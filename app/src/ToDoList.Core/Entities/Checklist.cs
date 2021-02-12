@@ -3,7 +3,7 @@ using ToDoList.SharedKernel;
 
 namespace ToDoList.Core.Entities
 {
-    public partial class Checklist : BaseEntity
+    public class Checklist : BaseEntity
     {
         public Checklist(string name, int userId) : base(name)
         {

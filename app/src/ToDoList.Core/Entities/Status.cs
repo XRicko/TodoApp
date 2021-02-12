@@ -3,7 +3,7 @@ using ToDoList.SharedKernel;
 
 namespace ToDoList.Core.Entities
 {
-    public partial class Status : BaseEntity
+    public class Status : BaseEntity
     {
         public Status(string name) : base(name) { }
 
