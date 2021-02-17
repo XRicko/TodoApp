@@ -16,5 +16,6 @@ namespace ToDoList.SharedKernel.Interfaces
 
         Task AddAsync<T>(T entity) where T : BaseEntity;
         void Update<T>(T entity) where T : BaseEntity;
+        void Remove<T>(T entity) where T : BaseEntity;
     }
 }
