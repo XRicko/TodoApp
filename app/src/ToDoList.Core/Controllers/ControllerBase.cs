@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using ToDoList.SharedKernel;
 using ToDoList.SharedKernel.Interfaces;
@@ -16,34 +17,27 @@ namespace ToDoList.Core.Controllers
 
         public Task<T> GetByNameAsync<T>(string name) where T : BaseEntity
         {
-            return UnitOfWork.Repository.GetAsync<T>(name);
+            throw new NotImplementedException();
         }
 
         public Task<T> GetByIdAsync<T>(int id) where T : BaseEntity
         {
-            return UnitOfWork.Repository.GetAsync<T>(id);
+            throw new NotImplementedException();
         }
 
         public Task<IEnumerable<T>> GetItemsAsync<T>() where T : BaseEntity
         {
-            return UnitOfWork.Repository.GetAllAsync<T>();
+            throw new NotImplementedException();
         }
 
         public async Task AddItemAsync<T>(T entity) where T : BaseEntity
         {
-            T item = await UnitOfWork.Repository.GetAsync(entity);
-
-            if (item is null)
-            {
-                await UnitOfWork.Repository.AddAsync(entity);
-                await UnitOfWork.SaveAsync();
-            }
+            throw new NotImplementedException();
         }
 
         public async Task UpdateAsync<T>(T entity) where T : BaseEntity
         {
-            UnitOfWork.Repository.Update(entity);
-            await UnitOfWork.SaveAsync();
+            throw new NotImplementedException();
         }
     }
 }
