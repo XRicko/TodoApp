@@ -7,9 +7,9 @@ namespace ToDoList.Core.Entities
     {
         public string Path { get; set; }
 
-        public Image(string name, string path) : base(name)
+        public Image() : base()
         {
-            Path = path;
+            ChecklistItems = new HashSet<ChecklistItem>();
         }
 
         public virtual ICollection<ChecklistItem> ChecklistItems { get; set; }

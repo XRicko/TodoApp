@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Spatial;
 using ToDoList.SharedKernel;
 
 namespace ToDoList.Core.Entities
@@ -8,6 +9,8 @@ namespace ToDoList.Core.Entities
     {
         public DateTime StartDate { get; private set; }
         public DateTime? DueDate { get; set; }
+        public GeographyPoint Geotag { get; set; }
+
         public int? ParentId { get; set; }
         public int? StatusId { get; set; }
         public int? CategoryId { get; set; }
@@ -21,16 +24,9 @@ namespace ToDoList.Core.Entities
         public virtual ChecklistItem Parent { get; set; }
         public virtual ICollection<ChecklistItem> Children { get; set; }
 
-        public ChecklistItem(string name, int checklistId, DateTime? dueDate = null, int? categoryId = null, int? parentId = null, int? imageId = null, int? statusId = null) : base(name)
+        public ChecklistItem() : base()
         {
-            StartDate = DateTime.Now;
-
-            DueDate = dueDate;
-            CategoryId = categoryId;
-            ChecklistId = checklistId;
-            ParentId = parentId;
-            ImageId = imageId;
-            StatusId = statusId;
+            Children = new HashSet<ChecklistItem>();
         }
     }
 }

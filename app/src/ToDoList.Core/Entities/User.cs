@@ -5,7 +5,10 @@ namespace ToDoList.Core.Entities
 {
     public class User : BaseEntity
     {
-        public User(string name) : base(name) { }
+        public User() : base()
+        {
+            Checklists = new HashSet<Checklist>();
+        }
 
         public virtual ICollection<Checklist> Checklists { get; set; }
     }
