@@ -9,9 +9,9 @@ namespace ToDoList.Infrastructure.Data
 
         public IRepository Repository { get; }
 
-        public UnitOfWork(ToDoListContext context, IRepository repository)
+        public UnitOfWork(ToDoListContext toDoListContext, IRepository repository)
         {
-            this.context = context;
+            context = toDoListContext;
             Repository = repository;
         }
 

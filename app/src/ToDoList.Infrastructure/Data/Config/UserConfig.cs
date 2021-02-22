@@ -4,7 +4,7 @@ using ToDoList.Core.Entities;
 
 namespace ToDoList.Infrastructure.Data.Config
 {
-    class UserConfig : IEntityTypeConfiguration<User>
+    internal class UserConfig : IEntityTypeConfiguration<User>
     {
         public void Configure(EntityTypeBuilder<User> builder)
         {

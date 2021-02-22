@@ -4,7 +4,7 @@ using ToDoList.Core.Entities;
 
 namespace ToDoList.Infrastructure.Data.Config
 {
-    class ChecklistItemConfig : IEntityTypeConfiguration<ChecklistItem>
+    internal class ChecklistItemConfig : IEntityTypeConfiguration<ChecklistItem>
     {
         public void Configure(EntityTypeBuilder<ChecklistItem> builder)
         {

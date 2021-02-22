@@ -4,7 +4,7 @@ using ToDoList.Core.Entities;
 
 namespace ToDoList.Infrastructure.Data.Config
 {
-    class StatusConfig : IEntityTypeConfiguration<Status>
+    internal class StatusConfig : IEntityTypeConfiguration<Status>
     {
         public void Configure(EntityTypeBuilder<Status> builder)
         {

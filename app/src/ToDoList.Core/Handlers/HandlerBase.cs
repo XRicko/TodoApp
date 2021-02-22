@@ -7,9 +7,9 @@ namespace ToDoList.Core.Handlers
     {
         protected readonly IUnitOfWork unitOfWork;
 
-        public HandlerBase(IUnitOfWork unitOfWork)
+        public HandlerBase(IUnitOfWork unit)
         {
-            this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
+            unitOfWork = unit ?? throw new ArgumentNullException(nameof(unit));
         }
     }
 }

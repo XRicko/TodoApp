@@ -13,9 +13,9 @@ namespace ToDoList.Infrastructure.Data
     {
         private readonly ToDoListContext context;
 
-        public EfRepository(ToDoListContext context)
+        public EfRepository(ToDoListContext toDoListContext)
         {
-            this.context = context ?? throw new ArgumentNullException(nameof(context));
+            context = toDoListContext ?? throw new ArgumentNullException(nameof(toDoListContext));
         }
 
         public Task<T> GetAsync<T>(int id) where T : BaseEntity =>

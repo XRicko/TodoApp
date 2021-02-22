@@ -4,7 +4,7 @@ using ToDoList.Core.Entities;
 
 namespace ToDoList.Infrastructure.Data.Config
 {
-    class ImageConfig : IEntityTypeConfiguration<Image>
+    internal class ImageConfig : IEntityTypeConfiguration<Image>
     {
         public void Configure(EntityTypeBuilder<Image> builder)
         {
