@@ -7,9 +7,9 @@ using ToDoList.SharedKernel.Interfaces;
 
 namespace ToDoList.Core.Handlers
 {
-    public class AddHandler<T> : HandlerBase, IRequestHandler<AddCommand<T>> where T : BaseEntity
+    public class AddCommandHandler<T> : HandlerBase, IRequestHandler<AddCommand<T>> where T : BaseEntity
     {
-        public AddHandler(IUnitOfWork unitOfWork) : base(unitOfWork) { }
+        public AddCommandHandler(IUnitOfWork unitOfWork) : base(unitOfWork) { }
 
         public async Task<Unit> Handle(AddCommand<T> request, CancellationToken cancellationToken)
         {

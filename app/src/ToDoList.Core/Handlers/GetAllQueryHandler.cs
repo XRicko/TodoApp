@@ -8,9 +8,9 @@ using ToDoList.SharedKernel.Interfaces;
 
 namespace ToDoList.Core.Handlers
 {
-    public class GetAllHandler<T> : HandlerBase, IRequestHandler<GetAllQuery<T>, IEnumerable<T>> where T : BaseEntity
+    public class GetAllQueryHandler<T> : HandlerBase, IRequestHandler<GetAllQuery<T>, IEnumerable<T>> where T : BaseEntity
     {
-        public GetAllHandler(IUnitOfWork unitOfWork) : base(unitOfWork) { }
+        public GetAllQueryHandler(IUnitOfWork unitOfWork) : base(unitOfWork) { }
 
         public async Task<IEnumerable<T>> Handle(GetAllQuery<T> request, CancellationToken cancellationToken)
         {
