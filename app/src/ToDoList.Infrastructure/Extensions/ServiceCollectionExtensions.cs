@@ -9,7 +9,7 @@ namespace ToDoList.Infrastructure.Extensions
     {
         public static IServiceCollection AddInfrastructure(this IServiceCollection services, string connectionString)
         {
-            services.AddDbContext<ToDoListContext>(options => options.UseSqlServer(connectionString)
+            services.AddDbContext<ToDoListContext>(options => options.UseSqlServer(connectionString, x => x.UseNetTopologySuite())
                                                                  .UseLazyLoadingProxies());
             services.AddScoped<IRepository, EfRepository>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();

@@ -3,7 +3,7 @@ using ToDoList.SharedKernel.Interfaces;
 
 namespace ToDoList.Core.Handlers
 {
-    public class HandlerBase
+    public abstract class HandlerBase
     {
         protected readonly IUnitOfWork unitOfWork;
 

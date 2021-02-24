@@ -1,6 +1,6 @@
-﻿using System;
+﻿using NetTopologySuite.Geometries;
+using System;
 using System.Collections.Generic;
-using System.Spatial;
 using ToDoList.SharedKernel;
 
 namespace ToDoList.Core.Entities
@@ -9,7 +9,7 @@ namespace ToDoList.Core.Entities
     {
         public DateTime StartDate { get; private set; }
         public DateTime? DueDate { get; set; }
-        public GeographyPoint Geotag { get; set; }
+        public Point GeoPoint { get; set; }
 
         public int? ParentId { get; set; }
         public int? StatusId { get; set; }

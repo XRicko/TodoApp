@@ -6,7 +6,7 @@
 
   <ItemGroup>
     <PackageReference Include="MediatR" Version="9.0.0" />
-    <PackageReference Include="System.Spatial" Version="5.8.4" />
+    <PackageReference Include="NetTopologySuite" Version="2.1.0" />
   </ItemGroup>
 
   <ItemGroup>

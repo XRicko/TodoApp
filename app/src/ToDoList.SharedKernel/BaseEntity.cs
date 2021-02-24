@@ -2,7 +2,7 @@
 
 namespace ToDoList.SharedKernel
 {
-    public class BaseEntity
+    public abstract class BaseEntity
     {
         private string name;
 
