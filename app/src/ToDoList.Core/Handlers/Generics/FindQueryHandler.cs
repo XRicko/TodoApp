@@ -1,14 +1,16 @@
-﻿using MediatR;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+
+using MediatR;
+
 using ToDoList.Core.Queries;
 using ToDoList.SharedKernel;
 using ToDoList.SharedKernel.Interfaces;
 
-namespace ToDoList.Core.Handlers
+namespace ToDoList.Core.Handlers.Generics
 {
-    public class FindQueryHandler<T> : HandlerBase, IRequestHandler<FindQuery<T>, IEnumerable<T>> where T : BaseEntity
+    internal class FindQueryHandler<T> : HandlerBase, IRequestHandler<FindQuery<T>, IEnumerable<T>> where T : BaseEntity
     {
         public FindQueryHandler(IUnitOfWork unitOfWork) : base(unitOfWork) { }
 

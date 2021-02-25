@@ -1,13 +1,15 @@
-﻿using MediatR;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
+
+using MediatR;
+
 using ToDoList.Core.Queries;
 using ToDoList.SharedKernel;
 using ToDoList.SharedKernel.Interfaces;
 
-namespace ToDoList.Core.Handlers
+namespace ToDoList.Core.Handlers.Generics
 {
-    public class GetByIdQueryHandler<T> : HandlerBase, IRequestHandler<GetByIdQuery<T>, T> where T : BaseEntity
+    internal class GetByIdQueryHandler<T> : HandlerBase, IRequestHandler<GetByIdQuery<T>, T> where T : BaseEntity
     {
         public GetByIdQueryHandler(IUnitOfWork unitOfWork) : base(unitOfWork) { }
 

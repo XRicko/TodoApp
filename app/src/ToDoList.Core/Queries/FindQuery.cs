@@ -1,7 +1,9 @@
-﻿using MediatR;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
+
+using MediatR;
+
 using ToDoList.SharedKernel;
 
 namespace ToDoList.Core.Queries

@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+
 using ToDoList.Infrastructure.Data;
 using ToDoList.SharedKernel.Interfaces;
 

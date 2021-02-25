@@ -1,6 +1,8 @@
-﻿using NetTopologySuite.Geometries;
-using System;
+﻿using System;
 using System.Collections.Generic;
+
+using NetTopologySuite.Geometries;
+
 using ToDoList.SharedKernel;
 
 namespace ToDoList.Core.Entities
@@ -26,6 +28,7 @@ namespace ToDoList.Core.Entities
 
         public ChecklistItem() : base()
         {
+            StartDate = DateTime.Now;
             Children = new HashSet<ChecklistItem>();
         }
     }

@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+
 using ToDoList.Core.Entities;
 
 namespace ToDoList.Infrastructure.Data.Config

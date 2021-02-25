@@ -1,13 +1,15 @@
-﻿using MediatR;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
+
+using MediatR;
+
 using ToDoList.Core.Commands;
 using ToDoList.SharedKernel;
 using ToDoList.SharedKernel.Interfaces;
 
-namespace ToDoList.Core.Handlers
+namespace ToDoList.Core.Handlers.Generics
 {
-    public class AddCommandHandler<T> : HandlerBase, IRequestHandler<AddCommand<T>> where T : BaseEntity
+    internal class AddCommandHandler<T> : HandlerBase, IRequestHandler<AddCommand<T>> where T : BaseEntity
     {
         public AddCommandHandler(IUnitOfWork unitOfWork) : base(unitOfWork) { }
 

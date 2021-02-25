@@ -1,12 +1,13 @@
-
 using MediatR;
+
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
-using ToDoList.Core.Handlers;
+
+using ToDoList.Core.Queries;
 using ToDoList.Infrastructure.Extensions;
 
 namespace ToDoList.WebApi
@@ -24,7 +25,9 @@ namespace ToDoList.WebApi
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddInfrastructure(Configuration.GetConnectionString("DefaultConnection"));
-            services.AddMediatR(typeof(HandlerBase));
+
+            //services.AddScoped(typeof(IRequestHandler<>), typeof(GetAllQuery<>));
+            services.AddMediatR(typeof(GetAllQuery<>));
 
             services.AddControllers();
             services.AddSwaggerGen(c =>

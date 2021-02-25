@@ -1,9 +1,10 @@
 ﻿using System;
+
 using ToDoList.SharedKernel.Interfaces;
 
-namespace ToDoList.Core.Handlers
+namespace ToDoList.Core.Handlers.Generics
 {
-    public abstract class HandlerBase
+    internal abstract class HandlerBase
     {
         protected readonly IUnitOfWork unitOfWork;
 

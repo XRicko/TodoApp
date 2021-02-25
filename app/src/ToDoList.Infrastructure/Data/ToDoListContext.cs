@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+
 using ToDoList.Core.Entities;
 using ToDoList.Infrastructure.Data.Config;
 
