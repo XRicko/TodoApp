@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ToDoList.SharedKernel", "sr
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ToDoList.Infrastructure", "src\ToDoList.Infrastructure\ToDoList.Infrastructure.csproj", "{7D8F1F81-9E2E-4AEF-8EF9-EF37604F67E2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToDoList.WebApi", "src\ToDoList.WebApi\ToDoList.WebApi.csproj", "{F2CC14AB-098A-4AAE-BDCF-DAE96E58E084}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ToDoList.WebApi", "src\ToDoList.WebApi\ToDoList.WebApi.csproj", "{F2CC14AB-098A-4AAE-BDCF-DAE96E58E084}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

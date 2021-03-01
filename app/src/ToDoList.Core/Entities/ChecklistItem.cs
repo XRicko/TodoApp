@@ -24,6 +24,7 @@ namespace ToDoList.Core.Entities
         public virtual Image Image { get; set; }
         public virtual Status Status { get; set; }
         public virtual ChecklistItem Parent { get; set; }
+
         public virtual ICollection<ChecklistItem> Children { get; set; }
 
         public ChecklistItem() : base()

@@ -7,6 +7,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 
+using NetTopologySuite.IO.Converters;
+
+using ToDoList.Core.DTOs;
 using ToDoList.Core.Queries;
 using ToDoList.Infrastructure.Extensions;
 
@@ -26,10 +29,12 @@ namespace ToDoList.WebApi
         {
             services.AddInfrastructure(Configuration.GetConnectionString("DefaultConnection"));
 
-            //services.AddScoped(typeof(IRequestHandler<>), typeof(GetAllQuery<>));
+            services.AddAutoMapper(typeof(CategoryDTO));
             services.AddMediatR(typeof(GetAllQuery<>));
 
-            services.AddControllers();
+            services.AddControllers()
+                .AddJsonOptions(options => options.JsonSerializerOptions.Converters.Add(new GeoJsonConverterFactory()));
+
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "ToDoList.WebApi", Version = "v1" });

@@ -18,7 +18,10 @@ namespace ToDoList.Core.Handlers.Generics
             T entity = await unitOfWork.Repository.GetAsync<T>(request.Id);
 
             if (entity is not null)
+            {
                 unitOfWork.Repository.Remove(entity);
+                await unitOfWork.SaveAsync();
+            }
 
             return Unit.Value;
         }
