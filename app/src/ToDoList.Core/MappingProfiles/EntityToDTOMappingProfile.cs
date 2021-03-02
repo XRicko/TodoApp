@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
 
+using NetTopologySuite.Geometries;
+
 using ToDoList.Core.DTOs;
 using ToDoList.Core.Entities;
 
@@ -9,17 +11,28 @@ namespace ToDoList.Core.MappingProfiles
     {
         public EntityToDTOMappingProfile()
         {
-            CreateMap<Category, CategoryDTO>();
-            CreateMap<CategoryDTO, Category>();
+            CreateMap<Point, GeoCoordinate>()
+               .ForMember(dest => dest.Longitude,
+                          opt => opt.MapFrom(src => src.X))
+               .ForMember(dest => dest.Latitude,
+                          opt => opt.MapFrom(src => src.Y))
+               .ForCtorParam("Longitude",
+                             opt => opt.MapFrom(src => src.X))
+               .ForCtorParam("Latitude",
+                             opt => opt.MapFrom(src => src.Y))
+               .ReverseMap();
 
-            CreateMap<ChecklistItem, ChecklistItemDTO>();
-            CreateMap<ChecklistItemDTO, ChecklistItem>();
+            CreateMap<GeoCoordinate, Point>()
+                .ForCtorParam("x",
+                              opt => opt.MapFrom(src => src.Longitude))
+                .ForCtorParam("y",
+                              opt => opt.MapFrom(src => src.Latitude));
 
-            CreateMap<Checklist, ChecklistDTO>();
-            CreateMap<ChecklistDTO, Checklist>();
+            CreateMap<ChecklistItem, ChecklistItemDTO>().ReverseMap();
 
-            CreateMap<Image, ImageDTO>();
-            CreateMap<ImageDTO, Image>();
+            CreateMap<Category, CategoryDTO>().ReverseMap();
+            CreateMap<Checklist, ChecklistDTO>().ReverseMap();
+            CreateMap<Image, ImageDTO>().ReverseMap();
         }
     }
 }

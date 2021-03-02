@@ -7,8 +7,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 
-using NetTopologySuite.IO.Converters;
-
 using ToDoList.Core.DTOs;
 using ToDoList.Core.Queries;
 using ToDoList.Infrastructure.Extensions;
@@ -32,8 +30,7 @@ namespace ToDoList.WebApi
             services.AddAutoMapper(typeof(CategoryDTO));
             services.AddMediatR(typeof(GetAllQuery<>));
 
-            services.AddControllers()
-                .AddJsonOptions(options => options.JsonSerializerOptions.Converters.Add(new GeoJsonConverterFactory()));
+            services.AddControllers();
 
             services.AddSwaggerGen(c =>
             {
