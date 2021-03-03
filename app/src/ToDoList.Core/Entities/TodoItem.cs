@@ -7,7 +7,7 @@ using ToDoList.SharedKernel;
 
 namespace ToDoList.Core.Entities
 {
-    public class ChecklistItem : BaseEntity
+    public class TodoItem : BaseEntity
     {
         public DateTime StartDate { get; private set; }
         public DateTime? DueDate { get; set; }
@@ -23,14 +23,14 @@ namespace ToDoList.Core.Entities
         public virtual Checklist Checklist { get; set; }
         public virtual Image Image { get; set; }
         public virtual Status Status { get; set; }
-        public virtual ChecklistItem Parent { get; set; }
+        public virtual TodoItem Parent { get; set; }
 
-        public virtual ICollection<ChecklistItem> Children { get; set; }
+        public virtual ICollection<TodoItem> Children { get; set; }
 
-        public ChecklistItem() : base()
+        public TodoItem() : base()
         {
             StartDate = DateTime.Now;
-            Children = new HashSet<ChecklistItem>();
+            Children = new HashSet<TodoItem>();
         }
     }
 }

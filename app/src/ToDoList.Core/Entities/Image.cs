@@ -10,9 +10,9 @@ namespace ToDoList.Core.Entities
 
         public Image() : base()
         {
-            ChecklistItems = new HashSet<ChecklistItem>();
+            TodoItems = new HashSet<TodoItem>();
         }
 
-        public virtual ICollection<ChecklistItem> ChecklistItems { get; set; }
+        public virtual ICollection<TodoItem> TodoItems { get; set; }
     }
 }

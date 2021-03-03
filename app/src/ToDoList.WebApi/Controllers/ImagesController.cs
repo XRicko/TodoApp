@@ -7,9 +7,11 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 using ToDoList.Core.Commands;
-using ToDoList.Core.DTOs;
 using ToDoList.Core.Entities;
 using ToDoList.Core.Queries;
+using ToDoList.Core.Response;
+using ToDoList.WebApi.Requests.Create;
+using ToDoList.WebApi.Requests.Update;
 
 namespace ToDoList.WebApi.Controllers
 {
@@ -27,16 +29,16 @@ namespace ToDoList.WebApi.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<ImageDTO> Get(int id)
+        public async Task<ImageResponse> Get(int id)
         {
             Image image = await mediator.Send(new GetByIdQuery<Image>(id));
-            return mapper.Map<ImageDTO>(image);
+            return mapper.Map<ImageResponse>(image);
         }
 
         [HttpPost]
-        public async Task Add([FromBody] ImageDTO imageDTO)
+        public async Task Add([FromBody] ImageCreateRequest createRequest)
         {
-            Image image = mapper.Map<Image>(imageDTO);
+            Image image = mapper.Map<Image>(createRequest);
             await mediator.Send(new AddCommand<Image>(image));
         }
 
@@ -45,9 +47,9 @@ namespace ToDoList.WebApi.Controllers
             await mediator.Send(new RemoveCommand<Image>(id));
 
         [HttpPut]
-        public async Task Update([FromBody] ImageDTO imageDTO)
+        public async Task Update([FromBody] ImageUpdateRequest updateRequest)
         {
-            Image checklist = mapper.Map<Image>(imageDTO);
+            Image checklist = mapper.Map<Image>(updateRequest);
             await mediator.Send(new UpdateCommand<Image>(checklist));
         }
     }

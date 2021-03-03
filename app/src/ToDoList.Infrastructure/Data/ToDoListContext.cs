@@ -16,7 +16,7 @@ namespace ToDoList.Infrastructure.Data
         public virtual DbSet<Checklist> Checklists { get; set; }
         public virtual DbSet<Image> Images { get; set; }
         public virtual DbSet<Status> Statuses { get; set; }
-        public virtual DbSet<ChecklistItem> ChecklistItems { get; set; }
+        public virtual DbSet<TodoItem> TodoItems { get; set; }
         public virtual DbSet<User> Users { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -29,7 +29,7 @@ namespace ToDoList.Infrastructure.Data
             modelBuilder.ApplyConfiguration(new StatusConfig());
             modelBuilder.ApplyConfiguration(new ChecklistConfig());
             modelBuilder.ApplyConfiguration(new ChecklistConfig());
-            modelBuilder.ApplyConfiguration(new ChecklistItemConfig());
+            modelBuilder.ApplyConfiguration(new TodoItemConfig());
         }
     }
 }

@@ -5,9 +5,9 @@ using ToDoList.Core.Entities;
 
 namespace ToDoList.Infrastructure.Data.Config
 {
-    internal class ChecklistItemConfig : IEntityTypeConfiguration<ChecklistItem>
+    internal class TodoItemConfig : IEntityTypeConfiguration<TodoItem>
     {
-        public void Configure(EntityTypeBuilder<ChecklistItem> builder)
+        public void Configure(EntityTypeBuilder<TodoItem> builder)
         {
             builder.ToTable("Task");
 
@@ -16,16 +16,16 @@ namespace ToDoList.Infrastructure.Data.Config
                 .HasMaxLength(200);
 
             builder.HasOne(d => d.Category)
-                .WithMany(p => p.ChecklistItems)
+                .WithMany(p => p.TodoItems)
                 .HasForeignKey(d => d.CategoryId);
 
             builder.HasOne(d => d.Checklist)
-                .WithMany(p => p.ChecklistItems)
+                .WithMany(p => p.TodoItems)
                 .HasForeignKey(d => d.ChecklistId)
                 .OnDelete(DeleteBehavior.ClientSetNull);
 
             builder.HasOne(d => d.Image)
-                .WithMany(p => p.ChecklistItems)
+                .WithMany(p => p.TodoItems)
                 .HasForeignKey(d => d.ImageId);
 
             builder.HasOne(d => d.Parent)
@@ -33,7 +33,7 @@ namespace ToDoList.Infrastructure.Data.Config
                 .HasForeignKey(d => d.ParentId);
 
             builder.HasOne(d => d.Status)
-                .WithMany(p => p.ChecklistItems)
+                .WithMany(p => p.TodoItems)
                 .HasForeignKey(d => d.StatusId);
         }
     }

@@ -8,9 +8,11 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 using ToDoList.Core.Commands;
-using ToDoList.Core.DTOs;
 using ToDoList.Core.Entities;
 using ToDoList.Core.Queries;
+using ToDoList.Core.Response;
+using ToDoList.WebApi.Requests.Create;
+using ToDoList.WebApi.Requests.Update;
 
 namespace ToDoList.WebApi.Controllers
 {
@@ -28,23 +30,23 @@ namespace ToDoList.WebApi.Controllers
         }
 
         [HttpGet]
-        public async Task<IEnumerable<ChecklistDTO>> Get()
+        public async Task<IEnumerable<ChecklistResponse>> Get()
         {
             IEnumerable<Checklist> checklists = await mediator.Send(new GetAllQuery<Checklist>());
-            return mapper.Map<IEnumerable<ChecklistDTO>>(checklists);
+            return mapper.Map<IEnumerable<ChecklistResponse>>(checklists);
         }
 
         [HttpGet("{id}")]
-        public async Task<ChecklistDTO> Get(int id)
+        public async Task<ChecklistResponse> Get(int id)
         {
             Checklist checklist = await mediator.Send(new GetByIdQuery<Checklist>(id));
-            return mapper.Map<ChecklistDTO>(checklist);
+            return mapper.Map<ChecklistResponse>(checklist);
         }
 
         [HttpPost]
-        public async Task Add([FromBody] ChecklistDTO checklistDTO)
+        public async Task Add([FromBody] ChecklistCreateRequest createRequest)
         {
-            Checklist checklist = mapper.Map<Checklist>(checklistDTO);
+            Checklist checklist = mapper.Map<Checklist>(createRequest);
             await mediator.Send(new AddCommand<Checklist>(checklist));
         }
 
@@ -53,9 +55,9 @@ namespace ToDoList.WebApi.Controllers
             await mediator.Send(new RemoveCommand<Checklist>(id));
 
         [HttpPut]
-        public async Task Update([FromBody] ChecklistDTO checklistDTO)
+        public async Task Update([FromBody] ChecklistUpdateRequest updateRequest)
         {
-            Checklist checklist = mapper.Map<Checklist>(checklistDTO);
+            Checklist checklist = mapper.Map<Checklist>(updateRequest);
             await mediator.Send(new UpdateCommand<Checklist>(checklist));
         }
     }

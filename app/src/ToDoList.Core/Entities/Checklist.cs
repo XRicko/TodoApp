@@ -10,10 +10,10 @@ namespace ToDoList.Core.Entities
 
         public Checklist() : base()
         {
-            ChecklistItems = new HashSet<ChecklistItem>();
+            TodoItems = new HashSet<TodoItem>();
         }
 
         public virtual User User { get; set; }
-        public virtual ICollection<ChecklistItem> ChecklistItems { get; set; }
+        public virtual ICollection<TodoItem> TodoItems { get; set; }
     }
 }

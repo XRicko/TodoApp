@@ -8,9 +8,10 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 using ToDoList.Core.Commands;
-using ToDoList.Core.DTOs;
 using ToDoList.Core.Entities;
 using ToDoList.Core.Queries;
+using ToDoList.Core.Response;
+using ToDoList.WebApi.Requests.Create;
 
 namespace ToDoList.WebApi.Controllers
 {
@@ -28,23 +29,23 @@ namespace ToDoList.WebApi.Controllers
         }
 
         [HttpGet]
-        public async Task<IEnumerable<CategoryDTO>> Get()
+        public async Task<IEnumerable<CategoryResponse>> Get()
         {
             IEnumerable<Category> categories = await mediator.Send(new GetAllQuery<Category>());
-            return mapper.Map<IEnumerable<CategoryDTO>>(categories);
+            return mapper.Map<IEnumerable<CategoryResponse>>(categories);
         }
 
         [HttpGet("{id}")]
-        public async Task<CategoryDTO> Get(int id)
+        public async Task<CategoryResponse> Get(int id)
         {
             Category category = await mediator.Send(new GetByIdQuery<Category>(id));
-            return mapper.Map<CategoryDTO>(category);
+            return mapper.Map<CategoryResponse>(category);
         }
 
         [HttpPost]
-        public async Task Add([FromBody] CategoryDTO categoryDTO)
+        public async Task Add([FromBody] CategoryCreateRequest createRequest)
         {
-            Category category = mapper.Map<Category>(categoryDTO);
+            Category category = mapper.Map<Category>(createRequest);
             await mediator.Send(new AddCommand<Category>(category));
         }
 
