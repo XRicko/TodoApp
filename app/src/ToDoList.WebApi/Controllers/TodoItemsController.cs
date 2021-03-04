@@ -47,6 +47,8 @@ namespace ToDoList.WebApi.Controllers
         public async Task Add([FromBody] TodoItemCreateRequest createRequest)
         {
             TodoItem todoItem = mapper.Map<TodoItem>(createRequest);
+            todoItem.GeoPoint.SRID = 4326;
+
             await mediator.Send(new AddCommand<TodoItem>(todoItem));
         }
 
