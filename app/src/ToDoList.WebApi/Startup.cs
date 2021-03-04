@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 
+using ToDoList.Core;
 using ToDoList.Core.Queries;
 using ToDoList.Core.Response;
 using ToDoList.Infrastructure.Extensions;
@@ -27,6 +28,8 @@ namespace ToDoList.WebApi
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddInfrastructure(Configuration.GetConnectionString("DefaultConnection"));
+
+            Credentials.GoogleApiKey = Configuration["Apis:GoogleApiKey"];
 
             services.AddAutoMapper(typeof(CategoryResponse), typeof(CategoryCreateRequest));
             services.AddMediatR(typeof(GetAllQuery<>));
