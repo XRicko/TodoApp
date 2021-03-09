@@ -11,7 +11,7 @@ using ToDoList.SharedKernel.Interfaces;
 
 namespace ToDoList.Infrastructure.Data
 {
-    class EfRepository : IRepository
+    internal class EfRepository : IRepository
     {
         private readonly ToDoListContext context;
 

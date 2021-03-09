@@ -5,7 +5,7 @@ using ToDoList.SharedKernel.Interfaces;
 
 namespace ToDoList.Core.Handlers.Images
 {
-    class UpdateImageCommandHandler : UpdateCommandHandler<Image>
+    internal class UpdateImageCommandHandler : UpdateCommandHandler<Image>
     {
         public UpdateImageCommandHandler(IUnitOfWork unitOfWork) : base(unitOfWork)
         {

@@ -5,7 +5,7 @@ using ToDoList.SharedKernel.Interfaces;
 
 namespace ToDoList.Core.Handlers.Images
 {
-    class RemoveImageCommandHandler : RemoveCommandHandler<Image>
+    internal class RemoveImageCommandHandler : RemoveCommandHandler<Image>
     {
         public RemoveImageCommandHandler(IUnitOfWork unitOfWork) : base(unitOfWork)
         {

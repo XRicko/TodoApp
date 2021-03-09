@@ -9,7 +9,7 @@ using ToDoList.WebApi.Requests.Update;
 
 namespace ToDoList.WebApi.MappingProfiles
 {
-    class EntityToDtoMappingProfile : Profile
+    internal class EntityToDtoMappingProfile : Profile
     {
         public EntityToDtoMappingProfile()
         {

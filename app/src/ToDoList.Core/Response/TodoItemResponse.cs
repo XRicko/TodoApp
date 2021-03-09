@@ -15,7 +15,7 @@ namespace ToDoList.Core.Response
                 IGeocoder geocoder = new GoogleGeocoder(Credentials.GoogleApiKey);
                 var addresses = geocoder.ReverseGeocodeAsync(GeoPoint.Latitude, GeoPoint.Longitude);
 
-                return addresses.Result.First().FormattedAddress;
+                return addresses.Result.FirstOrDefault()?.FormattedAddress;
             }
         }
     }

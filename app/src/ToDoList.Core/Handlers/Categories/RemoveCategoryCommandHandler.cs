@@ -5,7 +5,7 @@ using ToDoList.SharedKernel.Interfaces;
 
 namespace ToDoList.Core.Handlers.Categories
 {
-    class RemoveCategoryCommandHandler : RemoveCommandHandler<Category>
+    internal class RemoveCategoryCommandHandler : RemoveCommandHandler<Category>
     {
         public RemoveCategoryCommandHandler(IUnitOfWork unitOfWork) : base(unitOfWork)
         {

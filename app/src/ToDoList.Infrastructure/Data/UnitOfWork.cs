@@ -4,7 +4,7 @@ using ToDoList.SharedKernel.Interfaces;
 
 namespace ToDoList.Infrastructure.Data
 {
-    class UnitOfWork : IUnitOfWork
+    internal class UnitOfWork : IUnitOfWork
     {
         private readonly ToDoListContext context;
 

@@ -4,7 +4,7 @@ using ToDoList.SharedKernel.Interfaces;
 
 namespace ToDoList.Core.Handlers.Categories
 {
-    class GetCategoriesQueryHandler : GetAllQueryHandler<Category>
+    internal class GetCategoriesQueryHandler : GetAllQueryHandler<Category>
     {
         public GetCategoriesQueryHandler(IUnitOfWork unitOfWork) : base(unitOfWork)
         {

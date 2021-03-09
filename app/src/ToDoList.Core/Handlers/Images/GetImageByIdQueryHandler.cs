@@ -5,7 +5,7 @@ using ToDoList.SharedKernel.Interfaces;
 
 namespace ToDoList.Core.Handlers.Images
 {
-    class GetImageByIdQueryHandler : GetByIdQueryHandler<Image>
+    internal class GetImageByIdQueryHandler : GetByIdQueryHandler<Image>
     {
         public GetImageByIdQueryHandler(IUnitOfWork unitOfWork) : base(unitOfWork)
         {

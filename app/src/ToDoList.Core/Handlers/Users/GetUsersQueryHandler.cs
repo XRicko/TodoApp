@@ -5,7 +5,7 @@ using ToDoList.SharedKernel.Interfaces;
 
 namespace ToDoList.Core.Handlers.Users
 {
-    class GetUsersQueryHandler : GetAllQueryHandler<User>
+    internal class GetUsersQueryHandler : GetAllQueryHandler<User>
     {
         public GetUsersQueryHandler(IUnitOfWork unitOfWork) : base(unitOfWork)
         {

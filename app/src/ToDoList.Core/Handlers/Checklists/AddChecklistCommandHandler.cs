@@ -5,7 +5,7 @@ using ToDoList.SharedKernel.Interfaces;
 
 namespace ToDoList.Core.Handlers.Checklists
 {
-    class AddChecklistCommandHandler : AddCommandHandler<Checklist>
+    internal class AddChecklistCommandHandler : AddCommandHandler<Checklist>
     {
         public AddChecklistCommandHandler(IUnitOfWork unitOfWork) : base(unitOfWork)
         {

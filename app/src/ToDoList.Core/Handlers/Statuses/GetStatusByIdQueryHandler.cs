@@ -5,7 +5,7 @@ using ToDoList.SharedKernel.Interfaces;
 
 namespace ToDoList.Core.Handlers.Statuses
 {
-    class GetStatusByIdQueryHandler : GetByIdQueryHandler<Status>
+    internal class GetStatusByIdQueryHandler : GetByIdQueryHandler<Status>
     {
         public GetStatusByIdQueryHandler(IUnitOfWork unitOfWork) : base(unitOfWork)
         {
