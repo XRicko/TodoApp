@@ -1,6 +1,6 @@
 ﻿using System;
 
-using ToDoList.Core.Response;
+using ToDoList.SharedKernel;
 
 namespace ToDoList.WebApi.Requests.Create
 {

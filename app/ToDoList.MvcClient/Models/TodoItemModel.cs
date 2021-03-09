@@ -1,13 +1,14 @@
 ﻿using System;
 
+using ToDoList.SharedKernel;
+
 namespace ToDoList.MvcClient.Models
 {
-    public class TodoItemModel
+    public class TodoItemModel : BaseEntity
     {
-        public string Name { get; set; }
+        public DateTime StartDate { get; set; }
         public DateTime? DueDate { get; set; }
-
-        public string Address { get; set; }
+        public GeoCoordinate GeoPoint { get; set; }
 
         public int? ParentId { get; set; }
         public int? StatusId { get; set; }
@@ -15,5 +16,11 @@ namespace ToDoList.MvcClient.Models
         public int ChecklistId { get; set; }
         public int? ImageId { get; set; }
 
+        public string StatusName { get; set; }
+        public string CategoryName { get; set; }
+        public string ChecklistName { get; set; }
+        public string ImagePath { get; set; }
+
+        public string Address { get; set; }
     }
 }

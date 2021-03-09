@@ -1,8 +1,133 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
-}
+﻿@model ToDoList.MvcClient.ViewModels.IndexViewModel
+@*
+    @{
+        ViewData["Title"] = "Index";
+    }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+    <h1>Index</h1>
+
+    <p>
+        <a asp-action="Create">Create New</a>
+    </p>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.Name)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.StartDate)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.DueDate)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.ParentId)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.StatusName)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.CategoryName)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.ChecklistName)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.ImagePath)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Address)
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+    @foreach (var item in Model) {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.StartDate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.DueDate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ParentId)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.StatusName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CategoryName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ChecklistName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ImagePath)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Address)
+                </td>
+                <td>
+                    @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
+                    @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
+                    @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
+                </td>
+            </tr>
+    }
+        </tbody>
+    </table>*@
+<div class="d-flex flex-column">
+    @foreach (var checklist in Model.ChecklistModels)
+    {
+        <div class="row d-flex justify-content-center container">
+            <div class="col-md-8">
+                <div class="mb-3 card">
+                    <div class="card-header">
+                        <div class="font-size-lg text-capitalize font-weight-normal">
+                            <i class="bi bi-list-task"></i>&nbsp;@checklist.Name
+                        </div>
+                    </div>
+                    <div style="position: static;">
+                        <div>
+                            <ul class=" list-group list-group-flush">
+                                @foreach (var todoItem in Model.TodoItemModels.Where(i => i.ChecklistName == checklist.Name))
+                                {
+                                    <li class="list-group-item">
+                                        <div class="bg-warning"></div>
+                                        <div class="p-0">
+                                            <div>
+                                                <div class="mr-2">
+                                                    <div class="custom-checkbox custom-control">
+                                                        <input class="custom-control-input" id="@todoItem.Name" type="checkbox">
+                                                        <label class="custom-control-label" for="@todoItem.Name">&nbsp;</label>
+                                                    </div>
+                                                </div>
+                                                <div>
+                                                    <div>
+                                                        @todoItem.Name
+                                                        <div class="badge badge-danger ml-2">Rejected</div>
+                                                    </div>
+                                                </div>
+                                                <div>
+                                                    <a class="border-0 btn-transition btn btn-outline-danger" asp-action="Delete" asp-route-id="@todoItem.Id"> <i class="bi bi-trash"></i> </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </li>
+                                }
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="d-block text-right card-footer">
+                        <button class="btn btn-primary">Add Task</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
 </div>

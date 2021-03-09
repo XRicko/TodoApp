@@ -4,6 +4,7 @@ using NetTopologySuite.Geometries;
 
 using ToDoList.Core.Entities;
 using ToDoList.Core.Response;
+using ToDoList.SharedKernel;
 using ToDoList.WebApi.Requests.Create;
 using ToDoList.WebApi.Requests.Update;
 
