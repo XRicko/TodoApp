@@ -25,15 +25,15 @@ namespace ToDoList.WebApi.Controllers
         [HttpGet]
         public async Task<IEnumerable<StatusResponse>> Get()
         {
-            IEnumerable<Status> statuses = await mediator.Send(new GetAllQuery<Status>());
-            return mapper.Map<IEnumerable<StatusResponse>>(statuses);
+            IEnumerable<Status> statuses = await Mediator.Send(new GetAllQuery<Status>());
+            return Mapper.Map<IEnumerable<StatusResponse>>(statuses);
         }
 
         [HttpGet("{id}")]
         public async Task<StatusResponse> Get(int id)
         {
-            Status status = await mediator.Send(new GetByIdQuery<Status>(id));
-            return mapper.Map<StatusResponse>(status);
+            Status status = await Mediator.Send(new GetByIdQuery<Status>(id));
+            return Mapper.Map<StatusResponse>(status);
         }
     }
 }

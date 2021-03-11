@@ -13,6 +13,7 @@ using ToDoList.Core.Queries;
 using ToDoList.Core.Response;
 using ToDoList.WebApi.Requests.Create;
 using ToDoList.WebApi.Requests.Update;
+using ToDoList.WebApi.Services;
 
 namespace ToDoList.WebApi.Controllers
 {
@@ -20,43 +21,76 @@ namespace ToDoList.WebApi.Controllers
     [ApiController]
     public class TodoItemsController : Base
     {
-        public TodoItemsController(IMediator mediator, IMapper mapper) : base(mediator, mapper)
-        {
+        private readonly GeocodingService geocodingService;
 
+        public TodoItemsController(IMediator mediator, IMapper mapper, GeocodingService codingService) : base(mediator, mapper)
+        {
+            geocodingService = codingService;
         }
 
         [HttpGet]
         public async Task<IEnumerable<TodoItemResponse>> Get()
         {
-            IEnumerable<TodoItem> todoItems = await mediator.Send(new GetAllQuery<TodoItem>());
-            return mapper.Map<IEnumerable<TodoItemResponse>>(todoItems);
+            IEnumerable<TodoItem> todoItems = await Mediator.Send(new GetAllQuery<TodoItem>());
+            IEnumerable<TodoItemResponse> todoItemResponses = Mapper.Map<IEnumerable<TodoItemResponse>>(todoItems);
+
+            IEnumerable<TodoItemResponse> todoItemResponsesWithAddress = await GetTodoItemResponsesWithAddress(todoItemResponses);
+
+            return todoItemResponsesWithAddress;
         }
 
         [HttpGet("{id}")]
         public async Task<TodoItemResponse> Get(int id)
         {
-            TodoItem todoItem = await mediator.Send(new GetByIdQuery<TodoItem>(id));
-            return mapper.Map<TodoItemResponse>(todoItem);
+            TodoItem todoItem = await Mediator.Send(new GetByIdQuery<TodoItem>(id));
+            TodoItemResponse todoItemResponse = Mapper.Map<TodoItemResponse>(todoItem);
+
+            TodoItemResponse todoItemResponseWithAddress = await GetTodoItemResponseWithAddress(todoItemResponse);
+
+            return todoItemResponseWithAddress;
         }
 
         [HttpPost]
         public async Task Add([FromBody] TodoItemCreateRequest createRequest)
         {
-            TodoItem todoItem = mapper.Map<TodoItem>(createRequest);
+            TodoItem todoItem = Mapper.Map<TodoItem>(createRequest);
             todoItem.GeoPoint.SRID = 4326;
 
-            await mediator.Send(new AddCommand<TodoItem>(todoItem));
+            await Mediator.Send(new AddCommand<TodoItem>(todoItem));
         }
 
         [HttpDelete("{id}")]
         public async Task Delete(int id) =>
-            await mediator.Send(new RemoveCommand<TodoItem>(id));
+            await Mediator.Send(new RemoveCommand<TodoItem>(id));
 
         [HttpPut]
         public async Task Update([FromBody] TodoItemUpdateRequest updateRequest)
         {
-            TodoItem todoItem = mapper.Map<TodoItem>(updateRequest);
-            await mediator.Send(new UpdateCommand<TodoItem>(todoItem));
+            TodoItem todoItem = Mapper.Map<TodoItem>(updateRequest);
+            await Mediator.Send(new UpdateCommand<TodoItem>(todoItem));
+        }
+
+        private async Task<TodoItemResponse> GetTodoItemResponseWithAddress(TodoItemResponse todoItemResponse)
+        {
+            string address = await geocodingService.GetAddressAsync(todoItemResponse.GeoPoint.Latitude, todoItemResponse.GeoPoint.Longitude);
+            TodoItemResponse todoItemResponseWithAddress = todoItemResponse with { Address = address };
+
+            return todoItemResponseWithAddress;
+        }
+
+        private async Task<IEnumerable<TodoItemResponse>> GetTodoItemResponsesWithAddress(IEnumerable<TodoItemResponse> todoItemResponses)
+        {
+            List<TodoItemResponse> todoItemResponsesWithAddress = new();
+
+            foreach (var item in todoItemResponses)
+            {
+                if (item.GeoPoint is not null)
+                    todoItemResponsesWithAddress.Add(await GetTodoItemResponseWithAddress(item));
+                else
+                    todoItemResponsesWithAddress.Add(item);
+            }
+
+            return todoItemResponsesWithAddress;
         }
     }
 }

@@ -28,33 +28,33 @@ namespace ToDoList.WebApi.Controllers
         [HttpGet]
         public async Task<IEnumerable<ChecklistResponse>> Get()
         {
-            IEnumerable<Checklist> checklists = await mediator.Send(new GetAllQuery<Checklist>());
-            return mapper.Map<IEnumerable<ChecklistResponse>>(checklists);
+            IEnumerable<Checklist> checklists = await Mediator.Send(new GetAllQuery<Checklist>());
+            return Mapper.Map<IEnumerable<ChecklistResponse>>(checklists);
         }
 
         [HttpGet("{id}")]
         public async Task<ChecklistResponse> Get(int id)
         {
-            Checklist checklist = await mediator.Send(new GetByIdQuery<Checklist>(id));
-            return mapper.Map<ChecklistResponse>(checklist);
+            Checklist checklist = await Mediator.Send(new GetByIdQuery<Checklist>(id));
+            return Mapper.Map<ChecklistResponse>(checklist);
         }
 
         [HttpPost]
         public async Task Add([FromBody] ChecklistCreateRequest createRequest)
         {
-            Checklist checklist = mapper.Map<Checklist>(createRequest);
-            await mediator.Send(new AddCommand<Checklist>(checklist));
+            Checklist checklist = Mapper.Map<Checklist>(createRequest);
+            await Mediator.Send(new AddCommand<Checklist>(checklist));
         }
 
         [HttpDelete("{id}")]
         public async Task Delete(int id) =>
-            await mediator.Send(new RemoveCommand<Checklist>(id));
+            await Mediator.Send(new RemoveCommand<Checklist>(id));
 
         [HttpPut]
         public async Task Update([FromBody] ChecklistUpdateRequest updateRequest)
         {
-            Checklist checklist = mapper.Map<Checklist>(updateRequest);
-            await mediator.Send(new UpdateCommand<Checklist>(checklist));
+            Checklist checklist = Mapper.Map<Checklist>(updateRequest);
+            await Mediator.Send(new UpdateCommand<Checklist>(checklist));
         }
     }
 }

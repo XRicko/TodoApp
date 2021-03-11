@@ -16,7 +16,7 @@ namespace ToDoList.Core.Handlers.Generics
 
         public Task<IEnumerable<T>> Handle(FindQuery<T> request, CancellationToken cancellationToken)
         {
-            var result = unitOfWork.Repository.FindAsync(request.Predicate);
+            var result = UnitOfWork.Repository.FindAsync(request.Predicate);
             return result;
         }
     }

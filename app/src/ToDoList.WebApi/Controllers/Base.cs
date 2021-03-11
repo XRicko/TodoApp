@@ -8,13 +8,13 @@ namespace ToDoList.WebApi.Controllers
 {
     public abstract class Base : ControllerBase
     {
-        protected readonly IMediator mediator;
-        protected readonly IMapper mapper;
+        protected IMediator Mediator { get; }
+        protected IMapper Mapper { get; }
 
-        protected Base(IMediator mediator1, IMapper mapper1)
+        protected Base(IMediator mediator, IMapper mapper)
         {
-            mediator = mediator1;
-            mapper = mapper1;
+            Mediator = mediator;
+            Mapper = mapper;
         }
     }
 }

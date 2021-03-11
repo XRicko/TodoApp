@@ -6,11 +6,11 @@ namespace ToDoList.Core.Handlers.Generics
 {
     internal abstract class HandlerBase
     {
-        protected readonly IUnitOfWork unitOfWork;
+        protected IUnitOfWork UnitOfWork { get; }
 
-        public HandlerBase(IUnitOfWork unit)
+        public HandlerBase(IUnitOfWork unitOfWork)
         {
-            unitOfWork = unit ?? throw new ArgumentNullException(nameof(unit));
+            UnitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         }
     }
 }

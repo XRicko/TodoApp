@@ -15,7 +15,7 @@ namespace ToDoList.Core.Handlers.Generics
 
         public async Task<T> Handle(GetByIdQuery<T> request, CancellationToken cancellationToken)
         {
-            var result = await unitOfWork.Repository.GetAsync<T>(request.Id);
+            var result = await UnitOfWork.Repository.GetAsync<T>(request.Id);
             return result;
         }
     }

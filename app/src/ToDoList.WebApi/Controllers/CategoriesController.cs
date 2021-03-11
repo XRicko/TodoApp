@@ -27,26 +27,26 @@ namespace ToDoList.WebApi.Controllers
         [HttpGet]
         public async Task<IEnumerable<CategoryResponse>> Get()
         {
-            IEnumerable<Category> categories = await mediator.Send(new GetAllQuery<Category>());
-            return mapper.Map<IEnumerable<CategoryResponse>>(categories);
+            IEnumerable<Category> categories = await Mediator.Send(new GetAllQuery<Category>());
+            return Mapper.Map<IEnumerable<CategoryResponse>>(categories);
         }
 
         [HttpGet("{id}")]
         public async Task<CategoryResponse> Get(int id)
         {
-            Category category = await mediator.Send(new GetByIdQuery<Category>(id));
-            return mapper.Map<CategoryResponse>(category);
+            Category category = await Mediator.Send(new GetByIdQuery<Category>(id));
+            return Mapper.Map<CategoryResponse>(category);
         }
 
         [HttpPost]
         public async Task Add([FromBody] CategoryCreateRequest createRequest)
         {
-            Category category = mapper.Map<Category>(createRequest);
-            await mediator.Send(new AddCommand<Category>(category));
+            Category category = Mapper.Map<Category>(createRequest);
+            await Mediator.Send(new AddCommand<Category>(category));
         }
 
         [HttpDelete("{id}")]
         public async Task Delete(int id) =>
-            await mediator.Send(new RemoveCommand<Category>(id));
+            await Mediator.Send(new RemoveCommand<Category>(id));
     }
 }

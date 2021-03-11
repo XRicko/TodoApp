@@ -15,8 +15,8 @@ namespace ToDoList.Core.Handlers.Generics
 
         public async Task<Unit> Handle(UpdateCommand<T> request, CancellationToken cancellationToken)
         {
-            unitOfWork.Repository.Update(request.Entity);
-            await unitOfWork.SaveAsync();
+            UnitOfWork.Repository.Update(request.Entity);
+            await UnitOfWork.SaveAsync();
 
             return Unit.Value;
         }

@@ -27,26 +27,26 @@ namespace ToDoList.WebApi.Controllers
         [HttpGet("{id}")]
         public async Task<ImageResponse> Get(int id)
         {
-            Image image = await mediator.Send(new GetByIdQuery<Image>(id));
-            return mapper.Map<ImageResponse>(image);
+            Image image = await Mediator.Send(new GetByIdQuery<Image>(id));
+            return Mapper.Map<ImageResponse>(image);
         }
 
         [HttpPost]
         public async Task Add([FromBody] ImageCreateRequest createRequest)
         {
-            Image image = mapper.Map<Image>(createRequest);
-            await mediator.Send(new AddCommand<Image>(image));
+            Image image = Mapper.Map<Image>(createRequest);
+            await Mediator.Send(new AddCommand<Image>(image));
         }
 
         [HttpDelete("{id}")]
         public async Task Delete(int id) =>
-            await mediator.Send(new RemoveCommand<Image>(id));
+            await Mediator.Send(new RemoveCommand<Image>(id));
 
         [HttpPut]
         public async Task Update([FromBody] ImageUpdateRequest updateRequest)
         {
-            Image checklist = mapper.Map<Image>(updateRequest);
-            await mediator.Send(new UpdateCommand<Image>(checklist));
+            Image checklist = Mapper.Map<Image>(updateRequest);
+            await Mediator.Send(new UpdateCommand<Image>(checklist));
         }
     }
 }

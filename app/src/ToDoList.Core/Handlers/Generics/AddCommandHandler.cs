@@ -15,12 +15,12 @@ namespace ToDoList.Core.Handlers.Generics
 
         public async Task<Unit> Handle(AddCommand<T> request, CancellationToken cancellationToken)
         {
-            T item = await unitOfWork.Repository.GetAsync(request.Entity);
+            T item = await UnitOfWork.Repository.GetAsync(request.Entity);
 
             if (item is null)
             {
-                await unitOfWork.Repository.AddAsync(request.Entity);
-                await unitOfWork.SaveAsync();
+                await UnitOfWork.Repository.AddAsync(request.Entity);
+                await UnitOfWork.SaveAsync();
             }
 
             return Unit.Value;

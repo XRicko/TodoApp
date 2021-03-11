@@ -1,3 +1,6 @@
+using Geocoding;
+using Geocoding.Google;
+
 using MediatR;
 
 using Microsoft.AspNetCore.Builder;
@@ -5,13 +8,14 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 
-using ToDoList.Core;
 using ToDoList.Core.Queries;
 using ToDoList.Core.Response;
 using ToDoList.Infrastructure.Extensions;
 using ToDoList.WebApi.Requests.Create;
+using ToDoList.WebApi.Services;
 
 namespace ToDoList.WebApi
 {
@@ -29,7 +33,10 @@ namespace ToDoList.WebApi
         {
             services.AddInfrastructure(Configuration.GetConnectionString("DefaultConnection"));
 
-            Credentials.GoogleApiKey = Configuration["Apis:GoogleApiKey"];
+            services.Configure<ApiOptions>(Configuration.GetSection(ApiOptions.Apis));
+
+            services.AddScoped<IGeocoder>(x => new GoogleGeocoder(x.GetService<IOptions<ApiOptions>>().Value.GoogleApiKey));
+            services.AddTransient<GeocodingService>();
 
             services.AddAutoMapper(typeof(CategoryResponse), typeof(CategoryCreateRequest));
             services.AddMediatR(typeof(GetAllQuery<>));
