@@ -21,20 +21,20 @@ namespace ToDoList.WebApi.Controllers
     [ApiController]
     public class TodoItemsController : Base
     {
-        private readonly GeocodingService geocodingService;
+        private readonly CreateTodoItemResponseWithAddressService addressService;
 
-        public TodoItemsController(IMediator mediator, IMapper mapper, GeocodingService codingService) : base(mediator, mapper)
+        public TodoItemsController(IMediator mediator, IMapper mapper, CreateTodoItemResponseWithAddressService createService) : base(mediator, mapper)
         {
-            geocodingService = codingService;
+            addressService = createService;
         }
 
         [HttpGet]
         public async Task<IEnumerable<TodoItemResponse>> Get()
         {
-            IEnumerable<TodoItem> todoItems = await Mediator.Send(new GetAllQuery<TodoItem>());
-            IEnumerable<TodoItemResponse> todoItemResponses = Mapper.Map<IEnumerable<TodoItemResponse>>(todoItems);
+            var todoItems = await Mediator.Send(new GetAllQuery<TodoItem>());
+            var todoItemResponses = Mapper.Map<IEnumerable<TodoItemResponse>>(todoItems);
 
-            IEnumerable<TodoItemResponse> todoItemResponsesWithAddress = await GetTodoItemResponsesWithAddress(todoItemResponses);
+            var todoItemResponsesWithAddress = await addressService.GetTodoItemResponsesWithAddress(todoItemResponses);
 
             return todoItemResponsesWithAddress;
         }
@@ -45,7 +45,7 @@ namespace ToDoList.WebApi.Controllers
             TodoItem todoItem = await Mediator.Send(new GetByIdQuery<TodoItem>(id));
             TodoItemResponse todoItemResponse = Mapper.Map<TodoItemResponse>(todoItem);
 
-            TodoItemResponse todoItemResponseWithAddress = await GetTodoItemResponseWithAddress(todoItemResponse);
+            TodoItemResponse todoItemResponseWithAddress = await addressService.GetTodoItemResponseWithAddress(todoItemResponse);
 
             return todoItemResponseWithAddress;
         }
@@ -68,29 +68,6 @@ namespace ToDoList.WebApi.Controllers
         {
             TodoItem todoItem = Mapper.Map<TodoItem>(updateRequest);
             await Mediator.Send(new UpdateCommand<TodoItem>(todoItem));
-        }
-
-        private async Task<TodoItemResponse> GetTodoItemResponseWithAddress(TodoItemResponse todoItemResponse)
-        {
-            string address = await geocodingService.GetAddressAsync(todoItemResponse.GeoPoint.Latitude, todoItemResponse.GeoPoint.Longitude);
-            TodoItemResponse todoItemResponseWithAddress = todoItemResponse with { Address = address };
-
-            return todoItemResponseWithAddress;
-        }
-
-        private async Task<IEnumerable<TodoItemResponse>> GetTodoItemResponsesWithAddress(IEnumerable<TodoItemResponse> todoItemResponses)
-        {
-            List<TodoItemResponse> todoItemResponsesWithAddress = new();
-
-            foreach (var item in todoItemResponses)
-            {
-                if (item.GeoPoint is not null)
-                    todoItemResponsesWithAddress.Add(await GetTodoItemResponseWithAddress(item));
-                else
-                    todoItemResponsesWithAddress.Add(item);
-            }
-
-            return todoItemResponsesWithAddress;
         }
     }
 }

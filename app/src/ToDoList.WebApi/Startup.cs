@@ -37,6 +37,7 @@ namespace ToDoList.WebApi
 
             services.AddScoped<IGeocoder>(x => new GoogleGeocoder(x.GetService<IOptions<ApiOptions>>().Value.GoogleApiKey));
             services.AddTransient<GeocodingService>();
+            services.AddTransient<CreateTodoItemResponseWithAddressService>();
 
             services.AddAutoMapper(typeof(CategoryResponse), typeof(CategoryCreateRequest));
             services.AddMediatR(typeof(GetAllQuery<>));
