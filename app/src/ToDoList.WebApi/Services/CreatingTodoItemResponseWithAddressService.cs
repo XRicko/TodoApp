@@ -16,10 +16,15 @@ namespace ToDoList.WebApi.Services
 
         public async Task<TodoItemResponse> GetTodoItemResponseWithAddress(TodoItemResponse todoItemResponse)
         {
-            string address = await geocodingService.GetAddressAsync(todoItemResponse.GeoPoint.Latitude, todoItemResponse.GeoPoint.Longitude);
-            TodoItemResponse todoItemResponseWithAddress = todoItemResponse with { Address = address };
+            if (todoItemResponse.GeoPoint is not null)
+            {
+                string address = await geocodingService.GetAddressAsync(todoItemResponse.GeoPoint.Latitude, todoItemResponse.GeoPoint.Longitude);
+                TodoItemResponse todoItemResponseWithAddress = todoItemResponse with { Address = address };
 
-            return todoItemResponseWithAddress;
+                return todoItemResponseWithAddress;
+            }
+
+            return todoItemResponse;
         }
 
         public async Task<IEnumerable<TodoItemResponse>> GetTodoItemResponsesWithAddress(IEnumerable<TodoItemResponse> todoItemResponses)
