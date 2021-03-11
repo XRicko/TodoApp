@@ -8,8 +8,8 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 using ToDoList.Core.Entities;
-using ToDoList.Core.Queries;
-using ToDoList.Core.Response;
+using ToDoList.Core.Mediator.Queries;
+using ToDoList.Core.Mediator.Response;
 
 namespace ToDoList.WebApi.Controllers
 {
@@ -23,17 +23,11 @@ namespace ToDoList.WebApi.Controllers
         }
 
         [HttpGet]
-        public async Task<IEnumerable<StatusResponse>> Get()
-        {
-            IEnumerable<Status> statuses = await Mediator.Send(new GetAllQuery<Status>());
-            return Mapper.Map<IEnumerable<StatusResponse>>(statuses);
-        }
+        public async Task<IEnumerable<StatusResponse>> Get() =>
+            await Mediator.Send(new GetAllQuery<Status, StatusResponse>());
 
         [HttpGet("{id}")]
-        public async Task<StatusResponse> Get(int id)
-        {
-            Status status = await Mediator.Send(new GetByIdQuery<Status>(id));
-            return Mapper.Map<StatusResponse>(status);
-        }
+        public async Task<StatusResponse> Get(int id) =>
+            await Mediator.Send(new GetByIdQuery<Status, StatusResponse>(id));
     }
 }

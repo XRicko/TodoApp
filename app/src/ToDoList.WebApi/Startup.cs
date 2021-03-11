@@ -11,11 +11,10 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 
-using ToDoList.Core.Queries;
-using ToDoList.Core.Response;
+using ToDoList.Core.Mediator.Queries;
+using ToDoList.Core.Mediator.Response;
+using ToDoList.Core.Services;
 using ToDoList.Infrastructure.Extensions;
-using ToDoList.WebApi.Requests.Create;
-using ToDoList.WebApi.Services;
 
 namespace ToDoList.WebApi
 {
@@ -36,11 +35,12 @@ namespace ToDoList.WebApi
             services.Configure<ApiOptions>(Configuration.GetSection(ApiOptions.Apis));
 
             services.AddScoped<IGeocoder>(x => new GoogleGeocoder(x.GetService<IOptions<ApiOptions>>().Value.GoogleApiKey));
-            services.AddTransient<GeocodingService>();
-            services.AddTransient<CreateTodoItemResponseWithAddressService>();
 
-            services.AddAutoMapper(typeof(CategoryResponse), typeof(CategoryCreateRequest));
-            services.AddMediatR(typeof(GetAllQuery<>));
+            services.AddTransient<IGeocodingService, GeocodingService>();
+            services.AddTransient<ICreateTodoItemResponseWithAddressService, CreateTodoItemResponseWithAddressService>();
+
+            services.AddAutoMapper(typeof(CategoryResponse));
+            services.AddMediatR(typeof(GetAllQuery<,>));
 
             services.AddControllers();
 

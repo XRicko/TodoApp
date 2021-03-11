@@ -7,11 +7,11 @@ using MediatR;
 
 using Microsoft.AspNetCore.Mvc;
 
-using ToDoList.Core.Commands;
 using ToDoList.Core.Entities;
-using ToDoList.Core.Queries;
-using ToDoList.Core.Response;
-using ToDoList.WebApi.Requests.Create;
+using ToDoList.Core.Mediator.Commands;
+using ToDoList.Core.Mediator.Queries;
+using ToDoList.Core.Mediator.Requests.Create;
+using ToDoList.Core.Mediator.Response;
 
 namespace ToDoList.WebApi.Controllers
 {
@@ -19,31 +19,19 @@ namespace ToDoList.WebApi.Controllers
     [ApiController]
     public class CategoriesController : Base
     {
-        public CategoriesController(IMediator mediator, IMapper mapper) : base(mediator, mapper)
-        {
-
-        }
+        public CategoriesController(IMediator mediator, IMapper mapper) : base(mediator, mapper) { }
 
         [HttpGet]
-        public async Task<IEnumerable<CategoryResponse>> Get()
-        {
-            IEnumerable<Category> categories = await Mediator.Send(new GetAllQuery<Category>());
-            return Mapper.Map<IEnumerable<CategoryResponse>>(categories);
-        }
+        public async Task<IEnumerable<CategoryResponse>> Get() =>
+            await Mediator.Send(new GetAllQuery<Category, CategoryResponse>());
 
         [HttpGet("{id}")]
-        public async Task<CategoryResponse> Get(int id)
-        {
-            Category category = await Mediator.Send(new GetByIdQuery<Category>(id));
-            return Mapper.Map<CategoryResponse>(category);
-        }
+        public async Task<CategoryResponse> Get(int id) =>
+            await Mediator.Send(new GetByIdQuery<Category, CategoryResponse>(id));
 
         [HttpPost]
-        public async Task Add([FromBody] CategoryCreateRequest createRequest)
-        {
-            Category category = Mapper.Map<Category>(createRequest);
-            await Mediator.Send(new AddCommand<Category>(category));
-        }
+        public async Task Add([FromBody] CategoryCreateRequest createRequest) =>
+            await Mediator.Send(new AddCommand<CategoryCreateRequest>(createRequest));
 
         [HttpDelete("{id}")]
         public async Task Delete(int id) =>
