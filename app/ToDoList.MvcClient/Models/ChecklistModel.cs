@@ -2,7 +2,7 @@
 
 namespace ToDoList.MvcClient.Models
 {
-    public class ChecklistModel : BaseEntity
+    public class ChecklistModel : BaseModel
     {
         public int UserId { get; set; }
 

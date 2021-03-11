@@ -10,7 +10,6 @@ using Microsoft.Extensions.Logging;
 using ToDoList.MvcClient.API;
 using ToDoList.MvcClient.Models;
 using ToDoList.MvcClient.ViewModels;
-using ToDoList.SharedKernel;
 
 namespace ToDoList.MvcClient.Controllers
 {
@@ -33,15 +32,17 @@ namespace ToDoList.MvcClient.Controllers
             return View(viewModel);
         }
 
-        private static async Task<IEnumerable<T>> GetItems<T>(string route) where T : BaseEntity
+        private static async Task<IEnumerable<T>> GetItems<T>(string route) where T : BaseModel
         {
             using HttpResponseMessage response = await ApiHelper.ApiClient.GetAsync(route);
 
-            if (!response.IsSuccessStatusCode)
-                throw new Exception(response.ReasonPhrase);
+            if (response.IsSuccessStatusCode)
+            {
+                IEnumerable<T> items = await response.Content.ReadAsAsync<IEnumerable<T>>();
+                return items;
+            }
 
-            IEnumerable<T> items = await response.Content.ReadAsAsync<IEnumerable<T>>();
-            return items;
+            throw new Exception(response.ReasonPhrase);
         }
 
         public ActionResult Create()
@@ -49,14 +50,15 @@ namespace ToDoList.MvcClient.Controllers
             return View();
         }
 
-        //[ValidateAntiForgeryToken]
+        [ValidateAntiForgeryToken]
         [HttpPost]
         public async Task<ActionResult> CreateAsync(TodoItemModel todoItem)
         {
+            IEnumerable<TodoItemModel> todoItems = await GetItems<TodoItemModel>("TodoItems");
             using (HttpResponseMessage response = await ApiHelper.ApiClient.PostAsJsonAsync("TodoItems", todoItem))
             {
                 if (response.IsSuccessStatusCode)
-                    return RedirectToAction("Index");
+                    return Json(new { isValid = true, html = Helper.RenderRazorViewToString(this, "_ViewAll", todoItems)});
 
                 throw new Exception(response.ReasonPhrase);
             }
@@ -67,10 +69,16 @@ namespace ToDoList.MvcClient.Controllers
             return View();
         }
 
-        public ActionResult Delete(int id)
+        [HttpPost]
+        public async Task<ActionResult> DeleteAsync(int id)
         {
+            using (HttpResponseMessage response = await ApiHelper.ApiClient.DeleteAsync("TodoItems/" + id))
+            {
+                if (response.IsSuccessStatusCode)
+                    return RedirectToAction("Index");
 
-            return View();
+                throw new Exception(response.ReasonPhrase);
+            }
         }
 
         public IActionResult Privacy()

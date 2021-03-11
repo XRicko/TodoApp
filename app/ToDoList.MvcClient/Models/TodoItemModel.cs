@@ -1,12 +1,15 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 
 using ToDoList.SharedKernel;
 
 namespace ToDoList.MvcClient.Models
 {
-    public class TodoItemModel : BaseEntity
+    public class TodoItemModel : BaseModel
     {
+        [DisplayFormat(DataFormatString = "{0:f}")]
         public DateTime StartDate { get; set; }
+        [DisplayFormat(DataFormatString = "{0:f}")]
         public DateTime? DueDate { get; set; }
         public GeoCoordinate GeoPoint { get; set; }
 

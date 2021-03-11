@@ -1,86 +1,10 @@
 ﻿@model ToDoList.MvcClient.ViewModels.IndexViewModel
-@*
-    @{
-        ViewData["Title"] = "Index";
-    }
+@{
+    ViewData["Title"] = "Index";
+}
 
-    <h1>Index</h1>
+<h1>Index</h1>
 
-    <p>
-        <a asp-action="Create">Create New</a>
-    </p>
-    <table class="table">
-        <thead>
-            <tr>
-                <th>
-                    @Html.DisplayNameFor(model => model.Name)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.StartDate)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.DueDate)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.ParentId)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.StatusName)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.CategoryName)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.ChecklistName)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.ImagePath)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.Address)
-                </th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-    @foreach (var item in Model) {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Name)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.StartDate)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.DueDate)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.ParentId)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.StatusName)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.CategoryName)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.ChecklistName)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.ImagePath)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Address)
-                </td>
-                <td>
-                    @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
-                    @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
-                    @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
-                </td>
-            </tr>
-    }
-        </tbody>
-    </table>*@
 <div class="d-flex flex-column">
     @foreach (var checklist in Model.ChecklistModels)
     {
@@ -114,7 +38,9 @@
                                                     </div>
                                                 </div>
                                                 <div>
-                                                    <a class="border-0 btn-transition btn btn-outline-danger" asp-action="Delete" asp-route-id="@todoItem.Id"> <i class="bi bi-trash"></i> </a>
+                                                    <form asp-action="Delete" method="post" asp-route-id="@todoItem.Id" onsubmit="">
+                                                        <button type="submit" class="border-0 btn-transition btn btn-outline-danger"> <i class="bi bi-trash"></i> </button>
+                                                    </form>
                                                 </div>
                                             </div>
                                         </div>
@@ -124,7 +50,7 @@
                         </div>
                     </div>
                     <div class="d-block text-right card-footer">
-                        <button class="btn btn-primary">Add Task</button>
+                        <button onclick="showPopup('@Url.Action("Create", "Home", null, Context.Request.Scheme)','New task')" class="btn btn-primary">Add Task</button>
                     </div>
                 </div>
             </div>
