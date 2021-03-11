@@ -17,15 +17,11 @@ namespace ToDoList.WebApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ImagesController : ControllerBase
+    public class ImagesController : Base
     {
-        private readonly IMediator mediator;
-        private readonly IMapper mapper;
-
-        public ImagesController(IMediator m, IMapper map)
+        public ImagesController(IMediator mediator, IMapper mapper) : base(mediator, mapper)
         {
-            mediator = m;
-            mapper = map;
+
         }
 
         [HttpGet("{id}")]

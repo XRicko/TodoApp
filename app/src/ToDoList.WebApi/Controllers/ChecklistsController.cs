@@ -18,15 +18,11 @@ namespace ToDoList.WebApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ChecklistsController : ControllerBase
+    public class ChecklistsController : Base
     {
-        private readonly IMediator mediator;
-        private readonly IMapper mapper;
-
-        public ChecklistsController(IMediator m, IMapper map)
+        public ChecklistsController(IMediator mediator, IMapper mapper) : base(mediator, mapper)
         {
-            mediator = m;
-            mapper = map;
+
         }
 
         [HttpGet]

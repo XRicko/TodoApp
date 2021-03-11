@@ -15,15 +15,11 @@ namespace ToDoList.WebApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class StatusesController : ControllerBase
+    public class StatusesController : Base
     {
-        private readonly IMediator mediator;
-        private readonly IMapper mapper;
-
-        public StatusesController(IMediator m, IMapper map)
+        public StatusesController(IMediator mediator, IMapper mapper) : base(mediator, mapper)
         {
-            mediator = m;
-            mapper = map;
+
         }
 
         [HttpGet]
