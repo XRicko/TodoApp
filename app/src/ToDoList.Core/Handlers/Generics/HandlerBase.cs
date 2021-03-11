@@ -8,7 +8,7 @@ namespace ToDoList.Core.Handlers.Generics
     {
         protected IUnitOfWork UnitOfWork { get; }
 
-        public HandlerBase(IUnitOfWork unitOfWork)
+        protected HandlerBase(IUnitOfWork unitOfWork)
         {
             UnitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         }
