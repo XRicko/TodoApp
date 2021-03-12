@@ -1,6 +1,8 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 
+using Microsoft.AspNetCore.Http;
+
 using ToDoList.SharedKernel;
 
 namespace ToDoList.MvcClient.Models
@@ -23,6 +25,8 @@ namespace ToDoList.MvcClient.Models
         public string CategoryName { get; set; }
         public string ChecklistName { get; set; }
         public string ImagePath { get; set; }
+
+        public IFormFile Image { get; set; }
 
         public string Address { get; set; }
     }

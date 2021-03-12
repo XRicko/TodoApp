@@ -7,22 +7,22 @@ using Microsoft.AspNetCore.Mvc.ViewFeatures;
 
 namespace ToDoList.MvcClient
 {
-    public class Helper
+    public class RazorViewToStringConvertor
     {
         public static string RenderRazorViewToString(Controller controller, string viewName, object model = null)
         {
             controller.ViewData.Model = model;
 
-            using (var sw = new StringWriter())
+            using (var stringWriter = new StringWriter())
             {
                 IViewEngine viewEngine = controller.HttpContext.RequestServices.GetService(typeof(ICompositeViewEngine)) as ICompositeViewEngine;
                 ViewEngineResult viewResult = viewEngine.FindView(controller.ControllerContext, viewName, false);
 
                 var viewContext = new ViewContext(controller.ControllerContext, viewResult.View, controller.ViewData,
-                                                  controller.TempData, sw, new HtmlHelperOptions());
+                                                  controller.TempData, stringWriter, new HtmlHelperOptions());
                 viewResult.View.RenderAsync(viewContext);
 
-                return sw.GetStringBuilder().ToString();
+                return stringWriter.GetStringBuilder().ToString();
             }
         }
     }

@@ -11,7 +11,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ToDoList.Infrastructure", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ToDoList.WebApi", "src\ToDoList.WebApi\ToDoList.WebApi.csproj", "{F2CC14AB-098A-4AAE-BDCF-DAE96E58E084}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToDoList.MvcClient", "ToDoList.MvcClient\ToDoList.MvcClient.csproj", "{F8F429D1-3ED6-4A31-9396-15BF297B16C1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToDoList.MvcClient", "src\ToDoList.MvcClient\ToDoList.MvcClient.csproj", "{F8F429D1-3ED6-4A31-9396-15BF297B16C1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

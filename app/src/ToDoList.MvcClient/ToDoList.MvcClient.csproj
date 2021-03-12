@@ -10,7 +10,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\src\ToDoList.SharedKernel\ToDoList.SharedKernel.csproj" />
+    <ProjectReference Include="..\ToDoList.SharedKernel\ToDoList.SharedKernel.csproj" />
   </ItemGroup>
 
 </Project>

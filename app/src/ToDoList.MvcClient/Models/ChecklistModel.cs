@@ -1,6 +1,4 @@
-﻿using ToDoList.SharedKernel;
-
-namespace ToDoList.MvcClient.Models
+﻿namespace ToDoList.MvcClient.Models
 {
     public class ChecklistModel : BaseModel
     {
