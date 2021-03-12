@@ -1,4 +1,4 @@
-﻿namespace ToDoList.WebApi
+﻿namespace ToDoList.Core
 {
     public class ApiOptions
     {

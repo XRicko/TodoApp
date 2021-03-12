@@ -56,8 +56,7 @@ namespace ToDoList.Core.MappingProfiles
                 .ForMember(dest => dest.ChecklistName,
                            opt => opt.MapFrom(src => src.Checklist.Name))
                 .ForMember(dest => dest.ImagePath,
-                           opt => opt.MapFrom(src
-                           => src.Image.Name));
+                           opt => opt.MapFrom(src => src.Image.Name));
 
             CreateMap<TodoItemCreateRequest, TodoItem>();
             CreateMap<TodoItemUpdateRequest, TodoItem>();

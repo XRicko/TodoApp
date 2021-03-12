@@ -7,11 +7,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 
+using ToDoList.Core;
 using ToDoList.Core.Mediator.Queries;
 using ToDoList.Core.Mediator.Response;
 using ToDoList.Core.Services;
 using ToDoList.Infrastructure.Extensions;
-using ToDoList.WebApi.Extensions;
 
 namespace ToDoList.WebApi
 {
@@ -29,12 +29,9 @@ namespace ToDoList.WebApi
         {
             services.AddInfrastructure(Configuration.GetConnectionString("DefaultConnection"));
 
-            services.Configure<ApiOptions>(Configuration.GetSection(ApiOptions.Apis));
-            services.AddSingleton<ApiOptions>();
+            services.AddSingleton(Configuration.GetSection(ApiOptions.Apis).Get<ApiOptions>());
 
-            services.AddGoogleGeocoder();
-
-            services.AddTransient<IGeocodingService, GeocodingService>();
+            services.AddTransient<IGeocodingService, GoogleGeocodingService>();
             services.AddTransient<ICreateTodoItemResponseWithAddressService, CreateTodoItemResponseWithAddressService>();
 
             services.AddAutoMapper(typeof(CategoryResponse));
