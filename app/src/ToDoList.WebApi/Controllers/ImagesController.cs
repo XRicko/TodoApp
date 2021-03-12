@@ -6,51 +6,38 @@ using MediatR;
 
 using Microsoft.AspNetCore.Mvc;
 
-using ToDoList.Core.Commands;
 using ToDoList.Core.Entities;
-using ToDoList.Core.Queries;
-using ToDoList.Core.Response;
-using ToDoList.WebApi.Requests.Create;
-using ToDoList.WebApi.Requests.Update;
+using ToDoList.Core.Mediator.Commands;
+using ToDoList.Core.Mediator.Queries;
+using ToDoList.Core.Mediator.Requests.Create;
+using ToDoList.Core.Mediator.Requests.Update;
+using ToDoList.Core.Mediator.Response;
 
 namespace ToDoList.WebApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ImagesController : ControllerBase
+    public class ImagesController : Base
     {
-        private readonly IMediator mediator;
-        private readonly IMapper mapper;
-
-        public ImagesController(IMediator m, IMapper map)
+        public ImagesController(IMediator mediator, IMapper mapper) : base(mediator, mapper)
         {
-            mediator = m;
-            mapper = map;
+
         }
 
         [HttpGet("{id}")]
-        public async Task<ImageResponse> Get(int id)
-        {
-            Image image = await mediator.Send(new GetByIdQuery<Image>(id));
-            return mapper.Map<ImageResponse>(image);
-        }
+        public async Task<ImageResponse> Get(int id) =>
+            await Mediator.Send(new GetByIdQuery<Image, ImageResponse>(id));
 
         [HttpPost]
-        public async Task Add([FromBody] ImageCreateRequest createRequest)
-        {
-            Image image = mapper.Map<Image>(createRequest);
-            await mediator.Send(new AddCommand<Image>(image));
-        }
+        public async Task Add([FromBody] ImageCreateRequest createRequest) =>
+            await Mediator.Send(new AddCommand<ImageCreateRequest>(createRequest));
 
         [HttpDelete("{id}")]
         public async Task Delete(int id) =>
-            await mediator.Send(new RemoveCommand<Image>(id));
+            await Mediator.Send(new RemoveCommand<Image>(id));
 
         [HttpPut]
-        public async Task Update([FromBody] ImageUpdateRequest updateRequest)
-        {
-            Image checklist = mapper.Map<Image>(updateRequest);
-            await mediator.Send(new UpdateCommand<Image>(checklist));
-        }
+        public async Task Update([FromBody] ImageUpdateRequest updateRequest) =>
+            await Mediator.Send(new UpdateCommand<ImageUpdateRequest>(updateRequest));
     }
 }

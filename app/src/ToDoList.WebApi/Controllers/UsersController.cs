@@ -7,46 +7,33 @@ using MediatR;
 
 using Microsoft.AspNetCore.Mvc;
 
-using ToDoList.Core.Commands;
 using ToDoList.Core.Entities;
-using ToDoList.Core.Queries;
-using ToDoList.Core.Response;
-using ToDoList.WebApi.Requests.Create;
+using ToDoList.Core.Mediator.Commands;
+using ToDoList.Core.Mediator.Queries;
+using ToDoList.Core.Mediator.Requests.Create;
+using ToDoList.Core.Mediator.Response;
 
 namespace ToDoList.WebApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class UsersController : ControllerBase
+    public class UsersController : Base
     {
-        private readonly IMediator mediator;
-        private readonly IMapper mapper;
-
-        public UsersController(IMediator m, IMapper map)
+        public UsersController(IMediator mediator, IMapper mapper) : base(mediator, mapper)
         {
-            mediator = m;
-            mapper = map;
+
         }
 
         [HttpGet]
-        public async Task<IEnumerable<UserResponse>> Get()
-        {
-            IEnumerable<User> users = await mediator.Send(new GetAllQuery<User>());
-            return mapper.Map<IEnumerable<UserResponse>>(users);
-        }
+        public async Task<IEnumerable<UserResponse>> Get() =>
+            await Mediator.Send(new GetAllQuery<User, UserResponse>());
 
         [HttpGet("{id}")]
-        public async Task<UserResponse> Get(int id)
-        {
-            User user = await mediator.Send(new GetByIdQuery<User>(id));
-            return mapper.Map<UserResponse>(user);
-        }
+        public async Task<UserResponse> Get(int id) =>
+            await Mediator.Send(new GetByIdQuery<User, UserResponse>(id));
 
         [HttpPost]
-        public async Task Add([FromBody] UserCreateRequest createRequest)
-        {
-            User user = mapper.Map<User>(createRequest);
-            await mediator.Send(new AddCommand<User>(user));
-        }
+        public async Task Add([FromBody] UserCreateRequest createRequest) =>
+            await Mediator.Send(new AddCommand<UserCreateRequest>(createRequest));
     }
 }

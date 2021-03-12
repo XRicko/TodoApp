@@ -7,62 +7,39 @@ using MediatR;
 
 using Microsoft.AspNetCore.Mvc;
 
-using ToDoList.Core.Commands;
 using ToDoList.Core.Entities;
-using ToDoList.Core.Queries;
-using ToDoList.Core.Response;
-using ToDoList.WebApi.Requests.Create;
-using ToDoList.WebApi.Requests.Update;
+using ToDoList.Core.Mediator.Commands;
+using ToDoList.Core.Mediator.Queries;
+using ToDoList.Core.Mediator.Requests.Create;
+using ToDoList.Core.Mediator.Requests.Update;
+using ToDoList.Core.Mediator.Response;
 
 namespace ToDoList.WebApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class TodoItemsController : ControllerBase
+    public class TodoItemsController : Base
     {
-        private readonly IMediator mediator;
-        private readonly IMapper mapper;
-
-        public TodoItemsController(IMediator m, IMapper map)
-        {
-            mediator = m;
-            mapper = map;
-        }
+        public TodoItemsController(IMediator mediator, IMapper mapper) : base(mediator, mapper) { }
 
         [HttpGet]
-        public async Task<IEnumerable<TodoItemResponse>> Get()
-        {
-            IEnumerable<TodoItem> todoItems = await mediator.Send(new GetAllQuery<TodoItem>());
-            return mapper.Map<IEnumerable<TodoItemResponse>>(todoItems);
-        }
+        public async Task<IEnumerable<TodoItemResponse>> Get() =>
+            await Mediator.Send(new GetAllQuery<TodoItem, TodoItemResponse>());
 
         [HttpGet("{id}")]
-        public async Task<TodoItemResponse> Get(int id)
-        {
-            TodoItem todoItem = await mediator.Send(new GetByIdQuery<TodoItem>(id));
-            return mapper.Map<TodoItemResponse>(todoItem);
-        }
+        public async Task<TodoItemResponse> Get(int id) =>
+            await Mediator.Send(new GetByIdQuery<TodoItem, TodoItemResponse>(id));
 
         [HttpPost]
-        public async Task Add([FromBody] TodoItemCreateRequest createRequest)
-        {
-            TodoItem todoItem = mapper.Map<TodoItem>(createRequest);
-
-            if (todoItem.GeoPoint is not null)
-                todoItem.GeoPoint.SRID = 4326;
-
-            await mediator.Send(new AddCommand<TodoItem>(todoItem));
-        }
+        public async Task Add([FromBody] TodoItemCreateRequest createRequest) =>
+            await Mediator.Send(new AddCommand<TodoItemCreateRequest>(createRequest));
 
         [HttpDelete("{id}")]
         public async Task Delete(int id) =>
-            await mediator.Send(new RemoveCommand<TodoItem>(id));
+            await Mediator.Send(new RemoveCommand<TodoItem>(id));
 
         [HttpPut]
-        public async Task Update([FromBody] TodoItemUpdateRequest updateRequest)
-        {
-            TodoItem todoItem = mapper.Map<TodoItem>(updateRequest);
-            await mediator.Send(new UpdateCommand<TodoItem>(todoItem));
-        }
+        public async Task Update([FromBody] TodoItemUpdateRequest updateRequest) =>
+            await Mediator.Send(new UpdateCommand<TodoItemUpdateRequest>(updateRequest));
     }
 }

@@ -8,36 +8,26 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 using ToDoList.Core.Entities;
-using ToDoList.Core.Queries;
-using ToDoList.Core.Response;
+using ToDoList.Core.Mediator.Queries;
+using ToDoList.Core.Mediator.Response;
 
 namespace ToDoList.WebApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class StatusesController : ControllerBase
+    public class StatusesController : Base
     {
-        private readonly IMediator mediator;
-        private readonly IMapper mapper;
-
-        public StatusesController(IMediator m, IMapper map)
+        public StatusesController(IMediator mediator, IMapper mapper) : base(mediator, mapper)
         {
-            mediator = m;
-            mapper = map;
+
         }
 
         [HttpGet]
-        public async Task<IEnumerable<StatusResponse>> Get()
-        {
-            IEnumerable<Status> statuses = await mediator.Send(new GetAllQuery<Status>());
-            return mapper.Map<IEnumerable<StatusResponse>>(statuses);
-        }
+        public async Task<IEnumerable<StatusResponse>> Get() =>
+            await Mediator.Send(new GetAllQuery<Status, StatusResponse>());
 
         [HttpGet("{id}")]
-        public async Task<StatusResponse> Get(int id)
-        {
-            Status status = await mediator.Send(new GetByIdQuery<Status>(id));
-            return mapper.Map<StatusResponse>(status);
-        }
+        public async Task<StatusResponse> Get(int id) =>
+            await Mediator.Send(new GetByIdQuery<Status, StatusResponse>(id));
     }
 }

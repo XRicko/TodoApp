@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
 using System.Threading.Tasks;
 
 using Microsoft.EntityFrameworkCore;
@@ -31,9 +29,6 @@ namespace ToDoList.Infrastructure.Data
 
         public async Task<IEnumerable<T>> GetAllAsync<T>() where T : BaseEntity =>
             await context.Set<T>().ToListAsync();
-
-        public async Task<IEnumerable<T>> FindAsync<T>(Expression<Func<T, bool>> predicate) where T : BaseEntity =>
-            await context.Set<T>().Where(predicate).ToListAsync();
 
         public async Task AddAsync<T>(T entity) where T : BaseEntity =>
             await context.Set<T>().AddAsync(entity);
