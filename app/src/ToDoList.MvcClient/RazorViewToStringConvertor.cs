@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc.ViewFeatures;
 
 namespace ToDoList.MvcClient
 {
-    public class RazorViewToStringConvertor
+    public class RazorViewToStringConverter
     {
         public static string RenderRazorViewToString(Controller controller, string viewName, object model = null)
         {
@@ -16,7 +16,7 @@ namespace ToDoList.MvcClient
             using (var stringWriter = new StringWriter())
             {
                 IViewEngine viewEngine = controller.HttpContext.RequestServices.GetService(typeof(ICompositeViewEngine)) as ICompositeViewEngine;
-                ViewEngineResult viewResult = viewEngine.FindView(controller.ControllerContext, viewName, false);
+                var viewResult = viewEngine.FindView(controller.ControllerContext, viewName, false);
 
                 var viewContext = new ViewContext(controller.ControllerContext, viewResult.View, controller.ViewData,
                                                   controller.TempData, stringWriter, new HtmlHelperOptions());

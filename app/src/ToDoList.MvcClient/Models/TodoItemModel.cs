@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
 using Microsoft.AspNetCore.Http;
@@ -9,8 +10,11 @@ namespace ToDoList.MvcClient.Models
 {
     public class TodoItemModel : BaseModel
     {
+        [DisplayName("Start date")]
         [DisplayFormat(DataFormatString = "{0:f}")]
         public DateTime StartDate { get; set; }
+
+        [DisplayName("Due date")]
         [DisplayFormat(DataFormatString = "{0:f}")]
         public DateTime? DueDate { get; set; }
         public GeoCoordinate GeoPoint { get; set; }
@@ -24,6 +28,7 @@ namespace ToDoList.MvcClient.Models
         public string StatusName { get; set; }
         public string CategoryName { get; set; }
         public string ChecklistName { get; set; }
+        public string ImageName { get; set; }
         public string ImagePath { get; set; }
 
         public IFormFile Image { get; set; }

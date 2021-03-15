@@ -1,5 +1,4 @@
-﻿
-using AutoMapper;
+﻿using AutoMapper;
 
 using ToDoList.Core.Entities;
 using ToDoList.Core.Mediator.Handlers.Generics;
@@ -8,9 +7,9 @@ using ToDoList.SharedKernel.Interfaces;
 
 namespace ToDoList.Core.Mediator.Handlers.Images
 {
-    internal class GetImageByIdQueryHandler : GetByIdQueryHandler<Image, ImageResponse>
+    internal class GetImageByNameQueryHandler : GetByNameQueryHandler<Image, ImageResponse>
     {
-        public GetImageByIdQueryHandler(IUnitOfWork unitOfWork, IMapper mapper) : base(unitOfWork, mapper)
+        public GetImageByNameQueryHandler(IUnitOfWork unitOfWork, IMapper mapper) : base(unitOfWork, mapper)
         {
 
         }

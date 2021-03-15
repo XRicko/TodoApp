@@ -42,5 +42,4 @@ namespace ToDoList.Infrastructure.Data
         public void Remove<T>(T entity) where T : BaseEntity =>
             context.Set<T>().Remove(entity);
     }
-
 }

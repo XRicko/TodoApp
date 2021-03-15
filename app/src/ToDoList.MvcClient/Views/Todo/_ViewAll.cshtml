@@ -1,15 +1,10 @@
 ﻿@model ToDoList.MvcClient.ViewModels.IndexViewModel
-@{
-    ViewData["Title"] = "Index";
-}
 
-<h1>Index</h1>
-
-<div class="d-flex flex-column">
+<div class="d-flex flex-row">
     @foreach (var checklist in Model.ChecklistModels)
     {
         <div class="row d-flex justify-content-center container">
-            <div class="col-md-8">
+            <div class="col-md-12">
                 <div class="mb-3 card">
                     <div class="card-header">
                         <div class="font-size-lg text-capitalize font-weight-normal">
@@ -31,18 +26,24 @@
                                                         <label class="custom-control-label" for="@todoItem.Name">&nbsp;</label>
                                                     </div>
                                                 </div>
+
                                                 <div>
                                                     <div>
                                                         @todoItem.Name
                                                         <div class="badge badge-danger ml-2">Rejected</div>
-                                                        <img src="@Url.Content(todoItem.ImagePath)" />
+                                                        <img src="@Url.Content(todoItem.ImagePath)" class="img-fluid" />
                                                     </div>
                                                 </div>
+
                                                 <div>
-                                                    <form asp-action="Delete" method="post" asp-route-id="@todoItem.Id" onsubmit="">
+                                                    <button onclick="showPopup('@Url.Action("CreateOrUpdate", "Todo", new { todoItem.Id }, Context.Request.Scheme)','Update task')" class="border-0 btn-transition btn btn-outline-info"><i class="bi bi-pencil"></i></button>
+
+                                                    <form asp-action="Delete" method="post" asp-route-id="@todoItem.Id" onsubmit="return ajaxDelete(this);" class="d-inline">
                                                         <button type="submit" class="border-0 btn-transition btn btn-outline-danger"> <i class="bi bi-trash"></i> </button>
                                                     </form>
+
                                                 </div>
+
                                             </div>
                                         </div>
                                     </li>
@@ -51,7 +52,7 @@
                         </div>
                     </div>
                     <div class="d-block text-right card-footer">
-                        <button onclick="showPopup('@Url.Action("Create", "Home", null, Context.Request.Scheme)','New task')" class="btn btn-primary">Add Task</button>
+                        <button onclick="showPopup('@Url.Action("CreateOrUpdate", "Todo", null, Context.Request.Scheme)','New task')" class="btn btn-primary">Add Task</button>
                     </div>
                 </div>
             </div>

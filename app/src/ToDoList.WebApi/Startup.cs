@@ -32,7 +32,7 @@ namespace ToDoList.WebApi
             services.AddSingleton(Configuration.GetSection(ApiOptions.Apis).Get<ApiOptions>());
 
             services.AddTransient<IGeocodingService, GoogleGeocodingService>();
-            services.AddTransient<ICreateTodoItemResponseWithAddressService, CreateTodoItemResponseWithAddressService>();
+            services.AddTransient<ICreateWithAddressService, CreateWithAddressService>();
 
             services.AddAutoMapper(typeof(CategoryResponse));
             services.AddMediatR(typeof(GetAllQuery<,>));

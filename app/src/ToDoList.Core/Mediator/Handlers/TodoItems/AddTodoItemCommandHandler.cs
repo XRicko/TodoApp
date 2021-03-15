@@ -27,7 +27,8 @@ namespace ToDoList.Core.Mediator.Handlers.TodoItems
 
             if (todoItem is null)
             {
-                todoItem.GeoPoint.SRID = 4326;
+                if (entity.GeoPoint is not null)
+                    entity.GeoPoint.SRID = 4326;
 
                 await UnitOfWork.Repository.AddAsync(entity);
                 await UnitOfWork.SaveAsync();

@@ -28,6 +28,11 @@ namespace ToDoList.WebApi.Controllers
         public async Task<ImageResponse> Get(int id) =>
             await Mediator.Send(new GetByIdQuery<Image, ImageResponse>(id));
 
+        [HttpGet]
+        [Route("[action]/{name}")]
+        public async Task<ImageResponse> GetByName(string name) =>
+          await Mediator.Send(new GetByNameQuery<Image, ImageResponse>(name));
+
         [HttpPost]
         public async Task Add([FromBody] ImageCreateRequest createRequest) =>
             await Mediator.Send(new AddCommand<ImageCreateRequest>(createRequest));

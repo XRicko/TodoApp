@@ -15,9 +15,9 @@ namespace ToDoList.Core.Mediator.Handlers.TodoItems
 {
     internal class GetTodoItemsQueryHandler : GetAllQueryHandler<TodoItem, TodoItemResponse>
     {
-        private readonly ICreateTodoItemResponseWithAddressService createAddressService;
+        private readonly ICreateWithAddressService createAddressService;
 
-        public GetTodoItemsQueryHandler(IUnitOfWork unitOfWork, IMapper mapper, ICreateTodoItemResponseWithAddressService addressService) : base(unitOfWork, mapper)
+        public GetTodoItemsQueryHandler(IUnitOfWork unitOfWork, IMapper mapper, ICreateWithAddressService addressService) : base(unitOfWork, mapper)
         {
             createAddressService = addressService;
         }
@@ -25,7 +25,7 @@ namespace ToDoList.Core.Mediator.Handlers.TodoItems
         public override async Task<IEnumerable<TodoItemResponse>> Handle(GetAllQuery<TodoItem, TodoItemResponse> request, CancellationToken cancellationToken)
         {
             var responses = await base.Handle(request, cancellationToken);
-            var responsesWithAddress = await createAddressService.GetTodoItemResponsesWithAddress(responses);
+            var responsesWithAddress = await createAddressService.GetItemsWithAddressAsync(responses);
 
             return responsesWithAddress;
         }
