@@ -32,6 +32,12 @@ namespace ToDoList.MvcClient.Services
             ValidateStatusCode(response);
         }
 
+        public async Task PutItemAsync<T>(string route, T item) where T : BaseModel
+        {
+            using var response = await WebApiHelper.ApiClient.PutAsJsonAsync(route, item);
+            ValidateStatusCode(response);
+        }
+
         public async Task DeleteItemAsync(string route, int id)
         {
             using var response = await WebApiHelper.ApiClient.DeleteAsync(route + id);

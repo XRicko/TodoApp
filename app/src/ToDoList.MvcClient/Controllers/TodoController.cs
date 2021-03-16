@@ -13,29 +13,41 @@ namespace ToDoList.MvcClient.Controllers
 {
     public class TodoController : Controller
     {
+        private readonly ICreateViewModelService viewModelService;
         private readonly IApiCallsService apiCallsService;
-        private readonly IImageService imageFileService;
+        private readonly IImageAddingService imageAddingService;
 
-        public TodoController(IApiCallsService apiService, IImageService fileService)
+        public TodoController(IApiCallsService apiService, IImageAddingService addingService, ICreateViewModelService modelService)
         {
             apiCallsService = apiService;
-            imageFileService = fileService;
+            imageAddingService = addingService;
+            viewModelService = modelService;
         }
 
         public async Task<ActionResult> IndexAsync()
         {
-            IndexViewModel viewModel = await CreateIndexViewModel();
+            IndexViewModel viewModel = await viewModelService.CreateIndexViewModel();
             return View(viewModel);
         }
 
-        public async Task<ActionResult> CreateOrUpdateAsync(int checklistId, int todoItemId = 0)
+        public async Task<ActionResult> CreateOrUpdateAsync(int checklistId, int todoItemId = 0, int parentId = 0)
         {
             if (todoItemId == 0)
-                return View(await CreateUpdateOrCreateViewModel(new TodoItemModel { ChecklistId = checklistId }));
+            {
+                TodoItemModel todoItem = new() { ChecklistId = checklistId };
 
-            var todoItem = await apiCallsService.GetItemAsync<TodoItemModel>("TodoItems/" + todoItemId);
-            return todoItem is not null 
-                ? View(await CreateUpdateOrCreateViewModel(todoItem)) 
+                if (parentId == 0)
+                    return View(await viewModelService.CreateViewModelCreateOrUpdateTodoItem(todoItem));
+
+                todoItem.ParentId = parentId;
+                return View(await viewModelService.CreateViewModelCreateOrUpdateTodoItem(todoItem));
+            }
+
+            var todoItemModel = await apiCallsService.GetItemAsync<TodoItemModel>("TodoItems/" + todoItemId);
+            todoItemModel.ChecklistId = checklistId;
+
+            return todoItemModel is not null 
+                ? View(await viewModelService.CreateViewModelCreateOrUpdateTodoItem(todoItemModel)) 
                 : NotFound();
         }
 
@@ -44,25 +56,25 @@ namespace ToDoList.MvcClient.Controllers
         public async Task<ActionResult> CreateOrUpdateAsync(CreateViewModel createViewModel)
         {
             if (!ModelState.IsValid)
-                return GetJsonView(createViewModel.TodoItemModel, false, "CreateOrUpdate");
-
-            IndexViewModel viewModel = default;
+            {
+                Json(new { isValid = false, html = RazorViewToStringConverter.RenderRazorViewToString(this, "CreateOrUpdate", createViewModel.TodoItemModel) });
+            }
 
             if (createViewModel.TodoItemModel.Id == 0)
-            {
-                await AddTodoItem(createViewModel);
-                viewModel = await CreateIndexViewModel();
-            }
-            // TODO: Update item
+                await AddTodoItem(createViewModel.TodoItemModel);
 
-            return GetJsonView(viewModel, true, "_ViewAll");
+            if (createViewModel.TodoItemModel.Id != 0)
+                await apiCallsService.PutItemAsync("TodoItems", createViewModel.TodoItemModel);
+
+            IndexViewModel viewModel = await viewModelService.CreateIndexViewModel();
+            return Json(new { isValid = true, html = RazorViewToStringConverter.RenderRazorViewToString(this, "_ViewAll", viewModel) });
         }
 
         [HttpPost]
         public async Task<ActionResult> DeleteAsync(int id)
         {
             await apiCallsService.DeleteItemAsync("TodoItems/", id);
-            var viewModel = await CreateIndexViewModel();
+            var viewModel = await viewModelService.CreateIndexViewModel();
 
             return Json(new { html = RazorViewToStringConverter.RenderRazorViewToString(this, "_ViewAll", viewModel) });
         }
@@ -73,43 +85,12 @@ namespace ToDoList.MvcClient.Controllers
 
         public IActionResult Privacy() => View();
 
-        private async Task<CreateViewModel> CreateUpdateOrCreateViewModel(TodoItemModel todoItemModel)
+        private async Task AddTodoItem(TodoItemModel todoItemModel)
         {
-            var categoryModels = await apiCallsService.GetItemsAsync<CategoryModel>("Categories");
-            var statusModels = await apiCallsService.GetItemsAsync<StatusModel>("Statuses");
+            if (todoItemModel.Image is not null)
+                await imageAddingService.AddImageInTodoItem(todoItemModel);
 
-            CreateViewModel viewModel = new() {TodoItemModel = todoItemModel, CategoryModels = categoryModels, StatusModels = statusModels };
-
-            return viewModel;
+            await apiCallsService.PostItemAsync("TodoItems", todoItemModel);
         }
-
-        private async Task<IndexViewModel> CreateIndexViewModel()
-        {
-            var todoItems = await apiCallsService.GetItemsAsync<TodoItemModel>("TodoItems");
-            var checklistModels = await apiCallsService.GetItemsAsync<ChecklistModel>("Checklists");
-
-            IndexViewModel viewModel = new() { ChecklistModels = checklistModels, TodoItemModels = todoItems };
-
-            return viewModel;
-        }
-
-        private async Task AddTodoItem(CreateViewModel createViewModel)
-        {
-            if (createViewModel.TodoItemModel.Image is not null)
-                await AddImageInTodoItem(createViewModel.TodoItemModel);
-
-            await apiCallsService.PostItemAsync("TodoItems", createViewModel.TodoItemModel);
-        }
-
-        private async Task AddImageInTodoItem(TodoItemModel todoItem)
-        {
-            await imageFileService.AddImage(todoItem.Image);
-
-            var image = await apiCallsService.GetItemAsync<ImageModel>("Images/GetByName/" + todoItem.Image.FileName);
-            todoItem.ImageId = image.Id;
-        }
-
-        private ActionResult GetJsonView(object view, bool isValid, string viewName) =>
-            Json(new { isValid, html = RazorViewToStringConverter.RenderRazorViewToString(this, viewName, view) });
     }
 }

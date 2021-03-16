@@ -8,18 +8,26 @@ using ToDoList.MvcClient.Models;
 
 namespace ToDoList.MvcClient.Services
 {
-    public class ImageService : IImageService
+    public class ImageAddingService : IImageAddingService
     {
         private readonly IWebHostEnvironment webHostEnvironment;
         private readonly IApiCallsService apiCallsService;
 
-        public ImageService(IWebHostEnvironment hostEnvironment, IApiCallsService service)
+        public ImageAddingService(IWebHostEnvironment hostEnvironment, IApiCallsService service)
         {
             webHostEnvironment = hostEnvironment;
             apiCallsService = service;
         }
 
-        public async Task AddImage(IFormFile image)
+        public async Task AddImageInTodoItem(TodoItemModel todoItem)
+        {
+            await PostImage(todoItem.Image);
+
+            var image = await apiCallsService.GetItemAsync<ImageModel>("Images/GetByName/" + todoItem.Image.FileName);
+            todoItem.ImageId = image.Id;
+        }
+
+        private async Task PostImage(IFormFile image)
         {
             string absolutePath = MakeAbsoluteImagePath(image.FileName);
             string relativePath = @"~/images/" + image.FileName;

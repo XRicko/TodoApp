@@ -1,0 +1,29 @@
+﻿@model ToDoList.MvcClient.Models.ChecklistModel
+
+@{
+    ViewData["Title"] = "Create";
+    Layout = null;
+}
+
+<div class="row">
+    <div class="col-md-12">
+        <form asp-action="CreateOrUpdate" asp-route-id="@Model.Id" onsubmit="return ajaxPost(this);">
+            @Html.HiddenFor(m => m.Id)
+
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group required">
+                <label asp-for="Name" class="control-label"></label>
+                <input asp-for="Name" class="form-control" required />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+          
+            <div class="form-group">
+                <input type="submit" value="Submit" class="btn btn-primary btn-block" />
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

@@ -68,3 +68,4 @@ ajaxDelete = form => {
         return false;
     }
 }
+

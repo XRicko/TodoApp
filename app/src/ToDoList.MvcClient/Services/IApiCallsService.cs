@@ -11,6 +11,7 @@ namespace ToDoList.MvcClient.Services
         Task<T> GetItemAsync<T>(string routeWithParameters) where T : BaseModel;
 
         Task PostItemAsync<T>(string route, T item) where T : BaseModel;
+        Task PutItemAsync<T>(string route, T item) where T : BaseModel;
         Task DeleteItemAsync(string route, int id);
     }
 }
