@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Linq;
 using System.Threading.Tasks;
 
 using Microsoft.AspNetCore.Http;
@@ -27,38 +28,34 @@ namespace ToDoList.MvcClient.Controllers
             return View(viewModel);
         }
 
-        public async Task<ActionResult> CreateOrUpdateAsync(int id = 0)
+        public async Task<ActionResult> CreateOrUpdateAsync(int checklistId, int todoItemId = 0)
         {
-            if (id == 0)
-                return View(await CreateUpdateOrCreateViewModel(new TodoItemModel()));
+            if (todoItemId == 0)
+                return View(await CreateUpdateOrCreateViewModel(new TodoItemModel { ChecklistId = checklistId }));
 
-            var todoItem = await apiCallsService.GetItemAsync<TodoItemModel>("TodoItems/" + id);
+            var todoItem = await apiCallsService.GetItemAsync<TodoItemModel>("TodoItems/" + todoItemId);
             return todoItem is not null 
                 ? View(await CreateUpdateOrCreateViewModel(todoItem)) 
-                : (ActionResult)NotFound();
+                : NotFound();
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> CreateOrUpdateAsync(CreateViewModel createViewModel)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
+                return GetJsonView(createViewModel.TodoItemModel, false, "CreateOrUpdate");
+
+            IndexViewModel viewModel = default;
+
+            if (createViewModel.TodoItemModel.Id == 0)
             {
-                if (createViewModel.TodoItemModel.Id == 0)
-                {
-                    if (createViewModel.TodoItemModel.Image is not null)
-                        await AddImageInTodoItem(createViewModel.TodoItemModel);
-
-                    await apiCallsService.PostItemAsync("TodoItems", createViewModel.TodoItemModel);
-                    var viewModel = await CreateIndexViewModel();
-
-                    return Json(new { isValid = true, html = RazorViewToStringConverter.RenderRazorViewToString(this, "_ViewAll", viewModel) });
-                }
-
-                // TODO: Update item
+                await AddTodoItem(createViewModel);
+                viewModel = await CreateIndexViewModel();
             }
+            // TODO: Update item
 
-            return Json(new { isValid = false, html = RazorViewToStringConverter.RenderRazorViewToString(this, "CreateOrUpdate", createViewModel.TodoItemModel) });
+            return GetJsonView(viewModel, true, "_ViewAll");
         }
 
         [HttpPost]
@@ -78,11 +75,10 @@ namespace ToDoList.MvcClient.Controllers
 
         private async Task<CreateViewModel> CreateUpdateOrCreateViewModel(TodoItemModel todoItemModel)
         {
-            var checklistModels = await apiCallsService.GetItemsAsync<ChecklistModel>("Checklists");
             var categoryModels = await apiCallsService.GetItemsAsync<CategoryModel>("Categories");
             var statusModels = await apiCallsService.GetItemsAsync<StatusModel>("Statuses");
 
-            CreateViewModel viewModel = new() {TodoItemModel = todoItemModel, ChecklistModels = checklistModels, CategoryModels = categoryModels, StatusModels = statusModels };
+            CreateViewModel viewModel = new() {TodoItemModel = todoItemModel, CategoryModels = categoryModels, StatusModels = statusModels };
 
             return viewModel;
         }
@@ -97,6 +93,14 @@ namespace ToDoList.MvcClient.Controllers
             return viewModel;
         }
 
+        private async Task AddTodoItem(CreateViewModel createViewModel)
+        {
+            if (createViewModel.TodoItemModel.Image is not null)
+                await AddImageInTodoItem(createViewModel.TodoItemModel);
+
+            await apiCallsService.PostItemAsync("TodoItems", createViewModel.TodoItemModel);
+        }
+
         private async Task AddImageInTodoItem(TodoItemModel todoItem)
         {
             await imageFileService.AddImage(todoItem.Image);
@@ -104,5 +108,8 @@ namespace ToDoList.MvcClient.Controllers
             var image = await apiCallsService.GetItemAsync<ImageModel>("Images/GetByName/" + todoItem.Image.FileName);
             todoItem.ImageId = image.Id;
         }
+
+        private ActionResult GetJsonView(object view, bool isValid, string viewName) =>
+            Json(new { isValid, html = RazorViewToStringConverter.RenderRazorViewToString(this, viewName, view) });
     }
 }

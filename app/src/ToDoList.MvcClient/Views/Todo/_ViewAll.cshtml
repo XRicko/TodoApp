@@ -36,7 +36,7 @@
                                                 </div>
 
                                                 <div>
-                                                    <button onclick="showPopup('@Url.Action("CreateOrUpdate", "Todo", new { todoItem.Id }, Context.Request.Scheme)','Update task')" class="border-0 btn-transition btn btn-outline-info"><i class="bi bi-pencil"></i></button>
+                                                    <button onclick="showPopup('@Url.Action("CreateOrUpdate", "Todo", new { TodoItemsId = todoItem.Id, ChecklistId = checklist.Id }, Context.Request.Scheme)','Update task in @todoItem.ChecklistName list')" class="border-0 btn-transition btn btn-outline-info"><i class="bi bi-pencil"></i></button>
 
                                                     <form asp-action="Delete" method="post" asp-route-id="@todoItem.Id" onsubmit="return ajaxDelete(this);" class="d-inline">
                                                         <button type="submit" class="border-0 btn-transition btn btn-outline-danger"> <i class="bi bi-trash"></i> </button>
@@ -52,7 +52,7 @@
                         </div>
                     </div>
                     <div class="d-block text-right card-footer">
-                        <button onclick="showPopup('@Url.Action("CreateOrUpdate", "Todo", null, Context.Request.Scheme)','New task')" class="btn btn-primary">Add Task</button>
+                        <button onclick="showPopup('@Url.Action("CreateOrUpdate", "Todo", new { ChecklistId = checklist.Id }, Context.Request.Scheme)','New task for @checklist.Name list')" class="btn btn-primary">Add Task</button>
                     </div>
                 </div>
             </div>

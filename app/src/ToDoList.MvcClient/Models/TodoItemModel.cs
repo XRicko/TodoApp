@@ -17,6 +17,7 @@ namespace ToDoList.MvcClient.Models
         [DisplayName("Due date")]
         [DisplayFormat(DataFormatString = "{0:f}")]
         public DateTime? DueDate { get; set; }
+
         public GeoCoordinate GeoPoint { get; set; }
 
         public int? ParentId { get; set; }
