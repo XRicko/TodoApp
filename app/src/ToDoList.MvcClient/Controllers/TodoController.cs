@@ -23,34 +23,34 @@ namespace ToDoList.MvcClient.Controllers
 
         public async Task<ActionResult> IndexAsync()
         {
-            IndexViewModel viewModel = await CreateViewModel();
+            IndexViewModel viewModel = await CreateIndexViewModel();
             return View(viewModel);
         }
 
         public async Task<ActionResult> CreateOrUpdateAsync(int id = 0)
         {
             if (id == 0)
-                return View(new TodoItemModel());
+                return View(await CreateUpdateOrCreateViewModel(new TodoItemModel()));
 
             var todoItem = await apiCallsService.GetItemAsync<TodoItemModel>("TodoItems/" + id);
-            return todoItem is not null
-                ? View(todoItem)
-                : NotFound();
+            return todoItem is not null 
+                ? View(await CreateUpdateOrCreateViewModel(todoItem)) 
+                : (ActionResult)NotFound();
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> CreateOrUpdateAsync(TodoItemModel todoItem)
+        public async Task<ActionResult> CreateOrUpdateAsync(CreateViewModel createViewModel)
         {
             if (ModelState.IsValid)
             {
-                if (todoItem.Id == 0)
+                if (createViewModel.TodoItemModel.Id == 0)
                 {
-                    if (todoItem.Image is not null)
-                        await AddImageInTodoItem(todoItem);
+                    if (createViewModel.TodoItemModel.Image is not null)
+                        await AddImageInTodoItem(createViewModel.TodoItemModel);
 
-                    await apiCallsService.PostItemAsync("TodoItems", todoItem);
-                    var viewModel = await CreateViewModel();
+                    await apiCallsService.PostItemAsync("TodoItems", createViewModel.TodoItemModel);
+                    var viewModel = await CreateIndexViewModel();
 
                     return Json(new { isValid = true, html = RazorViewToStringConverter.RenderRazorViewToString(this, "_ViewAll", viewModel) });
                 }
@@ -58,14 +58,14 @@ namespace ToDoList.MvcClient.Controllers
                 // TODO: Update item
             }
 
-            return Json(new { isValid = false, html = RazorViewToStringConverter.RenderRazorViewToString(this, "CreateOrUpdate", todoItem) });
+            return Json(new { isValid = false, html = RazorViewToStringConverter.RenderRazorViewToString(this, "CreateOrUpdate", createViewModel.TodoItemModel) });
         }
 
         [HttpPost]
         public async Task<ActionResult> DeleteAsync(int id)
         {
             await apiCallsService.DeleteItemAsync("TodoItems/", id);
-            var viewModel = await CreateViewModel();
+            var viewModel = await CreateIndexViewModel();
 
             return Json(new { html = RazorViewToStringConverter.RenderRazorViewToString(this, "_ViewAll", viewModel) });
         }
@@ -76,7 +76,18 @@ namespace ToDoList.MvcClient.Controllers
 
         public IActionResult Privacy() => View();
 
-        private async Task<IndexViewModel> CreateViewModel()
+        private async Task<CreateViewModel> CreateUpdateOrCreateViewModel(TodoItemModel todoItemModel)
+        {
+            var checklistModels = await apiCallsService.GetItemsAsync<ChecklistModel>("Checklists");
+            var categoryModels = await apiCallsService.GetItemsAsync<CategoryModel>("Categories");
+            var statusModels = await apiCallsService.GetItemsAsync<StatusModel>("Statuses");
+
+            CreateViewModel viewModel = new() {TodoItemModel = todoItemModel, ChecklistModels = checklistModels, CategoryModels = categoryModels, StatusModels = statusModels };
+
+            return viewModel;
+        }
+
+        private async Task<IndexViewModel> CreateIndexViewModel()
         {
             var todoItems = await apiCallsService.GetItemsAsync<TodoItemModel>("TodoItems");
             var checklistModels = await apiCallsService.GetItemsAsync<ChecklistModel>("Checklists");
