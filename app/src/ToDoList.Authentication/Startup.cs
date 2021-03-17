@@ -1,6 +1,4 @@
 
-using MediatR;
-
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -8,13 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 
-using ToDoList.Core;
-using ToDoList.Core.Mediator.Queries;
-using ToDoList.Core.Mediator.Response;
-using ToDoList.Core.Services;
-using ToDoList.Infrastructure.Extensions;
-
-namespace ToDoList.WebApi
+namespace ToDoList.Authentication
 {
     public class Startup
     {
@@ -28,15 +20,8 @@ namespace ToDoList.WebApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddInfrastructure(Configuration.GetConnectionString("DefaultConnection"));
-
-            services.AddSingleton(Configuration.GetSection(ApiOptions.Apis).Get<ApiOptions>());
-
-            services.AddTransient<IGeocodingService, GoogleGeocodingService>();
-            services.AddTransient<ICreateWithAddressService, CreateWithAddressService>();
-
-            services.AddAutoMapper(typeof(CategoryResponse));
-            services.AddMediatR(typeof(GetAllQuery<,>));
+            var jwtTokenConfig = Configuration.GetSection("JwtTokenConfigs").Get<JwtTokenConfig>();
+            services.AddSingleton(jwtTokenConfig);
 
             services.AddCors(options =>
             {
@@ -49,10 +34,9 @@ namespace ToDoList.WebApi
             });
 
             services.AddControllers();
-
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "ToDoList.WebApi", Version = "v1" });
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "ToDoList.Authentication", Version = "v1" });
             });
         }
 
@@ -63,7 +47,7 @@ namespace ToDoList.WebApi
             {
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "ToDoList.WebApi v1"));
+                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "ToDoList.Authentication v1"));
             }
 
             app.UseHttpsRedirection();
@@ -72,7 +56,6 @@ namespace ToDoList.WebApi
 
             app.UseCors();
 
-            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>

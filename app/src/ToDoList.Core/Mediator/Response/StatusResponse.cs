@@ -1,4 +1,4 @@
 ﻿namespace ToDoList.Core.Mediator.Response
 {
-    public record StatusResponse(int Id, string Name) : BaseResponse(Id, Name);
+    public record StatusResponse(int Id, string Name, bool IsDone) : BaseResponse(Id, Name);
 }

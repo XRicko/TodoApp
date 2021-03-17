@@ -1,8 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 
-using AutoMapper;
-
 using MediatR;
 
 using Microsoft.AspNetCore.Mvc;
@@ -20,7 +18,7 @@ namespace ToDoList.WebApi.Controllers
     [ApiController]
     public class TodoItemsController : Base
     {
-        public TodoItemsController(IMediator mediator, IMapper mapper) : base(mediator, mapper) { }
+        public TodoItemsController(IMediator mediator) : base(mediator) { }
 
         [HttpGet]
         public async Task<IEnumerable<TodoItemResponse>> Get() =>

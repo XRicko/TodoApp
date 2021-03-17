@@ -1,8 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 
-using AutoMapper;
-
 using MediatR;
 
 using Microsoft.AspNetCore.Mvc;
@@ -17,7 +15,7 @@ namespace ToDoList.WebApi.Controllers
     [ApiController]
     public class StatusesController : Base
     {
-        public StatusesController(IMediator mediator, IMapper mapper) : base(mediator, mapper)
+        public StatusesController(IMediator mediator) : base(mediator)
         {
 
         }

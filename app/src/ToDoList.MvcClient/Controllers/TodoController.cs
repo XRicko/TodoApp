@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics;
-using System.Linq;
 using System.Threading.Tasks;
 
 using Microsoft.AspNetCore.Http;
@@ -46,8 +45,8 @@ namespace ToDoList.MvcClient.Controllers
             var todoItemModel = await apiCallsService.GetItemAsync<TodoItemModel>("TodoItems/" + todoItemId);
             todoItemModel.ChecklistId = checklistId;
 
-            return todoItemModel is not null 
-                ? View(await viewModelService.CreateViewModelCreateOrUpdateTodoItem(todoItemModel)) 
+            return todoItemModel is not null
+                ? View(await viewModelService.CreateViewModelCreateOrUpdateTodoItem(todoItemModel))
                 : NotFound();
         }
 

@@ -1,8 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 
-using AutoMapper;
-
 using MediatR;
 
 using Microsoft.AspNetCore.Mvc;
@@ -20,7 +18,7 @@ namespace ToDoList.WebApi.Controllers
     [ApiController]
     public class ChecklistsController : Base
     {
-        public ChecklistsController(IMediator mediator, IMapper mapper) : base(mediator, mapper)
+        public ChecklistsController(IMediator mediator) : base(mediator)
         {
 
         }
