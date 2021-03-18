@@ -11,9 +11,9 @@ namespace ToDoList.Infrastructure.Data
 {
     internal class EfRepository : IRepository
     {
-        private readonly ToDoListContext context;
+        private readonly TodoListContext context;
 
-        public EfRepository(ToDoListContext toDoListContext)
+        public EfRepository(TodoListContext toDoListContext)
         {
             context = toDoListContext ?? throw new ArgumentNullException(nameof(toDoListContext));
         }

@@ -31,13 +31,13 @@ namespace ToDoList.WebApi.Controllers
         }
 
         [HttpGet]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IEnumerable<ChecklistResponse>> Get()
         {
             var checklists = await Mediator.Send(new GetAllQuery<Checklist, ChecklistResponse>());
-            var usersChecklists = checklists.Where(x => x.Id == Convert.ToInt32(Id));
+            //var usersChecklists = checklists.Where(x => x.Id == Convert.ToInt32(Id));
 
-            return usersChecklists;
+            return checklists;
         }
 
         [HttpGet("{id}")]

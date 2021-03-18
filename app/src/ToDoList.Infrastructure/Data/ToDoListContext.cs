@@ -5,9 +5,9 @@ using ToDoList.Infrastructure.Data.Config;
 
 namespace ToDoList.Infrastructure.Data
 {
-    public class ToDoListContext : DbContext
+    public class TodoListContext : DbContext
     {
-        public ToDoListContext(DbContextOptions<ToDoListContext> options)
+        public TodoListContext(DbContextOptions<TodoListContext> options)
             : base(options)
         {
         }

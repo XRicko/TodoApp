@@ -6,11 +6,11 @@ namespace ToDoList.Infrastructure.Data
 {
     internal class UnitOfWork : IUnitOfWork
     {
-        private readonly ToDoListContext context;
+        private readonly TodoListContext context;
 
         public IRepository Repository { get; }
 
-        public UnitOfWork(ToDoListContext toDoListContext, IRepository repository)
+        public UnitOfWork(TodoListContext toDoListContext, IRepository repository)
         {
             context = toDoListContext;
             Repository = repository;
