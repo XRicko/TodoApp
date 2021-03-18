@@ -6,6 +6,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 
+using ToDoList.Core;
+
 namespace ToDoList.Authentication
 {
     public class Startup
@@ -54,8 +56,9 @@ namespace ToDoList.Authentication
 
             app.UseRouting();
 
-            app.UseCors();
-
+            app.UseCors(x => x.AllowAnyOrigin()
+                              .AllowAnyMethod()
+                              .AllowAnyHeader());
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>

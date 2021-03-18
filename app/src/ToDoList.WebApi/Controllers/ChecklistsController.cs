@@ -1,8 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 using MediatR;
 
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 using ToDoList.Core.Entities;
@@ -18,14 +23,22 @@ namespace ToDoList.WebApi.Controllers
     [ApiController]
     public class ChecklistsController : Base
     {
+        private string Id => User.Claims.Single(x => x.Type == ClaimTypes.NameIdentifier).Value;
+
         public ChecklistsController(IMediator mediator) : base(mediator)
         {
 
         }
 
         [HttpGet]
-        public async Task<IEnumerable<ChecklistResponse>> Get() =>
-            await Mediator.Send(new GetAllQuery<Checklist, ChecklistResponse>());
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        public async Task<IEnumerable<ChecklistResponse>> Get()
+        {
+            var checklists = await Mediator.Send(new GetAllQuery<Checklist, ChecklistResponse>());
+            var usersChecklists = checklists.Where(x => x.Id == Convert.ToInt32(Id));
+
+            return usersChecklists;
+        }
 
         [HttpGet("{id}")]
         public async Task<ChecklistResponse> Get(int id) =>

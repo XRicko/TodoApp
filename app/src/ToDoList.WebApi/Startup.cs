@@ -1,11 +1,13 @@
 
 using MediatR;
 
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 
 using ToDoList.Core;
@@ -37,6 +39,32 @@ namespace ToDoList.WebApi
 
             services.AddAutoMapper(typeof(CategoryResponse));
             services.AddMediatR(typeof(GetAllQuery<,>));
+
+            var jwtTokenConfig = Configuration.GetSection("JwtTokenConfigs").Get<JwtTokenConfig>();
+            services.AddSingleton(jwtTokenConfig);
+
+            services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+                .AddJwtBearer(options =>
+                {
+                    options.RequireHttpsMetadata = false;
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = true,
+                        ValidIssuer = jwtTokenConfig.Issuer,
+
+                        ValidateAudience = true,
+                        ValidAudience = jwtTokenConfig.Audience,
+
+                        ValidateLifetime = true,
+                        ValidateIssuerSigningKey = true,
+
+                        IssuerSigningKey = jwtTokenConfig.GetSymmetricSecurityKey()
+                    };
+                });
 
             services.AddCors(options =>
             {
@@ -70,10 +98,10 @@ namespace ToDoList.WebApi
 
             app.UseRouting();
 
-            app.UseCors();
-
             app.UseAuthentication();
             app.UseAuthorization();
+
+            app.UseCors();
 
             app.UseEndpoints(endpoints =>
             {

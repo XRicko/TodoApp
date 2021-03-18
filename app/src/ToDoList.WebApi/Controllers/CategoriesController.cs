@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 
 using MediatR;
 
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 using ToDoList.Core.Entities;
@@ -21,7 +20,6 @@ namespace ToDoList.WebApi.Controllers
         public CategoriesController(IMediator mediator) : base(mediator) { }
 
         [HttpGet]
-        [Authorize]
         public async Task<IEnumerable<CategoryResponse>> Get() =>
             await Mediator.Send(new GetAllQuery<Category, CategoryResponse>());
 
