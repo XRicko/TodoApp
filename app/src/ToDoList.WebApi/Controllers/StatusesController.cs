@@ -6,7 +6,7 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 using ToDoList.Core.Entities;
-using ToDoList.Core.Mediator.Queries;
+using ToDoList.Core.Mediator.Queries.Generics;
 using ToDoList.Core.Mediator.Response;
 
 namespace ToDoList.WebApi.Controllers
@@ -27,5 +27,10 @@ namespace ToDoList.WebApi.Controllers
         [HttpGet("{id}")]
         public async Task<StatusResponse> Get(int id) =>
             await Mediator.Send(new GetByIdQuery<Status, StatusResponse>(id));
+
+        [HttpGet]
+        [Route("[action]/{name}")]
+        public async Task<StatusResponse> GetByName(string name) =>
+            await Mediator.Send(new GetByNameQuery<Status, StatusResponse>(name));
     }
 }

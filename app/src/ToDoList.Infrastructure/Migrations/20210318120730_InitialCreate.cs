@@ -1,5 +1,7 @@
 ﻿using System;
+
 using Microsoft.EntityFrameworkCore.Migrations;
+
 using NetTopologySuite.Geometries;
 
 namespace ToDoList.Infrastructure.Migrations

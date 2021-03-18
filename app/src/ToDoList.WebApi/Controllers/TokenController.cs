@@ -1,39 +1,33 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
 using System.Security.Claims;
+using System.Threading.Tasks;
+
+using MediatR;
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 
-using ToDoList.Core;
-using ToDoList.Core.Entities;
+using ToDoList.Core.Mediator.Queries.Users;
+using ToDoList.Core.Mediator.Response;
 
-namespace ToDoList.Authentication.Controllers
+namespace ToDoList.WebApi.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     [ApiController]
-    public class TokenController : ControllerBase
+    public class TokenController : Base
     {
-        // private readonly IMediator mediator;
         private readonly JwtTokenConfig jwtTokenConfig;
 
-        private readonly List<User> users = new()
-        {
-            new User() { Name = "default", Password = "12346" },
-            new User() { Name = "admin", Password = "qwerty" }
-        };
-
-        public TokenController(JwtTokenConfig tokenConfig)
+        public TokenController(JwtTokenConfig tokenConfig, IMediator mediator) : base(mediator)
         {
             jwtTokenConfig = tokenConfig;
         }
 
         [HttpPost]
-        public IActionResult Login(string username, string password)
+        public async Task<IActionResult> LoginAsync(string username, string password)
         {
-            var user = users.SingleOrDefault(x => x.Name == username && x.Password == password);
+            var user = await Mediator.Send(new GetUserByNameAndPasswordQuery(username, password));
 
             if (user is not null)
             {
@@ -44,9 +38,8 @@ namespace ToDoList.Authentication.Controllers
             return Unauthorized();
         }
 
-        private string GenerateToken(User user)
+        private string GenerateToken(UserResponse user)
         {
-            //var user = await Mediator.Send(new GetByNameQuery<User, UserResponse>(username));
             var securityKey = jwtTokenConfig.GetSymmetricSecurityKey();
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
@@ -61,6 +54,7 @@ namespace ToDoList.Authentication.Controllers
                                              claims,
                                              signingCredentials: credentials,
                                              expires: DateTime.Now.AddDays(1));
+
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
     }

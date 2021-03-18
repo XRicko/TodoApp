@@ -3,7 +3,7 @@
 using ToDoList.Core.Mediator.Response;
 using ToDoList.SharedKernel;
 
-namespace ToDoList.Core.Mediator.Queries
+namespace ToDoList.Core.Mediator.Queries.Generics
 {
     public class GetByIdQuery<TEntity, TResponse> : IRequest<TResponse>
         where TEntity : BaseEntity

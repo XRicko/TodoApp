@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 using ToDoList.Core.Entities;
 using ToDoList.Core.Mediator.Commands;
-using ToDoList.Core.Mediator.Queries;
+using ToDoList.Core.Mediator.Queries.Generics;
 using ToDoList.Core.Mediator.Requests.Create;
 using ToDoList.Core.Mediator.Requests.Update;
 using ToDoList.Core.Mediator.Response;

@@ -2,5 +2,6 @@
 {
     public class StatusModel : BaseModel
     {
+        public bool IsDone { get; set; }
     }
 }

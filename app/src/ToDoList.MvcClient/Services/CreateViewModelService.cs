@@ -32,7 +32,13 @@ namespace ToDoList.MvcClient.Services
 
             int selectedChecklist = todoItemModel.ChecklistId;
             int? selectedCategory = todoItemModel.CategoryId;
-            int? selectedStatus = todoItemModel.StatusId;
+            int? selectedStatus = default;
+
+            if (todoItemModel.StatusId is null)
+            {
+                var plannedStatus = await apiCallsService.GetItemAsync<StatusModel>("Statuses/GetByName/Planned");
+                selectedStatus = plannedStatus.Id;
+            }
 
             CreateViewModel viewModel = new()
             {

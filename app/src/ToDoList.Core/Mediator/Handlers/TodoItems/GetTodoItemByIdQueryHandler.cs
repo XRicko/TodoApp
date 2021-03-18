@@ -6,7 +6,7 @@ using AutoMapper;
 
 using ToDoList.Core.Entities;
 using ToDoList.Core.Mediator.Handlers.Generics;
-using ToDoList.Core.Mediator.Queries;
+using ToDoList.Core.Mediator.Queries.Generics;
 using ToDoList.Core.Mediator.Response;
 using ToDoList.Core.Services;
 using ToDoList.SharedKernel.Interfaces;

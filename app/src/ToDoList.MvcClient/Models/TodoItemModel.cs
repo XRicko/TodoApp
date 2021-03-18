@@ -4,8 +4,6 @@ using System.ComponentModel.DataAnnotations;
 
 using Microsoft.AspNetCore.Http;
 
-using ToDoList.SharedKernel;
-
 namespace ToDoList.MvcClient.Models
 {
     public class TodoItemModel : BaseModel
@@ -18,7 +16,7 @@ namespace ToDoList.MvcClient.Models
         [DisplayFormat(DataFormatString = "{0:f}")]
         public DateTime? DueDate { get; set; }
 
-        public GeoCoordinate GeoPoint { get; set; }
+        //public GeoCoordinate GeoPoint { get; set; }
 
         public int? ParentId { get; set; }
         public int? StatusId { get; set; }

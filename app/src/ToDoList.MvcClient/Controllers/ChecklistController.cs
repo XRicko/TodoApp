@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Mvc;
 
 using ToDoList.MvcClient.Models;
 using ToDoList.MvcClient.Services;
-using ToDoList.MvcClient.ViewModels;
 
 namespace ToDoList.MvcClient.Controllers
 {
@@ -39,9 +38,7 @@ namespace ToDoList.MvcClient.Controllers
         public async Task<ActionResult> CreateOrUpdateAsync(ChecklistModel checklistModel)
         {
             if (!ModelState.IsValid)
-            {
                 Json(new { isValid = false, html = RazorViewToStringConverter.RenderRazorViewToString(this, "CreateOrUpdate", checklistModel) });
-            }
 
             if (checklistModel.Id == 0)
                 await apiCallsService.PostItemAsync("Checklists", checklistModel);
@@ -49,7 +46,7 @@ namespace ToDoList.MvcClient.Controllers
             if (checklistModel.Id != 0)
                 await apiCallsService.PutItemAsync("Checklists", checklistModel);
 
-            IndexViewModel viewModel = await viewModelService.CreateIndexViewModel();
+            var viewModel = await viewModelService.CreateIndexViewModel();
             return Json(new { isValid = true, html = RazorViewToStringConverter.RenderRazorViewToString(this, "_ViewAll", viewModel) });
         }
 

@@ -10,7 +10,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 
 using ToDoList.Core;
-using ToDoList.Core.Mediator.Queries;
+using ToDoList.Core.Mediator.Queries.Generics;
 using ToDoList.Core.Mediator.Response;
 using ToDoList.Core.Services;
 using ToDoList.Infrastructure.Extensions;

@@ -12,7 +12,8 @@ using Microsoft.AspNetCore.Mvc;
 
 using ToDoList.Core.Entities;
 using ToDoList.Core.Mediator.Commands;
-using ToDoList.Core.Mediator.Queries;
+using ToDoList.Core.Mediator.Queries.Checklists;
+using ToDoList.Core.Mediator.Queries.Generics;
 using ToDoList.Core.Mediator.Requests.Create;
 using ToDoList.Core.Mediator.Requests.Update;
 using ToDoList.Core.Mediator.Response;
@@ -23,7 +24,7 @@ namespace ToDoList.WebApi.Controllers
     [ApiController]
     public class ChecklistsController : Base
     {
-        private string Id => User.Claims.Single(x => x.Type == ClaimTypes.NameIdentifier).Value;
+        private string UserId => User.Claims.Single(x => x.Type == ClaimTypes.NameIdentifier).Value;
 
         public ChecklistsController(IMediator mediator) : base(mediator)
         {
@@ -34,9 +35,8 @@ namespace ToDoList.WebApi.Controllers
         //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IEnumerable<ChecklistResponse>> Get()
         {
-            var checklists = await Mediator.Send(new GetAllQuery<Checklist, ChecklistResponse>());
-            //var usersChecklists = checklists.Where(x => x.Id == Convert.ToInt32(Id));
-
+            //var checklists = await Mediator.Send(new GetChecklistsByUserIdQuery(Convert.ToInt32(UserId)));
+            var checklists = await Mediator.Send(new GetAllQuery<Checklist,ChecklistResponse>());
             return checklists;
         }
 
