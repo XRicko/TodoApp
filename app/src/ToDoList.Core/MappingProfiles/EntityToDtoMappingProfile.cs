@@ -3,6 +3,7 @@
 using NetTopologySuite.Geometries;
 
 using ToDoList.Core.Entities;
+using ToDoList.Core.Mediator.Requests;
 using ToDoList.Core.Mediator.Requests.Create;
 using ToDoList.Core.Mediator.Requests.Update;
 using ToDoList.Core.Mediator.Response;
@@ -32,7 +33,7 @@ namespace ToDoList.Core.MappingProfiles
                               opt => opt.MapFrom(src => src.Latitude));
 
             CreateMap<User, UserResponse>();
-            CreateMap<UserCreateRequest, User>();
+            CreateMap<UserRequest, User>();
 
             CreateMap<Image, ImageResponse>();
             CreateMap<ImageCreateRequest, Image>();
@@ -43,9 +44,7 @@ namespace ToDoList.Core.MappingProfiles
 
             CreateMap<Status, StatusResponse>();
 
-            CreateMap<Checklist, ChecklistResponse>()
-                .ForMember(dest => dest.UserName,
-                           opt => opt.MapFrom(src => src.User.Name));
+            CreateMap<Checklist, ChecklistResponse>();
             CreateMap<ChecklistCreateRequest, Checklist>();
             CreateMap<ChecklistUpdateRequest, Checklist>();
 

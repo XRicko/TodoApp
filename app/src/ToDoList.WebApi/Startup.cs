@@ -14,6 +14,7 @@ using ToDoList.Core.Mediator.Queries.Generics;
 using ToDoList.Core.Mediator.Response;
 using ToDoList.Core.Services;
 using ToDoList.Infrastructure.Extensions;
+using ToDoList.WebApi.Jwt;
 
 namespace ToDoList.WebApi
 {
@@ -40,7 +41,9 @@ namespace ToDoList.WebApi
             services.AddMediatR(typeof(GetAllQuery<,>));
 
             var jwtTokenConfig = Configuration.GetSection("JwtTokenConfigs").Get<JwtTokenConfig>();
+
             services.AddSingleton(jwtTokenConfig);
+            services.AddScoped<ITokenGenerator, TokenGenerator>();
 
             services.AddAuthentication(options =>
             {

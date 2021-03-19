@@ -1,6 +1,12 @@
 ﻿@model ToDoList.MvcClient.ViewModels.IndexViewModel
 
+@{ 
+    int userId;
+}
+
 <div class="d-flex flex-row">
+    @{ userId = Model.ChecklistModels.First().UserId; }
+
     @foreach (var checklist in Model.ChecklistModels)
     {
         <div class="row d-flex justify-content-center container">
@@ -11,11 +17,14 @@
                             <i class="bi bi-list-task"></i>&nbsp;@checklist.Name
 
                             <div class="text-right d-inline float-right">
-                                <button onclick="showPopup('@Url.Action("CreateOrUpdate", "Checklist", new { checklist.Id }, Context.Request.Scheme)','Update checklist')" class="border-0 btn-transition btn btn-outline-info"><i class="bi bi-pencil"></i></button>
-
-                                <form asp-action="Delete" asp-controller="Checklist" method="post" asp-route-id="@checklist.Id" onsubmit="return ajaxDelete(this);" class="d-inline">
-                                    <button type="submit" class="border-0 btn-transition btn btn-outline-danger"> <i class="bi bi-trash"></i> </button>
-                                </form>
+                              <button onclick="showPopup('@Url.Action("CreateOrUpdate", "Checklist", new { checklist.Id }, Context.Request.Scheme)','Update checklist')" class="border-0 btn-transition btn btn-outline-info"><i class="bi bi-pencil"></i></button>   
+                                
+                                @if (checklist.Name != "Untitled")
+                                {
+                                    <form asp-action="Delete" asp-controller="Checklist" method="post" asp-route-id="@checklist.Id" onsubmit="return ajaxDelete(this);" class="d-inline">
+                                        <button type="submit" class="border-0 btn-transition btn btn-outline-danger"> <i class="bi bi-trash"></i> </button>
+                                    </form>
+                                }
                             </div>
 
                         </div>
@@ -57,10 +66,14 @@
                     </div>
 
                     <div class="d-block text-right card-footer">
-                        <button onclick="showPopup('@Url.Action("CreateOrUpdate", "Todo", new { ChecklistId = checklist.Id }, Context.Request.Scheme)','New task')" class="btn btn-primary">Add Task</button>
+                        <button onclick="showPopup('@Url.Action("CreateOrUpdate", "Todo", new { ChecklistId = checklist.Id }, Context.Request.Scheme)','New task')" class="btn btn-primary">Add new task</button>
                     </div>
                 </div>
             </div>
         </div>
     }
+
+    <div class="align-self-end">
+         <button onclick="showPopup('@Url.Action("CreateOrUpdate", "Checklist", new { userId }, Context.Request.Scheme)','Add new checklist')" class="btn btn-primary">Add checklist</button>
+    </div>
 </div>

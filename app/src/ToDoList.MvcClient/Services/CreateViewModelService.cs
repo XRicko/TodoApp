@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 
 using ToDoList.MvcClient.Models;
+using ToDoList.MvcClient.Services.Api;
 using ToDoList.MvcClient.ViewModels;
 
 namespace ToDoList.MvcClient.Services
@@ -16,8 +17,8 @@ namespace ToDoList.MvcClient.Services
 
         public async Task<IndexViewModel> CreateIndexViewModel()
         {
-            var todoItems = await apiCallsService.GetItemsAsync<TodoItemModel>("TodoItems");
             var checklistModels = await apiCallsService.GetItemsAsync<ChecklistModel>("Checklists");
+            var todoItems = await apiCallsService.GetItemsAsync<TodoItemModel>("TodoItems");
 
             IndexViewModel viewModel = new() { ChecklistModels = checklistModels, TodoItemModels = todoItems };
 

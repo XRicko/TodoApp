@@ -24,9 +24,6 @@ namespace ToDoList.Infrastructure.Data
         public Task<T> GetAsync<T>(string name) where T : BaseEntity =>
             context.Set<T>().SingleOrDefaultAsync(x => x.Name == name);
 
-        public Task<T> GetAsync<T>(T entity) where T : BaseEntity =>
-            context.Set<T>().SingleOrDefaultAsync(x => x.Name == entity.Name);
-
         public async Task<IEnumerable<T>> GetAllAsync<T>() where T : BaseEntity =>
             await context.Set<T>().ToListAsync();
 

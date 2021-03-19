@@ -1,9 +1,21 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Threading.Tasks;
+
+using Microsoft.AspNetCore.Mvc;
+
+using ToDoList.MvcClient.Models;
+using ToDoList.MvcClient.Services.Api;
 
 namespace ToDoList.MvcClient.Controllers
 {
     public class UserController : Controller
     {
+        private readonly IApiCallsService apiCallsService;
+
+        public UserController(IApiCallsService apiService)
+        {
+            apiCallsService = apiService;
+        }
+
         public IActionResult Login()
         {
             return View();
@@ -12,6 +24,29 @@ namespace ToDoList.MvcClient.Controllers
         public IActionResult Register()
         {
             return View();
+        }
+
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> RegisterAsync(UserModel userModel)
+        {
+            await apiCallsService.AuthenticateUserAsync("User/Register", userModel);
+            return RedirectToAction("Index", "Todo");
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> LoginAsync(UserModel userModel)
+        {
+            await apiCallsService.AuthenticateUserAsync("User/Login", userModel);
+            return RedirectToAction("Index", "Todo");
+        }
+
+        public IActionResult Logout()
+        {
+            HttpContext.Response.Cookies.Delete("Token");
+            return RedirectToAction("Index", "Home");
         }
     }
 }

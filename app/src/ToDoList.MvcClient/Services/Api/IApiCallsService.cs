@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 using ToDoList.MvcClient.Models;
 
-namespace ToDoList.MvcClient.Services
+namespace ToDoList.MvcClient.Services.Api
 {
     public interface IApiCallsService
     {
@@ -13,5 +13,7 @@ namespace ToDoList.MvcClient.Services
         Task PostItemAsync<T>(string route, T item) where T : BaseModel;
         Task PutItemAsync<T>(string route, T item) where T : BaseModel;
         Task DeleteItemAsync(string route, int id);
+
+        Task AuthenticateUserAsync(string route, UserModel userModel);
     }
 }

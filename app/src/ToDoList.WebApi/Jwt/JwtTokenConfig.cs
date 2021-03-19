@@ -2,7 +2,7 @@
 
 using Microsoft.IdentityModel.Tokens;
 
-namespace ToDoList.WebApi
+namespace ToDoList.WebApi.Jwt
 {
     public class JwtTokenConfig
     {

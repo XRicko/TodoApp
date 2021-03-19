@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NetTopologySuite.Geometries;
 using ToDoList.Infrastructure.Data;
@@ -10,9 +11,10 @@ using ToDoList.Infrastructure.Data;
 namespace ToDoList.Infrastructure.Migrations
 {
     [DbContext(typeof(TodoListContext))]
-    partial class TodoListContextModelSnapshot : ModelSnapshot
+    [Migration("20210319091900_AddCompositeUniqueConstraint")]
+    partial class AddCompositeUniqueConstraint
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -161,9 +163,6 @@ namespace ToDoList.Infrastructure.Migrations
 
                     b.HasIndex("StatusId");
 
-                    b.HasIndex("Name", "ChecklistId")
-                        .IsUnique();
-
                     b.ToTable("Task");
                 });
 
@@ -179,13 +178,13 @@ namespace ToDoList.Infrastructure.Migrations
                         .HasColumnType("nvarchar(125)");
 
                     b.Property<string>("Password")
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Name", "Password")
+                    b.HasIndex("Name")
                         .IsUnique()
-                        .HasFilter("[Name] IS NOT NULL AND [Password] IS NOT NULL");
+                        .HasFilter("[Name] IS NOT NULL");
 
                     b.ToTable("User");
                 });

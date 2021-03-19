@@ -21,7 +21,7 @@ namespace ToDoList.Core.Mediator.Handlers.Generics
         public virtual async Task<Unit> Handle(AddCommand<TRequest> request, CancellationToken cancellationToken)
         {
             var entity = Mapper.Map<TEntity>(request.Request);
-            var item = await UnitOfWork.Repository.GetAsync(entity);
+            var item = await UnitOfWork.Repository.GetAsync<TEntity>(entity.Name);
 
             if (item is null)
             {

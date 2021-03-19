@@ -1,8 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 using MediatR;
 
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 using ToDoList.Core.Entities;
@@ -18,11 +23,14 @@ namespace ToDoList.WebApi.Controllers
     [ApiController]
     public class TodoItemsController : Base
     {
+        private string UserId => User.Claims.Single(x => x.Type == ClaimTypes.NameIdentifier).Value;
+
         public TodoItemsController(IMediator mediator) : base(mediator) { }
 
         [HttpGet]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IEnumerable<TodoItemResponse>> Get() =>
-            await Mediator.Send(new GetAllQuery<TodoItem, TodoItemResponse>());
+            await Mediator.Send(new GetByUserIdQuery<TodoItem, TodoItemResponse>(Convert.ToInt32(UserId)));
 
         [HttpGet("{id}")]
         public async Task<TodoItemResponse> Get(int id) =>

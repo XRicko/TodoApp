@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 using ToDoList.MvcClient.Models;
 using ToDoList.MvcClient.Services;
+using ToDoList.MvcClient.Services.Api;
 
 namespace ToDoList.MvcClient.Controllers
 {
@@ -20,11 +21,11 @@ namespace ToDoList.MvcClient.Controllers
             viewModelService = modelService;
         }
 
-        // GET: ChecklistController/Create
-        public async Task<ActionResult> CreateOrUpdateAsync(int id = 0)
+        // GET: ChecklistController/CreateOrUpdate
+        public async Task<ActionResult> CreateOrUpdateAsync(int id = 0, int userId = 0)
         {
             if (id == 0)
-                return View(new ChecklistModel());
+                return View(new ChecklistModel { UserId = userId});
 
             var checklistModel = await apiCallsService.GetItemAsync<ChecklistModel>("Checklists/" + id);
             return checklistModel is not null
@@ -32,7 +33,7 @@ namespace ToDoList.MvcClient.Controllers
                 : NotFound();
         }
 
-        // POST: ChecklistController/Create
+        // POST: ChecklistController/CreateOrUpdate
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> CreateOrUpdateAsync(ChecklistModel checklistModel)
@@ -53,16 +54,12 @@ namespace ToDoList.MvcClient.Controllers
         // POST: ChecklistController/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
+        public async Task<ActionResult> DeleteAsync(int id, IFormCollection collection)
         {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
+            await apiCallsService.DeleteItemAsync("Checklists/", id);
+            var viewModel = await viewModelService.CreateIndexViewModel();
+
+            return Json(new { html = RazorViewToStringConverter.RenderRazorViewToString(this, "_ViewAll", viewModel) });
         }
     }
 }
