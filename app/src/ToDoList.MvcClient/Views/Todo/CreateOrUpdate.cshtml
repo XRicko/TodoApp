@@ -10,7 +10,6 @@
         <form asp-action="CreateOrUpdate" asp-route-id="@Model.TodoItemModel.Id" onsubmit="return ajaxPost(this);">
             @Html.HiddenFor(m => m.TodoItemModel.Id)
             @Html.HiddenFor(m => m.TodoItemModel.ParentId)
-            @TempData[""]
 
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group required">
@@ -33,7 +32,7 @@
             <div class="form-group">
                 <label asp-for="TodoItemModel.StatusId" class="control-label">Status</label>
                 <select class="form-control" asp-for="TodoItemModel.StatusId" asp-items="@new SelectList(Model.StatusModels, nameof(StatusModel.Id), nameof(StatusModel.Name), Model.SelectedStatusId)">
-                    <option value="">Select status</option>
+                    <option value="" disabled>Select status</option>
                 </select>
                 <span asp-validation-for="TodoItemModel.StatusId" class="text-danger"></span>
             </div>

@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿
+using AutoMapper;
 
 using ToDoList.Core.Entities;
 using ToDoList.Core.Mediator.Handlers.Generics;

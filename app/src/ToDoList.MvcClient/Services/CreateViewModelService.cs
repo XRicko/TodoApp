@@ -17,10 +17,17 @@ namespace ToDoList.MvcClient.Services
 
         public async Task<IndexViewModel> CreateIndexViewModel()
         {
-            var checklistModels = await apiCallsService.GetItemsAsync<ChecklistModel>("Checklists");
-            var todoItems = await apiCallsService.GetItemsAsync<TodoItemModel>("TodoItems");
+            var activeTodoItems = await apiCallsService.GetItemsAsync<TodoItemModel>("TodoItems/GetActiveOrDone/" + false);
+            var doneTodoItems = await apiCallsService.GetItemsAsync<TodoItemModel>("TodoItems/GetActiveOrDone/" + true);
 
-            IndexViewModel viewModel = new() { ChecklistModels = checklistModels, TodoItemModels = todoItems };
+            var checklistModels = await apiCallsService.GetItemsAsync<ChecklistModel>("Checklists");
+
+            IndexViewModel viewModel = new()
+            {
+                ActiveTodoItems = activeTodoItems,
+                DoneTodoItems = doneTodoItems,
+                ChecklistModels = checklistModels
+            };
 
             return viewModel;
         }
@@ -33,9 +40,9 @@ namespace ToDoList.MvcClient.Services
 
             int selectedChecklist = todoItemModel.ChecklistId;
             int? selectedCategory = todoItemModel.CategoryId;
-            int? selectedStatus = default;
+            int selectedStatus = todoItemModel.StatusId;
 
-            if (todoItemModel.StatusId is null)
+            if (todoItemModel.StatusId is 0)
             {
                 var plannedStatus = await apiCallsService.GetItemAsync<StatusModel>("Statuses/GetByName/Planned");
                 selectedStatus = plannedStatus.Id;

@@ -57,17 +57,18 @@ namespace ToDoList.MvcClient.Controllers
         {
             if (!ModelState.IsValid)
             {
-                Json(new { isValid = false, html = RazorViewToStringConverter.RenderRazorViewToString(this, "CreateOrUpdate", createViewModel.TodoItemModel) });
+                return PartialView("CreateOrUpdate", createViewModel.TodoItemModel);
+
             }
 
             if (createViewModel.TodoItemModel.Id == 0)
                 await AddTodoItem(createViewModel.TodoItemModel);
 
             if (createViewModel.TodoItemModel.Id != 0)
-                await apiCallsService.PutItemAsync("TodoItems", createViewModel.TodoItemModel);
+                await UpdateTodoItem(createViewModel.TodoItemModel);
 
             IndexViewModel viewModel = await viewModelService.CreateIndexViewModel();
-            return Json(new { isValid = true, html = RazorViewToStringConverter.RenderRazorViewToString(this, "_ViewAll", viewModel) });
+            return PartialView("_ViewAll", viewModel);
         }
 
         [HttpPost]
@@ -76,7 +77,21 @@ namespace ToDoList.MvcClient.Controllers
             await apiCallsService.DeleteItemAsync("TodoItems/", id);
             var viewModel = await viewModelService.CreateIndexViewModel();
 
-            return Json(new { html = RazorViewToStringConverter.RenderRazorViewToString(this, "_ViewAll", viewModel) });
+            return PartialView("_ViewAll", viewModel);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> MarkTodoItemAsync(int id, bool isDone)
+        {
+            var todoItemModel = await apiCallsService.GetItemAsync<TodoItemModel>("TodoItems/" + id);
+
+            if (isDone)
+                await ChangeStatusAsync(todoItemModel, "Done");
+            else
+                await ChangeStatusAsync(todoItemModel, "Ongoing");
+
+            var viewModel = await viewModelService.CreateIndexViewModel();
+            return PartialView("_ViewAll", viewModel);
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
@@ -91,6 +106,22 @@ namespace ToDoList.MvcClient.Controllers
                 await imageAddingService.AddImageInTodoItem(todoItemModel);
 
             await apiCallsService.PostItemAsync("TodoItems", todoItemModel);
+        }
+
+        private async Task UpdateTodoItem(TodoItemModel todoItemModel)
+        {
+            if (todoItemModel.Image is not null)
+                await imageAddingService.AddImageInTodoItem(todoItemModel);
+
+            await apiCallsService.PutItemAsync("TodoItems", todoItemModel);
+        }
+
+        private async Task ChangeStatusAsync(TodoItemModel todoItemModel, string statusName)
+        {
+            var status = await apiCallsService.GetItemAsync<StatusModel>("Statuses/GetByName/" + statusName);
+            todoItemModel.StatusId = status.Id;
+
+            await apiCallsService.PutItemAsync("TodoItems", todoItemModel);
         }
     }
 }

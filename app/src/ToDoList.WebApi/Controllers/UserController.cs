@@ -29,7 +29,7 @@ namespace ToDoList.WebApi.Controllers
             var user = await Mediator.Send(new GetUserByNameAndPasswordQuery(userRequest.Name, userRequest.Password));
 
             if (user is null)
-                return Unauthorized();
+                return Unauthorized("No user found");
 
             string token = tokenGenerator.GenerateToken(user.Id, user.Name);
             return Ok(token);

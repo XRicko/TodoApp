@@ -24,10 +24,8 @@ namespace ToDoList.Core.Mediator.Handlers.Users
         public async Task<UserResponse> Handle(GetUserByNameAndPasswordQuery request, CancellationToken cancellationToken)
         {
             var users = await UnitOfWork.Repository.GetAllAsync<User>();
-            string hashPassword = PasswordHasher.Hash(request.Password, 10000);
-
             var user = users.SingleOrDefault(u => u.Name == request.Name
-                                                  && PasswordHasher.Verify(request.Password, hashPassword));
+                                                  && PasswordHasher.Verify(request.Password, u.Password));
 
             var response = Mapper.Map<UserResponse>(user);
 

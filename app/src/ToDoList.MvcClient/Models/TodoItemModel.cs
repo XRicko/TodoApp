@@ -19,7 +19,7 @@ namespace ToDoList.MvcClient.Models
         //public GeoCoordinate GeoPoint { get; set; }
 
         public int? ParentId { get; set; }
-        public int? StatusId { get; set; }
+        public int StatusId { get; set; }
         public int? CategoryId { get; set; }
         public int ChecklistId { get; set; }
         public int? ImageId { get; set; }
