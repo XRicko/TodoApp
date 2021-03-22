@@ -10,6 +10,7 @@ using ToDoList.Core.Entities;
 using ToDoList.Core.Mediator.Commands;
 using ToDoList.Core.Mediator.Handlers.Generics;
 using ToDoList.Core.Mediator.Requests;
+using ToDoList.Core.Services;
 using ToDoList.SharedKernel.Interfaces;
 
 namespace ToDoList.Core.Mediator.Handlers.Users
@@ -24,12 +25,15 @@ namespace ToDoList.Core.Mediator.Handlers.Users
         public override async Task<Unit> Handle(AddCommand<UserRequest> request, CancellationToken cancellationToken)
         {
             var users = await UnitOfWork.Repository.GetAllAsync<User>();
+            string hashPassword = PasswordHasher.Hash(request.Request.Password, 10000);
+
             var item = users.SingleOrDefault(u => u.Name == request.Request.Name
-                                                  && u.Password == request.Request.Password);
+                                                  && PasswordHasher.Verify(request.Request.Password, hashPassword));
 
             if (item is null)
             {
                 var user = Mapper.Map<User>(request.Request);
+                user.Password = hashPassword;
 
                 await UnitOfWork.Repository.AddAsync(user);
                 await UnitOfWork.SaveAsync();

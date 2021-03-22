@@ -32,7 +32,7 @@ namespace ToDoList.WebApi.Controllers
 
         [HttpGet]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        public async Task<IEnumerable<ChecklistResponse>> Get() => 
+        public async Task<IEnumerable<ChecklistResponse>> Get() =>
             await Mediator.Send(new GetByUserIdQuery<Checklist, ChecklistResponse>(Convert.ToInt32(UserId)));
 
         [HttpGet("{id}")]

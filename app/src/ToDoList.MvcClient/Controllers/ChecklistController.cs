@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -25,7 +24,7 @@ namespace ToDoList.MvcClient.Controllers
         public async Task<ActionResult> CreateOrUpdateAsync(int id = 0, int userId = 0)
         {
             if (id == 0)
-                return View(new ChecklistModel { UserId = userId});
+                return View(new ChecklistModel { UserId = userId });
 
             var checklistModel = await apiCallsService.GetItemAsync<ChecklistModel>("Checklists/" + id);
             return checklistModel is not null

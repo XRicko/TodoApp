@@ -10,6 +10,7 @@ using ToDoList.Core.Entities;
 using ToDoList.Core.Mediator.Handlers.Generics;
 using ToDoList.Core.Mediator.Queries.Users;
 using ToDoList.Core.Mediator.Response;
+using ToDoList.Core.Services;
 using ToDoList.SharedKernel.Interfaces;
 
 namespace ToDoList.Core.Mediator.Handlers.Users
@@ -23,8 +24,10 @@ namespace ToDoList.Core.Mediator.Handlers.Users
         public async Task<UserResponse> Handle(GetUserByNameAndPasswordQuery request, CancellationToken cancellationToken)
         {
             var users = await UnitOfWork.Repository.GetAllAsync<User>();
+            string hashPassword = PasswordHasher.Hash(request.Password, 10000);
+
             var user = users.SingleOrDefault(u => u.Name == request.Name
-                                                  && u.Password == request.Passsword);
+                                                  && PasswordHasher.Verify(request.Password, hashPassword));
 
             var response = Mapper.Map<UserResponse>(user);
 
