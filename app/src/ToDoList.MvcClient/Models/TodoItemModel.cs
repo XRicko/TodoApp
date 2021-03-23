@@ -4,19 +4,24 @@ using System.ComponentModel.DataAnnotations;
 
 using Microsoft.AspNetCore.Http;
 
+using ToDoList.SharedKernel;
+
 namespace ToDoList.MvcClient.Models
 {
     public class TodoItemModel : BaseModel
     {
-        [DisplayName("Start date")]
-        [DisplayFormat(DataFormatString = "{0:f}")]
         public DateTime StartDate { get; set; }
 
         [DisplayName("Due date")]
         [DisplayFormat(DataFormatString = "{0:f}")]
         public DateTime? DueDate { get; set; }
 
-        //public GeoCoordinate GeoPoint { get; set; }
+        public int DaysAgo => (DateTime.Now.Date - StartDate.Date).Days;
+
+        public GeoCoordinate GeoPoint { get; set; }
+
+        public string Latitude { get; set; }
+        public string Longitude { get; set; }
 
         public int? ParentId { get; set; }
         public int StatusId { get; set; }

@@ -74,3 +74,15 @@ body {
     content: "*";
     color: red;
 }
+
+@media (max-width:990px) {
+    .card-columns {
+        column-count: 1;
+    }
+}
+
+@media (min-width:991px) {
+    .card-columns {
+        column-count: 2;
+    }
+}

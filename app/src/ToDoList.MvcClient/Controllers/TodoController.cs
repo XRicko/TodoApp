@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Globalization;
 using System.Threading.Tasks;
 
 using Microsoft.AspNetCore.Http;
@@ -46,6 +47,12 @@ namespace ToDoList.MvcClient.Controllers
             var todoItemModel = await apiCallsService.GetItemAsync<TodoItemModel>("TodoItems/" + todoItemId);
             todoItemModel.ChecklistId = checklistId;
 
+            if (todoItemModel.GeoPoint is not null)
+            {
+                todoItemModel.Latitude = todoItemModel.GeoPoint.Latitude.ToString();
+                todoItemModel.Longitude = todoItemModel.GeoPoint.Longitude.ToString();
+            }
+
             return todoItemModel is not null
                 ? View(await viewModelService.CreateViewModelCreateOrUpdateTodoItem(todoItemModel))
                 : NotFound();
@@ -58,13 +65,11 @@ namespace ToDoList.MvcClient.Controllers
             if (!ModelState.IsValid)
                 return PartialView("CreateOrUpdate", createViewModel.TodoItemModel);
 
-            if (createViewModel.TodoItemModel.CategoryName is not null)
-            {
-                await apiCallsService.PostItemAsync("Categories", new CategoryModel { Name = createViewModel.TodoItemModel.CategoryName });
+            if (LatLongExists(createViewModel.TodoItemModel))
+                AddGeoPoint(createViewModel.TodoItemModel);
 
-                var category = await apiCallsService.GetItemAsync<CategoryModel>("Categories/GetByName/" + createViewModel.TodoItemModel.CategoryName);
-                createViewModel.TodoItemModel.CategoryId = category.Id;
-            }
+            if (createViewModel.TodoItemModel.CategoryName is not null)
+                await AddCategory(createViewModel.TodoItemModel);
 
             if (createViewModel.TodoItemModel.Id == 0)
                 await AddTodoItem(createViewModel.TodoItemModel);
@@ -105,6 +110,36 @@ namespace ToDoList.MvcClient.Controllers
 
         public IActionResult Privacy() => View();
 
+        private async Task ChangeStatusAsync(TodoItemModel todoItemModel, string statusName)
+        {
+            var status = await apiCallsService.GetItemAsync<StatusModel>("Statuses/GetByName/" + statusName);
+            todoItemModel.StatusId = status.Id;
+
+            await apiCallsService.PutItemAsync("TodoItems", todoItemModel);
+        }
+        
+        private static void AddGeoPoint(TodoItemModel todoItemModel)
+        {
+            double latitude = double.Parse(todoItemModel.Latitude, CultureInfo.InvariantCulture);
+            double longitude = double.Parse(todoItemModel.Longitude, CultureInfo.InvariantCulture);
+
+            todoItemModel.GeoPoint = new(longitude, latitude);
+        }
+
+        private async Task AddCategory(TodoItemModel todoItemModel)
+        {
+            await apiCallsService.PostItemAsync("Categories", new CategoryModel { Name = todoItemModel.CategoryName });
+
+            var category = await apiCallsService.GetItemAsync<CategoryModel>("Categories/GetByName/" + todoItemModel.CategoryName);
+            todoItemModel.CategoryId = category.Id;
+        }
+
+        private static bool LatLongExists(TodoItemModel todoItemModel)
+        {
+            return !string.IsNullOrWhiteSpace(todoItemModel.Latitude)
+                   && !string.IsNullOrWhiteSpace(todoItemModel.Latitude);
+        }
+
         private async Task AddTodoItem(TodoItemModel todoItemModel)
         {
             if (todoItemModel.Image is not null)
@@ -117,14 +152,6 @@ namespace ToDoList.MvcClient.Controllers
         {
             if (todoItemModel.Image is not null)
                 await imageAddingService.AddImageInTodoItem(todoItemModel);
-
-            await apiCallsService.PutItemAsync("TodoItems", todoItemModel);
-        }
-
-        private async Task ChangeStatusAsync(TodoItemModel todoItemModel, string statusName)
-        {
-            var status = await apiCallsService.GetItemAsync<StatusModel>("Statuses/GetByName/" + statusName);
-            todoItemModel.StatusId = status.Id;
 
             await apiCallsService.PutItemAsync("TodoItems", todoItemModel);
         }

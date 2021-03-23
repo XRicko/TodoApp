@@ -68,7 +68,7 @@ namespace ToDoList.MvcClient.Services.Api
             string tokenJson = await response.Content.ReadAsStringAsync();
             string token = JsonSerializer.Deserialize<string>(tokenJson);
 
-            httpContext.Response.Cookies.Append("Token", token);
+            httpContext.Response.Cookies.Append("Token", token, new CookieOptions { Expires = DateTime.Now.AddHours(3)});
         }
 
         private static void ValidateStatusCode(HttpResponseMessage response)
