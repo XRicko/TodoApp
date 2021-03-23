@@ -56,9 +56,14 @@ namespace ToDoList.MvcClient.Controllers
         public async Task<ActionResult> CreateOrUpdateAsync(CreateViewModel createViewModel)
         {
             if (!ModelState.IsValid)
-            {
                 return PartialView("CreateOrUpdate", createViewModel.TodoItemModel);
 
+            if (createViewModel.TodoItemModel.CategoryName is not null)
+            {
+                await apiCallsService.PostItemAsync("Categories", new CategoryModel { Name = createViewModel.TodoItemModel.CategoryName });
+
+                var category = await apiCallsService.GetItemAsync<CategoryModel>("Categories/GetByName/" + createViewModel.TodoItemModel.CategoryName);
+                createViewModel.TodoItemModel.CategoryId = category.Id;
             }
 
             if (createViewModel.TodoItemModel.Id == 0)

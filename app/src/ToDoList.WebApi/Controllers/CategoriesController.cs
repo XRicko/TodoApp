@@ -27,6 +27,11 @@ namespace ToDoList.WebApi.Controllers
         public async Task<CategoryResponse> Get(int id) =>
             await Mediator.Send(new GetByIdQuery<Category, CategoryResponse>(id));
 
+        [HttpGet]
+        [Route("[action]/{name}")]
+        public async Task<CategoryResponse> GetByName(string name) =>
+           await Mediator.Send(new GetByNameQuery<Category, CategoryResponse>(name));
+
         [HttpPost]
         public async Task Add([FromBody] CategoryCreateRequest createRequest) =>
             await Mediator.Send(new AddCommand<CategoryCreateRequest>(createRequest));
