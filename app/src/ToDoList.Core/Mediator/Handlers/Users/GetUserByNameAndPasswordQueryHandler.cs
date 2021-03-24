@@ -15,7 +15,7 @@ using ToDoList.SharedKernel.Interfaces;
 
 namespace ToDoList.Core.Mediator.Handlers.Users
 {
-    internal class GetUserByNameAndPasswordQueryHandler : HandlerBase, IRequestHandler<GetUserByNameAndPasswordQuery, UserResponse>
+    public class GetUserByNameAndPasswordQueryHandler : HandlerBase, IRequestHandler<GetUserByNameAndPasswordQuery, UserResponse>
     {
         public GetUserByNameAndPasswordQueryHandler(IUnitOfWork unitOfWork, IMapper mapper) : base(unitOfWork, mapper)
         {

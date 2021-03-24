@@ -12,7 +12,7 @@ using ToDoList.SharedKernel.Interfaces;
 
 namespace ToDoList.Core.Mediator.Handlers.Checklists
 {
-    internal class RemoveChecklistCommandHandler : RemoveCommandHandler<Checklist>
+    public class RemoveChecklistCommandHandler : RemoveCommandHandler<Checklist>
     {
         public RemoveChecklistCommandHandler(IUnitOfWork unitOfWork, IMapper mapper) : base(unitOfWork, mapper)
         {
@@ -22,7 +22,6 @@ namespace ToDoList.Core.Mediator.Handlers.Checklists
         public override async Task<Unit> Handle(RemoveCommand<Checklist> request, CancellationToken cancellationToken)
         {
             var checklist = await UnitOfWork.Repository.GetAsync<Checklist>(request.Id);
-
 
             if (checklist is not null && checklist.Name != "Untitled")
             {

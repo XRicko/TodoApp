@@ -6,7 +6,7 @@ using ToDoList.SharedKernel.Interfaces;
 
 namespace ToDoList.Core.Mediator.Handlers.Generics
 {
-    internal abstract class HandlerBase
+    public abstract class HandlerBase
     {
         protected IUnitOfWork UnitOfWork { get; }
         protected IMapper Mapper { get; }

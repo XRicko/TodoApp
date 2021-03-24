@@ -11,7 +11,7 @@ using ToDoList.SharedKernel;
 
 namespace ToDoList.Core.MappingProfiles
 {
-    internal class EntityToDtoMappingProfile : Profile
+    public class EntityToDtoMappingProfile : Profile
     {
         public EntityToDtoMappingProfile()
         {
@@ -37,7 +37,6 @@ namespace ToDoList.Core.MappingProfiles
 
             CreateMap<Image, ImageResponse>();
             CreateMap<ImageCreateRequest, Image>();
-            CreateMap<ImageUpdateRequest, Image>();
 
             CreateMap<Category, CategoryResponse>();
             CreateMap<CategoryCreateRequest, Category>();

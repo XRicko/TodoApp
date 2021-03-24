@@ -14,7 +14,7 @@ using ToDoList.SharedKernel.Interfaces;
 
 namespace ToDoList.Core.Mediator.Handlers.TodoItems
 {
-    internal class AddTodoItemCommandHandler : AddCommandHandler<TodoItemCreateRequest, TodoItem>
+    public class AddTodoItemCommandHandler : AddCommandHandler<TodoItemCreateRequest, TodoItem>
     {
         public AddTodoItemCommandHandler(IUnitOfWork unitOfWork, IMapper mapper) : base(unitOfWork, mapper)
         {

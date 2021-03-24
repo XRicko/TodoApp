@@ -8,7 +8,7 @@ namespace ToDoList.Core.Services
         private const int SaltSize = 16;
         private const int HashSize = 20;
 
-        public static string Hash(string password, int iterations)
+        public static string Hash(string password, int iterations = 10000)
         {
             byte[] salt;
             new RNGCryptoServiceProvider().GetBytes(salt = new byte[SaltSize]);

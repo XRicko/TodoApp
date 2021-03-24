@@ -7,7 +7,7 @@ using ToDoList.SharedKernel.Interfaces;
 
 namespace ToDoList.Core.Mediator.Handlers.Categories
 {
-    internal class AddCategoryCommandHandler : AddCommandHandler<CategoryCreateRequest, Category>
+    public class AddCategoryCommandHandler : AddCommandHandler<CategoryCreateRequest, Category>
     {
         public AddCategoryCommandHandler(IUnitOfWork unitOfWork, IMapper mapper) : base(unitOfWork, mapper)
         {

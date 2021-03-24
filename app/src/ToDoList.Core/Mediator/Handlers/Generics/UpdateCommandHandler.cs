@@ -12,7 +12,7 @@ using ToDoList.SharedKernel.Interfaces;
 
 namespace ToDoList.Core.Mediator.Handlers.Generics
 {
-    internal class UpdateCommandHandler<TRequest, TEntity> : HandlerBase, IRequestHandler<UpdateCommand<TRequest>>
+    public class UpdateCommandHandler<TRequest, TEntity> : HandlerBase, IRequestHandler<UpdateCommand<TRequest>>
         where TRequest : BaseRequest
         where TEntity : BaseEntity
     {

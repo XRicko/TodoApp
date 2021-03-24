@@ -6,7 +6,7 @@ namespace ToDoList.SharedKernel
     {
         private string name;
 
-        public int Id { get; private set; }
+        public int Id { get; set; }
         public string Name
         {
             get => name;

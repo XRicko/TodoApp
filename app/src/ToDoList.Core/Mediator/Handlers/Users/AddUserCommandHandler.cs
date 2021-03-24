@@ -15,7 +15,7 @@ using ToDoList.SharedKernel.Interfaces;
 
 namespace ToDoList.Core.Mediator.Handlers.Users
 {
-    internal class AddUserCommandHandler : AddCommandHandler<UserRequest, User>
+    public class AddUserCommandHandler : AddCommandHandler<UserRequest, User>
     {
         public AddUserCommandHandler(IUnitOfWork unitOfWork, IMapper mapper) : base(unitOfWork, mapper)
         {

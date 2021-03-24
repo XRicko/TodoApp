@@ -8,9 +8,9 @@ namespace ToDoList.Core.Mediator.Commands
     {
         public TRequest Request { get; set; }
 
-        public UpdateCommand(TRequest entity)
+        public UpdateCommand(TRequest request)
         {
-            Request = entity;
+            Request = request;
         }
     }
 }

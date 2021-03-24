@@ -24,10 +24,6 @@ namespace ToDoList.WebApi.Controllers
         public async Task<IEnumerable<StatusResponse>> Get() =>
             await Mediator.Send(new GetAllQuery<Status, StatusResponse>());
 
-        [HttpGet("{id}")]
-        public async Task<StatusResponse> Get(int id) =>
-            await Mediator.Send(new GetByIdQuery<Status, StatusResponse>(id));
-
         [HttpGet]
         [Route("[action]/{name}")]
         public async Task<StatusResponse> GetByName(string name) =>

@@ -16,7 +16,7 @@ using ToDoList.SharedKernel.Interfaces;
 
 namespace ToDoList.Core.Mediator.Handlers.TodoItems
 {
-    internal class GetActiveOrDoneTodoItemsByUserQueryHandler : HandlerBase, IRequestHandler<GetActiveOrDoneTodoItemsByUserQuery, IEnumerable<TodoItemResponse>>
+    public class GetActiveOrDoneTodoItemsByUserQueryHandler : HandlerBase, IRequestHandler<GetActiveOrDoneTodoItemsByUserQuery, IEnumerable<TodoItemResponse>>
     {
         private readonly ICreateWithAddressService createWithAddressService;
 

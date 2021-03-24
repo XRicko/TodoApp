@@ -36,10 +36,6 @@ namespace ToDoList.WebApi.Controllers
         public async Task<IEnumerable<ChecklistResponse>> Get() =>
             await Mediator.Send(new GetChecklistsByUserIdQuery(Convert.ToInt32(UserId)));
 
-        [HttpGet("{id}")]
-        public async Task<ChecklistResponse> Get(int id) =>
-            await Mediator.Send(new GetByIdQuery<Checklist, ChecklistResponse>(id));
-
         [HttpPost]
         public async Task Add([FromBody] ChecklistCreateRequest createRequest) =>
             await Mediator.Send(new AddCommand<ChecklistCreateRequest>(createRequest));
