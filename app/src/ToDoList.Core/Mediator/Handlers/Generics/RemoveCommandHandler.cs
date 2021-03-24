@@ -16,9 +16,9 @@ namespace ToDoList.Core.Mediator.Handlers.Generics
     {
         public RemoveCommandHandler(IUnitOfWork unitOfWork, IMapper mapper) : base(unitOfWork, mapper) { }
 
-        public async Task<Unit> Handle(RemoveCommand<TEntity> request, CancellationToken cancellationToken)
+        public virtual async Task<Unit> Handle(RemoveCommand<TEntity> request, CancellationToken cancellationToken)
         {
-            TEntity entity = await UnitOfWork.Repository.GetAsync<TEntity>(request.Id);
+            var entity = await UnitOfWork.Repository.GetAsync<TEntity>(request.Id);
 
             if (entity is not null)
             {

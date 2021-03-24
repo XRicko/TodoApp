@@ -1,15 +1,19 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
-
-using AutoMapper;
 
 using MediatR;
 
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 using ToDoList.Core.Entities;
 using ToDoList.Core.Mediator.Commands;
-using ToDoList.Core.Mediator.Queries;
+using ToDoList.Core.Mediator.Queries.Generics;
+using ToDoList.Core.Mediator.Queries.TodoItems;
 using ToDoList.Core.Mediator.Requests.Create;
 using ToDoList.Core.Mediator.Requests.Update;
 using ToDoList.Core.Mediator.Response;
@@ -20,11 +24,15 @@ namespace ToDoList.WebApi.Controllers
     [ApiController]
     public class TodoItemsController : Base
     {
-        public TodoItemsController(IMediator mediator, IMapper mapper) : base(mediator, mapper) { }
+        private string UserId => User.Claims.Single(x => x.Type == ClaimTypes.NameIdentifier).Value;
+
+        public TodoItemsController(IMediator mediator) : base(mediator) { }
 
         [HttpGet]
-        public async Task<IEnumerable<TodoItemResponse>> Get() =>
-            await Mediator.Send(new GetAllQuery<TodoItem, TodoItemResponse>());
+        [Route("[action]/{isDone}")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        public async Task<IEnumerable<TodoItemResponse>> GetActiveOrDone(bool isDone) =>
+            await Mediator.Send(new GetActiveOrDoneTodoItemsByUserQuery(Convert.ToInt32(UserId), isDone));
 
         [HttpGet("{id}")]
         public async Task<TodoItemResponse> Get(int id) =>

@@ -1,14 +1,12 @@
 ﻿using System.Threading.Tasks;
 
-using AutoMapper;
-
 using MediatR;
 
 using Microsoft.AspNetCore.Mvc;
 
 using ToDoList.Core.Entities;
 using ToDoList.Core.Mediator.Commands;
-using ToDoList.Core.Mediator.Queries;
+using ToDoList.Core.Mediator.Queries.Generics;
 using ToDoList.Core.Mediator.Requests.Create;
 using ToDoList.Core.Mediator.Requests.Update;
 using ToDoList.Core.Mediator.Response;
@@ -19,7 +17,7 @@ namespace ToDoList.WebApi.Controllers
     [ApiController]
     public class ImagesController : Base
     {
-        public ImagesController(IMediator mediator, IMapper mapper) : base(mediator, mapper)
+        public ImagesController(IMediator mediator) : base(mediator)
         {
 
         }
@@ -27,6 +25,11 @@ namespace ToDoList.WebApi.Controllers
         [HttpGet("{id}")]
         public async Task<ImageResponse> Get(int id) =>
             await Mediator.Send(new GetByIdQuery<Image, ImageResponse>(id));
+
+        [HttpGet]
+        [Route("[action]/{name}")]
+        public async Task<ImageResponse> GetByName(string name) =>
+          await Mediator.Send(new GetByNameQuery<Image, ImageResponse>(name));
 
         [HttpPost]
         public async Task Add([FromBody] ImageCreateRequest createRequest) =>

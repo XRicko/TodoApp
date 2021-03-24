@@ -5,21 +5,21 @@ using ToDoList.Core.Mediator.Response;
 
 namespace ToDoList.Core.Services
 {
-    public class CreateTodoItemResponseWithAddressService : ICreateTodoItemResponseWithAddressService
+    public class CreateWithAddressService : ICreateWithAddressService
     {
         private readonly IGeocodingService geocodingService;
 
-        public CreateTodoItemResponseWithAddressService(IGeocodingService service)
+        public CreateWithAddressService(IGeocodingService service)
         {
             geocodingService = service;
         }
 
-        public async Task<TodoItemResponse> GetTodoItemResponseWithAddress(TodoItemResponse todoItemResponse)
+        public async Task<TodoItemResponse> GetItemWithAddressAsync(TodoItemResponse todoItemResponse)
         {
             if (todoItemResponse.GeoPoint is not null)
             {
                 string address = await geocodingService.GetAddressAsync(todoItemResponse.GeoPoint.Latitude, todoItemResponse.GeoPoint.Longitude);
-                TodoItemResponse todoItemResponseWithAddress = todoItemResponse with { Address = address };
+                var todoItemResponseWithAddress = todoItemResponse with { Address = address };
 
                 return todoItemResponseWithAddress;
             }
@@ -27,16 +27,13 @@ namespace ToDoList.Core.Services
             return todoItemResponse;
         }
 
-        public async Task<IEnumerable<TodoItemResponse>> GetTodoItemResponsesWithAddress(IEnumerable<TodoItemResponse> todoItemResponses)
+        public async Task<IEnumerable<TodoItemResponse>> GetItemsWithAddressAsync(IEnumerable<TodoItemResponse> todoItemResponses)
         {
             List<TodoItemResponse> todoItemResponsesWithAddress = new();
 
             foreach (var item in todoItemResponses)
             {
-                if (item.GeoPoint is not null)
-                    todoItemResponsesWithAddress.Add(await GetTodoItemResponseWithAddress(item));
-                else
-                    todoItemResponsesWithAddress.Add(item);
+                todoItemResponsesWithAddress.Add(await GetItemWithAddressAsync(item));
             }
 
             return todoItemResponsesWithAddress;

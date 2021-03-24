@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 using AutoMapper;
@@ -22,12 +23,16 @@ namespace ToDoList.Core.Mediator.Handlers.TodoItems
 
         public override async Task<Unit> Handle(AddCommand<TodoItemCreateRequest> request, CancellationToken cancellationToken)
         {
-            var entity = Mapper.Map<TodoItem>(request.Request);
-            var todoItem = await UnitOfWork.Repository.GetAsync(entity);
+            var todoItems = await UnitOfWork.Repository.GetAllAsync<TodoItem>();
+            var todoItem = todoItems.SingleOrDefault(e => e.Name == request.Request.Name
+                                                          && e.ChecklistId == request.Request.ChecklistId);
 
             if (todoItem is null)
             {
-                todoItem.GeoPoint.SRID = 4326;
+                var entity = Mapper.Map<TodoItem>(request.Request);
+
+                if (entity.GeoPoint is not null)
+                    entity.GeoPoint.SRID = 4326;
 
                 await UnitOfWork.Repository.AddAsync(entity);
                 await UnitOfWork.SaveAsync();

@@ -6,7 +6,7 @@ using ToDoList.SharedKernel.Interfaces;
 
 namespace ToDoList.Core.Mediator.Handlers.Images
 {
-    class RemoveImageCommandHandler : RemoveCommandHandler<Image>
+    internal class RemoveImageCommandHandler : RemoveCommandHandler<Image>
     {
         public RemoveImageCommandHandler(IUnitOfWork unitOfWork, IMapper mapper) : base(unitOfWork, mapper)
         {
