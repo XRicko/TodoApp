@@ -1,13 +1,19 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
+
+using Microsoft.AspNetCore.Http;
 
 using Moq;
 
 using ToDoList.Core.Entities;
 using ToDoList.Core.Mediator.Commands;
+using ToDoList.Core.Mediator.Queries.TodoItems;
 using ToDoList.Core.Mediator.Requests.Create;
 using ToDoList.Core.Mediator.Requests.Update;
+using ToDoList.Core.Mediator.Response;
 using ToDoList.WebApi.Controllers;
 
 using Xunit;
@@ -21,6 +27,18 @@ namespace ToDoList.UnitTests.WebApi.Controllers
         public TodoItemsControllerTests() : base()
         {
             todoItemsController = new TodoItemsController(MediatorMock.Object);
+        }
+
+        [Fact]
+        public async Task Get_ReturnsListOfActiveTodoItemResponsesByUser()
+        {
+            await TestGet(4, false);
+        }
+
+        [Fact]
+        public async Task Get_ReturnsListOfDoneTodoItemResponsesByUser()
+        {
+            await TestGet(2, true);
         }
 
         [Fact]
@@ -66,6 +84,25 @@ namespace ToDoList.UnitTests.WebApi.Controllers
 
             // Assert
             MediatorMock.Verify();
+        }
+
+        private async Task TestGet(int userId, bool isDone)
+        {
+            var contextMock = new Mock<HttpContext>();
+            todoItemsController.ControllerContext.HttpContext = contextMock.Object;
+
+            var claims = new List<Claim> { new Claim(ClaimTypes.NameIdentifier, userId.ToString()) };
+
+            contextMock.SetupGet(x => x.User.Claims)
+                       .Returns(claims);
+
+            // Act
+            var actual = await todoItemsController.GetActiveOrDone(isDone);
+
+            // Assert
+            MediatorMock.Verify(x => x.Send(It.Is<GetActiveOrDoneTodoItemsByUserQuery>(q => q.UserId == userId
+                                                                                           && q.IsDone == isDone), 
+                                            It.IsAny<CancellationToken>()), Times.Once);
         }
     }
 }

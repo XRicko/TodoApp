@@ -18,7 +18,7 @@ namespace ToDoList.UnitTests.Core.Handlers.Users
     {
         private readonly AddUserCommandHandler addUserHandler;
 
-        private readonly string userName;
+        private readonly string username;
         private readonly string password;
         private readonly string hashedPassword;
 
@@ -26,7 +26,7 @@ namespace ToDoList.UnitTests.Core.Handlers.Users
         {
             addUserHandler = new AddUserCommandHandler(UnitOfWorkMock.Object, Mapper);
 
-            userName = "admin";
+            username = "admin";
             password = "qwerty";
             hashedPassword = PasswordHasher.Hash(password);
         }
@@ -57,7 +57,7 @@ namespace ToDoList.UnitTests.Core.Handlers.Users
         public async Task DoesntAddUserGivenExisting()
         {
             // Arrange
-            var existingUser = new UserRequest(userName, hashedPassword);
+            var existingUser = new UserRequest(username, hashedPassword);
             var users = GetSampleUsers();
 
             RepoMock.Setup(x => x.GetAllAsync<User>())
@@ -79,7 +79,7 @@ namespace ToDoList.UnitTests.Core.Handlers.Users
         {
             return new List<User>
             {
-                new User { Name = userName, Password = PasswordHasher.Hash(password) },
+                new User { Name = username, Password = PasswordHasher.Hash(password) },
                 new User { Name = "qwerty", Password = PasswordHasher.Hash("admin") },
                 new User { Name = "anonim", Password = PasswordHasher.Hash("123456") },
                 new User { Name = "anonim", Password = PasswordHasher.Hash("asjdnj") }

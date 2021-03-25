@@ -17,14 +17,14 @@ namespace ToDoList.UnitTests.Core.Handlers.Users
     {
         private readonly GetUserByNameAndPasswordQueryHandler getUserByNameAndPasswordHandler;
 
-        private readonly string userName;
+        private readonly string username;
         private readonly string password;
 
         public GetUserByNameAndPasswordQueryHandlerTests() : base()
         {
             getUserByNameAndPasswordHandler = new GetUserByNameAndPasswordQueryHandler(UnitOfWorkMock.Object, Mapper);
 
-            userName = "admin";
+            username = "admin";
             password = "qwerty";
         }
 
@@ -38,10 +38,10 @@ namespace ToDoList.UnitTests.Core.Handlers.Users
                   .ReturnsAsync(users);
 
             // Act
-            var actual = await getUserByNameAndPasswordHandler.Handle(new GetUserByNameAndPasswordQuery(userName, password), new CancellationToken());
+            var actual = await getUserByNameAndPasswordHandler.Handle(new GetUserByNameAndPasswordQuery(username, password), new CancellationToken());
 
             // Assert
-            Assert.Equal(userName, actual.Name);
+            Assert.Equal(username, actual.Name);
             Assert.True(PasswordHasher.Verify(password, actual.Password));
 
             RepoMock.Verify(x => x.GetAllAsync<User>(), Times.Once);
@@ -57,7 +57,7 @@ namespace ToDoList.UnitTests.Core.Handlers.Users
                  .ReturnsAsync(users);
 
             // Act
-            var actual = await getUserByNameAndPasswordHandler.Handle(new GetUserByNameAndPasswordQuery(userName, "ivalid_credentials"), new CancellationToken());
+            var actual = await getUserByNameAndPasswordHandler.Handle(new GetUserByNameAndPasswordQuery(username, "ivalid_credentials"), new CancellationToken());
 
             // Assert
             Assert.Null(actual);
@@ -68,7 +68,7 @@ namespace ToDoList.UnitTests.Core.Handlers.Users
         {
             return new List<User>
             {
-                new User { Name = userName, Password = PasswordHasher.Hash(password) },
+                new User { Name = username, Password = PasswordHasher.Hash(password) },
                 new User { Name = "qwerty", Password = PasswordHasher.Hash("admin") },
                 new User { Name = "anonim", Password = PasswordHasher.Hash("123456") },
                 new User { Name = "anonim", Password = PasswordHasher.Hash(password) }
