@@ -1,4 +1,6 @@
-﻿using AutoMapper;
+﻿using System.Diagnostics.CodeAnalysis;
+
+using AutoMapper;
 
 using ToDoList.Core.Entities;
 using ToDoList.Core.Mediator.Handlers.Generics;
@@ -9,6 +11,7 @@ namespace ToDoList.Core.Mediator.Handlers.Images
 {
     internal class GetImageByNameQueryHandler : GetByNameQueryHandler<Image, ImageResponse>
     {
+        [ExcludeFromCodeCoverage]
         public GetImageByNameQueryHandler(IUnitOfWork unitOfWork, IMapper mapper) : base(unitOfWork, mapper)
         {
 

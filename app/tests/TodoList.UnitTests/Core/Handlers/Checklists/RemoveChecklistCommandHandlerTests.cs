@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -13,7 +10,7 @@ using ToDoList.Core.Mediator.Handlers.Checklists;
 
 using Xunit;
 
-namespace Core.Handlers.Checklists
+namespace ToDoList.UnitTests.Core.Handlers.Checklists
 {
     public class RemoveChecklistCommandHandlerTests : HandlerBaseForTests
     {

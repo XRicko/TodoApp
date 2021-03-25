@@ -1,4 +1,6 @@
 ﻿
+using System.Diagnostics.CodeAnalysis;
+
 using AutoMapper;
 
 using ToDoList.Core.Entities;
@@ -10,6 +12,7 @@ namespace ToDoList.Core.Mediator.Handlers.Statuses
 {
     internal class GetStatusByNameQueryHandler : GetByNameQueryHandler<Status, StatusResponse>
     {
+        [ExcludeFromCodeCoverage]
         public GetStatusByNameQueryHandler(IUnitOfWork unitOfWork, IMapper mapper) : base(unitOfWork, mapper)
         {
         }

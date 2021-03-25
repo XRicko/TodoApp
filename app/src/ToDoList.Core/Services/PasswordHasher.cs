@@ -25,11 +25,6 @@ namespace ToDoList.Core.Services
             return string.Format("$MYHASH$V1${0}${1}", iterations, base64Hash);
         }
 
-        private static bool IsHashSupported(string hashString)
-        {
-            return hashString.Contains("$MYHASH$V1$");
-        }
-
         public static bool Verify(string password, string hashedPassword)
         {
             if (!IsHashSupported(hashedPassword))
@@ -54,6 +49,11 @@ namespace ToDoList.Core.Services
             }
 
             return true;
+        }
+
+        private static bool IsHashSupported(string hashString)
+        {
+            return hashString.Contains("$MYHASH$V1$");
         }
     }
 }

@@ -11,7 +11,7 @@ using ToDoList.Core.Mediator.Response;
 
 using Xunit;
 
-namespace Core.Handlers.Generic
+namespace ToDoList.UnitTests.Core.Handlers.Generic
 {
     public class GetAllQueryHandlderTests : HandlerBaseForTests
     {

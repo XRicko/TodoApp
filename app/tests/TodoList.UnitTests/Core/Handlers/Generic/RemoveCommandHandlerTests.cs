@@ -9,7 +9,7 @@ using ToDoList.Core.Mediator.Handlers.TodoItems;
 
 using Xunit;
 
-namespace Core.Handlers.Generic
+namespace ToDoList.UnitTests.Core.Handlers.Generic
 {
     public class RemoveCommandHandlerTests : HandlerBaseForTests
     {

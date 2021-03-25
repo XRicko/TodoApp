@@ -11,7 +11,7 @@ using ToDoList.Core.Mediator.Requests.Create;
 
 using Xunit;
 
-namespace Core.Handlers.Checklists
+namespace ToDoList.UnitTests.Core.Handlers.Checklists
 {
     public class AddChecklistCommandHandlerTests : HandlerBaseForTests
     {

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 
 using Moq;
@@ -10,12 +6,11 @@ using Moq;
 using ToDoList.Core.Entities;
 using ToDoList.Core.Mediator.Commands;
 using ToDoList.Core.Mediator.Handlers.Checklists;
-using ToDoList.Core.Mediator.Handlers.TodoItems;
 using ToDoList.Core.Mediator.Requests.Update;
 
 using Xunit;
 
-namespace Core.Handlers.Generic
+namespace ToDoList.UnitTests.Core.Handlers.Generic
 {
     public class UpdateCommandHandlerTest : HandlerBaseForTests
     {

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -14,7 +11,7 @@ using ToDoList.Core.Mediator.Requests.Create;
 
 using Xunit;
 
-namespace Core.Handlers.TodoItems
+namespace ToDoList.UnitTests.Core.Handlers.TodoItems
 {
     public class AddTodoItemCommandHandlerTests : HandlerBaseForTests
     {
@@ -33,7 +30,7 @@ namespace Core.Handlers.TodoItems
         public async Task AddsTodoItemGivenNew()
         {
             // Arrange
-            var newRequest = new TodoItemCreateRequest(name, 3, DateTime.Now, null, null, 1, null, null);
+            var newRequest = new TodoItemCreateRequest(name, 3, 1);
             var todoItems = GetSampleTodoItems();
 
 
@@ -51,11 +48,11 @@ namespace Core.Handlers.TodoItems
             UnitOfWorkMock.Verify(x => x.SaveAsync(), Times.Once);
         }
 
-       [Fact]
+        [Fact]
         public async Task DoesntAddTodoItemGivenExisting()
         {
             // Arrange
-            var existingRequest = new TodoItemCreateRequest(name, 2, DateTime.Now, null, null, 1, null, null);
+            var existingRequest = new TodoItemCreateRequest(name, 2, 2);
             var todoItems = GetSampleTodoItems();
 
             RepoMock.Setup(x => x.GetAllAsync<TodoItem>())

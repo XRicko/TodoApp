@@ -1,3 +1,5 @@
+using System.Diagnostics.CodeAnalysis;
+
 using MediatR;
 
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -18,6 +20,7 @@ using ToDoList.WebApi.Jwt;
 
 namespace ToDoList.WebApi
 {
+    [ExcludeFromCodeCoverage]
     public class Startup
     {
         public Startup(IConfiguration configuration)

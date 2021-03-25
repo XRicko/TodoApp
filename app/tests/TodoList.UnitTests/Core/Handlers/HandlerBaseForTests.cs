@@ -5,12 +5,12 @@ using Moq;
 using ToDoList.Core.MappingProfiles;
 using ToDoList.SharedKernel.Interfaces;
 
-namespace Core.Handlers
+namespace ToDoList.UnitTests.Core.Handlers
 {
     public abstract class HandlerBaseForTests
     {
-        protected Mock<IRepository> RepoMock { get; private set; }
-        protected Mock<IUnitOfWork> UnitOfWorkMock { get; private set; }
+        protected Mock<IRepository> RepoMock { get; }
+        protected Mock<IUnitOfWork> UnitOfWorkMock { get; }
 
         protected IMapper Mapper { get; private set; }
 

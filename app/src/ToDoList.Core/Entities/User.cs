@@ -1,9 +1,11 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 using ToDoList.SharedKernel;
 
 namespace ToDoList.Core.Entities
 {
+    [ExcludeFromCodeCoverage]
     public class User : BaseEntity
     {
         public User() : base()

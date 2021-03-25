@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 
 using Moq;
@@ -14,7 +10,7 @@ using ToDoList.Core.Mediator.Response;
 
 using Xunit;
 
-namespace Core.Handlers.Generic
+namespace ToDoList.UnitTests.Core.Handlers.Generic
 {
     public class GetByNameQueryHandlerTests : HandlerBaseForTests
     {

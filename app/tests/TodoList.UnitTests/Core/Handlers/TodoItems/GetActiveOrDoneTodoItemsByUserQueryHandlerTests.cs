@@ -13,7 +13,7 @@ using ToDoList.Core.Services;
 
 using Xunit;
 
-namespace Core.Handlers.TodoItems
+namespace ToDoList.UnitTests.Core.Handlers.TodoItems
 {
     public class GetActiveOrDoneTodoItemsByUserQueryHandlerTests : HandlerBaseForTests
     {
@@ -43,10 +43,10 @@ namespace Core.Handlers.TodoItems
         {
             // Arrange
             var todoItems = GetSampleTodoItems();
-            var activeTodoItems = todoItems.Where(i => i.Checklist.UserId == 1
+            var activeOrDoneTodoItems = todoItems.Where(i => i.Checklist.UserId == 1
                                                        && i.Status.IsDone == isDone);
 
-            var responses = Mapper.Map<IEnumerable<TodoItemResponse>>(activeTodoItems);
+            var responses = Mapper.Map<IEnumerable<TodoItemResponse>>(activeOrDoneTodoItems);
             var expected = GetWithAddress(responses);
 
             RepoMock.Setup(x => x.GetAllAsync<TodoItem>())
@@ -56,7 +56,7 @@ namespace Core.Handlers.TodoItems
                               .ReturnsAsync(expected);
 
             // Act
-            var actual = await getTodoItemsHandler.Handle(new GetActiveOrDoneTodoItemsByUserQuery(1, false), new CancellationToken());
+            var actual = await getTodoItemsHandler.Handle(new GetActiveOrDoneTodoItemsByUserQuery(1, isDone), new CancellationToken());
 
             // Assert
             Assert.Equal(expected, actual);
@@ -82,7 +82,7 @@ namespace Core.Handlers.TodoItems
             return expected;
         }
 
-        private IEnumerable<TodoItem> GetSampleTodoItems()
+        private static IEnumerable<TodoItem> GetSampleTodoItems()
         {
             var personal = new Checklist { Id = 1, Name = "Personal", UserId = 1 };
             var birthday = new Checklist { Id = 2, Name = "Birthday", UserId = 1 };

@@ -1,7 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System.Diagnostics.CodeAnalysis;
+
+using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace ToDoList.Infrastructure.Migrations
 {
+    [ExcludeFromCodeCoverage]
     public partial class AddCompositeUniqueConstraint : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)

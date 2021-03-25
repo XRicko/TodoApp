@@ -1,9 +1,11 @@
-﻿using System.Text;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Text;
 
 using Microsoft.IdentityModel.Tokens;
 
 namespace ToDoList.WebApi.Jwt
 {
+    [ExcludeFromCodeCoverage]
     public class JwtTokenConfig
     {
         public string Issuer { get; set; }

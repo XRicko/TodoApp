@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 
 using ToDoList.SharedKernel;
 
 namespace ToDoList.Core.Mediator.Requests.Update
 {
-    public record TodoItemUpdateRequest(int Id, string Name, int ChecklistId, DateTime StartDate, DateTime? DueDate, GeoCoordinate GeoPoint, int? ParentId, int StatusId, int? CategoryId, int? ImageId) : BaseRequest(Name);
+    [ExcludeFromCodeCoverage]
+    public record TodoItemUpdateRequest(int Id, string Name, int ChecklistId, int StatusId, DateTime StartDate, DateTime? DueDate = null, GeoCoordinate GeoPoint = null, int? ParentId = null, int? CategoryId = null, int? ImageId = null) : BaseRequest(Name);
 }

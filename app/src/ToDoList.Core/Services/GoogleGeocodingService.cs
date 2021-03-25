@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -7,6 +8,7 @@ using Geocoding.Google;
 
 namespace ToDoList.Core.Services
 {
+    [ExcludeFromCodeCoverage]
     public class GoogleGeocodingService : IGeocodingService
     {
         private readonly GoogleGeocoder googleGeocoder;
