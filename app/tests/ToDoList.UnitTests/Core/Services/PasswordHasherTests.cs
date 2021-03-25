@@ -9,6 +9,23 @@ namespace ToDoList.UnitTests.Core.Services
     public class PasswordHasherTests
     {
         [Fact]
+        public void Hash_ReturnsHashInProperFormat()
+        {
+            // Arrange
+            string password = "][poiuytrewq";
+            int expectedIterations = 12399;
+
+            // Act
+            string hashedPassword = PasswordHasher.Hash(password, expectedIterations);
+            int actualIterations = int.Parse(hashedPassword.Replace("$MYHASH$V1$", "")
+                                                           .Split('$')[0]);
+
+            // Assert
+            Assert.Contains("$MYHASH$V1$", hashedPassword);
+            Assert.Equal(expectedIterations, actualIterations);
+        }
+
+        [Fact]
         public void Verify_ReturnsTrueGivenProperPassword()
         {
             // Arrange

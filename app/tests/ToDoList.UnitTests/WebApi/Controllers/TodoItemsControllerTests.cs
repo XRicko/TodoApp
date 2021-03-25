@@ -13,7 +13,6 @@ using ToDoList.Core.Mediator.Commands;
 using ToDoList.Core.Mediator.Queries.TodoItems;
 using ToDoList.Core.Mediator.Requests.Create;
 using ToDoList.Core.Mediator.Requests.Update;
-using ToDoList.Core.Mediator.Response;
 using ToDoList.WebApi.Controllers;
 
 using Xunit;
@@ -101,7 +100,7 @@ namespace ToDoList.UnitTests.WebApi.Controllers
 
             // Assert
             MediatorMock.Verify(x => x.Send(It.Is<GetActiveOrDoneTodoItemsByUserQuery>(q => q.UserId == userId
-                                                                                           && q.IsDone == isDone), 
+                                                                                           && q.IsDone == isDone),
                                             It.IsAny<CancellationToken>()), Times.Once);
         }
     }
