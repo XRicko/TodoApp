@@ -13,6 +13,8 @@ namespace ToDoList.Core.MappingProfiles
 {
     internal class EntityToDtoMappingProfile : Profile
     {
+        private const int SRID = 4326;
+
         public EntityToDtoMappingProfile()
         {
             CreateMap<Point, GeoCoordinate>()
@@ -30,7 +32,9 @@ namespace ToDoList.Core.MappingProfiles
                 .ForCtorParam("x",
                               opt => opt.MapFrom(src => src.Longitude))
                 .ForCtorParam("y",
-                              opt => opt.MapFrom(src => src.Latitude));
+                              opt => opt.MapFrom(src => src.Latitude))
+                .ForMember(dest => dest.SRID,
+                           opt => opt.MapFrom(src => SRID));
 
             CreateMap<User, UserResponse>();
             CreateMap<UserRequest, User>();
