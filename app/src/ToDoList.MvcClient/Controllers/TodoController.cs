@@ -120,7 +120,7 @@ namespace ToDoList.MvcClient.Controllers
 
             await apiCallsService.PutItemAsync("TodoItems", todoItemModel);
         }
-        
+
         private static void AddGeoPoint(TodoItemModel todoItemModel)
         {
             double latitude = double.Parse(todoItemModel.Latitude, CultureInfo.InvariantCulture);

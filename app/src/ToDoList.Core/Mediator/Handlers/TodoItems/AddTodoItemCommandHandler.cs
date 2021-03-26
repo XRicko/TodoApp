@@ -17,6 +17,8 @@ namespace ToDoList.Core.Mediator.Handlers.TodoItems
 {
     internal class AddTodoItemCommandHandler : AddCommandHandler<TodoItemCreateRequest, TodoItem>
     {
+        private const int SRID = 4326;
+
         public AddTodoItemCommandHandler(IUnitOfWork unitOfWork, IMapper mapper) : base(unitOfWork, mapper)
         {
 
@@ -35,7 +37,7 @@ namespace ToDoList.Core.Mediator.Handlers.TodoItems
                 var entity = Mapper.Map<TodoItem>(request.Request);
 
                 if (entity.GeoPoint is not null)
-                    entity.GeoPoint.SRID = 4326;
+                    entity.GeoPoint.SRID = SRID;
 
                 await UnitOfWork.Repository.AddAsync(entity);
                 await UnitOfWork.SaveAsync();

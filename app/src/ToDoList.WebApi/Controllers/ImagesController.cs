@@ -44,7 +44,7 @@ namespace ToDoList.WebApi.Controllers
             await Mediator.Send(new RemoveCommand<Image>(id));
 
         [HttpPut]
-        public async Task Update([FromBody] ImageUpdateRequest updateRequest) 
+        public async Task Update([FromBody] ImageUpdateRequest updateRequest)
         {
             _ = updateRequest ?? throw new ArgumentNullException(nameof(updateRequest));
             await Mediator.Send(new UpdateCommand<ImageUpdateRequest>(updateRequest));

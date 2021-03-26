@@ -39,7 +39,7 @@ namespace ToDoList.WebApi.Controllers
             await Mediator.Send(new GetByIdQuery<TodoItem, TodoItemResponse>(id));
 
         [HttpPost]
-        public async Task Add([FromBody] TodoItemCreateRequest createRequest) 
+        public async Task Add([FromBody] TodoItemCreateRequest createRequest)
         {
             _ = createRequest ?? throw new ArgumentNullException(nameof(createRequest));
             await Mediator.Send(new AddCommand<TodoItemCreateRequest>(createRequest));

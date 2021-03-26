@@ -9,7 +9,7 @@ namespace ToDoList.Core.Entities
 {
     public class TodoItem : BaseEntity
     {
-        public DateTime StartDate { get; init; } =  DateTime.Now;
+        public DateTime StartDate { get; private set; }
         public DateTime? DueDate { get; set; }
         public Point GeoPoint { get; set; }
 
@@ -30,6 +30,7 @@ namespace ToDoList.Core.Entities
         public TodoItem() : base()
         {
             Children = new HashSet<TodoItem>();
+            StartDate = DateTime.Now;
         }
     }
 }

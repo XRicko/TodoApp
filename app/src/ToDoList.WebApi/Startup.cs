@@ -1,3 +1,4 @@
+
 using MediatR;
 
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -46,6 +47,8 @@ namespace ToDoList.WebApi
             services.AddSingleton(jwtTokenConfig);
             services.AddScoped<ITokenGenerator, TokenGenerator>();
 
+            services.AddCors();
+
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -54,6 +57,8 @@ namespace ToDoList.WebApi
                 .AddJwtBearer(options =>
                 {
                     options.RequireHttpsMetadata = false;
+                    options.SaveToken = true;
+
                     options.TokenValidationParameters = new TokenValidationParameters
                     {
                         ValidateIssuer = true,
@@ -68,16 +73,6 @@ namespace ToDoList.WebApi
                         IssuerSigningKey = jwtTokenConfig.GetSymmetricSecurityKey()
                     };
                 });
-
-            services.AddCors(options =>
-            {
-                options.AddDefaultPolicy(builder =>
-                {
-                    builder.AllowAnyOrigin()
-                           .AllowAnyMethod()
-                           .AllowAnyHeader();
-                });
-            });
 
             services.AddControllers();
 
@@ -104,7 +99,9 @@ namespace ToDoList.WebApi
             app.UseAuthentication();
             app.UseAuthorization();
 
-            app.UseCors();
+            app.UseCors(x => x.AllowAnyOrigin()
+                              .AllowAnyMethod()
+                              .AllowAnyHeader());
 
             app.UseEndpoints(endpoints =>
             {
