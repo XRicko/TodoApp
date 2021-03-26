@@ -39,15 +39,21 @@ namespace ToDoList.WebApi.Controllers
             await Mediator.Send(new GetByIdQuery<TodoItem, TodoItemResponse>(id));
 
         [HttpPost]
-        public async Task Add([FromBody] TodoItemCreateRequest createRequest) =>
+        public async Task Add([FromBody] TodoItemCreateRequest createRequest) 
+        {
+            _ = createRequest ?? throw new ArgumentNullException(nameof(createRequest));
             await Mediator.Send(new AddCommand<TodoItemCreateRequest>(createRequest));
+        }
 
         [HttpDelete("{id}")]
         public async Task Delete(int id) =>
             await Mediator.Send(new RemoveCommand<TodoItem>(id));
 
         [HttpPut]
-        public async Task Update([FromBody] TodoItemUpdateRequest updateRequest) =>
+        public async Task Update([FromBody] TodoItemUpdateRequest updateRequest)
+        {
+            _ = updateRequest ?? throw new ArgumentNullException(nameof(updateRequest));
             await Mediator.Send(new UpdateCommand<TodoItemUpdateRequest>(updateRequest));
+        }
     }
 }

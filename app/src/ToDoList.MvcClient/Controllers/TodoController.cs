@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using System.Globalization;
 using System.Threading.Tasks;
 
@@ -20,9 +21,9 @@ namespace ToDoList.MvcClient.Controllers
 
         public TodoController(IApiCallsService apiService, IImageAddingService addingService, ICreateViewModelService modelService)
         {
-            apiCallsService = apiService;
-            imageAddingService = addingService;
-            viewModelService = modelService;
+            apiCallsService = apiService ?? throw new ArgumentNullException(nameof(apiService));
+            imageAddingService = addingService ?? throw new ArgumentNullException(nameof(addingService));
+            viewModelService = modelService ?? throw new ArgumentNullException(nameof(modelService));
         }
 
         public async Task<ActionResult> IndexAsync()
@@ -62,6 +63,8 @@ namespace ToDoList.MvcClient.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> CreateOrUpdateAsync(CreateViewModel createViewModel)
         {
+            _ = createViewModel ?? throw new ArgumentNullException(nameof(createViewModel));
+
             if (!ModelState.IsValid)
                 return PartialView("CreateOrUpdate", createViewModel.TodoItemModel);
 

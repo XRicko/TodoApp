@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 using ToDoList.Core.Mediator.Response;
@@ -11,11 +12,13 @@ namespace ToDoList.Core.Services
 
         public CreateWithAddressService(IGeocodingService service)
         {
-            geocodingService = service;
+            geocodingService = service ?? throw new ArgumentNullException(nameof(service));
         }
 
         public async Task<TodoItemResponse> GetItemWithAddressAsync(TodoItemResponse todoItemResponse)
         {
+            _ = todoItemResponse ?? throw new ArgumentNullException(nameof(todoItemResponse));
+
             if (todoItemResponse.GeoPoint is not null)
             {
                 string address = await geocodingService.GetAddressAsync(todoItemResponse.GeoPoint.Latitude, todoItemResponse.GeoPoint.Longitude);
@@ -29,6 +32,8 @@ namespace ToDoList.Core.Services
 
         public async Task<IEnumerable<TodoItemResponse>> GetItemsWithAddressAsync(IEnumerable<TodoItemResponse> todoItemResponses)
         {
+            _ = todoItemResponses ?? throw new ArgumentNullException(nameof(todoItemResponses));
+
             List<TodoItemResponse> todoItemResponsesWithAddress = new();
 
             foreach (var item in todoItemResponses)

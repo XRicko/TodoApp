@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -17,18 +18,22 @@ namespace ToDoList.Core.Mediator.Handlers.Users
 {
     internal class AddUserCommandHandler : AddCommandHandler<UserRequest, User>
     {
-        public AddUserCommandHandler(IUnitOfWork unitOfWork, IMapper mapper) : base(unitOfWork, mapper)
-        {
+        private readonly IPasswordHasher passwordHasher;
 
+        public AddUserCommandHandler(IUnitOfWork unitOfWork, IMapper mapper, IPasswordHasher hasher) : base(unitOfWork, mapper)
+        {
+            passwordHasher = hasher ?? throw new ArgumentNullException(nameof(hasher));
         }
 
         public override async Task<Unit> Handle(AddCommand<UserRequest> request, CancellationToken cancellationToken)
         {
+            _ = request ?? throw new ArgumentNullException(nameof(request));
+
             var users = await UnitOfWork.Repository.GetAllAsync<User>();
-            string hashPassword = PasswordHasher.Hash(request.Request.Password, 10000);
+            string hashPassword = passwordHasher.Hash(request.Request.Password, 10000);
 
             var item = users.SingleOrDefault(u => u.Name == request.Request.Name
-                                                  && PasswordHasher.Verify(request.Request.Password, hashPassword));
+                                                  && passwordHasher.Verify(request.Request.Password, hashPassword));
 
             if (item is null)
             {

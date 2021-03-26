@@ -19,12 +19,15 @@ namespace ToDoList.MvcClient.Services.Api
 
         public ApiCallsService(IHttpContextAccessor httpAccessor)
         {
-            httpContextAccessor = httpAccessor;
+            httpContextAccessor = httpAccessor ?? throw new ArgumentNullException(nameof(httpAccessor));
             httpContext = httpContextAccessor.HttpContext;
         }
 
         public async Task<IEnumerable<T>> GetItemsAsync<T>(string route) where T : BaseModel
         {
+            if (string.IsNullOrEmpty(route))
+                throw new ArgumentException($"'{nameof(route)}' cannot be null or empty", nameof(route));
+
             AddAuthenticationHeader();
             using var response = await WebApiHelper.ApiClient.GetAsync(route);
 
@@ -35,6 +38,9 @@ namespace ToDoList.MvcClient.Services.Api
 
         public async Task<T> GetItemAsync<T>(string routeWithParemeters) where T : BaseModel
         {
+            if (string.IsNullOrEmpty(routeWithParemeters))
+                throw new ArgumentException($"'{nameof(routeWithParemeters)}' cannot be null or empty", nameof(routeWithParemeters));
+
             using var response = await WebApiHelper.ApiClient.GetAsync(routeWithParemeters);
             ValidateStatusCode(response);
 
@@ -43,24 +49,39 @@ namespace ToDoList.MvcClient.Services.Api
 
         public async Task PostItemAsync<T>(string route, T item) where T : BaseModel
         {
+            if (string.IsNullOrEmpty(route))
+                throw new ArgumentException($"'{nameof(route)}' cannot be null or empty", nameof(route));
+            _ = item ?? throw new ArgumentNullException(nameof(item));
+
             using var response = await WebApiHelper.ApiClient.PostAsJsonAsync(route, item);
             ValidateStatusCode(response);
         }
 
         public async Task PutItemAsync<T>(string route, T item) where T : BaseModel
         {
+            if (string.IsNullOrEmpty(route))
+                throw new ArgumentException($"'{nameof(route)}' cannot be null or empty", nameof(route));
+            _ = item ?? throw new ArgumentNullException(nameof(item));
+
             using var response = await WebApiHelper.ApiClient.PutAsJsonAsync(route, item);
             ValidateStatusCode(response);
         }
 
         public async Task DeleteItemAsync(string route, int id)
         {
+            if (string.IsNullOrEmpty(route))
+                throw new ArgumentException($"'{nameof(route)}' cannot be null or empty", nameof(route));
+
             using var response = await WebApiHelper.ApiClient.DeleteAsync(route + id);
             ValidateStatusCode(response);
         }
 
         public async Task AuthenticateUserAsync(string route, UserModel userModel)
         {
+            if (string.IsNullOrEmpty(route))
+                throw new ArgumentException($"'{nameof(route)}' cannot be null or empty", nameof(route));
+            _ = userModel ?? throw new ArgumentNullException(nameof(userModel));
+
             using var response = await WebApiHelper.ApiClient.PostAsJsonAsync(route, userModel);
 
             ValidateStatusCode(response);

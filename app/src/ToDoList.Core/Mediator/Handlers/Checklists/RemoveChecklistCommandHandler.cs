@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 using AutoMapper;
@@ -21,8 +22,9 @@ namespace ToDoList.Core.Mediator.Handlers.Checklists
 
         public override async Task<Unit> Handle(RemoveCommand<Checklist> request, CancellationToken cancellationToken)
         {
-            var checklist = await UnitOfWork.Repository.GetAsync<Checklist>(request.Id);
+            _ = request ?? throw new ArgumentNullException(nameof(request));
 
+            var checklist = await UnitOfWork.Repository.GetAsync<Checklist>(request.Id);
 
             if (checklist is not null && checklist.Name != "Untitled")
             {

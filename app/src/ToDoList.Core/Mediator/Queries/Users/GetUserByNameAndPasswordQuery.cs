@@ -12,6 +12,11 @@ namespace ToDoList.Core.Mediator.Queries.Users
 
         public GetUserByNameAndPasswordQuery(string name, string passsword)
         {
+            if (string.IsNullOrEmpty(name))
+                throw new System.ArgumentException($"'{nameof(name)}' cannot be null or empty", nameof(name));
+            if (string.IsNullOrEmpty(passsword))
+                throw new System.ArgumentException($"'{nameof(passsword)}' cannot be null or empty", nameof(passsword));
+
             Name = name;
             Password = passsword;
         }

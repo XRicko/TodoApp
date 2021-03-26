@@ -11,7 +11,7 @@ namespace ToDoList.Core.Mediator.Commands
 
         public AddCommand(TRequest entity)
         {
-            Request = entity;
+            Request = entity ?? throw new System.ArgumentNullException(nameof(entity));
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 
 using ToDoList.MvcClient.Models;
 using ToDoList.MvcClient.Services.Api;
@@ -12,7 +13,7 @@ namespace ToDoList.MvcClient.Services
 
         public CreateViewModelService(IApiCallsService apiService)
         {
-            apiCallsService = apiService;
+            apiCallsService = apiService ?? throw new ArgumentNullException(nameof(apiService));
         }
 
         public async Task<IndexViewModel> CreateIndexViewModel()
@@ -34,6 +35,8 @@ namespace ToDoList.MvcClient.Services
 
         public async Task<CreateViewModel> CreateViewModelCreateOrUpdateTodoItem(TodoItemModel todoItemModel)
         {
+            _ = todoItemModel ?? throw new ArgumentNullException(nameof(todoItemModel));
+
             var checklistModels = await apiCallsService.GetItemsAsync<ChecklistModel>("Checklists");
             var categoryModels = await apiCallsService.GetItemsAsync<CategoryModel>("Categories");
             var statusModels = await apiCallsService.GetItemsAsync<StatusModel>("Statuses");

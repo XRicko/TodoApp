@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -23,6 +24,8 @@ namespace ToDoList.Core.Mediator.Handlers.Checklists
 
         public async Task<IEnumerable<ChecklistResponse>> Handle(GetChecklistsByUserIdQuery request, CancellationToken cancellationToken)
         {
+            _ = request ?? throw new ArgumentNullException(nameof(request));
+
             var checklists = await UnitOfWork.Repository.GetAllAsync<Checklist>();
             var checklistsByUser = checklists.Where(x => x.UserId == request.UserId);
 

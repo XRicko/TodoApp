@@ -33,8 +33,11 @@ namespace ToDoList.WebApi.Controllers
            await Mediator.Send(new GetByNameQuery<Category, CategoryResponse>(name));
 
         [HttpPost]
-        public async Task Add([FromBody] CategoryCreateRequest createRequest) =>
+        public async Task Add([FromBody] CategoryCreateRequest createRequest)
+        {
+            _ = createRequest ?? throw new System.ArgumentNullException(nameof(createRequest));
             await Mediator.Send(new AddCommand<CategoryCreateRequest>(createRequest));
+        }
 
         [HttpDelete("{id}")]
         public async Task Delete(int id) =>

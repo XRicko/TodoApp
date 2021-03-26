@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,8 +16,8 @@ namespace ToDoList.MvcClient.Controllers
 
         public ChecklistController(IApiCallsService apiService, ICreateViewModelService modelService)
         {
-            apiCallsService = apiService;
-            viewModelService = modelService;
+            apiCallsService = apiService ?? throw new ArgumentNullException(nameof(apiService));
+            viewModelService = modelService ?? throw new ArgumentNullException(nameof(modelService));
         }
 
         // GET: ChecklistController/CreateOrUpdate
@@ -36,6 +37,8 @@ namespace ToDoList.MvcClient.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> CreateOrUpdateAsync(ChecklistModel checklistModel)
         {
+            _ = checklistModel ?? throw new ArgumentNullException(nameof(checklistModel));
+
             if (!ModelState.IsValid)
                 return PartialView("CreateOrUpdate", checklistModel);
 

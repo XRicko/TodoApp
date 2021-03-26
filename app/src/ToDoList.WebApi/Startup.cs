@@ -36,6 +36,7 @@ namespace ToDoList.WebApi
 
             services.AddTransient<IGeocodingService, GoogleGeocodingService>();
             services.AddTransient<ICreateWithAddressService, CreateWithAddressService>();
+            services.AddScoped<IPasswordHasher, PasswordHasher>();
 
             services.AddAutoMapper(typeof(CategoryResponse));
             services.AddMediatR(typeof(GetAllQuery<,>));

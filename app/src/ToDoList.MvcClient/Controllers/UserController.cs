@@ -13,7 +13,7 @@ namespace ToDoList.MvcClient.Controllers
 
         public UserController(IApiCallsService apiService)
         {
-            apiCallsService = apiService;
+            apiCallsService = apiService ?? throw new System.ArgumentNullException(nameof(apiService));
         }
 
         public IActionResult Login()
@@ -31,6 +31,8 @@ namespace ToDoList.MvcClient.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> RegisterAsync(UserModel userModel)
         {
+            _ = userModel ?? throw new System.ArgumentNullException(nameof(userModel));
+
             await apiCallsService.AuthenticateUserAsync("User/Register", userModel);
             return RedirectToAction("Index", "Todo");
         }
@@ -39,6 +41,8 @@ namespace ToDoList.MvcClient.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> LoginAsync(UserModel userModel)
         {
+            _ = userModel ?? throw new System.ArgumentNullException(nameof(userModel));
+
             await apiCallsService.AuthenticateUserAsync("User/Login", userModel);
             return RedirectToAction("Index", "Todo");
         }

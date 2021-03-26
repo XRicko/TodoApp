@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -27,6 +28,8 @@ namespace ToDoList.Core.Mediator.Handlers.TodoItems
 
         public async Task<IEnumerable<TodoItemResponse>> Handle(GetActiveOrDoneTodoItemsByUserQuery request, CancellationToken cancellationToken)
         {
+            _ = request ?? throw new ArgumentNullException(nameof(request));
+
             var todoItems = await UnitOfWork.Repository.GetAllAsync<TodoItem>();
             var activeOrDoneTodoItemsByUser = todoItems.Where(i => i.Checklist.UserId == request.UserId
                                                              && i.Status.IsDone == request.IsDone);

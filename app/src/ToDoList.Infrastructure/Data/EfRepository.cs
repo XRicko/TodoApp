@@ -27,16 +27,24 @@ namespace ToDoList.Infrastructure.Data
         public async Task<IEnumerable<T>> GetAllAsync<T>() where T : BaseEntity =>
             await context.Set<T>().ToListAsync();
 
-        public async Task AddAsync<T>(T entity) where T : BaseEntity =>
+        public async Task AddAsync<T>(T entity) where T : BaseEntity
+        {
+            _ = entity ?? throw new ArgumentNullException(nameof(entity));
             await context.Set<T>().AddAsync(entity);
+        }
 
         public void Update<T>(T entity) where T : BaseEntity
         {
+            _ = entity ?? throw new ArgumentNullException(nameof(entity));
+
             context.Set<T>().Attach(entity);
             context.Entry(entity).State = EntityState.Modified;
         }
 
-        public void Remove<T>(T entity) where T : BaseEntity =>
+        public void Remove<T>(T entity) where T : BaseEntity
+        {
+            _ = entity ?? throw new ArgumentNullException(nameof(entity));
             context.Set<T>().Remove(entity);
+        }
     }
 }

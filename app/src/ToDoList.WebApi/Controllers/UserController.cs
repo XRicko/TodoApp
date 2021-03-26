@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 
 using MediatR;
 
@@ -19,13 +20,15 @@ namespace ToDoList.WebApi.Controllers
 
         public UserController(IMediator mediator, ITokenGenerator generator) : base(mediator)
         {
-            tokenGenerator = generator;
+            tokenGenerator = generator ?? throw new ArgumentNullException(nameof(generator));
         }
 
         [HttpPost]
         [Route("[action]")]
         public async Task<IActionResult> LoginAsync(UserRequest userRequest)
         {
+            _ = userRequest ?? throw new ArgumentNullException(nameof(userRequest));
+
             var user = await Mediator.Send(new GetUserByNameAndPasswordQuery(userRequest.Name, userRequest.Password));
 
             if (user is null)
@@ -39,6 +42,8 @@ namespace ToDoList.WebApi.Controllers
         [Route("[action]")]
         public async Task<IActionResult> RegisterAsync(UserRequest userCreateRequest)
         {
+            _ = userCreateRequest ?? throw new ArgumentNullException(nameof(userCreateRequest));
+
             var user = await Mediator.Send(new GetUserByNameAndPasswordQuery(userCreateRequest.Name, userCreateRequest.Password));
 
             if (user is not null)

@@ -1,4 +1,5 @@
 ﻿
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -19,11 +20,13 @@ namespace ToDoList.Core.Mediator.Handlers.TodoItems
 
         public GetTodoItemByIdQueryHandler(IUnitOfWork unitOfWork, IMapper mapper, ICreateWithAddressService addressService) : base(unitOfWork, mapper)
         {
-            createAddressService = addressService;
+            createAddressService = addressService ?? throw new ArgumentNullException(nameof(addressService));
         }
 
         public override async Task<TodoItemResponse> Handle(GetByIdQuery<TodoItem, TodoItemResponse> request, CancellationToken cancellationToken)
         {
+            _ = request ?? throw new ArgumentNullException(nameof(request));
+
             var response = await base.Handle(request, cancellationToken);
             var responseWithAddress = await createAddressService.GetItemWithAddressAsync(response);
 

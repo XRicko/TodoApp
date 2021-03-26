@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -23,6 +24,8 @@ namespace ToDoList.Core.Mediator.Handlers.TodoItems
 
         public override async Task<Unit> Handle(AddCommand<TodoItemCreateRequest> request, CancellationToken cancellationToken)
         {
+            _ = request ?? throw new ArgumentNullException(nameof(request));
+
             var todoItems = await UnitOfWork.Repository.GetAllAsync<TodoItem>();
             var todoItem = todoItems.SingleOrDefault(e => e.Name == request.Request.Name
                                                           && e.ChecklistId == request.Request.ChecklistId);

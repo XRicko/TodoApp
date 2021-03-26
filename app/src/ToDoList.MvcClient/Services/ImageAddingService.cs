@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Threading.Tasks;
 
 using Microsoft.AspNetCore.Hosting;
@@ -16,12 +17,14 @@ namespace ToDoList.MvcClient.Services
 
         public ImageAddingService(IWebHostEnvironment hostEnvironment, IApiCallsService service)
         {
-            webHostEnvironment = hostEnvironment;
-            apiCallsService = service;
+            webHostEnvironment = hostEnvironment ?? throw new ArgumentNullException(nameof(hostEnvironment));
+            apiCallsService = service ?? throw new ArgumentNullException(nameof(service));
         }
 
         public async Task AddImageInTodoItem(TodoItemModel todoItem)
         {
+            _ = todoItem ?? throw new ArgumentNullException(nameof(todoItem));
+
             await PostImage(todoItem.Image);
 
             var image = await apiCallsService.GetItemAsync<ImageModel>("Images/GetByName/" + todoItem.Image.FileName);
@@ -30,6 +33,8 @@ namespace ToDoList.MvcClient.Services
 
         private async Task PostImage(IFormFile image)
         {
+            _ = image ?? throw new ArgumentNullException(nameof(image));
+
             string absolutePath = MakeAbsoluteImagePath(image.FileName);
             string relativePath = @"~/images/" + image.FileName;
 
@@ -39,6 +44,9 @@ namespace ToDoList.MvcClient.Services
 
         private string MakeAbsoluteImagePath(string fileName)
         {
+            if (string.IsNullOrEmpty(fileName))
+                throw new ArgumentException($"'{nameof(fileName)}' cannot be null or empty", nameof(fileName));
+
             string folder = Path.Combine(webHostEnvironment.WebRootPath, "images");
             string imagePath = Path.Combine(folder, fileName);
 
@@ -47,6 +55,10 @@ namespace ToDoList.MvcClient.Services
 
         private static async Task SaveImageInFolder(IFormFile image, string imagePath)
         {
+            _ = image ?? throw new ArgumentNullException(nameof(image));
+            if (string.IsNullOrEmpty(imagePath))
+                throw new ArgumentException($"'{nameof(imagePath)}' cannot be null or empty", nameof(imagePath));
+
             using var fileStream = new FileStream(imagePath, FileMode.Create);
             await image.CopyToAsync(fileStream);
         }

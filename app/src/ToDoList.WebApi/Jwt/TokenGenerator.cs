@@ -12,7 +12,7 @@ namespace ToDoList.WebApi.Jwt
 
         public TokenGenerator(JwtTokenConfig tokenConfig)
         {
-            jwtTokenConfig = tokenConfig;
+            jwtTokenConfig = tokenConfig ?? throw new ArgumentNullException(nameof(tokenConfig));
         }
 
         public string GenerateToken(int id, string username)

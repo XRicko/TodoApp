@@ -11,7 +11,7 @@ namespace ToDoList.WebApi.Controllers
 
         protected Base(IMediator mediator)
         {
-            Mediator = mediator;
+            Mediator = mediator ?? throw new System.ArgumentNullException(nameof(mediator));
         }
     }
 }
