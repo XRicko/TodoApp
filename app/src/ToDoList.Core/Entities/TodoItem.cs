@@ -9,7 +9,7 @@ namespace ToDoList.Core.Entities
 {
     public class TodoItem : BaseEntity
     {
-        public DateTime StartDate { get; private set; }
+        public DateTime StartDate { get; init; }
         public DateTime? DueDate { get; set; }
         public Point GeoPoint { get; set; }
 

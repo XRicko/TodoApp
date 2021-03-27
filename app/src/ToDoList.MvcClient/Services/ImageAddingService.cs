@@ -25,7 +25,13 @@ namespace ToDoList.MvcClient.Services
         {
             _ = todoItem ?? throw new ArgumentNullException(nameof(todoItem));
 
-            await PostImage(todoItem.Image);
+            string absolutePath = MakeAbsoluteImagePath(todoItem.Image.FileName);
+
+            if (!File.Exists(absolutePath))
+            {
+                await PostImage(todoItem.Image);
+                await SaveImageInFolder(todoItem.Image, absolutePath);
+            }
 
             var image = await apiCallsService.GetItemAsync<ImageModel>("Images/GetByName/" + todoItem.Image.FileName);
             todoItem.ImageId = image.Id;
@@ -35,10 +41,7 @@ namespace ToDoList.MvcClient.Services
         {
             _ = image ?? throw new ArgumentNullException(nameof(image));
 
-            string absolutePath = MakeAbsoluteImagePath(image.FileName);
             string relativePath = @"~/images/" + image.FileName;
-
-            await SaveImageInFolder(image, absolutePath);
             await apiCallsService.PostItemAsync("Images", new ImageModel { Name = image.FileName, Path = relativePath });
         }
 

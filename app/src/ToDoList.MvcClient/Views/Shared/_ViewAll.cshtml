@@ -33,7 +33,7 @@
                 </div>
 
                 <div class="card-body">
-                    <ul class="nav nav-tabs">
+                    <ul class="nav nav-tabs border-0 mb-2" style="grid-gap: 12px;">
                         <li class="nav-item">
                             <a class="btn btn-outline-primary active" id="notDone-@checklist.Id-tab"
                                data-toggle="tab" href="#notDone-@checklist.Id">Active <span class="badge badge-light">@Model.ActiveTodoItems.Where(x => x.ChecklistId == checklist.Id).Count()</span></a>
@@ -86,7 +86,7 @@
                                             </div>
                                         }
 
-                                    <a href="http://maps.google.com/?q=@todoItem.Address">@todoItem.Address</a>
+                                        <a href="http://maps.google.com/?q=@todoItem.Address">@todoItem.Address</a>
 
                                         <img src="@Url.Content(todoItem.ImagePath)" class="img-fluid" />
 

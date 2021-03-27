@@ -123,8 +123,8 @@ namespace ToDoList.MvcClient.Controllers
 
         private static void AddGeoPoint(TodoItemModel todoItemModel)
         {
-            double latitude = double.Parse(todoItemModel.Latitude, CultureInfo.InvariantCulture);
-            double longitude = double.Parse(todoItemModel.Longitude, CultureInfo.InvariantCulture);
+            double latitude = double.Parse(todoItemModel.Latitude.Replace(',', '.'), CultureInfo.InvariantCulture);
+            double longitude = double.Parse(todoItemModel.Longitude.Replace(',', '.'), CultureInfo.InvariantCulture);
 
             todoItemModel.GeoPoint = new(longitude, latitude);
         }

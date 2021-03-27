@@ -12,9 +12,11 @@ showPopup = (url, title, button) => {
             $('#form-modal .modal-title').html(title);
             $('#form-modal').modal('show');
 
-            if (button.className.includes('todoItem')) {
-                initMap();
-                initSelect();
+            if (button) {
+                if (button.className.includes('todoItem')) {
+                    initMap();
+                    initSelect();
+                }
             }
         }
     })
