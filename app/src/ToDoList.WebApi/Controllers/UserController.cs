@@ -47,7 +47,7 @@ namespace ToDoList.WebApi.Controllers
             var user = await Mediator.Send(new GetUserByNameAndPasswordQuery(userCreateRequest.Name, userCreateRequest.Password));
 
             if (user is not null)
-                return BadRequest("User exists");
+                return Unauthorized("User exists");
 
             await Mediator.Send(new AddCommand<UserRequest>(userCreateRequest));
             var createdUser = await Mediator.Send(new GetUserByNameAndPasswordQuery(userCreateRequest.Name, userCreateRequest.Password));

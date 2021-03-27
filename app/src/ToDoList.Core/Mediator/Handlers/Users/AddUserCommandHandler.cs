@@ -33,7 +33,7 @@ namespace ToDoList.Core.Mediator.Handlers.Users
             string hashPassword = passwordHasher.Hash(request.Request.Password, 10000);
 
             var item = users.SingleOrDefault(u => u.Name == request.Request.Name
-                                                  && passwordHasher.Verify(request.Request.Password, hashPassword));
+                                                  && passwordHasher.Verify(request.Request.Password, u.Password));
 
             if (item is null)
             {

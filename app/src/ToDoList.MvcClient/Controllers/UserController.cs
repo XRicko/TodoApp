@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 
 using Microsoft.AspNetCore.Mvc;
 
@@ -13,7 +14,7 @@ namespace ToDoList.MvcClient.Controllers
 
         public UserController(IApiCallsService apiService)
         {
-            apiCallsService = apiService ?? throw new System.ArgumentNullException(nameof(apiService));
+            apiCallsService = apiService ?? throw new ArgumentNullException(nameof(apiService));
         }
 
         public IActionResult Login()
@@ -31,9 +32,21 @@ namespace ToDoList.MvcClient.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> RegisterAsync(UserModel userModel)
         {
-            _ = userModel ?? throw new System.ArgumentNullException(nameof(userModel));
+            _ = userModel ?? throw new ArgumentNullException(nameof(userModel));
 
-            await apiCallsService.AuthenticateUserAsync("User/Register", userModel);
+            try
+            {
+                await apiCallsService.AuthenticateUserAsync("User/Register", userModel);
+            }
+            catch (Exception e)
+            {
+                if (e.Message == "Unauthorized")
+                {
+                    ModelState.AddModelError(string.Empty, "User exists");
+                    return View();
+                }
+            }
+
             return RedirectToAction("Index", "Todo");
         }
 
@@ -41,9 +54,24 @@ namespace ToDoList.MvcClient.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> LoginAsync(UserModel userModel)
         {
-            _ = userModel ?? throw new System.ArgumentNullException(nameof(userModel));
+            _ = userModel ?? throw new ArgumentNullException(nameof(userModel));
 
-            await apiCallsService.AuthenticateUserAsync("User/Login", userModel);
+            try
+            {
+                await apiCallsService.AuthenticateUserAsync("User/Login", userModel);
+            }
+            catch (Exception e)
+            {
+                if (e.Message == "Unauthorized")
+                {
+                    if (ModelState.ContainsKey("ConfirmPassword"))
+                        ModelState["ConfirmPassword"].Errors.Clear();
+
+                    ModelState.AddModelError(string.Empty, "Username or password is incorrect");
+                    return View();
+                }
+            }
+
             return RedirectToAction("Index", "Todo");
         }
 
