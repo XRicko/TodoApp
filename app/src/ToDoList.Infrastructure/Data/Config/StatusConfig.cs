@@ -20,6 +20,10 @@ namespace ToDoList.Infrastructure.Data.Config
             builder.Property(e => e.Name)
                 .IsRequired()
                 .HasMaxLength(75);
+
+            builder.HasData(new Status { Id = 1, Name = "Planned", IsDone = false },
+                            new Status { Id = 2, Name = "Ongoing", IsDone = false },
+                            new Status { Id = 3, Name = "Done", IsDone = true });
         }
     }
 }

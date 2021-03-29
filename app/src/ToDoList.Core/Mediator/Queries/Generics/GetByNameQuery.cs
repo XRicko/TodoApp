@@ -13,6 +13,9 @@ namespace ToDoList.Core.Mediator.Queries.Generics
 
         public GetByNameQuery(string name)
         {
+            if (string.IsNullOrEmpty(name))
+                throw new System.ArgumentException($"'{nameof(name)}' cannot be null or empty", nameof(name));
+
             Name = name;
         }
     }

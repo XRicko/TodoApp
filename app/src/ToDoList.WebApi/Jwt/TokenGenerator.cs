@@ -6,13 +6,21 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace ToDoList.WebApi.Jwt
 {
+<<<<<<< HEAD
     public class TokenGenerator : ITokenGenerator
+=======
+    internal class TokenGenerator : ITokenGenerator
+>>>>>>> master
     {
         private readonly JwtTokenConfig jwtTokenConfig;
 
         public TokenGenerator(JwtTokenConfig tokenConfig)
         {
+<<<<<<< HEAD
             jwtTokenConfig = tokenConfig;
+=======
+            jwtTokenConfig = tokenConfig ?? throw new ArgumentNullException(nameof(tokenConfig));
+>>>>>>> master
         }
 
         public string GenerateToken(int id, string username)

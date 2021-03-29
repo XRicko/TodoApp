@@ -1,5 +1,9 @@
 using System.Diagnostics.CodeAnalysis;
 
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
+
 using MediatR;
 
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -39,14 +43,28 @@ namespace ToDoList.WebApi
 
             services.AddTransient<IGeocodingService, GoogleGeocodingService>();
             services.AddTransient<ICreateWithAddressService, CreateWithAddressService>();
+            services.AddScoped<IPasswordHasher, PasswordHasher>();
 
             services.AddAutoMapper(typeof(CategoryResponse));
             services.AddMediatR(typeof(GetAllQuery<,>));
 
             var jwtTokenConfig = Configuration.GetSection("JwtTokenConfigs").Get<JwtTokenConfig>();
 
+            var validationResults = new List<ValidationResult>();
+            var validationContext = new ValidationContext(jwtTokenConfig, serviceProvider: null, items: null);
+
+            if (!Validator.TryValidateObject(jwtTokenConfig, validationContext, validationResults, validateAllProperties: true))
+            {
+                foreach (var item in validationResults)
+                {
+                    throw new ValidationException(item.ErrorMessage);
+                }
+            }
+
             services.AddSingleton(jwtTokenConfig);
             services.AddScoped<ITokenGenerator, TokenGenerator>();
+
+            services.AddCors();
 
             services.AddAuthentication(options =>
             {
@@ -56,6 +74,8 @@ namespace ToDoList.WebApi
                 .AddJwtBearer(options =>
                 {
                     options.RequireHttpsMetadata = false;
+                    options.SaveToken = true;
+
                     options.TokenValidationParameters = new TokenValidationParameters
                     {
                         ValidateIssuer = true,
@@ -70,16 +90,6 @@ namespace ToDoList.WebApi
                         IssuerSigningKey = jwtTokenConfig.GetSymmetricSecurityKey()
                     };
                 });
-
-            services.AddCors(options =>
-            {
-                options.AddDefaultPolicy(builder =>
-                {
-                    builder.AllowAnyOrigin()
-                           .AllowAnyMethod()
-                           .AllowAnyHeader();
-                });
-            });
 
             services.AddControllers();
 
@@ -106,7 +116,9 @@ namespace ToDoList.WebApi
             app.UseAuthentication();
             app.UseAuthorization();
 
-            app.UseCors();
+            app.UseCors(x => x.AllowAnyOrigin()
+                              .AllowAnyMethod()
+                              .AllowAnyHeader());
 
             app.UseEndpoints(endpoints =>
             {

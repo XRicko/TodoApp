@@ -3,13 +3,16 @@ using System.Security.Cryptography;
 
 namespace ToDoList.Core.Services
 {
-    public static class PasswordHasher
+    public class PasswordHasher : IPasswordHasher
     {
         private const int SaltSize = 16;
         private const int HashSize = 20;
 
-        public static string Hash(string password, int iterations = 10000)
+        public string Hash(string password, int iterations = 10000)
         {
+            if (string.IsNullOrEmpty(password))
+                throw new ArgumentException($"'{nameof(password)}' cannot be null or empty", nameof(password));
+
             byte[] salt;
             new RNGCryptoServiceProvider().GetBytes(salt = new byte[SaltSize]);
 
@@ -25,8 +28,13 @@ namespace ToDoList.Core.Services
             return string.Format("$MYHASH$V1${0}${1}", iterations, base64Hash);
         }
 
-        public static bool Verify(string password, string hashedPassword)
+        public bool Verify(string password, string hashedPassword)
         {
+            if (string.IsNullOrEmpty(password))
+                throw new ArgumentException($"'{nameof(password)}' cannot be null or empty", nameof(password));
+            if (string.IsNullOrEmpty(hashedPassword))
+                throw new ArgumentException($"'{nameof(hashedPassword)}' cannot be null or empty", nameof(hashedPassword));
+
             if (!IsHashSupported(hashedPassword))
                 throw new NotSupportedException("The hashtype is not supported");
 

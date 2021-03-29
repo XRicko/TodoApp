@@ -1,4 +1,5 @@
-﻿using System.Linq;
+using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -23,9 +24,11 @@ namespace ToDoList.Core.Mediator.Handlers.Users
 
         public async Task<UserResponse> Handle(GetUserByNameAndPasswordQuery request, CancellationToken cancellationToken)
         {
+            _ = request ?? throw new ArgumentNullException(nameof(request));
+
             var users = await UnitOfWork.Repository.GetAllAsync<User>();
             var user = users.SingleOrDefault(u => u.Name == request.Name
-                                                  && PasswordHasher.Verify(request.Password, u.Password));
+                                                  && passwordHasher.Verify(request.Password, u.Password));
 
             var response = Mapper.Map<UserResponse>(user);
 

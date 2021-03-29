@@ -28,8 +28,15 @@ namespace ToDoList.WebApi.Controllers
         public async Task<CategoryResponse> GetByName(string name) =>
             await Mediator.Send(new GetByNameQuery<Category, CategoryResponse>(name));
 
+        [HttpGet]
+        [Route("[action]/{name}")]
+        public async Task<CategoryResponse> GetByName(string name) =>
+           await Mediator.Send(new GetByNameQuery<Category, CategoryResponse>(name));
+
         [HttpPost]
-        public async Task Add([FromBody] CategoryCreateRequest createRequest) =>
+        public async Task Add([FromBody] CategoryCreateRequest createRequest)
+        {
+            _ = createRequest ?? throw new System.ArgumentNullException(nameof(createRequest));
             await Mediator.Send(new AddCommand<CategoryCreateRequest>(createRequest));
     }
 }

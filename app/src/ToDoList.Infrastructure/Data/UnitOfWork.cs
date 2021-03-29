@@ -12,8 +12,8 @@ namespace ToDoList.Infrastructure.Data
 
         public UnitOfWork(TodoListContext toDoListContext, IRepository repository)
         {
-            context = toDoListContext;
-            Repository = repository;
+            context = toDoListContext ?? throw new System.ArgumentNullException(nameof(toDoListContext));
+            Repository = repository ?? throw new System.ArgumentNullException(nameof(repository));
         }
 
         public Task SaveAsync()

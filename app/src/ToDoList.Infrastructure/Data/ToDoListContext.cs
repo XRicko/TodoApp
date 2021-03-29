@@ -7,7 +7,10 @@ using ToDoList.Infrastructure.Data.Config;
 
 namespace ToDoList.Infrastructure.Data
 {
+<<<<<<< HEAD
     [ExcludeFromCodeCoverage]
+=======
+>>>>>>> master
     public class TodoListContext : DbContext
     {
         public TodoListContext(DbContextOptions<TodoListContext> options)

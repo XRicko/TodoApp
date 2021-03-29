@@ -114,6 +114,26 @@ namespace ToDoList.Infrastructure.Migrations
                         .IsUnique();
 
                     b.ToTable("Status");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            IsDone = false,
+                            Name = "Planned"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            IsDone = false,
+                            Name = "Ongoing"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            IsDone = true,
+                            Name = "Done"
+                        });
                 });
 
             modelBuilder.Entity("ToDoList.Core.Entities.TodoItem", b =>

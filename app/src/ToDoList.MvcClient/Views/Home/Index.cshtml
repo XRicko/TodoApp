@@ -1,0 +1,14 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+@if (Context.Request.Cookies["Token"] is null)
+{
+    <div class="text-center">
+        <h1 class="display-4">Welcome</h1>
+        <p>Login or register to get acces</p>
+    </div>
+}
+else
+{
+    Context.Response.Redirect("/Todo/Index");
+}

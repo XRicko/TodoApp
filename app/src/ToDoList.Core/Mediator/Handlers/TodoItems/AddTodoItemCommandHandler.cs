@@ -1,4 +1,5 @@
-﻿using System.Linq;
+using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -23,6 +24,8 @@ namespace ToDoList.Core.Mediator.Handlers.TodoItems
 
         public override async Task<Unit> Handle(AddCommand<TodoItemCreateRequest> request, CancellationToken cancellationToken)
         {
+            _ = request ?? throw new ArgumentNullException(nameof(request));
+
             var todoItems = await UnitOfWork.Repository.GetAllAsync<TodoItem>();
             var todoItem = todoItems.SingleOrDefault(e => e.Name == request.Request.Name
                                                           && e.ChecklistId == request.Request.ChecklistId);
@@ -30,9 +33,6 @@ namespace ToDoList.Core.Mediator.Handlers.TodoItems
             if (todoItem is null)
             {
                 var entity = Mapper.Map<TodoItem>(request.Request);
-
-                if (entity.GeoPoint is not null)
-                    entity.GeoPoint.SRID = 4326;
 
                 await UnitOfWork.Repository.AddAsync(entity);
                 await UnitOfWork.SaveAsync();

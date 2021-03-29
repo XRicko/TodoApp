@@ -36,15 +36,21 @@ namespace ToDoList.WebApi.Controllers
             await Mediator.Send(new GetChecklistsByUserIdQuery(Convert.ToInt32(UserId)));
 
         [HttpPost]
-        public async Task Add([FromBody] ChecklistCreateRequest createRequest) =>
+        public async Task Add([FromBody] ChecklistCreateRequest createRequest)
+        {
+            _ = createRequest ?? throw new ArgumentNullException(nameof(createRequest));
             await Mediator.Send(new AddCommand<ChecklistCreateRequest>(createRequest));
+        }
 
         [HttpDelete("{id}")]
         public async Task Delete(int id) =>
             await Mediator.Send(new RemoveCommand<Checklist>(id));
 
         [HttpPut]
-        public async Task Update([FromBody] ChecklistUpdateRequest updateRequest) =>
+        public async Task Update([FromBody] ChecklistUpdateRequest updateRequest)
+        {
+            _ = updateRequest ?? throw new ArgumentNullException(nameof(updateRequest));
             await Mediator.Send(new UpdateCommand<ChecklistUpdateRequest>(updateRequest));
+        }
     }
 }
