@@ -1,4 +1,8 @@
 
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
+
 using MediatR;
 
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -7,6 +11,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 
@@ -43,6 +48,17 @@ namespace ToDoList.WebApi
             services.AddMediatR(typeof(GetAllQuery<,>));
 
             var jwtTokenConfig = Configuration.GetSection("JwtTokenConfigs").Get<JwtTokenConfig>();
+
+            var validationResults = new List<ValidationResult>();
+            var validationContext = new ValidationContext(jwtTokenConfig, serviceProvider: null, items: null);
+
+            if (!Validator.TryValidateObject(jwtTokenConfig, validationContext, validationResults, validateAllProperties: true))
+            {
+                foreach (var item in validationResults)
+                {
+                    throw new ValidationException(item.ErrorMessage);
+                }
+            }
 
             services.AddSingleton(jwtTokenConfig);
             services.AddScoped<ITokenGenerator, TokenGenerator>();
