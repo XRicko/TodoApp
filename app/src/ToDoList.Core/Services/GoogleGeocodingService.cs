@@ -14,7 +14,7 @@ namespace ToDoList.Core.Services
 
         public GoogleGeocodingService(ApiOptions options)
         {
-            apiOptions = options;
+            apiOptions = options ?? throw new System.ArgumentNullException(nameof(options));
             googleGeocoder = new GoogleGeocoder(apiOptions.GoogleApiKey);
         }
 

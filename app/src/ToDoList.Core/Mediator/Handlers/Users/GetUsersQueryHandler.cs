@@ -7,7 +7,7 @@ using ToDoList.SharedKernel.Interfaces;
 
 namespace ToDoList.Core.Mediator.Handlers.Users
 {
-    class GetUsersQueryHandler : GetAllQueryHandler<User, UserResponse>
+    internal class GetUsersQueryHandler : GetAllQueryHandler<User, UserResponse>
     {
         public GetUsersQueryHandler(IUnitOfWork unitOfWork, IMapper mapper) : base(unitOfWork, mapper)
         {

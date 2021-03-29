@@ -1,0 +1,84 @@
+﻿@model ToDoList.MvcClient.ViewModels.CreateViewModel
+
+@{
+    ViewData["Title"] = "Create";
+    Layout = null;
+}
+
+<div class="row">
+    <div class="col-md-12">
+        <form asp-action="CreateOrUpdate" asp-route-id="@Model.TodoItemModel.Id" onsubmit="return ajaxPost(this);">
+            @Html.HiddenFor(m => m.TodoItemModel.Id)
+
+            @Html.HiddenFor(m => m.TodoItemModel.ParentId)
+            @Html.HiddenFor(m => m.TodoItemModel.StartDate)
+            @Html.HiddenFor(m => m.TodoItemModel.ImageId)
+
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="form-group required">
+                <label asp-for="TodoItemModel.Name" class="control-label"></label>
+                <input asp-for="TodoItemModel.Name" class="form-control" required />
+                <span asp-validation-for="TodoItemModel.Name" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="TodoItemModel.DueDate" class="control-label"></label>
+                <input asp-for="TodoItemModel.DueDate" class="form-control" />
+                <span asp-validation-for="TodoItemModel.DueDate" class="text-danger"></span>
+            </div>
+
+            <div class="form-group required">
+                <label asp-for="TodoItemModel.ChecklistId" class="control-label">Checklist</label>
+                <select class="form-control" asp-for="TodoItemModel.ChecklistId" asp-items="@new SelectList(Model.ChecklistModels, nameof(ChecklistModel.Id), nameof(ChecklistModel.Name), Model.SelectedChecklistId)">
+                    <option value="" disabled>Select checklist</option>
+                </select>
+                <span asp-validation-for="TodoItemModel.ChecklistId" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="TodoItemModel.StatusId" class="control-label">Status</label>
+                <select class="form-control" asp-for="TodoItemModel.StatusId" asp-items="@new SelectList(Model.StatusModels, nameof(StatusModel.Id), nameof(StatusModel.Name), Model.SelectedStatusId)">
+                    <option value="" disabled>Select status</option>
+                </select>
+                <span asp-validation-for="TodoItemModel.StatusId" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="TodoItemModel.CategoryId" class="control-label">Category</label>
+                <select class="form-control" id="categorySelector" asp-for="TodoItemModel.CategoryName" asp-items="@new SelectList(Model.CategoryModels, nameof(CategoryModel.Name), nameof(CategoryModel.Name), Model.SelectedCategoryId)">
+                    <option value="">Select category</option>
+                </select>
+                <span asp-validation-for="TodoItemModel.CategoryId" class="text-danger"></span>
+            </div>
+
+            <div class="form-row mb-2">
+                <div class="col">
+                    <input id="latitude" class="form-control" placeholder="Latitude" asp-for="TodoItemModel.Latitude" value="@Model.TodoItemModel.Latitude" />
+                </div>
+                <div class="col">
+                    <input id="longitude" class="form-control" placeholder="Longitude" asp-for="TodoItemModel.Longitude" value="@Model.TodoItemModel.Longitude" />
+                </div>           
+            </div>
+
+            <div class="form-group">
+                <div id="map" style="height: 400px; width: 100%;"></div>
+            </div>
+
+            <div class="form-group">
+                <label>Choose image</label>
+                <div class="custom-file">
+                    <input asp-for="TodoItemModel.Image" class="custom-file-input" id="customFile" onchange="$('#fileLabel').text(this.files[0].name)" />
+                    <label asp-for="TodoItemModel.Image" id="fileLabel" class="custom-file-label">Choose image</label>
+                </div>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Submit" class="btn btn-primary btn-block" />
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

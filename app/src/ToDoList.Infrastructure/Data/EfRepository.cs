@@ -9,11 +9,11 @@ using ToDoList.SharedKernel.Interfaces;
 
 namespace ToDoList.Infrastructure.Data
 {
-    class EfRepository : IRepository
+    internal class EfRepository : IRepository
     {
-        private readonly ToDoListContext context;
+        private readonly TodoListContext context;
 
-        public EfRepository(ToDoListContext toDoListContext)
+        public EfRepository(TodoListContext toDoListContext)
         {
             context = toDoListContext ?? throw new ArgumentNullException(nameof(toDoListContext));
         }
@@ -24,23 +24,27 @@ namespace ToDoList.Infrastructure.Data
         public Task<T> GetAsync<T>(string name) where T : BaseEntity =>
             context.Set<T>().SingleOrDefaultAsync(x => x.Name == name);
 
-        public Task<T> GetAsync<T>(T entity) where T : BaseEntity =>
-            context.Set<T>().SingleOrDefaultAsync(x => x.Name == entity.Name);
-
         public async Task<IEnumerable<T>> GetAllAsync<T>() where T : BaseEntity =>
             await context.Set<T>().ToListAsync();
 
-        public async Task AddAsync<T>(T entity) where T : BaseEntity =>
+        public async Task AddAsync<T>(T entity) where T : BaseEntity
+        {
+            _ = entity ?? throw new ArgumentNullException(nameof(entity));
             await context.Set<T>().AddAsync(entity);
+        }
 
         public void Update<T>(T entity) where T : BaseEntity
         {
+            _ = entity ?? throw new ArgumentNullException(nameof(entity));
+
             context.Set<T>().Attach(entity);
             context.Entry(entity).State = EntityState.Modified;
         }
 
-        public void Remove<T>(T entity) where T : BaseEntity =>
+        public void Remove<T>(T entity) where T : BaseEntity
+        {
+            _ = entity ?? throw new ArgumentNullException(nameof(entity));
             context.Set<T>().Remove(entity);
+        }
     }
-
 }

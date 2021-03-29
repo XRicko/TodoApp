@@ -4,16 +4,16 @@ using ToDoList.SharedKernel.Interfaces;
 
 namespace ToDoList.Infrastructure.Data
 {
-    class UnitOfWork : IUnitOfWork
+    internal class UnitOfWork : IUnitOfWork
     {
-        private readonly ToDoListContext context;
+        private readonly TodoListContext context;
 
         public IRepository Repository { get; }
 
-        public UnitOfWork(ToDoListContext toDoListContext, IRepository repository)
+        public UnitOfWork(TodoListContext toDoListContext, IRepository repository)
         {
-            context = toDoListContext;
-            Repository = repository;
+            context = toDoListContext ?? throw new System.ArgumentNullException(nameof(toDoListContext));
+            Repository = repository ?? throw new System.ArgumentNullException(nameof(repository));
         }
 
         public Task SaveAsync()

@@ -9,12 +9,12 @@ namespace ToDoList.Core.Entities
 {
     public class TodoItem : BaseEntity
     {
-        public DateTime StartDate { get; private set; }
+        public DateTime StartDate { get; init; }
         public DateTime? DueDate { get; set; }
         public Point GeoPoint { get; set; }
 
         public int? ParentId { get; set; }
-        public int? StatusId { get; set; }
+        public int StatusId { get; set; }
         public int? CategoryId { get; set; }
         public int ChecklistId { get; set; }
         public int? ImageId { get; set; }
@@ -29,8 +29,8 @@ namespace ToDoList.Core.Entities
 
         public TodoItem() : base()
         {
-            StartDate = DateTime.Now;
             Children = new HashSet<TodoItem>();
+            StartDate = DateTime.Now;
         }
     }
 }

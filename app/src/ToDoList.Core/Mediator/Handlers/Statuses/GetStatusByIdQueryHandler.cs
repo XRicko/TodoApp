@@ -8,7 +8,7 @@ using ToDoList.SharedKernel.Interfaces;
 
 namespace ToDoList.Core.Mediator.Handlers.Statuses
 {
-    class GetStatusByIdQueryHandler : GetByIdQueryHandler<Status, StatusResponse>
+    internal class GetStatusByIdQueryHandler : GetByIdQueryHandler<Status, StatusResponse>
     {
         public GetStatusByIdQueryHandler(IUnitOfWork unitOfWork, IMapper mapper) : base(unitOfWork, mapper)
         {

@@ -8,7 +8,7 @@ using ToDoList.SharedKernel.Interfaces;
 
 namespace ToDoList.Core.Mediator.Handlers.Images
 {
-    class GetImageByIdQueryHandler : GetByIdQueryHandler<Image, ImageResponse>
+    internal class GetImageByIdQueryHandler : GetByIdQueryHandler<Image, ImageResponse>
     {
         public GetImageByIdQueryHandler(IUnitOfWork unitOfWork, IMapper mapper) : base(unitOfWork, mapper)
         {

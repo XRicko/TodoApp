@@ -1,0 +1,159 @@
+﻿@model ToDoList.MvcClient.ViewModels.IndexViewModel
+
+@{
+    int userId = Model.ChecklistModels.First().UserId;
+}
+
+
+<div class="text-right mb-3">
+    <button onclick="showPopup('@Url.Action("CreateOrUpdate", "Checklist", new { userId }, Context.Request.Scheme)','Add new checklist')" class="btn btn-primary">Add checklist</button>
+</div>
+
+<div class="d-flex flex-row flex-wrap" style="margin: -1em">
+        @foreach (var checklist in Model.ChecklistModels)
+        {
+            <div class="card" style="flex: 1 0 calc(50% - 2em); margin: 1em 0.5em 0.5em 1em;">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <div class="text-capitalize font-weight-normal">
+                        <i class="bi bi-list-task"></i>&nbsp;@checklist.Name
+                    </div>
+
+                    <div>
+                        <button onclick="showPopup('@Url.Action("CreateOrUpdate", "Checklist", new { checklist.Id }, Context.Request.Scheme)','Update checklist')" class="border-0 btn-transition btn btn-outline-info"><i class="bi bi-pencil"></i></button>
+
+                        @if (checklist.Name != "Untitled")
+                        {
+                            <form asp-action="Delete" asp-controller="Checklist" method="post" asp-route-id="@checklist.Id" onsubmit="return ajaxDelete(this);" class="d-inline">
+                                <button type="submit" class="border-0 btn-transition btn btn-outline-danger"> <i class="bi bi-trash"></i> </button>
+                            </form>
+                        }
+                    </div>
+
+                </div>
+
+                <div class="card-body">
+                    <ul class="nav nav-tabs border-0 mb-2" style="grid-gap: 12px;">
+                        <li class="nav-item">
+                            <a class="btn btn-outline-primary active" id="notDone-@checklist.Id-tab"
+                               data-toggle="tab" href="#notDone-@checklist.Id">Active <span class="badge badge-light">@Model.ActiveTodoItems.Where(x => x.ChecklistId == checklist.Id).Count()</span></a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="btn btn-outline-secondary" id="done-@checklist.Id-tab"
+                               data-toggle="tab" href="#done-@checklist.Id">Done  <span class="badge badge-light">@Model.DoneTodoItems.Where(x => x.ChecklistId == checklist.Id).Count()</span></a>
+                        </li>
+                    </ul>
+
+                    <div class="tab-content">
+                        <ul class=" tab-pane show active list-group list-group-flush" id="notDone-@checklist.Id">
+                            @foreach (var todoItem in Model.ActiveTodoItems.Where(i => i.ChecklistId == checklist.Id))
+                            {
+                                <li class="list-group-item">
+                                    <div class="d-flex flex-column">
+                                        <div class="d-flex">
+                                            <div class="form-check">
+                                                <input class="form-check-input" id="@todoItem.Id" data-url="@Url.Action("MarkTodoItem")" onchange="return ajaxChangeStatus(this)" type="checkbox">
+                                                <label class="form-check-label" for="@todoItem.Id">&nbsp;</label>
+                                            </div>
+
+                                            <div>
+                                                @todoItem.Name
+                                                @if (todoItem.StatusName is "Planned")
+                                                {
+                                                    <div class="badge badge-secondary ml-2">@todoItem.StatusName</div>
+                                                }
+                                                else if (todoItem.StatusName is "Ongoing")
+                                                {
+                                                    <div class="badge badge-warning ml-2">@todoItem.StatusName</div>
+                                                }
+                                                else
+                                                {
+                                                    <div class="badge badge-success ml-2">@todoItem.StatusName</div>
+                                                }
+
+                                                @if (todoItem.CategoryName is not null)
+                                                {
+                                                    <div class="badge badge-pill badge-info">#@todoItem.CategoryName</div>
+                                                }
+
+                                            </div>
+                                        </div>
+
+                                        @if (todoItem.DueDate is not null)
+                                        {
+                                            <div class="text-right text-secondary">
+                                                Due @todoItem.DueDate
+                                            </div>
+                                        }
+
+                                        <a href="http://maps.google.com/?q=@todoItem.Address">@todoItem.Address</a>
+
+                                        <img src="@Url.Content(todoItem.ImagePath)" class="img-fluid" />
+
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <div class="text-muted">
+                                                @todoItem.DaysAgo days ago
+                                            </div>
+
+                                            <div>
+                                                <button onclick="showPopup('@Url.Action("CreateOrUpdate", "Todo", new { ChecklistId = checklist.Id, ParentId = todoItem.Id }, Context.Request.Scheme)', 'Add subtask for @todoItem.Name')" class="border-0 btn-transition btn btn-outline-primary"><i class="bi bi-plus-square"></i></button>
+                                                <button onclick="showPopup('@Url.Action("CreateOrUpdate", "Todo", new { TodoItemId = todoItem.Id, ChecklistId = checklist.Id }, Context.Request.Scheme)','Update task', this)" class="border-0 btn-transition btn btn-outline-info todoItem"><i class="bi bi-pencil"></i></button>
+
+                                                <form asp-action="Delete" method="post" asp-route-id="@todoItem.Id" onsubmit="return ajaxDelete(this);" class="d-inline">
+                                                    <button type="submit" class="border-0 btn-transition btn btn-outline-danger"> <i class="bi bi-trash"></i> </button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                            }
+                        </ul>
+
+                        <ul class="tab-pane list-group list-group-flush" id="done-@checklist.Id">
+                            @foreach (var todoItem in Model.DoneTodoItems.Where(i => i.ChecklistId == checklist.Id))
+                            {
+                                <li class="list-group-item">
+                                    <div class="d-flex flex-column">
+                                        <div class="d-flex">
+                                            <div class="form-check">
+                                                <input class="form-check-input" checked id="@todoItem.Id" data-url="@Url.Action("MarkTodoItem")" onchange="return ajaxChangeStatus(this)" type="checkbox">
+                                                <label class="form-check-label" for="@todoItem.Id">&nbsp;</label>
+                                            </div>
+
+                                            <div>
+                                                @todoItem.Name
+                                                <div class="badge badge-success ml-2">@todoItem.StatusName</div>
+
+                                                @if (todoItem.CategoryName is not null)
+                                                {
+                                                    <div class="badge badge-pill badge-info">#@todoItem.CategoryName</div>
+                                                }
+
+                                            </div>
+                                        </div>
+
+                                        <img src="@Url.Content(todoItem.ImagePath)" class="img-fluid" />
+
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <div class="text-muted">
+                                                @todoItem.DaysAgo days ago
+                                            </div>
+
+                                            <div>
+                                                <form asp-action="Delete" method="post" asp-route-id="@todoItem.Id" onsubmit="return ajaxDelete(this);" class="d-inline">
+                                                    <button type="submit" class="border-0 btn-transition btn btn-outline-danger"> <i class="bi bi-trash"></i> </button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="d-block text-right card-footer">
+                    <button onclick="showPopup('@Url.Action("CreateOrUpdate", "Todo", new { ChecklistId = checklist.Id }, Context.Request.Scheme)', 'New task', this)" class="btn btn-primary todoItem">Add task</button>
+                </div>
+            </div>
+        }
+</div>

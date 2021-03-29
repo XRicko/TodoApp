@@ -1,0 +1,8 @@
+﻿@model ToDoList.MvcClient.ViewModels.IndexViewModel
+@{
+    ViewData["Title"] = "Index";
+}
+
+<div id="view-all">
+    @await Html.PartialAsync("_ViewAll", Model)
+</div>

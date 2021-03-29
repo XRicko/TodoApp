@@ -3,14 +3,18 @@
 using NetTopologySuite.Geometries;
 
 using ToDoList.Core.Entities;
+using ToDoList.Core.Mediator.Requests;
 using ToDoList.Core.Mediator.Requests.Create;
 using ToDoList.Core.Mediator.Requests.Update;
 using ToDoList.Core.Mediator.Response;
+using ToDoList.SharedKernel;
 
 namespace ToDoList.Core.MappingProfiles
 {
-    class EntityToDtoMappingProfile : Profile
+    internal class EntityToDtoMappingProfile : Profile
     {
+        private const int SRID = 4326;
+
         public EntityToDtoMappingProfile()
         {
             CreateMap<Point, GeoCoordinate>()
@@ -28,10 +32,12 @@ namespace ToDoList.Core.MappingProfiles
                 .ForCtorParam("x",
                               opt => opt.MapFrom(src => src.Longitude))
                 .ForCtorParam("y",
-                              opt => opt.MapFrom(src => src.Latitude));
+                              opt => opt.MapFrom(src => src.Latitude))
+                .ForMember(dest => dest.SRID,
+                           opt => opt.MapFrom(src => SRID));
 
             CreateMap<User, UserResponse>();
-            CreateMap<UserCreateRequest, User>();
+            CreateMap<UserRequest, User>();
 
             CreateMap<Image, ImageResponse>();
             CreateMap<ImageCreateRequest, Image>();
@@ -42,9 +48,7 @@ namespace ToDoList.Core.MappingProfiles
 
             CreateMap<Status, StatusResponse>();
 
-            CreateMap<Checklist, ChecklistResponse>()
-                .ForMember(dest => dest.UserName,
-                           opt => opt.MapFrom(src => src.User.Name));
+            CreateMap<Checklist, ChecklistResponse>();
             CreateMap<ChecklistCreateRequest, Checklist>();
             CreateMap<ChecklistUpdateRequest, Checklist>();
 

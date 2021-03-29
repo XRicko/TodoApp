@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -6,7 +7,7 @@ using AutoMapper;
 
 using MediatR;
 
-using ToDoList.Core.Mediator.Queries;
+using ToDoList.Core.Mediator.Queries.Generics;
 using ToDoList.Core.Mediator.Response;
 using ToDoList.SharedKernel;
 using ToDoList.SharedKernel.Interfaces;
@@ -21,6 +22,8 @@ namespace ToDoList.Core.Mediator.Handlers.Generics
 
         public virtual async Task<IEnumerable<TResponse>> Handle(GetAllQuery<TEntity, TResponse> request, CancellationToken cancellationToken)
         {
+            _ = request ?? throw new ArgumentNullException(nameof(request));
+
             var entities = await UnitOfWork.Repository.GetAllAsync<TEntity>();
             var responses = Mapper.Map<IEnumerable<TResponse>>(entities);
 

@@ -11,7 +11,7 @@ namespace ToDoList.Infrastructure.Data.Config
         {
             builder.ToTable("Checklist");
 
-            builder.HasIndex(e => e.Name)
+            builder.HasIndex(e => new { e.Name, e.UserId })
                 .IsUnique();
 
             builder.Property(e => e.Name)

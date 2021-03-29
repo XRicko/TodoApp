@@ -7,7 +7,6 @@ namespace ToDoList.SharedKernel.Interfaces
     {
         Task<T> GetAsync<T>(int id) where T : BaseEntity;
         Task<T> GetAsync<T>(string name) where T : BaseEntity;
-        Task<T> GetAsync<T>(T entity) where T : BaseEntity;
 
         Task<IEnumerable<T>> GetAllAsync<T>() where T : BaseEntity;
 

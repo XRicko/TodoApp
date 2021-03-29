@@ -11,6 +11,8 @@ namespace ToDoList.Core.Entities
             Checklists = new HashSet<Checklist>();
         }
 
+        public string Password { get; set; }
+
         public virtual ICollection<Checklist> Checklists { get; set; }
     }
 }

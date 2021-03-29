@@ -1,15 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 
-using AutoMapper;
-
 using MediatR;
 
 using Microsoft.AspNetCore.Mvc;
 
 using ToDoList.Core.Entities;
 using ToDoList.Core.Mediator.Commands;
-using ToDoList.Core.Mediator.Queries;
+using ToDoList.Core.Mediator.Queries.Generics;
 using ToDoList.Core.Mediator.Requests.Create;
 using ToDoList.Core.Mediator.Response;
 
@@ -19,7 +17,7 @@ namespace ToDoList.WebApi.Controllers
     [ApiController]
     public class CategoriesController : Base
     {
-        public CategoriesController(IMediator mediator, IMapper mapper) : base(mediator, mapper) { }
+        public CategoriesController(IMediator mediator) : base(mediator) { }
 
         [HttpGet]
         public async Task<IEnumerable<CategoryResponse>> Get() =>
@@ -29,9 +27,17 @@ namespace ToDoList.WebApi.Controllers
         public async Task<CategoryResponse> Get(int id) =>
             await Mediator.Send(new GetByIdQuery<Category, CategoryResponse>(id));
 
+        [HttpGet]
+        [Route("[action]/{name}")]
+        public async Task<CategoryResponse> GetByName(string name) =>
+           await Mediator.Send(new GetByNameQuery<Category, CategoryResponse>(name));
+
         [HttpPost]
-        public async Task Add([FromBody] CategoryCreateRequest createRequest) =>
+        public async Task Add([FromBody] CategoryCreateRequest createRequest)
+        {
+            _ = createRequest ?? throw new System.ArgumentNullException(nameof(createRequest));
             await Mediator.Send(new AddCommand<CategoryCreateRequest>(createRequest));
+        }
 
         [HttpDelete("{id}")]
         public async Task Delete(int id) =>

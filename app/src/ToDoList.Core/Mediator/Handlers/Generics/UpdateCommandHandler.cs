@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 using AutoMapper;
@@ -20,6 +21,8 @@ namespace ToDoList.Core.Mediator.Handlers.Generics
 
         public async Task<Unit> Handle(UpdateCommand<TRequest> request, CancellationToken cancellationToken)
         {
+            _ = request ?? throw new ArgumentNullException(nameof(request));
+
             var entity = Mapper.Map<TEntity>(request.Request);
 
             UnitOfWork.Repository.Update(entity);

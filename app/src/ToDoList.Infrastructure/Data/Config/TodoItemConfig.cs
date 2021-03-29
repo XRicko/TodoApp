@@ -15,6 +15,9 @@ namespace ToDoList.Infrastructure.Data.Config
                 .IsRequired()
                 .HasMaxLength(200);
 
+            builder.HasIndex(e => new { e.Name, e.ChecklistId })
+                .IsUnique();
+
             builder.HasOne(d => d.Category)
                 .WithMany(p => p.TodoItems)
                 .HasForeignKey(d => d.CategoryId);
