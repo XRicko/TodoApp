@@ -24,11 +24,11 @@ namespace ToDoList.MvcClient.Controllers
         public async Task<ActionResult> CreateOrUpdateAsync(int id = 0, int userId = 0)
         {
             if (id == 0)
-                return View(new ChecklistModel { UserId = userId });
+                return View("CreateOrUpdate", new ChecklistModel { UserId = userId });
 
             var checklistModel = await apiCallsService.GetItemAsync<ChecklistModel>("Checklists/" + id);
             return checklistModel is not null
-                ? View(checklistModel)
+                ? View("CreateOrUpdate", checklistModel)
                 : NotFound();
         }
 
@@ -48,7 +48,7 @@ namespace ToDoList.MvcClient.Controllers
             if (checklistModel.Id != 0)
                 await apiCallsService.PutItemAsync("Checklists", checklistModel);
 
-            var viewModel = await viewModelService.CreateIndexViewModel();
+            var viewModel = await viewModelService.CreateIndexViewModelAsync();
             return PartialView("_ViewAll", viewModel);
         }
 
@@ -58,7 +58,7 @@ namespace ToDoList.MvcClient.Controllers
         public async Task<ActionResult> DeleteAsync(int id)
         {
             await apiCallsService.DeleteItemAsync("Checklists/", id);
-            var viewModel = await viewModelService.CreateIndexViewModel();
+            var viewModel = await viewModelService.CreateIndexViewModelAsync();
 
             return PartialView("_ViewAll", viewModel);
         }

@@ -19,7 +19,7 @@ using Xunit;
 
 namespace ToDoList.UnitTests.WebApi.Controllers
 {
-    public class TodoItemsControllerTests : ControllerBaseForTests
+    public class TodoItemsControllerTests : ApiControllerBaseForTests
     {
         private readonly TodoItemsController todoItemsController;
 

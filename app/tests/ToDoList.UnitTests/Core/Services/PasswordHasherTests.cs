@@ -8,6 +8,13 @@ namespace ToDoList.UnitTests.Core.Services
 {
     public class PasswordHasherTests
     {
+        private readonly PasswordHasher passwordHasher;
+
+        public PasswordHasherTests()
+        {
+            passwordHasher = new PasswordHasher();
+        }
+
         [Fact]
         public void Hash_ReturnsHashInProperFormat()
         {
@@ -16,7 +23,7 @@ namespace ToDoList.UnitTests.Core.Services
             int expectedIterations = 12399;
 
             // Act
-            string hashedPassword = PasswordHasher.Hash(password, expectedIterations);
+            string hashedPassword = passwordHasher.Hash(password, expectedIterations);
             int actualIterations = int.Parse(hashedPassword.Replace("$MYHASH$V1$", "")
                                                            .Split('$')[0]);
 
@@ -30,10 +37,10 @@ namespace ToDoList.UnitTests.Core.Services
         {
             // Arrange
             string password = "qwerty123456";
-            string hashedPassword = PasswordHasher.Hash(password);
+            string hashedPassword = passwordHasher.Hash(password);
 
             // Act
-            bool isValid = PasswordHasher.Verify(password, hashedPassword);
+            bool isValid = passwordHasher.VerifyPassword(password, hashedPassword);
 
             // Assert
             Assert.True(isValid);
@@ -44,10 +51,10 @@ namespace ToDoList.UnitTests.Core.Services
         {
             // Arrange
             string password = "invalid_password";
-            string hashedPassword = PasswordHasher.Hash("valid_password");
+            string hashedPassword = passwordHasher.Hash("valid_password");
 
             // Act
-            bool isValid = PasswordHasher.Verify(password, hashedPassword);
+            bool isValid = passwordHasher.VerifyPassword(password, hashedPassword);
 
             // Assert
             Assert.False(isValid);
@@ -62,7 +69,7 @@ namespace ToDoList.UnitTests.Core.Services
             string hashedPassword = "$MyHash$invalid/hash";
 
             // Act && Assert
-            Assert.Throws<NotSupportedException>(() => PasswordHasher.Verify(password, hashedPassword));
+            Assert.Throws<NotSupportedException>(() => passwordHasher.VerifyPassword(password, hashedPassword));
         }
     }
 }

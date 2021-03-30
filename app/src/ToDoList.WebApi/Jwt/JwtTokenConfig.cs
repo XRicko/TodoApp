@@ -1,5 +1,5 @@
-using System.Diagnostics.CodeAnalysis;
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.CodeAnalysis;
 using System.Text;
 
 using Microsoft.IdentityModel.Tokens;
@@ -9,7 +9,7 @@ namespace ToDoList.WebApi.Jwt
     [ExcludeFromCodeCoverage]
     public class JwtTokenConfig
     {
-         [Required(AllowEmptyStrings = false)]
+        [Required(AllowEmptyStrings = false)]
         public string Issuer { get; set; }
 
         [Required(AllowEmptyStrings = false)]

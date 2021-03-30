@@ -13,7 +13,7 @@ using Xunit;
 
 namespace ToDoList.UnitTests.WebApi.Controllers
 {
-    public class StatusesControllerTests : ControllerBaseForTests
+    public class StatusesControllerTests : ApiControllerBaseForTests
     {
         private readonly StatusesController statusesController;
 

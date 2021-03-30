@@ -16,19 +16,19 @@ namespace ToDoList.UnitTests.Core.Handlers.Users
 {
     public class AddUserCommandHandlerTests : HandlerBaseForTests
     {
+        private readonly PasswordHasher passwordHasher;
         private readonly AddUserCommandHandler addUserHandler;
 
         private readonly string username;
         private readonly string password;
-        private readonly string hashedPassword;
 
         public AddUserCommandHandlerTests() : base()
         {
-            addUserHandler = new AddUserCommandHandler(UnitOfWorkMock.Object, Mapper);
+            passwordHasher = new PasswordHasher();
+            addUserHandler = new AddUserCommandHandler(UnitOfWorkMock.Object, Mapper, passwordHasher);
 
             username = "admin";
             password = "qwerty";
-            hashedPassword = PasswordHasher.Hash(password);
         }
 
         [Fact]
@@ -47,7 +47,7 @@ namespace ToDoList.UnitTests.Core.Handlers.Users
             // Assert
             RepoMock.Verify(x => x.GetAllAsync<User>(), Times.Once);
             RepoMock.Verify(x => x.AddAsync(It.Is<User>(u => u.Name == newUser.Name
-                                                             && PasswordHasher.Verify(newUser.Password, hashedPassword))), Times.Once);
+                                                             && passwordHasher.VerifyPassword(newUser.Password, u.Password))), Times.Once);
             RepoMock.Verify(x => x.AddAsync(It.Is<Checklist>(l => l.Name == "Untitled")), Times.Once);
 
             UnitOfWorkMock.Verify(x => x.SaveAsync(), Times.Exactly(2));
@@ -57,7 +57,7 @@ namespace ToDoList.UnitTests.Core.Handlers.Users
         public async Task DoesntAddUserGivenExisting()
         {
             // Arrange
-            var existingUser = new UserRequest(username, hashedPassword);
+            var existingUser = new UserRequest(username, password);
             var users = GetSampleUsers();
 
             RepoMock.Setup(x => x.GetAllAsync<User>())
@@ -69,7 +69,7 @@ namespace ToDoList.UnitTests.Core.Handlers.Users
             // Assert
             RepoMock.Verify(x => x.GetAllAsync<User>(), Times.Once);
             RepoMock.Verify(x => x.AddAsync(It.Is<User>(u => u.Name == existingUser.Name
-                                                             && PasswordHasher.Verify(existingUser.Password, hashedPassword))), Times.Never);
+                                                             && passwordHasher.VerifyPassword(existingUser.Password, u.Password))), Times.Never);
             RepoMock.Verify(x => x.AddAsync(It.Is<Checklist>(l => l.Name == "Untitled")), Times.Never);
 
             UnitOfWorkMock.Verify(x => x.SaveAsync(), Times.Never);
@@ -79,10 +79,10 @@ namespace ToDoList.UnitTests.Core.Handlers.Users
         {
             return new List<User>
             {
-                new User { Name = username, Password = PasswordHasher.Hash(password) },
-                new User { Name = "qwerty", Password = PasswordHasher.Hash("admin") },
-                new User { Name = "anonim", Password = PasswordHasher.Hash("123456") },
-                new User { Name = "anonim", Password = PasswordHasher.Hash("asjdnj") }
+                new User { Name = username, Password = passwordHasher.Hash(password) },
+                new User { Name = "qwerty", Password = passwordHasher.Hash("admin") },
+                new User { Name = "anonim", Password = passwordHasher.Hash("123456") },
+                new User { Name = "anonim", Password = passwordHasher.Hash("asjdnj") }
             };
         }
     }

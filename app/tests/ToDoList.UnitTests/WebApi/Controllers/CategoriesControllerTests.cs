@@ -16,7 +16,7 @@ using Xunit;
 
 namespace ToDoList.UnitTests.WebApi.Controllers
 {
-    public class CategoriesControllerTests : ControllerBaseForTests
+    public class CategoriesControllerTests : ApiControllerBaseForTests
     {
         private readonly CategoriesController categoriesController;
 

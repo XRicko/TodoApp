@@ -4,11 +4,11 @@ using Moq;
 
 namespace ToDoList.UnitTests.WebApi.Controllers
 {
-    abstract public class ControllerBaseForTests
+    abstract public class ApiControllerBaseForTests
     {
         protected Mock<IMediator> MediatorMock { get; }
 
-        protected ControllerBaseForTests()
+        protected ApiControllerBaseForTests()
         {
             MediatorMock = new Mock<IMediator>();
         }

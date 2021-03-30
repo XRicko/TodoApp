@@ -15,6 +15,7 @@ namespace ToDoList.UnitTests.Core.Handlers.Users
 {
     public class GetUserByNameAndPasswordQueryHandlerTests : HandlerBaseForTests
     {
+        private readonly PasswordHasher passwordHasher;
         private readonly GetUserByNameAndPasswordQueryHandler getUserByNameAndPasswordHandler;
 
         private readonly string username;
@@ -22,7 +23,8 @@ namespace ToDoList.UnitTests.Core.Handlers.Users
 
         public GetUserByNameAndPasswordQueryHandlerTests() : base()
         {
-            getUserByNameAndPasswordHandler = new GetUserByNameAndPasswordQueryHandler(UnitOfWorkMock.Object, Mapper);
+            passwordHasher = new PasswordHasher();
+            getUserByNameAndPasswordHandler = new GetUserByNameAndPasswordQueryHandler(UnitOfWorkMock.Object, Mapper, passwordHasher);
 
             username = "admin";
             password = "qwerty";
@@ -42,7 +44,7 @@ namespace ToDoList.UnitTests.Core.Handlers.Users
 
             // Assert
             Assert.Equal(username, actual.Name);
-            Assert.True(PasswordHasher.Verify(password, actual.Password));
+            Assert.True(passwordHasher.VerifyPassword(password, actual.Password));
 
             RepoMock.Verify(x => x.GetAllAsync<User>(), Times.Once);
         }
@@ -68,10 +70,10 @@ namespace ToDoList.UnitTests.Core.Handlers.Users
         {
             return new List<User>
             {
-                new User { Name = username, Password = PasswordHasher.Hash(password) },
-                new User { Name = "qwerty", Password = PasswordHasher.Hash("admin") },
-                new User { Name = "anonim", Password = PasswordHasher.Hash("123456") },
-                new User { Name = "anonim", Password = PasswordHasher.Hash(password) }
+                new User { Name = username, Password = passwordHasher.Hash(password) },
+                new User { Name = "qwerty", Password = passwordHasher.Hash("admin") },
+                new User { Name = "anonim", Password = passwordHasher.Hash("123456") },
+                new User { Name = "anonim", Password = passwordHasher.Hash(password) }
             };
         }
     }

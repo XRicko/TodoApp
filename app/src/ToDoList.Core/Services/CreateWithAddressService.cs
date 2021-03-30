@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 using ToDoList.Core.Mediator.Response;
@@ -16,6 +17,9 @@ namespace ToDoList.Core.Services
 
         public async Task<IEnumerable<TodoItemResponse>> GetItemsWithAddressAsync(IEnumerable<TodoItemResponse> todoItemResponses)
         {
+            if (todoItemResponses is null)
+                throw new ArgumentNullException(nameof(todoItemResponses));
+
             List<TodoItemResponse> todoItemResponsesWithAddress = new();
 
             foreach (var item in todoItemResponses)

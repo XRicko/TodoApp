@@ -34,18 +34,12 @@ namespace ToDoList.Core.MappingProfiles
                               opt => opt.MapFrom(src => src.Longitude))
                 .ForCtorParam("y",
                               opt => opt.MapFrom(src => src.Latitude))
-<<<<<<< HEAD
+                .ForMember(dest => dest.SRID,
+                           opt => opt.MapFrom(src => SRID))
                 .ForAllOtherMembers(opt => opt.Ignore());
 
             CreateMap<User, UserResponse>();
             CreateMap<UserRequest, User>(MemberList.Source);
-=======
-                .ForMember(dest => dest.SRID,
-                           opt => opt.MapFrom(src => SRID));
-
-            CreateMap<User, UserResponse>();
-            CreateMap<UserRequest, User>();
->>>>>>> master
 
             CreateMap<Image, ImageResponse>();
             CreateMap<ImageCreateRequest, Image>(MemberList.Source);
@@ -56,13 +50,8 @@ namespace ToDoList.Core.MappingProfiles
             CreateMap<Status, StatusResponse>();
 
             CreateMap<Checklist, ChecklistResponse>();
-<<<<<<< HEAD
             CreateMap<ChecklistCreateRequest, Checklist>(MemberList.Source);
             CreateMap<ChecklistUpdateRequest, Checklist>(MemberList.Source);
-=======
-            CreateMap<ChecklistCreateRequest, Checklist>();
-            CreateMap<ChecklistUpdateRequest, Checklist>();
->>>>>>> master
 
             CreateMap<TodoItem, TodoItemResponse>()
                 .ForMember(dest => dest.StatusName,

@@ -1,9 +1,12 @@
 
+using System.Diagnostics.CodeAnalysis;
+
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 
 namespace ToDoList.MvcClient
 {
+    [ExcludeFromCodeCoverage]
     public class Program
     {
         public static void Main(string[] args)

@@ -19,12 +19,12 @@ namespace ToDoList.MvcClient.Controllers
 
         public IActionResult Login()
         {
-            return View();
+            return View("Login");
         }
 
         public IActionResult Register()
         {
-            return View();
+            return View("Register");
         }
 
 
@@ -43,7 +43,7 @@ namespace ToDoList.MvcClient.Controllers
                 if (e.Message == "Unauthorized")
                 {
                     ModelState.AddModelError(string.Empty, "User exists");
-                    return View();
+                    return View("Register");
                 }
             }
 
@@ -68,7 +68,7 @@ namespace ToDoList.MvcClient.Controllers
                         ModelState["ConfirmPassword"].Errors.Clear();
 
                     ModelState.AddModelError(string.Empty, "Username or password is incorrect");
-                    return View();
+                    return View("Login");
                 }
             }
 

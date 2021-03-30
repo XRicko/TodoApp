@@ -14,7 +14,7 @@ using Xunit;
 
 namespace ToDoList.UnitTests.WebApi.Controllers
 {
-    public class ImagesControllerTests : ControllerBaseForTests
+    public class ImagesControllerTests : ApiControllerBaseForTests
     {
         private readonly ImagesController imagesController;
 

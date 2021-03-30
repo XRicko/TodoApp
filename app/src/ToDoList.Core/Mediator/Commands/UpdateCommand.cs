@@ -10,7 +10,7 @@ namespace ToDoList.Core.Mediator.Commands
 
         public UpdateCommand(TRequest request)
         {
-            Request = entity ?? throw new System.ArgumentNullException(nameof(entity));
+            Request = request ?? throw new System.ArgumentNullException(nameof(request));
         }
     }
 }

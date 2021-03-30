@@ -28,7 +28,7 @@ namespace ToDoList.Core.Services
             return string.Format("$MYHASH$V1${0}${1}", iterations, base64Hash);
         }
 
-        public bool Verify(string password, string hashedPassword)
+        public bool VerifyPassword(string password, string hashedPassword)
         {
             if (string.IsNullOrEmpty(password))
                 throw new ArgumentException($"'{nameof(password)}' cannot be null or empty", nameof(password));

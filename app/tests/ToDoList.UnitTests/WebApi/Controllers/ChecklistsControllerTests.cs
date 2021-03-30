@@ -20,7 +20,7 @@ using Xunit;
 
 namespace ToDoList.UnitTests.WebApi.Controllers
 {
-    public class ChecklistsControllerTests : ControllerBaseForTests
+    public class ChecklistsControllerTests : ApiControllerBaseForTests
     {
         private readonly ChecklistsController checklistsController;
 

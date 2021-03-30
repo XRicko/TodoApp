@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.CodeAnalysis;
 
 using Microsoft.AspNetCore.Http;
 
@@ -8,6 +9,7 @@ using ToDoList.SharedKernel;
 
 namespace ToDoList.MvcClient.Models
 {
+    [ExcludeFromCodeCoverage]
     public class TodoItemModel : BaseModel
     {
         public DateTime StartDate { get; set; }

@@ -3,8 +3,6 @@ using System.Diagnostics.CodeAnalysis;
 
 using ToDoList.SharedKernel;
 
-using ToDoList.SharedKernel;
-
 namespace ToDoList.Core.Mediator.Response
 {
     [ExcludeFromCodeCoverage]

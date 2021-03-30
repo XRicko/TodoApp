@@ -16,7 +16,7 @@ namespace ToDoList.MvcClient.Services
             apiCallsService = apiService ?? throw new ArgumentNullException(nameof(apiService));
         }
 
-        public async Task<IndexViewModel> CreateIndexViewModel()
+        public async Task<IndexViewModel> CreateIndexViewModelAsync()
         {
             var activeTodoItems = await apiCallsService.GetItemsAsync<TodoItemModel>("TodoItems/GetActiveOrDone/" + false);
             var doneTodoItems = await apiCallsService.GetItemsAsync<TodoItemModel>("TodoItems/GetActiveOrDone/" + true);
@@ -33,7 +33,7 @@ namespace ToDoList.MvcClient.Services
             return viewModel;
         }
 
-        public async Task<CreateViewModel> CreateViewModelCreateOrUpdateTodoItem(TodoItemModel todoItemModel)
+        public async Task<CreateTodoItemViewModel> CreateViewModelCreateOrUpdateTodoItemAsync(TodoItemModel todoItemModel)
         {
             _ = todoItemModel ?? throw new ArgumentNullException(nameof(todoItemModel));
 
@@ -51,7 +51,7 @@ namespace ToDoList.MvcClient.Services
                 selectedStatus = plannedStatus.Id;
             }
 
-            CreateViewModel viewModel = new()
+            CreateTodoItemViewModel viewModel = new()
             {
                 TodoItemModel = todoItemModel,
 

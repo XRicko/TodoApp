@@ -15,7 +15,7 @@ using Xunit;
 
 namespace ToDoList.UnitTests.WebApi.Controllers
 {
-    public class UserControllerTests : ControllerBaseForTests
+    public class UserControllerTests : ApiControllerBaseForTests
     {
         private readonly UserController userController;
         private readonly Mock<ITokenGenerator> tockenGeneratorMock;
@@ -63,7 +63,7 @@ namespace ToDoList.UnitTests.WebApi.Controllers
         public async Task Login_ReturnsUnauthorizedGivenNotRegisteredUser()
         {
             // Arrange
-            string expectedMessage = "No user found";
+            string expectedMessage = "Username or password is incorrect";
 
             MediatorMock.Setup(x => x.Send(It.Is<GetUserByNameAndPasswordQuery>(q => q.Name == userRequest.Name
                                                                                      && q.Password == userRequest.Password),
@@ -129,12 +129,12 @@ namespace ToDoList.UnitTests.WebApi.Controllers
 
             // Act
             var actionResult = await userController.RegisterAsync(userRequest);
-            var badRequestResult = actionResult as BadRequestObjectResult;
+            var unauthorizedResult = actionResult as UnauthorizedObjectResult;
 
-            string actual = badRequestResult.Value as string;
+            string actual = unauthorizedResult.Value as string;
 
             // Assert
-            Assert.Equal(400, badRequestResult.StatusCode);
+            Assert.Equal(401, unauthorizedResult.StatusCode);
             Assert.Equal(expectedMessage, actual);
 
             MediatorMock.Verify();

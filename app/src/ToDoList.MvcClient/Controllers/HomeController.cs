@@ -8,19 +8,13 @@ namespace ToDoList.MvcClient.Controllers
 {
     public class HomeController : Controller
     {
-
         public HomeController()
         {
         }
 
         public IActionResult Index()
         {
-            return View();
-        }
-
-        public IActionResult Privacy()
-        {
-            return View();
+            return View("Index");
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
