@@ -130,7 +130,7 @@ namespace ToDoList.UnitTests.MvcClient.Controllers
         }
 
         [Fact]
-        public async Task Get_Logout_ReturnsRedirectToIndexActionInHome()
+        public void Get_Logout_ReturnsRedirectToIndexActionInHome()
         {
             // Arrange
             Mock<ControllerContext> controllerContextMock = new();

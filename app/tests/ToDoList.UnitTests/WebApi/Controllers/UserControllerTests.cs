@@ -114,7 +114,6 @@ namespace ToDoList.UnitTests.WebApi.Controllers
             tockenGeneratorMock.Verify();
         }
 
-
         [Fact]
         public async Task Register_ReturnsBadRequestGivenExistingUser()
         {

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text.Json;
@@ -12,6 +13,7 @@ using ToDoList.MvcClient.Models;
 
 namespace ToDoList.MvcClient.Services.Api
 {
+    [ExcludeFromCodeCoverage]
     public class ApiCallsService : IApiCallsService
     {
         private readonly IHttpContextAccessor httpContextAccessor;

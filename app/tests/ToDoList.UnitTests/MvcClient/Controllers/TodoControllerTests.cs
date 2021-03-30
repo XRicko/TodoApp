@@ -131,6 +131,7 @@ namespace ToDoList.UnitTests.MvcClient.Controllers
 
             ApiCallsServiceMock.Setup(x => x.GetItemAsync<TodoItemModel>(routeWithId))
                                .ReturnsAsync(existingTodoItem);
+
             createViewModelServiceMock.Setup(x => x.CreateViewModelCreateOrUpdateTodoItemAsync(existingTodoItem))
                                       .ReturnsAsync((TodoItemModel m) =>
                                       {
@@ -174,6 +175,7 @@ namespace ToDoList.UnitTests.MvcClient.Controllers
 
             ApiCallsServiceMock.Setup(x => x.GetItemAsync<TodoItemModel>(routeWithId))
                                .ReturnsAsync(existingTodoItem);
+
             createViewModelServiceMock.Setup(x => x.CreateViewModelCreateOrUpdateTodoItemAsync(existingTodoItem))
                                       .ReturnsAsync((TodoItemModel m) =>
                                       {
@@ -218,15 +220,46 @@ namespace ToDoList.UnitTests.MvcClient.Controllers
         public async Task Post_CreateOrUpdate_ReturnsViewAllWithAddedTodoItemGivenNew()
         {
             // Arrange
-            var todoItems = new List<TodoItemModel> { new TodoItemModel { Id = 1, Name = "Read a book", ChecklistId = checklistId } };
-            var newTodoItem = new TodoItemModel { Id = 0, Name = "Wath some film", ChecklistId = checklistId };
+            double lat = 34.12345;
+            double lng = 54.76547;
+
+            GeoCoordinate geoCoordinate = new(lng, lat);
+
+            var category = new CategoryModel { Id = 1, Name = "Important" };
+
+            var todoItems = new List<TodoItemModel>
+            {
+                new TodoItemModel { Id = 1, Name = "Read a book", ChecklistId = checklistId }
+            };
+
+            var newTodoItem = new TodoItemModel
+            {
+                Id = 0,
+                Name = "Wath some film",
+                ChecklistId = checklistId,
+
+                CategoryId = category.Id,
+                CategoryName = category.Name,
+
+                Latitude = lat.ToString(),
+                Longitude = lng.ToString()
+            };
 
             var createTodoItemViewModel = GetCreateTodoItemViewModel();
             createTodoItemViewModel.TodoItemModel = newTodoItem;
 
             IndexViewModel indexViewModel = new();
 
-            SetupPostItem(todoItems, newTodoItem, indexViewModel);
+            ApiCallsServiceMock.Setup(x => x.PostItemAsync(route, newTodoItem))
+                               .Callback(() =>
+                               {
+                                   newTodoItem.Id = todoItems.Last().Id++;
+                                   todoItems.Add(newTodoItem);
+                                   indexViewModel.ActiveTodoItems = todoItems;
+                               });
+            ApiCallsServiceMock.Setup(x => x.GetItemAsync<CategoryModel>("Categories/GetByName/" + category.Name))
+                             .ReturnsAsync(category);
+
             createViewModelServiceMock.Setup(x => x.CreateIndexViewModelAsync())
                                 .ReturnsAsync(indexViewModel);
 
@@ -234,11 +267,18 @@ namespace ToDoList.UnitTests.MvcClient.Controllers
             var result = await todoController.CreateOrUpdateAsync(createTodoItemViewModel) as PartialViewResult;
             var viewModel = (IndexViewModel)result.ViewData.Model;
 
+            var todoItemWithGeoPoint = viewModel.ActiveTodoItems.SingleOrDefault(i => i.GeoPoint is not null);
+
             // Assert
             Assert.Contains(newTodoItem, viewModel.ActiveTodoItems);
+
             Assert.Equal(viewAllViewName, result.ViewName);
+            Assert.Equal(category.Id, newTodoItem.CategoryId);
+            Assert.Equal(geoCoordinate, todoItemWithGeoPoint.GeoPoint);
 
             ApiCallsServiceMock.Verify();
+            ApiCallsServiceMock.Verify(x => x.PostItemAsync("Categories", It.Is<CategoryModel>(m => m.Name == category.Name)), Times.Once);
+
             createViewModelServiceMock.Verify();
         }
 
@@ -260,6 +300,7 @@ namespace ToDoList.UnitTests.MvcClient.Controllers
                                    todoItems.SingleOrDefault(c => c.Id == todoItemToUpdate.Id).Name = todoItemToUpdate.Name;
                                    indexViewModel.ActiveTodoItems = todoItems;
                                });
+
             createViewModelServiceMock.Setup(x => x.CreateIndexViewModelAsync())
                                 .ReturnsAsync(indexViewModel);
 
@@ -272,77 +313,6 @@ namespace ToDoList.UnitTests.MvcClient.Controllers
             Assert.Equal(viewAllViewName, result.ViewName);
 
             ApiCallsServiceMock.Verify();
-            createViewModelServiceMock.Verify();
-        }
-
-        [Fact]
-        public async Task Post_CreateOrUpdate_ReturnsViewAllWithTodoItemWithGeoPoint()
-        {
-            // Arrange
-            double lat = 34.12345;
-            double lng = 54.76547;
-
-            GeoCoordinate geoCoordinate = new(lng, lat);
-
-            var todoItems = new List<TodoItemModel> { new TodoItemModel { Id = 1, Name = "Read a book", ChecklistId = checklistId } };
-            var todoItem = new TodoItemModel { Id = 0, Name = "Wath some film", ChecklistId = checklistId, Latitude = lat.ToString(), Longitude = lng.ToString() };
-
-            var createTodoItemViewModel = GetCreateTodoItemViewModel();
-            createTodoItemViewModel.TodoItemModel = todoItem;
-
-            IndexViewModel indexViewModel = new();
-
-            SetupPostItem(todoItems, todoItem, indexViewModel);
-            createViewModelServiceMock.Setup(x => x.CreateIndexViewModelAsync())
-                                .ReturnsAsync(indexViewModel);
-
-            // Act
-            var result = await todoController.CreateOrUpdateAsync(createTodoItemViewModel) as PartialViewResult;
-            var viewModel = (IndexViewModel)result.ViewData.Model;
-
-            var todoItemWithGeoPoint = viewModel.ActiveTodoItems.SingleOrDefault(i => i.GeoPoint is not null);
-
-            // Assert
-            Assert.Contains(todoItem, viewModel.ActiveTodoItems);
-            Assert.Equal(viewAllViewName, result.ViewName);
-            Assert.Equal(geoCoordinate, todoItemWithGeoPoint.GeoPoint);
-
-            ApiCallsServiceMock.Verify();
-            createViewModelServiceMock.Verify();
-        }
-
-        [Fact]
-        public async Task Post_CreateOrUpdate_ReturnsViewAllWithTodoItemWithCategory()
-        {
-            // Arrange
-            var category = new CategoryModel { Id = 1, Name = "Important" };
-
-            var todoItems = new List<TodoItemModel> { new TodoItemModel { Id = 1, Name = "Read a book", ChecklistId = checklistId } };
-            var todoItem = new TodoItemModel { Id = 0, Name = "Wath some film", ChecklistId = checklistId, CategoryName = category.Name };
-
-            var createTodoItemViewModel = GetCreateTodoItemViewModel();
-            createTodoItemViewModel.TodoItemModel = todoItem;
-
-            IndexViewModel indexViewModel = new();
-
-            SetupPostItem(todoItems, todoItem, indexViewModel);
-            ApiCallsServiceMock.Setup(x => x.GetItemAsync<CategoryModel>("Categories/GetByName/" + category.Name))
-                               .ReturnsAsync(category);
-
-            createViewModelServiceMock.Setup(x => x.CreateIndexViewModelAsync())
-                                .ReturnsAsync(indexViewModel);
-
-            // Act
-            var result = await todoController.CreateOrUpdateAsync(createTodoItemViewModel) as PartialViewResult;
-            var viewModel = (IndexViewModel)result.ViewData.Model;
-
-            // Assert
-            Assert.Contains(todoItem, viewModel.ActiveTodoItems);
-            Assert.Equal(viewAllViewName, result.ViewName);
-            Assert.Equal(category.Id, todoItem.CategoryId);
-
-            ApiCallsServiceMock.Verify();
-            ApiCallsServiceMock.Verify(x => x.PostItemAsync("Categories", It.Is<CategoryModel>(m => m.Name == category.Name)), Times.Once);
             createViewModelServiceMock.Verify();
         }
 
@@ -365,6 +335,7 @@ namespace ToDoList.UnitTests.MvcClient.Controllers
                                    todoItems.Remove(todoItems.SingleOrDefault(c => c.Id == idToDelete));
                                    indexViewModel.ActiveTodoItems = todoItems;
                                });
+
             createViewModelServiceMock.Setup(x => x.CreateIndexViewModelAsync())
                                .ReturnsAsync(indexViewModel);
 
@@ -410,6 +381,7 @@ namespace ToDoList.UnitTests.MvcClient.Controllers
                                .ReturnsAsync(todoItem);
             ApiCallsServiceMock.Setup(x => x.GetItemAsync<StatusModel>(routeForStatus))
                                .ReturnsAsync(status);
+
             ApiCallsServiceMock.Setup(x => x.PutItemAsync(route, todoItem))
                              .Callback((string s, TodoItemModel m) =>
                              {
@@ -462,18 +434,6 @@ namespace ToDoList.UnitTests.MvcClient.Controllers
             };
 
             return createTodoItemViewModel;
-        }
-
-
-        private void SetupPostItem(List<TodoItemModel> todoItems, TodoItemModel todoItem, IndexViewModel indexViewModel)
-        {
-            ApiCallsServiceMock.Setup(x => x.PostItemAsync(route, todoItem))
-                               .Callback(() =>
-                               {
-                                   todoItem.Id = todoItems.Last().Id++;
-                                   todoItems.Add(todoItem);
-                                   indexViewModel.ActiveTodoItems = todoItems;
-                               });
         }
     }
 }

@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Net.Http;
 using System.Net.Http.Headers;
 
 namespace ToDoList.MvcClient.API
 {
+    [ExcludeFromCodeCoverage]
     internal static class WebApiHelper
     {
         public static HttpClient ApiClient { get; set; }

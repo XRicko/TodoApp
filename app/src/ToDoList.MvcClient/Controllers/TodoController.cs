@@ -146,7 +146,7 @@ namespace ToDoList.MvcClient.Controllers
         private async Task AddTodoItem(TodoItemModel todoItemModel)
         {
             if (todoItemModel.Image is not null)
-                await imageAddingService.AddImageInTodoItem(todoItemModel);
+                await imageAddingService.AddImageInTodoItemAsync(todoItemModel);
 
             await apiCallsService.PostItemAsync("TodoItems", todoItemModel);
         }
@@ -154,7 +154,7 @@ namespace ToDoList.MvcClient.Controllers
         private async Task UpdateTodoItem(TodoItemModel todoItemModel)
         {
             if (todoItemModel.Image is not null)
-                await imageAddingService.AddImageInTodoItem(todoItemModel);
+                await imageAddingService.AddImageInTodoItemAsync(todoItemModel);
 
             await apiCallsService.PutItemAsync("TodoItems", todoItemModel);
         }
