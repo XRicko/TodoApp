@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Mvc;
 using ToDoList.Core.Entities;
 using ToDoList.Core.Mediator.Commands;
 using ToDoList.Core.Mediator.Queries.Checklists;
+using ToDoList.Core.Mediator.Queries.Generics;
 using ToDoList.Core.Mediator.Requests.Create;
 using ToDoList.Core.Mediator.Requests.Update;
 using ToDoList.Core.Mediator.Response;
@@ -34,6 +35,10 @@ namespace ToDoList.WebApi.Controllers
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IEnumerable<ChecklistResponse>> Get() =>
             await Mediator.Send(new GetChecklistsByUserIdQuery(Convert.ToInt32(UserId)));
+
+        [HttpGet("{id}")]
+        public async Task<ChecklistResponse> Get(int id) =>
+            await Mediator.Send(new GetByIdQuery<Checklist, ChecklistResponse>(id));
 
         [HttpPost]
         public async Task Add([FromBody] ChecklistCreateRequest createRequest)

@@ -9,9 +9,9 @@ using ToDoList.SharedKernel.Interfaces;
 
 namespace ToDoList.Core.Mediator.Handlers.Images
 {
+    [ExcludeFromCodeCoverage]
     internal class GetImageByNameQueryHandler : GetByNameQueryHandler<Image, ImageResponse>
     {
-        [ExcludeFromCodeCoverage]
         public GetImageByNameQueryHandler(IUnitOfWork unitOfWork, IMapper mapper) : base(unitOfWork, mapper)
         {
 

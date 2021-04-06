@@ -30,8 +30,10 @@ namespace ToDoList.Core.Services
             return todoItemResponsesWithAddress;
         }
 
-        private async Task<TodoItemResponse> GetItemWithAddressAsync(TodoItemResponse todoItemResponse)
+        public async Task<TodoItemResponse> GetItemWithAddressAsync(TodoItemResponse todoItemResponse)
         {
+            _ = todoItemResponse ?? throw new ArgumentNullException(nameof(todoItemResponse));
+
             if (todoItemResponse.GeoPoint is not null)
             {
                 string address = await geocodingService.GetAddressAsync(todoItemResponse.GeoPoint.Latitude, todoItemResponse.GeoPoint.Longitude);

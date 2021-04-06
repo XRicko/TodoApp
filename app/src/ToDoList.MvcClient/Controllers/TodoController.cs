@@ -48,7 +48,6 @@ namespace ToDoList.MvcClient.Controllers
             }
 
             var todoItemModel = await apiCallsService.GetItemAsync<TodoItemModel>("TodoItems/" + todoItemId);
-            //todoItemModel.ChecklistId = checklistId;
 
             if (todoItemModel?.GeoPoint is not null)
             {

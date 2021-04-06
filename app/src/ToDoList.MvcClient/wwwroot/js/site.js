@@ -16,6 +16,23 @@ showPopup = (url, title, button) => {
                 if (button.className.includes('todoItem')) {
                     initMap();
                     initSelect();
+
+                    $('#customFile').change(function () {
+                        $('#fileLabel').text($('#customFile').prop('files')[0].name);
+                    });
+
+                    if ($('#TodoItemModel_ImageId').val()) {
+                        $('#fileLabel').text($('#TodoItemModel_ImageName').val());
+                    }
+
+                    $('#resetImage').click(function () {
+                        resetImage();
+                    });
+
+                    $('#resetLocation').click(function () {
+                        $('#latitude').val('');
+                        $('#longitude').val('');
+                    });
                 }
             }
         }
@@ -100,8 +117,6 @@ ajaxChangeStatus = checkbox => {
     return false;
 }
 
-
-
 function initSelect () {
     $('#categorySelector').select2({
         theme: 'bootstrap4',
@@ -109,6 +124,18 @@ function initSelect () {
     });
 }
 
+function resetImage() {
+    $('#TodoItemModel_ImageId').val('');
+    $('#TodoItemModel_ImageName').val('');
+    $('#fileLabel').text('Choose image');
+
+    resetFileInput($('#customFile'));
+}
+
+function resetFileInput(input) {
+    input.wrap('<form>').closest('form').get(0).reset();
+    input.unwrap();
+}
 
 
 let marker;

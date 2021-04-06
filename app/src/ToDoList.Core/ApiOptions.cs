@@ -1,4 +1,5 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.CodeAnalysis;
 
 namespace ToDoList.Core
 {
@@ -7,6 +8,8 @@ namespace ToDoList.Core
     {
         public const string Apis = "Apis";
 
+        [Required]
+        [MinLength(30)]
         public string GoogleApiKey { get; init; }
     }
 }

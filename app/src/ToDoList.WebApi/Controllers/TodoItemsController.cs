@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Mvc;
 
 using ToDoList.Core.Entities;
 using ToDoList.Core.Mediator.Commands;
+using ToDoList.Core.Mediator.Queries.Generics;
 using ToDoList.Core.Mediator.Queries.TodoItems;
 using ToDoList.Core.Mediator.Requests.Create;
 using ToDoList.Core.Mediator.Requests.Update;
@@ -32,6 +33,10 @@ namespace ToDoList.WebApi.Controllers
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IEnumerable<TodoItemResponse>> GetActiveOrDone(bool isDone) =>
             await Mediator.Send(new GetActiveOrDoneTodoItemsByUserQuery(Convert.ToInt32(UserId), isDone));
+
+        [HttpGet("{id}")]
+        public async Task<TodoItemResponse> Get(int id) =>
+           await Mediator.Send(new GetByIdQuery<TodoItem, TodoItemResponse>(id));
 
         [HttpPost]
         public async Task Add([FromBody] TodoItemCreateRequest createRequest)

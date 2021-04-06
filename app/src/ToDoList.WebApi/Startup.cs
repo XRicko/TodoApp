@@ -7,6 +7,7 @@ using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -17,6 +18,8 @@ using ToDoList.Core;
 using ToDoList.Core.Mediator.Queries.Generics;
 using ToDoList.Core.Mediator.Response;
 using ToDoList.Core.Services;
+using ToDoList.Extensions;
+using ToDoList.Infrastructure.Data;
 using ToDoList.Infrastructure.Extensions;
 using ToDoList.WebApi.Jwt;
 
@@ -37,7 +40,7 @@ namespace ToDoList.WebApi
         {
             services.AddInfrastructure(Configuration.GetConnectionString("DefaultConnection"));
 
-            services.AddSingleton(Configuration.GetSection(ApiOptions.Apis).Get<ApiOptions>());
+            services.AddSingleton(Configuration.GetSection(ApiOptions.Apis).GetValid<ApiOptions>());
 
             services.AddTransient<IGeocodingService, GoogleGeocodingService>();
             services.AddTransient<ICreateWithAddressService, CreateWithAddressService>();
@@ -46,20 +49,9 @@ namespace ToDoList.WebApi
             services.AddAutoMapper(typeof(CategoryResponse));
             services.AddMediatR(typeof(GetAllQuery<,>));
 
-            var jwtTokenConfig = Configuration.GetSection("JwtTokenConfigs").Get<JwtTokenConfig>();
-
-            var validationResults = new List<ValidationResult>();
-            var validationContext = new ValidationContext(jwtTokenConfig, serviceProvider: null, items: null);
-
-            if (!Validator.TryValidateObject(jwtTokenConfig, validationContext, validationResults, validateAllProperties: true))
-            {
-                foreach (var item in validationResults)
-                {
-                    throw new ValidationException(item.ErrorMessage);
-                }
-            }
-
+            var jwtTokenConfig = Configuration.GetSection("JwtTokenConfigs").GetValid<JwtTokenConfig>();
             services.AddSingleton(jwtTokenConfig);
+
             services.AddScoped<ITokenGenerator, TokenGenerator>();
 
             services.AddCors();
@@ -107,7 +99,8 @@ namespace ToDoList.WebApi
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "ToDoList.WebApi v1"));
             }
 
-            app.UseHttpsRedirection();
+            if (env.IsProduction())
+                app.UseHttpsRedirection();
 
             app.UseRouting();
 

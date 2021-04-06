@@ -1,0 +1,22 @@
+version: '3.4'
+
+services:
+  mssql:
+    image: mcr.microsoft.com/mssql/server
+    container_name: mssql-server
+
+  todolist.webapi:
+    container_name: webapi
+    build:
+      context: .
+      dockerfile: src/ToDoList.WebApi/Dockerfile
+    restart: on-failure
+    depends_on:
+      - mssql
+
+  todolist.mvcclient:
+    build:
+      context: .
+      dockerfile: src/ToDoList.MvcClient/Dockerfile
+    depends_on:
+      - todolist.webapi
