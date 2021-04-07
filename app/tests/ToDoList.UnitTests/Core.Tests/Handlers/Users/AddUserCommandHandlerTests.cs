@@ -12,7 +12,7 @@ using ToDoList.Core.Services;
 
 using Xunit;
 
-namespace ToDoList.UnitTests.Core.Handlers.Users
+namespace Core.Tests.Handlers.Users
 {
     public class AddUserCommandHandlerTests : HandlerBaseForTests
     {

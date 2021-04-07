@@ -13,7 +13,7 @@ using ToDoList.Core.Services;
 
 using Xunit;
 
-namespace ToDoList.UnitTests.Core.Handlers.TodoItems
+namespace Core.Tests.Handlers.TodoItems
 {
     public class GetActiveOrDoneTodoItemsByUserQueryHandlerTests : HandlerBaseForTests
     {

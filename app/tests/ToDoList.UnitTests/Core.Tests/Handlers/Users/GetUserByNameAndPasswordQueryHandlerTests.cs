@@ -11,7 +11,7 @@ using ToDoList.Core.Services;
 
 using Xunit;
 
-namespace ToDoList.UnitTests.Core.Handlers.Users
+namespace Core.Tests.Handlers.Users
 {
     public class GetUserByNameAndPasswordQueryHandlerTests : HandlerBaseForTests
     {

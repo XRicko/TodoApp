@@ -10,7 +10,7 @@ using ToDoList.SharedKernel;
 
 using Xunit;
 
-namespace ToDoList.UnitTests.Core.Services
+namespace Core.Tests.Services
 {
     public class GetWithAddressServiceTests
     {

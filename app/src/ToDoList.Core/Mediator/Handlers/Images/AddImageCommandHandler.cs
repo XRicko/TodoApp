@@ -9,7 +9,6 @@ using ToDoList.SharedKernel.Interfaces;
 
 namespace ToDoList.Core.Mediator.Handlers.Images
 {
-    [ExcludeFromCodeCoverage]
     internal class AddImageCommandHandler : AddCommandHandler<ImageCreateRequest, Image>
     {
         public AddImageCommandHandler(IUnitOfWork unitOfWork, IMapper mapper) : base(unitOfWork, mapper)

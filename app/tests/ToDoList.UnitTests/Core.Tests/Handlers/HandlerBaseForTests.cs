@@ -5,7 +5,7 @@ using Moq;
 using ToDoList.Core.MappingProfiles;
 using ToDoList.SharedKernel.Interfaces;
 
-namespace ToDoList.UnitTests.Core.Handlers
+namespace Core.Tests.Handlers
 {
     public abstract class HandlerBaseForTests
     {

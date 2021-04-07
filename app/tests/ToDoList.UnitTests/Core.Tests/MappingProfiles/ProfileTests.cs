@@ -4,7 +4,7 @@ using ToDoList.Core.MappingProfiles;
 
 using Xunit;
 
-namespace ToDoList.UnitTests.Core.MappingProfiles
+namespace Core.Tests.MappingProfiles
 {
     public class ProfileTests
     {

@@ -10,7 +10,7 @@ using ToDoList.Core.Mediator.Handlers.Checklists;
 
 using Xunit;
 
-namespace ToDoList.UnitTests.Core.Handlers.Checklists
+namespace Core.Tests.Handlers.Checklists
 {
     public class RemoveChecklistCommandHandlerTests : HandlerBaseForTests
     {

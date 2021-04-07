@@ -8,7 +8,6 @@ using Geocoding.Google;
 
 namespace ToDoList.Core.Services
 {
-    [ExcludeFromCodeCoverage]
     public class GoogleGeocodingService : IGeocodingService
     {
         private readonly GoogleGeocoder googleGeocoder;
@@ -20,6 +19,7 @@ namespace ToDoList.Core.Services
             googleGeocoder = new GoogleGeocoder(apiOptions.GoogleApiKey);
         }
 
+        [ExcludeFromCodeCoverage]
         public async Task<string> GetAddressAsync(double latitude, double longitude)
         {
             IEnumerable<Address> addresses = await googleGeocoder.ReverseGeocodeAsync(latitude, longitude);

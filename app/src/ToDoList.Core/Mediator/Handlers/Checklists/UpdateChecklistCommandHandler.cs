@@ -16,7 +16,6 @@ using ToDoList.SharedKernel.Interfaces;
 
 namespace ToDoList.Core.Mediator.Handlers.Checklists
 {
-    [ExcludeFromCodeCoverage]
     public class UpdateChecklistCommandHandler : UpdateCommandHandler<ChecklistUpdateRequest, Checklist>
     {
         public UpdateChecklistCommandHandler(IUnitOfWork unitOfWork, IMapper mapper) : base(unitOfWork, mapper)

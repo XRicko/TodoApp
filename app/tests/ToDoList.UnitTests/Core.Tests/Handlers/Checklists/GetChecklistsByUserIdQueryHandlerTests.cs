@@ -11,7 +11,7 @@ using ToDoList.Core.Mediator.Response;
 
 using Xunit;
 
-namespace ToDoList.UnitTests.Core.Handlers.Checklists
+namespace Core.Tests.Handlers.Checklists
 {
     public class GetChecklistsByUserIdQueryHandlerTests : HandlerBaseForTests
     {

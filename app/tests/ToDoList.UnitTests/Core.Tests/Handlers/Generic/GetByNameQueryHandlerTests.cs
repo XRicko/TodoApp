@@ -10,7 +10,7 @@ using ToDoList.Core.Mediator.Response;
 
 using Xunit;
 
-namespace ToDoList.UnitTests.Core.Handlers.Generic
+namespace Core.Tests.Handlers.Generic
 {
     public class GetByNameQueryHandlerTests : HandlerBaseForTests
     {

@@ -10,7 +10,7 @@ using ToDoList.Core.Mediator.Requests.Create;
 
 using Xunit;
 
-namespace ToDoList.UnitTests.Core.Handlers.Generic
+namespace Core.Tests.Handlers.Generic
 {
     public class AddCommandHandlerTests : HandlerBaseForTests
     {

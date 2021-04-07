@@ -17,15 +17,12 @@ namespace ToDoList.MvcClient.Services.Api
     public class ApiCallsService : IApiCallsService
     {
         private readonly IHttpContextAccessor httpContextAccessor;
-        private readonly HttpContext httpContext;
 
         private readonly WebApiHelper webApiHelper;
 
         public ApiCallsService(IHttpContextAccessor httpAccessor, WebApiHelper apiHelper)
         {
             httpContextAccessor = httpAccessor ?? throw new ArgumentNullException(nameof(httpAccessor));
-            httpContext = httpContextAccessor.HttpContext;
-
             webApiHelper = apiHelper;
         }
 
@@ -95,7 +92,7 @@ namespace ToDoList.MvcClient.Services.Api
             string tokenJson = await response.Content.ReadAsStringAsync();
             string token = JsonSerializer.Deserialize<string>(tokenJson);
 
-            httpContext.Response.Cookies.Append("Token", token, new CookieOptions { Expires = DateTime.Now.AddHours(3) });
+            httpContextAccessor.HttpContext.Response.Cookies.Append("Token", token, new CookieOptions { Expires = DateTime.Now.AddHours(3) });
         }
 
         private static void ValidateStatusCode(HttpResponseMessage response)
@@ -106,7 +103,7 @@ namespace ToDoList.MvcClient.Services.Api
 
         private void AddAuthenticationHeader()
         {
-            webApiHelper.ApiClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", httpContext.Request.Cookies["Token"]);
+            webApiHelper.ApiClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", httpContextAccessor.HttpContext.Request.Cookies["Token"]);
         }
     }
 }

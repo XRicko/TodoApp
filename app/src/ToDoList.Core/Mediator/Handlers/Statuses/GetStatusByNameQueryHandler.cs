@@ -10,7 +10,6 @@ using ToDoList.SharedKernel.Interfaces;
 
 namespace ToDoList.Core.Mediator.Handlers.Statuses
 {
-    [ExcludeFromCodeCoverage]
     internal class GetStatusByNameQueryHandler : GetByNameQueryHandler<Status, StatusResponse>
     {
         public GetStatusByNameQueryHandler(IUnitOfWork unitOfWork, IMapper mapper) : base(unitOfWork, mapper) { }

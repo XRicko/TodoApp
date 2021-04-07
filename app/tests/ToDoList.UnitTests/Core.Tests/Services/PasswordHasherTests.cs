@@ -4,7 +4,7 @@ using ToDoList.Core.Services;
 
 using Xunit;
 
-namespace ToDoList.UnitTests.Core.Services
+namespace Core.Tests.Services
 {
     public class PasswordHasherTests
     {
