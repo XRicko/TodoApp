@@ -19,7 +19,7 @@ namespace ToDoList.Core.Mediator.Handlers.Generics
     {
         public UpdateCommandHandler(IUnitOfWork unitOfWork, IMapper mapper) : base(unitOfWork, mapper) { }
 
-        public async Task<Unit> Handle(UpdateCommand<TRequest> request, CancellationToken cancellationToken)
+        public virtual async Task<Unit> Handle(UpdateCommand<TRequest> request, CancellationToken cancellationToken)
         {
             _ = request ?? throw new ArgumentNullException(nameof(request));
 

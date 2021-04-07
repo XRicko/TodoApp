@@ -6,15 +6,19 @@ using System.Net.Http.Headers;
 namespace ToDoList.MvcClient.API
 {
     [ExcludeFromCodeCoverage]
-    internal static class WebApiHelper
+    public class WebApiHelper
     {
-        public static HttpClient ApiClient { get; set; }
+        private readonly WebApiConfig webApiConfig;
 
-        public static void InitializeClient()
+        public HttpClient ApiClient { get; set; }
+
+        public WebApiHelper(WebApiConfig apiConfig)
         {
+            webApiConfig = apiConfig;
+
             ApiClient = new HttpClient
             {
-                BaseAddress = new Uri("https://localhost:44391/api/")
+                BaseAddress = new Uri(webApiConfig.BaseUrl)
             };
 
             ApiClient.DefaultRequestHeaders.Accept.Clear();

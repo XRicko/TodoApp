@@ -61,6 +61,8 @@ namespace ToDoList.Core.MappingProfiles
                 .ForMember(dest => dest.ChecklistName,
                            opt => opt.MapFrom(src => src.Checklist.Name))
                 .ForMember(dest => dest.ImagePath,
+                           opt => opt.MapFrom(src => src.Image.Path))
+                .ForMember(dest => dest.ImageName,
                            opt => opt.MapFrom(src => src.Image.Name))
                 .ForAllOtherMembers(opt => opt.Ignore());
 

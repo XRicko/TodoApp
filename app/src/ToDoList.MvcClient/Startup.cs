@@ -7,6 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
+using ToDoList.Extensions;
 using ToDoList.MvcClient.API;
 using ToDoList.MvcClient.Services;
 using ToDoList.MvcClient.Services.Api;
@@ -26,6 +27,9 @@ namespace ToDoList.MvcClient
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddSingleton(Configuration.GetSection("WebApiConfig").GetValid<WebApiConfig>());
+            services.AddSingleton<WebApiHelper>();
+
             services.AddScoped<ICreateViewModelService, CreateViewModelService>();
             services.AddScoped<IApiCallsService, ApiCallsService>();
             services.AddScoped<IImageAddingService, ImageAddingService>();
@@ -38,8 +42,6 @@ namespace ToDoList.MvcClient
             services.AddDistributedMemoryCache();
 
             services.AddHttpContextAccessor();
-
-            WebApiHelper.InitializeClient();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
