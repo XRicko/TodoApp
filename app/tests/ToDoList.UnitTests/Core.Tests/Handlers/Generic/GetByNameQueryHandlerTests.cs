@@ -30,10 +30,10 @@ namespace Core.Tests.Handlers.Generic
         {
             // Arrange
             var expected = new CategoryResponse(5, name);
-            var enity = new Category { Id = 5, Name = name };
+            var entity = new Category { Id = 5, Name = name };
 
             RepoMock.Setup(x => x.GetAsync<Category>(name))
-                    .ReturnsAsync(enity);
+                    .ReturnsAsync(entity);
 
             // Act
             var actual = await getByNameHandler.Handle(new GetByNameQuery<Category, CategoryResponse>(name), new CancellationToken());
