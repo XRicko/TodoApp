@@ -27,10 +27,12 @@ namespace Core.Tests.Handlers.Checklists
         }
 
         [Fact]
-        public async Task AddsChecklistGivenNew()
+        public async Task Handle_AddsChecklistGivenNew()
         {
             // Arrange
-            var newChecklist = new ChecklistCreateRequest(name, 1);
+            int userId = 1;
+
+            var newChecklist = new ChecklistCreateRequest(name, userId);
             var checklists = GetSampleChecklists();
 
             RepoMock.Setup(x => x.GetAllAsync<Checklist>())
@@ -48,10 +50,12 @@ namespace Core.Tests.Handlers.Checklists
         }
 
         [Fact]
-        public async Task DoesntAddChecklistGivenExisting()
+        public async Task Handle_DoesntAddChecklistGivenExisting()
         {
             // Arrange
-            var existingChecklist = new ChecklistCreateRequest(name, 2);
+            int userId = 2;
+
+            var existingChecklist = new ChecklistCreateRequest(name, userId);
             var checklists = GetSampleChecklists();
 
             RepoMock.Setup(x => x.GetAllAsync<Checklist>())

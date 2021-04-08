@@ -28,13 +28,13 @@ namespace Core.Tests.Handlers.TodoItems
         }
 
         [Fact]
-        public async Task ReturnsActiveTodoItems()
+        public async Task Handle_ReturnsActiveTodoItems()
         {
             await TestGetActiveOrDone(false);
         }
 
         [Fact]
-        public async Task ReturnsDoneTodoItems()
+        public async Task Handle_ReturnsDoneTodoItems()
         {
             await TestGetActiveOrDone(true);
         }

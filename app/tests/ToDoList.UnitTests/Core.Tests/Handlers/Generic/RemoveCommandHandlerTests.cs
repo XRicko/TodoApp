@@ -25,7 +25,7 @@ namespace Core.Tests.Handlers.Generic
         }
 
         [Fact]
-        public async Task DeletesItemGivenExisting()
+        public async Task Handle_DeletesItemGivenExisting()
         {
             // Arrange
             var entity = new TodoItem { Id = id, Name = "Clean my room" };
@@ -45,7 +45,7 @@ namespace Core.Tests.Handlers.Generic
 
 
         [Fact]
-        public async Task DoesntDeleteItemGivenInvalidId()
+        public async Task Handle_DoesntDeleteItemGivenInvalidId()
         {
             // Arrange
             RepoMock.Setup(x => x.GetAsync<TodoItem>(id))

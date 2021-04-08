@@ -62,7 +62,8 @@ namespace ToDoList.UnitTests.MvcClient.Controllers
             string error = "User exists";
 
             ApiCallsServiceMock.Setup(x => x.AuthenticateUserAsync("User/Register", existingUser))
-                               .ThrowsAsync(new Exception("Unauthorized"));
+                               .ThrowsAsync(new Exception("Unauthorized"))
+                               .Verifiable();
 
             // Act
             var result = await userController.RegisterAsync(existingUser) as ViewResult;
@@ -100,7 +101,8 @@ namespace ToDoList.UnitTests.MvcClient.Controllers
             userController.ModelState.AddModelError("ConfirmPassword", "Confirm password doesnt match");
 
             ApiCallsServiceMock.Setup(x => x.AuthenticateUserAsync("User/Login", invalidUser))
-                               .ThrowsAsync(new Exception("Unauthorized"));
+                               .ThrowsAsync(new Exception("Unauthorized"))
+                               .Verifiable();
 
             // Act
             var result = await userController.LoginAsync(invalidUser) as ViewResult;
@@ -136,7 +138,8 @@ namespace ToDoList.UnitTests.MvcClient.Controllers
             Mock<ControllerContext> controllerContextMock = new();
             Mock<HttpContext> httpContextMock = new();
 
-            httpContextMock.Setup(x => x.Response.Cookies.Delete("Token"));
+            httpContextMock.Setup(x => x.Response.Cookies.Delete("Token"))
+                           .Verifiable();
             controllerContextMock.Object.HttpContext = httpContextMock.Object;
 
             userController.ControllerContext = controllerContextMock.Object;

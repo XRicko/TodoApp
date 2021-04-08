@@ -14,20 +14,21 @@ namespace ToDoList.UnitTests.MvcClient.Services
 {
     public class CreateViewModelServiceTests
     {
-        private readonly Mock<IApiCallsService> apiCallsServiceMock;
+        private readonly Mock<IApiInvoker> apiCallsServiceMock;
         private readonly CreateViewModelService createViewModelService;
 
         private readonly List<ChecklistModel> checklists;
 
         public CreateViewModelServiceTests()
         {
-            apiCallsServiceMock = new Mock<IApiCallsService>();
+            apiCallsServiceMock = new Mock<IApiInvoker>();
             createViewModelService = new CreateViewModelService(apiCallsServiceMock.Object);
 
             checklists = GetChecklistsSample();
 
             apiCallsServiceMock.Setup(x => x.GetItemsAsync<ChecklistModel>("Checklists"))
-                               .ReturnsAsync(checklists);
+                               .ReturnsAsync(checklists)
+                               .Verifiable();
         }
 
         [Fact]
@@ -49,9 +50,11 @@ namespace ToDoList.UnitTests.MvcClient.Services
             };
 
             apiCallsServiceMock.Setup(x => x.GetItemsAsync<TodoItemModel>("TodoItems/GetActiveOrDone/" + false))
-                               .ReturnsAsync(activeTodoItems);
+                               .ReturnsAsync(activeTodoItems)
+                               .Verifiable();
             apiCallsServiceMock.Setup(x => x.GetItemsAsync<TodoItemModel>("TodoItems/GetActiveOrDone/" + true))
-                               .ReturnsAsync(doneTodoItems);
+                               .ReturnsAsync(doneTodoItems)
+                               .Verifiable();
 
             // Act
             var indexViewModel = await createViewModelService.CreateIndexViewModelAsync();
@@ -79,12 +82,15 @@ namespace ToDoList.UnitTests.MvcClient.Services
             var todoItem = new TodoItemModel { Name = "Do something", ChecklistId = selectedChecklist, CategoryId = selectedCategory };
 
             apiCallsServiceMock.Setup(x => x.GetItemsAsync<CategoryModel>("Categories"))
-                       .ReturnsAsync(categorires);
+                               .ReturnsAsync(categorires)
+                               .Verifiable();
             apiCallsServiceMock.Setup(x => x.GetItemsAsync<StatusModel>("Statuses"))
-                       .ReturnsAsync(statuses);
+                               .ReturnsAsync(statuses)
+                               .Verifiable();
 
             apiCallsServiceMock.Setup(x => x.GetItemAsync<StatusModel>("Statuses/GetByName/Planned"))
-                               .ReturnsAsync(statusPlanned);
+                               .ReturnsAsync(statusPlanned)
+                               .Verifiable();
 
             // Act
             var viewModel = await createViewModelService.CreateViewModelCreateOrUpdateTodoItemAsync(todoItem);

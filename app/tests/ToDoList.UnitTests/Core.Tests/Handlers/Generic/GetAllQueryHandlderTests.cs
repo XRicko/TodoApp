@@ -23,7 +23,7 @@ namespace Core.Tests.Handlers.Generic
         }
 
         [Fact]
-        public async Task ReturnsListOfResponses()
+        public async Task Handle_ReturnsListOfResponses()
         {
             // Arrange
             var entities = GetSampleEntities();

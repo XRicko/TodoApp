@@ -21,7 +21,7 @@ namespace Core.Tests.Handlers
             UnitOfWorkMock = new Mock<IUnitOfWork>();
 
             UnitOfWorkMock.SetupGet(x => x.Repository)
-             .Returns(RepoMock.Object);
+                          .Returns(RepoMock.Object);
 
             var profile = new EntityToDtoMappingProfile();
             var configuration = new MapperConfiguration(cfg => cfg.AddProfile(profile));

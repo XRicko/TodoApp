@@ -53,7 +53,8 @@ namespace ToDoList.UnitTests.WebApi.Controllers
             contextMock.SetupGet(x => x.User.Claims)
                        .Returns(claims);
             MediatorMock.Setup(x => x.Send(It.Is<GetChecklistsByUserIdQuery>(q => q.UserId == userId), It.IsAny<CancellationToken>()))
-                  .ReturnsAsync(expected);
+                        .ReturnsAsync(expected)
+                        .Verifiable();
 
             // Act
             var actual = await checklistsController.Get();
@@ -69,7 +70,8 @@ namespace ToDoList.UnitTests.WebApi.Controllers
             // Arrange
             var createRequest = new ChecklistCreateRequest("Essential", 2);
 
-            MediatorMock.Setup(x => x.Send(It.Is<AddCommand<ChecklistCreateRequest>>(q => q.Request == createRequest), It.IsAny<CancellationToken>()));
+            MediatorMock.Setup(x => x.Send(It.Is<AddCommand<ChecklistCreateRequest>>(q => q.Request == createRequest), It.IsAny<CancellationToken>()))
+                        .Verifiable();
 
             // Act
             await checklistsController.Add(createRequest);
@@ -84,7 +86,8 @@ namespace ToDoList.UnitTests.WebApi.Controllers
             // Arrange
             int id = 3;
 
-            MediatorMock.Setup(x => x.Send(It.Is<RemoveCommand<Checklist>>(q => q.Id == id), It.IsAny<CancellationToken>()));
+            MediatorMock.Setup(x => x.Send(It.Is<RemoveCommand<Checklist>>(q => q.Id == id), It.IsAny<CancellationToken>()))
+                        .Verifiable();
 
             // Act
             await checklistsController.Delete(id);
@@ -99,7 +102,8 @@ namespace ToDoList.UnitTests.WebApi.Controllers
             // Arrange
             var updateRequest = new ChecklistUpdateRequest(4, "Chores", 9);
 
-            MediatorMock.Setup(x => x.Send(It.Is<UpdateCommand<ChecklistUpdateRequest>>(q => q.Request == updateRequest), It.IsAny<CancellationToken>()));
+            MediatorMock.Setup(x => x.Send(It.Is<UpdateCommand<ChecklistUpdateRequest>>(q => q.Request == updateRequest), It.IsAny<CancellationToken>()))
+                        .Verifiable();
 
             // Act
             await checklistsController.Update(updateRequest);

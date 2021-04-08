@@ -1,17 +1,16 @@
-﻿
-using Moq;
+﻿using Moq;
 
 using ToDoList.MvcClient.Services.Api;
 
 namespace ToDoList.UnitTests.MvcClient.Controllers
 {
-    abstract public class MvcControllerBaseForTests
+    public abstract class MvcControllerBaseForTests
     {
-        protected Mock<IApiCallsService> ApiCallsServiceMock { get; }
+        protected Mock<IApiInvoker> ApiCallsServiceMock { get; }
 
         public MvcControllerBaseForTests()
         {
-            ApiCallsServiceMock = new Mock<IApiCallsService>();
+            ApiCallsServiceMock = new Mock<IApiInvoker>();
         }
     }
 }

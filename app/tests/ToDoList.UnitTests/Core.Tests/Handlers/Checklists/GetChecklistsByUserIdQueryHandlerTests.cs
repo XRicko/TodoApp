@@ -27,7 +27,7 @@ namespace Core.Tests.Handlers.Checklists
         }
 
         [Fact]
-        public async Task ReturnsListOfChecklistResponsesByUser()
+        public async Task Handle_ReturnsListOfChecklistResponsesByUser()
         {
             // Arrange
             var expected = GetSampleChecklistResponses();

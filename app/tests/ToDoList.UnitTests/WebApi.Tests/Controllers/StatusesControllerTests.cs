@@ -34,7 +34,8 @@ namespace ToDoList.UnitTests.WebApi.Controllers
             };
 
             MediatorMock.Setup(x => x.Send(It.IsAny<GetAllQuery<Status, StatusResponse>>(), It.IsAny<CancellationToken>()))
-                        .ReturnsAsync(expected);
+                        .ReturnsAsync(expected)
+                        .Verifiable();
 
             // Act
             var actual = await statusesController.Get();
@@ -52,7 +53,8 @@ namespace ToDoList.UnitTests.WebApi.Controllers
             var expected = new StatusResponse(2, name, false);
 
             MediatorMock.Setup(x => x.Send(It.Is<GetByNameQuery<Status, StatusResponse>>(q => q.Name == name), It.IsAny<CancellationToken>()))
-                        .ReturnsAsync(expected);
+                        .ReturnsAsync(expected)
+                        .Verifiable();
 
             // Act
             var actual = await statusesController.GetByName(name);
@@ -69,7 +71,8 @@ namespace ToDoList.UnitTests.WebApi.Controllers
             string invalidName = "invalid_name";
 
             MediatorMock.Setup(x => x.Send(It.Is<GetByNameQuery<Status, StatusResponse>>(q => q.Name == invalidName), It.IsAny<CancellationToken>()))
-                      .ReturnsAsync(() => null);
+                        .ReturnsAsync(() => null)
+                        .Verifiable();
 
             // Act
             var actual = await statusesController.GetByName(invalidName);

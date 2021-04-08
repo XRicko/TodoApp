@@ -1,4 +1,3 @@
-
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -37,7 +36,8 @@ namespace ToDoList.UnitTests.WebApi.Controllers
             };
 
             MediatorMock.Setup(x => x.Send(It.IsAny<GetAllQuery<Category, CategoryResponse>>(), It.IsAny<CancellationToken>()))
-                        .ReturnsAsync(expected);
+                        .ReturnsAsync(expected)
+                        .Verifiable();
 
             // Act
             var actual = await categoriesController.Get();
@@ -55,7 +55,8 @@ namespace ToDoList.UnitTests.WebApi.Controllers
             var expected = new CategoryResponse(0, name);
 
             MediatorMock.Setup(x => x.Send(It.Is<GetByNameQuery<Category, CategoryResponse>>(q => q.Name == name), It.IsAny<CancellationToken>()))
-                        .ReturnsAsync(expected);
+                        .ReturnsAsync(expected)
+                        .Verifiable();
 
             // Act
             var actual = await categoriesController.GetByName(name);
@@ -72,7 +73,8 @@ namespace ToDoList.UnitTests.WebApi.Controllers
             string invalidName = "invalid_name";
 
             MediatorMock.Setup(x => x.Send(It.Is<GetByNameQuery<Category, CategoryResponse>>(q => q.Name == invalidName), It.IsAny<CancellationToken>()))
-                      .ReturnsAsync(() => null);
+                        .ReturnsAsync(() => null)
+                        .Verifiable();
 
             // Act
             var actual = await categoriesController.GetByName(invalidName);
@@ -88,7 +90,8 @@ namespace ToDoList.UnitTests.WebApi.Controllers
             // Arrange
             var createRequest = new CategoryCreateRequest("Essential");
 
-            MediatorMock.Setup(x => x.Send(It.Is<AddCommand<CategoryCreateRequest>>(q => q.Request == createRequest), It.IsAny<CancellationToken>()));
+            MediatorMock.Setup(x => x.Send(It.Is<AddCommand<CategoryCreateRequest>>(q => q.Request == createRequest), It.IsAny<CancellationToken>()))
+                        .Verifiable();
 
             // Act
             await categoriesController.Add(createRequest);

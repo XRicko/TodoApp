@@ -26,7 +26,7 @@ namespace Core.Tests.Handlers.Generic
         }
 
         [Fact]
-        public async Task ReturnsResponseGivenProperName()
+        public async Task Handle_ReturnsResponseGivenProperName()
         {
             // Arrange
             var expected = new CategoryResponse(5, name);
@@ -44,7 +44,7 @@ namespace Core.Tests.Handlers.Generic
         }
 
         [Fact]
-        public async Task ReturnsNullGivenInvalidName()
+        public async Task Handle_ReturnsNullGivenInvalidName()
         {
             // Arrange
             RepoMock.Setup(x => x.GetAsync<Category>(name))

@@ -30,7 +30,7 @@ namespace Core.Tests.Handlers.Generic
         }
 
         [Fact]
-        public async Task ReturnsResponseGivenProperId()
+        public async Task Handle_ReturnsResponseGivenProperId()
         {
             // Arrange
             var expected = new ChecklistResponse(id, name, userId);
@@ -49,7 +49,7 @@ namespace Core.Tests.Handlers.Generic
         }
 
         [Fact]
-        public async Task ReturnsNullGivenInvalidId()
+        public async Task Handle_ReturnsNullGivenInvalidId()
         {
             // Arrange
             RepoMock.Setup(x => x.GetAsync<Checklist>(id))

@@ -23,7 +23,7 @@ namespace Core.Tests.Handlers.Generic
         }
 
         [Fact]
-        public async Task UpdatesItem()
+        public async Task Handle_UpdatesItem()
         {
             // Arrange
             var request = new TodoItemUpdateRequest(2, "Do something", 6, 2, DateTime.Now);

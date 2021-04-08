@@ -26,13 +26,13 @@ namespace Core.Tests.Handlers.Checklists
         }
 
         [Fact]
-        public async Task DeletesChecklistWithTodosGivenExistingWithProperName()
+        public async Task Handle_DeletesChecklistWithTodosGivenExistingWithProperName()
         {
             // Arrange
             var entity = GetSampleChecklist("Birthday");
 
             RepoMock.Setup(x => x.GetAsync<Checklist>(id))
-                   .ReturnsAsync(entity);
+                    .ReturnsAsync(entity);
 
             // Act
             await removeChecklistHandler.Handle(new RemoveCommand<Checklist>(id), new CancellationToken());
@@ -46,10 +46,10 @@ namespace Core.Tests.Handlers.Checklists
         }
 
         [Fact]
-        public async Task DoesntDeleteChecklistGivenInvalidId()
+        public async Task Handle_DoesntDeleteChecklistGivenInvalidId()
         {
             RepoMock.Setup(x => x.GetAsync<TodoItem>(id))
-                             .ReturnsAsync(() => null);
+                    .ReturnsAsync(() => null);
 
             // Act
             await removeChecklistHandler.Handle(new RemoveCommand<Checklist>(id), new CancellationToken());
@@ -63,13 +63,13 @@ namespace Core.Tests.Handlers.Checklists
         }
 
         [Fact]
-        public async Task DoesntDeleteChecklistGivenInvalidName()
+        public async Task Handle_DoesntDeleteChecklistGivenDefaultName()
         {
             // Arrange
             var entity = GetSampleChecklist("Untitled");
 
             RepoMock.Setup(x => x.GetAsync<Checklist>(id))
-                  .ReturnsAsync(entity);
+                    .ReturnsAsync(entity);
 
             // Act
             await removeChecklistHandler.Handle(new RemoveCommand<Checklist>(id), new CancellationToken());

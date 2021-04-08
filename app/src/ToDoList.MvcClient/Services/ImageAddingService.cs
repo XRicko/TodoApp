@@ -15,9 +15,9 @@ namespace ToDoList.MvcClient.Services
     public class ImageAddingService : IImageAddingService
     {
         private readonly IWebHostEnvironment webHostEnvironment;
-        private readonly IApiCallsService apiCallsService;
+        private readonly IApiInvoker apiCallsService;
 
-        public ImageAddingService(IWebHostEnvironment hostEnvironment, IApiCallsService service)
+        public ImageAddingService(IWebHostEnvironment hostEnvironment, IApiInvoker service)
         {
             webHostEnvironment = hostEnvironment ?? throw new ArgumentNullException(nameof(hostEnvironment));
             apiCallsService = service ?? throw new ArgumentNullException(nameof(service));

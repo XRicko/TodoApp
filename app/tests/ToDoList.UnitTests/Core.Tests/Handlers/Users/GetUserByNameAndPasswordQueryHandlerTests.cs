@@ -31,13 +31,13 @@ namespace Core.Tests.Handlers.Users
         }
 
         [Fact]
-        public async Task ReturnsUserGivenProperCredentials()
+        public async Task Handle_ReturnsUserGivenProperCredentials()
         {
             // Arrange
             var users = GetSampleUsers();
 
             RepoMock.Setup(x => x.GetAllAsync<User>())
-                  .ReturnsAsync(users);
+                    .ReturnsAsync(users);
 
             // Act
             var actual = await getUserByNameAndPasswordHandler.Handle(new GetUserByNameAndPasswordQuery(username, password), new CancellationToken());
@@ -50,13 +50,13 @@ namespace Core.Tests.Handlers.Users
         }
 
         [Fact]
-        public async Task ReturnsNullGivenInvalidCredentials()
+        public async Task Handle_ReturnsNullGivenInvalidCredentials()
         {
             // Arrange
             var users = GetSampleUsers();
 
             RepoMock.Setup(x => x.GetAllAsync<User>())
-                 .ReturnsAsync(users);
+                    .ReturnsAsync(users);
 
             // Act
             var actual = await getUserByNameAndPasswordHandler.Handle(new GetUserByNameAndPasswordQuery(username, "ivalid_credentials"), new CancellationToken());

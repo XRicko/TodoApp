@@ -32,7 +32,7 @@ namespace Core.Tests.Handlers.Users
         }
 
         [Fact]
-        public async Task AddUserGivenNew()
+        public async Task Handle_AddUserGivenNew()
         {
             // Arrange
             var users = GetSampleUsers();
@@ -54,14 +54,14 @@ namespace Core.Tests.Handlers.Users
         }
 
         [Fact]
-        public async Task DoesntAddUserGivenExisting()
+        public async Task Handle_DoesntAddUserGivenExisting()
         {
             // Arrange
             var existingUser = new UserRequest(username, password);
             var users = GetSampleUsers();
 
             RepoMock.Setup(x => x.GetAllAsync<User>())
-              .ReturnsAsync(users);
+                    .ReturnsAsync(users);
 
             // Act
             await addUserHandler.Handle(new AddCommand<UserRequest>(existingUser), new CancellationToken());

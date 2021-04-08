@@ -12,9 +12,9 @@ namespace ToDoList.MvcClient.Controllers
     public class ChecklistController : Controller
     {
         private readonly ICreateViewModelService viewModelService;
-        private readonly IApiCallsService apiCallsService;
+        private readonly IApiInvoker apiCallsService;
 
-        public ChecklistController(IApiCallsService apiService, ICreateViewModelService modelService)
+        public ChecklistController(IApiInvoker apiService, ICreateViewModelService modelService)
         {
             apiCallsService = apiService ?? throw new ArgumentNullException(nameof(apiService));
             viewModelService = modelService ?? throw new ArgumentNullException(nameof(modelService));

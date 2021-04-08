@@ -32,7 +32,7 @@ namespace ToDoList.MvcClient
             var apiConfig = Configuration.GetSection("WebApiConfig").GetValid<WebApiConfig>();
 
             services.AddSingleton(apiConfig);
-            services.AddHttpClient<IApiCallsService, ApiCallsService>(client =>
+            services.AddHttpClient<IApiInvoker, ApiInvoker>(client =>
             {
                 client.BaseAddress = new Uri(apiConfig.BaseUrl);
                 client.DefaultRequestHeaders.Accept.Clear();

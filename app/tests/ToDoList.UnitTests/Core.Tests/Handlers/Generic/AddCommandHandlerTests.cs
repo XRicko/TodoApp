@@ -26,13 +26,13 @@ namespace Core.Tests.Handlers.Generic
         }
 
         [Fact]
-        public async Task AddsItemGivenNew()
+        public async Task Handle_AddsItemGivenNew()
         {
             // Arrange
             var request = new CategoryCreateRequest(name);
 
             RepoMock.Setup(x => x.GetAsync<Category>(request.Name))
-                               .ReturnsAsync(() => null);
+                    .ReturnsAsync(() => null);
 
             // Act
             await addCommandHandler.Handle(new AddCommand<CategoryCreateRequest>(request), new CancellationToken());
@@ -45,7 +45,7 @@ namespace Core.Tests.Handlers.Generic
         }
 
         [Fact]
-        public async Task DoesntAddItemGivenExisting()
+        public async Task Handle_DoesntAddItemGivenExisting()
         {
             // Arrange
             var request = new CategoryCreateRequest(name);

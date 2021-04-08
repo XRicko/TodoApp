@@ -46,7 +46,8 @@ namespace ToDoList.UnitTests.WebApi.Controllers
             // Arrange
             var createRequest = new TodoItemCreateRequest("Essential", 2, 1, DateTime.Now.AddDays(2));
 
-            MediatorMock.Setup(x => x.Send(It.Is<AddCommand<TodoItemCreateRequest>>(q => q.Request == createRequest), It.IsAny<CancellationToken>()));
+            MediatorMock.Setup(x => x.Send(It.Is<AddCommand<TodoItemCreateRequest>>(q => q.Request == createRequest), It.IsAny<CancellationToken>()))
+                        .Verifiable();
 
             // Act
             await todoItemsController.Add(createRequest);
@@ -61,7 +62,8 @@ namespace ToDoList.UnitTests.WebApi.Controllers
             // Arrange
             int id = 3;
 
-            MediatorMock.Setup(x => x.Send(It.Is<RemoveCommand<TodoItem>>(q => q.Id == id), It.IsAny<CancellationToken>()));
+            MediatorMock.Setup(x => x.Send(It.Is<RemoveCommand<TodoItem>>(q => q.Id == id), It.IsAny<CancellationToken>()))
+                        .Verifiable();
 
             // Act
             await todoItemsController.Delete(id);
@@ -76,7 +78,8 @@ namespace ToDoList.UnitTests.WebApi.Controllers
             // Arrange
             var updateRequest = new TodoItemUpdateRequest(2, "Cleaninig", 2, 1, DateTime.Now);
 
-            MediatorMock.Setup(x => x.Send(It.Is<UpdateCommand<ChecklistUpdateRequest>>(q => q.Request == updateRequest), It.IsAny<CancellationToken>()));
+            MediatorMock.Setup(x => x.Send(It.Is<UpdateCommand<TodoItemUpdateRequest>>(q => q.Request == updateRequest), It.IsAny<CancellationToken>()))
+                        .Verifiable();
 
             // Act
             await todoItemsController.Update(updateRequest);

@@ -16,10 +16,10 @@ namespace ToDoList.MvcClient.Controllers
     public class TodoController : Controller
     {
         private readonly ICreateViewModelService viewModelService;
-        private readonly IApiCallsService apiCallsService;
+        private readonly IApiInvoker apiCallsService;
         private readonly IImageAddingService imageAddingService;
 
-        public TodoController(IApiCallsService apiService, IImageAddingService addingService, ICreateViewModelService modelService) : base()
+        public TodoController(IApiInvoker apiService, IImageAddingService addingService, ICreateViewModelService modelService) : base()
         {
             apiCallsService = apiService ?? throw new ArgumentNullException(nameof(apiService));
             imageAddingService = addingService ?? throw new ArgumentNullException(nameof(addingService));

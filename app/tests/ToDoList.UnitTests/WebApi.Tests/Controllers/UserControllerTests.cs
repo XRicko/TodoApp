@@ -38,13 +38,13 @@ namespace ToDoList.UnitTests.WebApi.Controllers
 
             string expected = "eUnfjsnaqqopd_sOPmNaj";
 
-            MediatorMock.Setup(x => x.Send(It.Is<GetUserByNameAndPasswordQuery>(q => q.Name == userRequest.Name
-                                                                                     && q.Password == userRequest.Password),
-                                           It.IsAny<CancellationToken>()))
-                        .ReturnsAsync(userResponse);
+            MediatorMock.Setup(x => x.Send(It.Is<GetUserByNameAndPasswordQuery>(q => q.Name == userRequest.Name && q.Password == userRequest.Password), It.IsAny<CancellationToken>()))
+                        .ReturnsAsync(userResponse)
+                        .Verifiable();
 
             tockenGeneratorMock.Setup(x => x.GenerateToken(userResponse.Id, userResponse.Name))
-                               .Returns(expected);
+                               .Returns(expected)
+                               .Verifiable();
             // Act
             var actionResult = await userController.LoginAsync(userRequest);
             var okResult = actionResult as OkObjectResult;
@@ -65,10 +65,9 @@ namespace ToDoList.UnitTests.WebApi.Controllers
             // Arrange
             string expectedMessage = "Username or password is incorrect";
 
-            MediatorMock.Setup(x => x.Send(It.Is<GetUserByNameAndPasswordQuery>(q => q.Name == userRequest.Name
-                                                                                     && q.Password == userRequest.Password),
-                                           It.IsAny<CancellationToken>()))
-                        .ReturnsAsync(() => null);
+            MediatorMock.Setup(x => x.Send(It.Is<GetUserByNameAndPasswordQuery>(q => q.Name == userRequest.Name && q.Password == userRequest.Password), It.IsAny<CancellationToken>()))
+                        .ReturnsAsync(() => null)
+                        .Verifiable();
 
             // Act
             var actionResult = await userController.LoginAsync(userRequest);
@@ -98,7 +97,8 @@ namespace ToDoList.UnitTests.WebApi.Controllers
                         .ReturnsAsync(userResponse);
 
             tockenGeneratorMock.Setup(x => x.GenerateToken(userResponse.Id, userResponse.Name))
-                               .Returns(expected);
+                               .Returns(expected)
+                               .Verifiable();
 
             // Act
             var actionResult = await userController.RegisterAsync(userRequest);
@@ -121,10 +121,9 @@ namespace ToDoList.UnitTests.WebApi.Controllers
             string expectedMessage = "User exists";
             var userResponse = new UserResponse(3, "admin", "password");
 
-            MediatorMock.Setup(x => x.Send(It.Is<GetUserByNameAndPasswordQuery>(q => q.Name == userRequest.Name
-                                                                                     && q.Password == userRequest.Password),
-                                           It.IsAny<CancellationToken>()))
-                        .ReturnsAsync(userResponse);
+            MediatorMock.Setup(x => x.Send(It.Is<GetUserByNameAndPasswordQuery>(q => q.Name == userRequest.Name && q.Password == userRequest.Password), It.IsAny<CancellationToken>()))
+                        .ReturnsAsync(userResponse)
+                        .Verifiable();
 
             // Act
             var actionResult = await userController.RegisterAsync(userRequest);

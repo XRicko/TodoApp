@@ -27,7 +27,7 @@ namespace Core.Tests.Handlers.TodoItems
         }
 
         [Fact]
-        public async Task AddsTodoItemGivenNew()
+        public async Task Handle_AddsTodoItemGivenNew()
         {
             // Arrange
             var newRequest = new TodoItemCreateRequest(name, 3, 1);
@@ -49,7 +49,7 @@ namespace Core.Tests.Handlers.TodoItems
         }
 
         [Fact]
-        public async Task DoesntAddTodoItemGivenExisting()
+        public async Task Handle_DoesntAddTodoItemGivenExisting()
         {
             // Arrange
             var existingRequest = new TodoItemCreateRequest(name, 2, 2);

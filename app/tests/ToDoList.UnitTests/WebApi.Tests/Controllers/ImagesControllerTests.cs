@@ -31,7 +31,8 @@ namespace ToDoList.UnitTests.WebApi.Controllers
             var expected = new ImageResponse(2, name, "C:\\users\\image.png");
 
             MediatorMock.Setup(x => x.Send(It.Is<GetByNameQuery<Image, ImageResponse>>(q => q.Name == name), It.IsAny<CancellationToken>()))
-                        .ReturnsAsync(expected);
+                        .ReturnsAsync(expected)
+                        .Verifiable();
 
             // Act
             var actual = await imagesController.GetByName(name);
@@ -48,7 +49,8 @@ namespace ToDoList.UnitTests.WebApi.Controllers
             string name = "wrong_name";
 
             MediatorMock.Setup(x => x.Send(It.Is<GetByNameQuery<Image, ImageResponse>>(q => q.Name == name), It.IsAny<CancellationToken>()))
-                        .ReturnsAsync(() => null);
+                        .ReturnsAsync(() => null)
+                        .Verifiable();
 
             // Act
             var actual = await imagesController.GetByName(name);
@@ -64,7 +66,8 @@ namespace ToDoList.UnitTests.WebApi.Controllers
             // Arrange
             var createRequest = new ImageCreateRequest("Essential", "C:\\");
 
-            MediatorMock.Setup(x => x.Send(It.Is<AddCommand<ImageCreateRequest>>(q => q.Request == createRequest), It.IsAny<CancellationToken>()));
+            MediatorMock.Setup(x => x.Send(It.Is<AddCommand<ImageCreateRequest>>(q => q.Request == createRequest), It.IsAny<CancellationToken>()))
+                        .Verifiable();
 
             // Act
             await imagesController.Add(createRequest);

@@ -5,7 +5,7 @@ using ToDoList.MvcClient.Models;
 
 namespace ToDoList.MvcClient.Services.Api
 {
-    public interface IApiCallsService
+    public interface IApiInvoker
     {
         Task<IEnumerable<T>> GetItemsAsync<T>(string route) where T : BaseModel;
         Task<T> GetItemAsync<T>(string routeWithParameters) where T : BaseModel;

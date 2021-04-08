@@ -35,19 +35,19 @@ namespace Core.Tests.Handlers.Checklists
         }
 
         [Fact]
-        public async Task UpdatesChecklistAndAddsDefaultChecklistGivenUserWithoutIt()
+        public async Task Handle_UpdatesChecklistAndAddsDefaultChecklistGivenUserWithoutIt()
         {
             // Arrange
             var checklists = new List<Checklist> { new Checklist { Id = 1, Name = "Chores", UserId = userId } };
 
             RepoMock.Setup(x => x.GetAllAsync<Checklist>())
-                    .ReturnsAsync(checklists);
+                   .ReturnsAsync(checklists);
 
             // Act
             await updateCommandHandler.Handle(new UpdateCommand<ChecklistUpdateRequest>(request), new CancellationToken());
 
             // Assert
-            RepoMock.Verify();
+            RepoMock.Verify(x => x.GetAllAsync<Checklist>(), Times.Once);
             RepoMock.Verify(x => x.Update(It.Is<Checklist>(l => l.Id == checklistId)), Times.Once);
             RepoMock.Verify(x => x.AddAsync(It.Is<Checklist>(l => l.Name == defaultChecklistName && l.UserId == userId)), Times.Once);
 
@@ -55,10 +55,10 @@ namespace Core.Tests.Handlers.Checklists
         }
 
         [Fact]
-        public async Task UpdatesChecklistAndDoesntAddsDefaultChecklistGivenUserWithIt()
+        public async Task Handle_UpdatesChecklistAndDoesntAddDefaultChecklistGivenUserWithIt()
         {
             // Arrange
-            var checklists = new List<Checklist> { new Checklist { Id = 1, Name = defaultChecklistName, UserId = userId } };
+            var checklists = new List<Checklist> { new Checklist { Id = 3, Name = "Untitled", UserId = userId } };
 
             RepoMock.Setup(x => x.GetAllAsync<Checklist>())
                     .ReturnsAsync(checklists);
@@ -67,7 +67,7 @@ namespace Core.Tests.Handlers.Checklists
             await updateCommandHandler.Handle(new UpdateCommand<ChecklistUpdateRequest>(request), new CancellationToken());
 
             // Assert
-            RepoMock.Verify();
+            RepoMock.Verify(x => x.GetAllAsync<Checklist>(), Times.Once);
             RepoMock.Verify(x => x.Update(It.Is<Checklist>(l => l.Id == checklistId)), Times.Once);
             RepoMock.Verify(x => x.AddAsync(It.Is<Checklist>(l => l.Name == "Untitled" && l.UserId == userId)), Times.Never);
 
