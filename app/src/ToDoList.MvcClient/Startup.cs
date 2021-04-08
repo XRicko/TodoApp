@@ -1,4 +1,6 @@
+using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Net.Http.Headers;
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -27,11 +29,17 @@ namespace ToDoList.MvcClient
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddSingleton(Configuration.GetSection("WebApiConfig").GetValid<WebApiConfig>());
-            services.AddSingleton<WebApiHelper>();
+            var apiConfig = Configuration.GetSection("WebApiConfig").GetValid<WebApiConfig>();
+
+            services.AddSingleton(apiConfig);
+            services.AddHttpClient<IApiCallsService, ApiCallsService>(client =>
+            {
+                client.BaseAddress = new Uri(apiConfig.BaseUrl);
+                client.DefaultRequestHeaders.Accept.Clear();
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            });
 
             services.AddScoped<ICreateViewModelService, CreateViewModelService>();
-            services.AddScoped<IApiCallsService, ApiCallsService>();
             services.AddScoped<IImageAddingService, ImageAddingService>();
 
             services.AddControllersWithViews();

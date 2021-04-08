@@ -19,13 +19,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.runsettings = .runsettings
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core.Tests", "tests\ToDoList.UnitTests\Core.Tests\Core.Tests.csproj", "{FEB3B430-AA33-4986-BC19-E22FDFC47A2C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Core.Tests", "tests\ToDoList.UnitTests\Core.Tests\Core.Tests.csproj", "{FEB3B430-AA33-4986-BC19-E22FDFC47A2C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MvcClient.Tests", "tests\ToDoList.UnitTests\MvcClient.Tests\MvcClient.Tests.csproj", "{F4F7949D-3D90-424D-81DE-A0C1C7955B42}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MvcClient.Tests", "tests\ToDoList.UnitTests\MvcClient.Tests\MvcClient.Tests.csproj", "{F4F7949D-3D90-424D-81DE-A0C1C7955B42}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ToDoList.Extensions", "src\ToDoList.Extensions\ToDoList.Extensions.csproj", "{79FB0912-E336-4081-A934-14EDB2BA90EA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApi.Tests", "tests\ToDoList.UnitTests\WebApi.Tests\WebApi.Tests.csproj", "{CE90B856-38FB-485E-B1F3-FA9BE4FD888F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebApi.Tests", "tests\ToDoList.UnitTests\WebApi.Tests\WebApi.Tests.csproj", "{CE90B856-38FB-485E-B1F3-FA9BE4FD888F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
