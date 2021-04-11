@@ -13,13 +13,13 @@ using ToDoList.SharedKernel.Interfaces;
 
 namespace ToDoList.Core.Mediator.Handlers.Generics
 {
-    internal class UpdateCommandHandler<TRequest, TEntity> : HandlerBase, IRequestHandler<UpdateCommand<TRequest>>
+    public class UpdateCommandHandler<TRequest, TEntity> : HandlerBase, IRequestHandler<UpdateCommand<TRequest>>
         where TRequest : BaseRequest
         where TEntity : BaseEntity
     {
         public UpdateCommandHandler(IUnitOfWork unitOfWork, IMapper mapper) : base(unitOfWork, mapper) { }
 
-        public async Task<Unit> Handle(UpdateCommand<TRequest> request, CancellationToken cancellationToken)
+        public virtual async Task<Unit> Handle(UpdateCommand<TRequest> request, CancellationToken cancellationToken)
         {
             _ = request ?? throw new ArgumentNullException(nameof(request));
 

@@ -12,7 +12,22 @@ namespace ToDoList.Core.Services
 
         public CreateWithAddressService(IGeocodingService service)
         {
-            geocodingService = service ?? throw new ArgumentNullException(nameof(service));
+            geocodingService = service;
+        }
+
+        public async Task<IEnumerable<TodoItemResponse>> GetItemsWithAddressAsync(IEnumerable<TodoItemResponse> todoItemResponses)
+        {
+            if (todoItemResponses is null)
+                throw new ArgumentNullException(nameof(todoItemResponses));
+
+            List<TodoItemResponse> todoItemResponsesWithAddress = new();
+
+            foreach (var item in todoItemResponses)
+            {
+                todoItemResponsesWithAddress.Add(await GetItemWithAddressAsync(item));
+            }
+
+            return todoItemResponsesWithAddress;
         }
 
         public async Task<TodoItemResponse> GetItemWithAddressAsync(TodoItemResponse todoItemResponse)
@@ -28,20 +43,6 @@ namespace ToDoList.Core.Services
             }
 
             return todoItemResponse;
-        }
-
-        public async Task<IEnumerable<TodoItemResponse>> GetItemsWithAddressAsync(IEnumerable<TodoItemResponse> todoItemResponses)
-        {
-            _ = todoItemResponses ?? throw new ArgumentNullException(nameof(todoItemResponses));
-
-            List<TodoItemResponse> todoItemResponsesWithAddress = new();
-
-            foreach (var item in todoItemResponses)
-            {
-                todoItemResponsesWithAddress.Add(await GetItemWithAddressAsync(item));
-            }
-
-            return todoItemResponsesWithAddress;
         }
     }
 }

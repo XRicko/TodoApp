@@ -13,10 +13,19 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ToDoList.WebApi", "src\ToDo
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ToDoList.MvcClient", "src\ToDoList.MvcClient\ToDoList.MvcClient.csproj", "{F8F429D1-3ED6-4A31-9396-15BF297B16C1}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{56977DF7-FFC5-453B-84E8-D68EBABA38B3}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{7505A07E-37C5-47BC-9099-E714DF5F3116}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
+		.runsettings = .runsettings
 	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Core.Tests", "tests\ToDoList.UnitTests\Core.Tests\Core.Tests.csproj", "{FEB3B430-AA33-4986-BC19-E22FDFC47A2C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MvcClient.Tests", "tests\ToDoList.UnitTests\MvcClient.Tests\MvcClient.Tests.csproj", "{F4F7949D-3D90-424D-81DE-A0C1C7955B42}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ToDoList.Extensions", "src\ToDoList.Extensions\ToDoList.Extensions.csproj", "{79FB0912-E336-4081-A934-14EDB2BA90EA}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebApi.Tests", "tests\ToDoList.UnitTests\WebApi.Tests\WebApi.Tests.csproj", "{CE90B856-38FB-485E-B1F3-FA9BE4FD888F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -44,6 +53,22 @@ Global
 		{F8F429D1-3ED6-4A31-9396-15BF297B16C1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F8F429D1-3ED6-4A31-9396-15BF297B16C1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F8F429D1-3ED6-4A31-9396-15BF297B16C1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FEB3B430-AA33-4986-BC19-E22FDFC47A2C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FEB3B430-AA33-4986-BC19-E22FDFC47A2C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FEB3B430-AA33-4986-BC19-E22FDFC47A2C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FEB3B430-AA33-4986-BC19-E22FDFC47A2C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F4F7949D-3D90-424D-81DE-A0C1C7955B42}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F4F7949D-3D90-424D-81DE-A0C1C7955B42}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F4F7949D-3D90-424D-81DE-A0C1C7955B42}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F4F7949D-3D90-424D-81DE-A0C1C7955B42}.Release|Any CPU.Build.0 = Release|Any CPU
+		{79FB0912-E336-4081-A934-14EDB2BA90EA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{79FB0912-E336-4081-A934-14EDB2BA90EA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{79FB0912-E336-4081-A934-14EDB2BA90EA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{79FB0912-E336-4081-A934-14EDB2BA90EA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CE90B856-38FB-485E-B1F3-FA9BE4FD888F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CE90B856-38FB-485E-B1F3-FA9BE4FD888F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CE90B856-38FB-485E-B1F3-FA9BE4FD888F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CE90B856-38FB-485E-B1F3-FA9BE4FD888F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

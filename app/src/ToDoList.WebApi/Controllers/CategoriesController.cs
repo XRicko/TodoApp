@@ -23,14 +23,10 @@ namespace ToDoList.WebApi.Controllers
         public async Task<IEnumerable<CategoryResponse>> Get() =>
             await Mediator.Send(new GetAllQuery<Category, CategoryResponse>());
 
-        [HttpGet("{id}")]
-        public async Task<CategoryResponse> Get(int id) =>
-            await Mediator.Send(new GetByIdQuery<Category, CategoryResponse>(id));
-
         [HttpGet]
         [Route("[action]/{name}")]
         public async Task<CategoryResponse> GetByName(string name) =>
-           await Mediator.Send(new GetByNameQuery<Category, CategoryResponse>(name));
+            await Mediator.Send(new GetByNameQuery<Category, CategoryResponse>(name));
 
         [HttpPost]
         public async Task Add([FromBody] CategoryCreateRequest createRequest)
@@ -38,9 +34,5 @@ namespace ToDoList.WebApi.Controllers
             _ = createRequest ?? throw new System.ArgumentNullException(nameof(createRequest));
             await Mediator.Send(new AddCommand<CategoryCreateRequest>(createRequest));
         }
-
-        [HttpDelete("{id}")]
-        public async Task Delete(int id) =>
-            await Mediator.Send(new RemoveCommand<Category>(id));
     }
 }

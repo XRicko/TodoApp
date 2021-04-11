@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text.Json;
@@ -7,20 +8,20 @@ using System.Threading.Tasks;
 
 using Microsoft.AspNetCore.Http;
 
-using ToDoList.MvcClient.API;
 using ToDoList.MvcClient.Models;
 
 namespace ToDoList.MvcClient.Services.Api
 {
-    public class ApiCallsService : IApiCallsService
+    [ExcludeFromCodeCoverage]
+    public class ApiInvoker : IApiInvoker
     {
         private readonly IHttpContextAccessor httpContextAccessor;
-        private readonly HttpContext httpContext;
+        private readonly HttpClient httpClient;
 
-        public ApiCallsService(IHttpContextAccessor httpAccessor)
+        public ApiInvoker(IHttpContextAccessor httpAccessor, HttpClient client)
         {
             httpContextAccessor = httpAccessor ?? throw new ArgumentNullException(nameof(httpAccessor));
-            httpContext = httpContextAccessor.HttpContext;
+            httpClient = client ?? throw new ArgumentNullException(nameof(client));
         }
 
         public async Task<IEnumerable<T>> GetItemsAsync<T>(string route) where T : BaseModel
@@ -29,7 +30,7 @@ namespace ToDoList.MvcClient.Services.Api
                 throw new ArgumentException($"'{nameof(route)}' cannot be null or empty", nameof(route));
 
             AddAuthenticationHeader();
-            using var response = await WebApiHelper.ApiClient.GetAsync(route);
+            using var response = await httpClient.GetAsync(route);
 
             ValidateStatusCode(response);
 
@@ -41,7 +42,7 @@ namespace ToDoList.MvcClient.Services.Api
             if (string.IsNullOrEmpty(routeWithParemeters))
                 throw new ArgumentException($"'{nameof(routeWithParemeters)}' cannot be null or empty", nameof(routeWithParemeters));
 
-            using var response = await WebApiHelper.ApiClient.GetAsync(routeWithParemeters);
+            using var response = await httpClient.GetAsync(routeWithParemeters);
             ValidateStatusCode(response);
 
             return await response.Content.ReadAsAsync<T>();
@@ -53,7 +54,7 @@ namespace ToDoList.MvcClient.Services.Api
                 throw new ArgumentException($"'{nameof(route)}' cannot be null or empty", nameof(route));
             _ = item ?? throw new ArgumentNullException(nameof(item));
 
-            using var response = await WebApiHelper.ApiClient.PostAsJsonAsync(route, item);
+            using var response = await httpClient.PostAsJsonAsync(route, item);
             ValidateStatusCode(response);
         }
 
@@ -63,7 +64,7 @@ namespace ToDoList.MvcClient.Services.Api
                 throw new ArgumentException($"'{nameof(route)}' cannot be null or empty", nameof(route));
             _ = item ?? throw new ArgumentNullException(nameof(item));
 
-            using var response = await WebApiHelper.ApiClient.PutAsJsonAsync(route, item);
+            using var response = await httpClient.PutAsJsonAsync(route, item);
             ValidateStatusCode(response);
         }
 
@@ -72,7 +73,7 @@ namespace ToDoList.MvcClient.Services.Api
             if (string.IsNullOrEmpty(route))
                 throw new ArgumentException($"'{nameof(route)}' cannot be null or empty", nameof(route));
 
-            using var response = await WebApiHelper.ApiClient.DeleteAsync(route + id);
+            using var response = await httpClient.DeleteAsync(route + id);
             ValidateStatusCode(response);
         }
 
@@ -82,14 +83,14 @@ namespace ToDoList.MvcClient.Services.Api
                 throw new ArgumentException($"'{nameof(route)}' cannot be null or empty", nameof(route));
             _ = userModel ?? throw new ArgumentNullException(nameof(userModel));
 
-            using var response = await WebApiHelper.ApiClient.PostAsJsonAsync(route, userModel);
+            using var response = await httpClient.PostAsJsonAsync(route, userModel);
 
             ValidateStatusCode(response);
 
             string tokenJson = await response.Content.ReadAsStringAsync();
             string token = JsonSerializer.Deserialize<string>(tokenJson);
 
-            httpContext.Response.Cookies.Append("Token", token, new CookieOptions { Expires = DateTime.Now.AddHours(3) });
+            httpContextAccessor.HttpContext.Response.Cookies.Append("Token", token, new CookieOptions { Expires = DateTime.Now.AddHours(3) });
         }
 
         private static void ValidateStatusCode(HttpResponseMessage response)
@@ -100,7 +101,7 @@ namespace ToDoList.MvcClient.Services.Api
 
         private void AddAuthenticationHeader()
         {
-            WebApiHelper.ApiClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", httpContext.Request.Cookies["Token"]);
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", httpContextAccessor.HttpContext.Request.Cookies["Token"]);
         }
     }
 }

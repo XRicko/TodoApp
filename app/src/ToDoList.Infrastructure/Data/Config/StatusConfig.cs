@@ -1,10 +1,13 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Diagnostics.CodeAnalysis;
+
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 using ToDoList.Core.Entities;
 
 namespace ToDoList.Infrastructure.Data.Config
 {
+    [ExcludeFromCodeCoverage]
     internal class StatusConfig : IEntityTypeConfiguration<Status>
     {
         public void Configure(EntityTypeBuilder<Status> builder)

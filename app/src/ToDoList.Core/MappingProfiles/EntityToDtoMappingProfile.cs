@@ -11,7 +11,7 @@ using ToDoList.SharedKernel;
 
 namespace ToDoList.Core.MappingProfiles
 {
-    internal class EntityToDtoMappingProfile : Profile
+    public class EntityToDtoMappingProfile : Profile
     {
         private const int SRID = 4326;
 
@@ -26,7 +26,8 @@ namespace ToDoList.Core.MappingProfiles
                             opt => opt.MapFrom(src => src.X))
               .ForCtorParam("Latitude",
                             opt => opt.MapFrom(src => src.Y))
-              .ReverseMap();
+              .ReverseMap()
+              .ForAllOtherMembers(opt => opt.Ignore());
 
             CreateMap<GeoCoordinate, Point>()
                 .ForCtorParam("x",
@@ -34,23 +35,23 @@ namespace ToDoList.Core.MappingProfiles
                 .ForCtorParam("y",
                               opt => opt.MapFrom(src => src.Latitude))
                 .ForMember(dest => dest.SRID,
-                           opt => opt.MapFrom(src => SRID));
+                           opt => opt.MapFrom(src => SRID))
+                .ForAllOtherMembers(opt => opt.Ignore());
 
             CreateMap<User, UserResponse>();
-            CreateMap<UserRequest, User>();
+            CreateMap<UserRequest, User>(MemberList.Source);
 
             CreateMap<Image, ImageResponse>();
-            CreateMap<ImageCreateRequest, Image>();
-            CreateMap<ImageUpdateRequest, Image>();
+            CreateMap<ImageCreateRequest, Image>(MemberList.Source);
 
             CreateMap<Category, CategoryResponse>();
-            CreateMap<CategoryCreateRequest, Category>();
+            CreateMap<CategoryCreateRequest, Category>(MemberList.Source);
 
             CreateMap<Status, StatusResponse>();
 
             CreateMap<Checklist, ChecklistResponse>();
-            CreateMap<ChecklistCreateRequest, Checklist>();
-            CreateMap<ChecklistUpdateRequest, Checklist>();
+            CreateMap<ChecklistCreateRequest, Checklist>(MemberList.Source);
+            CreateMap<ChecklistUpdateRequest, Checklist>(MemberList.Source);
 
             CreateMap<TodoItem, TodoItemResponse>()
                 .ForMember(dest => dest.StatusName,
@@ -60,10 +61,13 @@ namespace ToDoList.Core.MappingProfiles
                 .ForMember(dest => dest.ChecklistName,
                            opt => opt.MapFrom(src => src.Checklist.Name))
                 .ForMember(dest => dest.ImagePath,
-                           opt => opt.MapFrom(src => src.Image.Name));
+                           opt => opt.MapFrom(src => src.Image.Path))
+                .ForMember(dest => dest.ImageName,
+                           opt => opt.MapFrom(src => src.Image.Name))
+                .ForAllOtherMembers(opt => opt.Ignore());
 
-            CreateMap<TodoItemCreateRequest, TodoItem>();
-            CreateMap<TodoItemUpdateRequest, TodoItem>();
+            CreateMap<TodoItemCreateRequest, TodoItem>(MemberList.Source);
+            CreateMap<TodoItemUpdateRequest, TodoItem>(MemberList.Source);
         }
     }
 }

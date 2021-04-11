@@ -6,7 +6,7 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace ToDoList.WebApi.Jwt
 {
-    internal class TokenGenerator : ITokenGenerator
+    public class TokenGenerator : ITokenGenerator
     {
         private readonly JwtTokenConfig jwtTokenConfig;
 

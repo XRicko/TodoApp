@@ -1,10 +1,12 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 using ToDoList.MvcClient.Models;
 
 namespace ToDoList.MvcClient.ViewModels
 {
-    public class CreateViewModel
+    [ExcludeFromCodeCoverage]
+    public class CreateTodoItemViewModel
     {
         public TodoItemModel TodoItemModel { get; set; }
 

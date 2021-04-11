@@ -1,4 +1,4 @@
-﻿@model ToDoList.MvcClient.ViewModels.CreateViewModel
+﻿@model ToDoList.MvcClient.ViewModels.CreateTodoItemViewModel
 
 @{
     ViewData["Title"] = "Create";
@@ -13,6 +13,7 @@
             @Html.HiddenFor(m => m.TodoItemModel.ParentId)
             @Html.HiddenFor(m => m.TodoItemModel.StartDate)
             @Html.HiddenFor(m => m.TodoItemModel.ImageId)
+            @Html.HiddenFor(m => m.TodoItemModel.ImageName)
 
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
@@ -54,11 +55,14 @@
 
             <div class="form-row mb-2">
                 <div class="col">
-                    <input id="latitude" class="form-control" placeholder="Latitude" asp-for="TodoItemModel.Latitude" value="@Model.TodoItemModel.Latitude" />
+                    <input id="latitude" class="form-control" placeholder="Latitude" readonly asp-for="TodoItemModel.Latitude" value="@Model.TodoItemModel.Latitude" />
                 </div>
                 <div class="col">
-                    <input id="longitude" class="form-control" placeholder="Longitude" asp-for="TodoItemModel.Longitude" value="@Model.TodoItemModel.Longitude" />
-                </div>           
+                    <input id="longitude" class="form-control" placeholder="Longitude" readonly asp-for="TodoItemModel.Longitude" value="@Model.TodoItemModel.Longitude" />
+                </div>    
+                <div class="col flex-grow-0">
+                    <button id="resetLocation" class="btn btn-outline-secondary" type="button">Reset</button>
+                </div>
             </div>
 
             <div class="form-group">
@@ -67,9 +71,14 @@
 
             <div class="form-group">
                 <label>Choose image</label>
-                <div class="custom-file">
-                    <input asp-for="TodoItemModel.Image" class="custom-file-input" id="customFile" onchange="$('#fileLabel').text(this.files[0].name)" />
-                    <label asp-for="TodoItemModel.Image" id="fileLabel" class="custom-file-label">Choose image</label>
+
+                <div class="d-flex">
+                    <div class="custom-file mr-2">
+                        <input asp-for="TodoItemModel.Image" class="custom-file-input" id="customFile" />
+                        <label asp-for="TodoItemModel.Image" id="fileLabel" class="custom-file-label">Choose image</label>
+                    </div>
+
+                    <button id="resetImage" class="btn btn-outline-secondary" type="button">Reset</button>
                 </div>
             </div>
             <div class="form-group">

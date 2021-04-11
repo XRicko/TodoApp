@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 
 using ToDoList.SharedKernel;
 
 namespace ToDoList.Core.Mediator.Response
 {
-    public record TodoItemResponse(int Id, string Name, DateTime StartDate, DateTime? DueDate, GeoCoordinate GeoPoint, int? ParentId, int StatusId, string StatusName, int? CategoryId, string CategoryName, int ChecklistId, string ChecklistName, int? ImageId, string ImagePath, string Address = null) : BaseResponse(Id, Name);
+    [ExcludeFromCodeCoverage]
+    public record TodoItemResponse(int Id, string Name, DateTime StartDate, int ChecklistId, string ChecklistName, int StatusId, string StatusName, DateTime? DueDate = null, GeoCoordinate GeoPoint = null, int? ParentId = null, int? CategoryId = null, string CategoryName = null, int? ImageId = null, string ImageName = null, string ImagePath = null, string Address = null) : BaseResponse(Id, Name);
 }

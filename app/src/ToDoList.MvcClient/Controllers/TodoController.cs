@@ -16,10 +16,10 @@ namespace ToDoList.MvcClient.Controllers
     public class TodoController : Controller
     {
         private readonly ICreateViewModelService viewModelService;
-        private readonly IApiCallsService apiCallsService;
+        private readonly IApiInvoker apiCallsService;
         private readonly IImageAddingService imageAddingService;
 
-        public TodoController(IApiCallsService apiService, IImageAddingService addingService, ICreateViewModelService modelService)
+        public TodoController(IApiInvoker apiService, IImageAddingService addingService, ICreateViewModelService modelService) : base()
         {
             apiCallsService = apiService ?? throw new ArgumentNullException(nameof(apiService));
             imageAddingService = addingService ?? throw new ArgumentNullException(nameof(addingService));
@@ -28,40 +28,41 @@ namespace ToDoList.MvcClient.Controllers
 
         public async Task<ActionResult> IndexAsync()
         {
-            IndexViewModel viewModel = await viewModelService.CreateIndexViewModel();
-            return View(viewModel);
+            IndexViewModel viewModel = await viewModelService.CreateIndexViewModelAsync();
+            return View("Index", viewModel);
         }
 
         public async Task<ActionResult> CreateOrUpdateAsync(int checklistId, int todoItemId = 0, int parentId = 0)
         {
+            string viewName = "CreateOrUpdate";
+
             if (todoItemId == 0)
             {
                 TodoItemModel todoItem = new() { ChecklistId = checklistId };
 
                 if (parentId == 0)
-                    return View(await viewModelService.CreateViewModelCreateOrUpdateTodoItem(todoItem));
+                    return View(viewName, await viewModelService.CreateViewModelCreateOrUpdateTodoItemAsync(todoItem));
 
                 todoItem.ParentId = parentId;
-                return View(await viewModelService.CreateViewModelCreateOrUpdateTodoItem(todoItem));
+                return View(viewName, await viewModelService.CreateViewModelCreateOrUpdateTodoItemAsync(todoItem));
             }
 
             var todoItemModel = await apiCallsService.GetItemAsync<TodoItemModel>("TodoItems/" + todoItemId);
-            todoItemModel.ChecklistId = checklistId;
 
-            if (todoItemModel.GeoPoint is not null)
+            if (todoItemModel?.GeoPoint is not null)
             {
                 todoItemModel.Latitude = todoItemModel.GeoPoint.Latitude.ToString();
                 todoItemModel.Longitude = todoItemModel.GeoPoint.Longitude.ToString();
             }
 
             return todoItemModel is not null
-                ? View(await viewModelService.CreateViewModelCreateOrUpdateTodoItem(todoItemModel))
+                ? View(viewName, await viewModelService.CreateViewModelCreateOrUpdateTodoItemAsync(todoItemModel))
                 : NotFound();
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> CreateOrUpdateAsync(CreateViewModel createViewModel)
+        public async Task<ActionResult> CreateOrUpdateAsync(CreateTodoItemViewModel createViewModel)
         {
             _ = createViewModel ?? throw new ArgumentNullException(nameof(createViewModel));
 
@@ -80,7 +81,7 @@ namespace ToDoList.MvcClient.Controllers
             if (createViewModel.TodoItemModel.Id != 0)
                 await UpdateTodoItem(createViewModel.TodoItemModel);
 
-            IndexViewModel viewModel = await viewModelService.CreateIndexViewModel();
+            IndexViewModel viewModel = await viewModelService.CreateIndexViewModelAsync();
             return PartialView("_ViewAll", viewModel);
         }
 
@@ -88,7 +89,7 @@ namespace ToDoList.MvcClient.Controllers
         public async Task<ActionResult> DeleteAsync(int id)
         {
             await apiCallsService.DeleteItemAsync("TodoItems/", id);
-            var viewModel = await viewModelService.CreateIndexViewModel();
+            var viewModel = await viewModelService.CreateIndexViewModelAsync();
 
             return PartialView("_ViewAll", viewModel);
         }
@@ -99,11 +100,11 @@ namespace ToDoList.MvcClient.Controllers
             var todoItemModel = await apiCallsService.GetItemAsync<TodoItemModel>("TodoItems/" + id);
 
             if (isDone)
-                await ChangeStatusAsync(todoItemModel, "Done");
+                await ChangeStatusToAsync(todoItemModel, "Done");
             else
-                await ChangeStatusAsync(todoItemModel, "Ongoing");
+                await ChangeStatusToAsync(todoItemModel, "Ongoing");
 
-            var viewModel = await viewModelService.CreateIndexViewModel();
+            var viewModel = await viewModelService.CreateIndexViewModelAsync();
             return PartialView("_ViewAll", viewModel);
         }
 
@@ -111,9 +112,7 @@ namespace ToDoList.MvcClient.Controllers
         public IActionResult Error() =>
             View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
 
-        public IActionResult Privacy() => View();
-
-        private async Task ChangeStatusAsync(TodoItemModel todoItemModel, string statusName)
+        private async Task ChangeStatusToAsync(TodoItemModel todoItemModel, string statusName)
         {
             var status = await apiCallsService.GetItemAsync<StatusModel>("Statuses/GetByName/" + statusName);
             todoItemModel.StatusId = status.Id;
@@ -146,7 +145,7 @@ namespace ToDoList.MvcClient.Controllers
         private async Task AddTodoItem(TodoItemModel todoItemModel)
         {
             if (todoItemModel.Image is not null)
-                await imageAddingService.AddImageInTodoItem(todoItemModel);
+                await imageAddingService.AddImageInTodoItemAsync(todoItemModel);
 
             await apiCallsService.PostItemAsync("TodoItems", todoItemModel);
         }
@@ -154,7 +153,7 @@ namespace ToDoList.MvcClient.Controllers
         private async Task UpdateTodoItem(TodoItemModel todoItemModel)
         {
             if (todoItemModel.Image is not null)
-                await imageAddingService.AddImageInTodoItem(todoItemModel);
+                await imageAddingService.AddImageInTodoItemAsync(todoItemModel);
 
             await apiCallsService.PutItemAsync("TodoItems", todoItemModel);
         }

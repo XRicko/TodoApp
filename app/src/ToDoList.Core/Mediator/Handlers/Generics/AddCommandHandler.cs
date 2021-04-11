@@ -13,7 +13,7 @@ using ToDoList.SharedKernel.Interfaces;
 
 namespace ToDoList.Core.Mediator.Handlers.Generics
 {
-    internal class AddCommandHandler<TRequest, TEntity> : HandlerBase, IRequestHandler<AddCommand<TRequest>>
+    public class AddCommandHandler<TRequest, TEntity> : HandlerBase, IRequestHandler<AddCommand<TRequest>>
         where TRequest : BaseRequest
         where TEntity : BaseEntity
     {

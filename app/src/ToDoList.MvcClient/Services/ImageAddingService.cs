@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Threading.Tasks;
 
@@ -10,20 +11,22 @@ using ToDoList.MvcClient.Services.Api;
 
 namespace ToDoList.MvcClient.Services
 {
+    [ExcludeFromCodeCoverage]
     public class ImageAddingService : IImageAddingService
     {
         private readonly IWebHostEnvironment webHostEnvironment;
-        private readonly IApiCallsService apiCallsService;
+        private readonly IApiInvoker apiCallsService;
 
-        public ImageAddingService(IWebHostEnvironment hostEnvironment, IApiCallsService service)
+        public ImageAddingService(IWebHostEnvironment hostEnvironment, IApiInvoker service)
         {
             webHostEnvironment = hostEnvironment ?? throw new ArgumentNullException(nameof(hostEnvironment));
             apiCallsService = service ?? throw new ArgumentNullException(nameof(service));
         }
 
-        public async Task AddImageInTodoItem(TodoItemModel todoItem)
+        public async Task AddImageInTodoItemAsync(TodoItemModel todoItem)
         {
             _ = todoItem ?? throw new ArgumentNullException(nameof(todoItem));
+            _ = todoItem.Image ?? throw new ArgumentNullException(nameof(todoItem.Image));
 
             string absolutePath = MakeAbsoluteImagePath(todoItem.Image.FileName);
 

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -16,13 +16,13 @@ using ToDoList.SharedKernel.Interfaces;
 
 namespace ToDoList.Core.Mediator.Handlers.Users
 {
-    internal class GetUserByNameAndPasswordQueryHandler : HandlerBase, IRequestHandler<GetUserByNameAndPasswordQuery, UserResponse>
+    public class GetUserByNameAndPasswordQueryHandler : HandlerBase, IRequestHandler<GetUserByNameAndPasswordQuery, UserResponse>
     {
         private readonly IPasswordHasher passwordHasher;
 
         public GetUserByNameAndPasswordQueryHandler(IUnitOfWork unitOfWork, IMapper mapper, IPasswordHasher hasher) : base(unitOfWork, mapper)
         {
-            passwordHasher = hasher ?? throw new ArgumentNullException(nameof(hasher));
+            passwordHasher = hasher;
         }
 
         public async Task<UserResponse> Handle(GetUserByNameAndPasswordQuery request, CancellationToken cancellationToken)
@@ -31,7 +31,7 @@ namespace ToDoList.Core.Mediator.Handlers.Users
 
             var users = await UnitOfWork.Repository.GetAllAsync<User>();
             var user = users.SingleOrDefault(u => u.Name == request.Name
-                                                  && passwordHasher.Verify(request.Password, u.Password));
+                                                  && passwordHasher.VerifyPassword(request.Password, u.Password));
 
             var response = Mapper.Map<UserResponse>(user);
 

@@ -10,8 +10,6 @@ namespace ToDoList.Core.Mediator.Handlers.Statuses
 {
     internal class GetStatusByNameQueryHandler : GetByNameQueryHandler<Status, StatusResponse>
     {
-        public GetStatusByNameQueryHandler(IUnitOfWork unitOfWork, IMapper mapper) : base(unitOfWork, mapper)
-        {
-        }
+        public GetStatusByNameQueryHandler(IUnitOfWork unitOfWork, IMapper mapper) : base(unitOfWork, mapper) { }
     }
 }
