@@ -95,7 +95,6 @@
                                             </div>
 
                                             <div>
-                                                <button onclick="showPopup('@Url.Action("CreateOrUpdate", "Todo", new { ChecklistId = checklist.Id, ParentId = todoItem.Id }, Context.Request.Scheme)', 'Add subtask for @todoItem.Name')" class="border-0 btn-transition btn btn-outline-primary"><i class="bi bi-plus-square"></i></button>
                                                 <button onclick="showPopup('@Url.Action("CreateOrUpdate", "Todo", new { TodoItemId = todoItem.Id, ChecklistId = checklist.Id }, Context.Request.Scheme)','Update task', this)" class="border-0 btn-transition btn btn-outline-info todoItem"><i class="bi bi-pencil"></i></button>
 
                                                 <form asp-action="Delete" method="post" asp-route-id="@todoItem.Id" onsubmit="return ajaxDelete(this);" class="d-inline">

@@ -10,7 +10,6 @@
         <form asp-action="CreateOrUpdate" asp-route-id="@Model.TodoItemModel.Id" onsubmit="return ajaxPost(this);">
             @Html.HiddenFor(m => m.TodoItemModel.Id)
 
-            @Html.HiddenFor(m => m.TodoItemModel.ParentId)
             @Html.HiddenFor(m => m.TodoItemModel.StartDate)
             @Html.HiddenFor(m => m.TodoItemModel.ImageId)
             @Html.HiddenFor(m => m.TodoItemModel.ImageName)
@@ -37,7 +36,7 @@
                 <span asp-validation-for="TodoItemModel.ChecklistId" class="text-danger"></span>
             </div>
 
-            <div class="form-group">
+            <div class="form-group required">
                 <label asp-for="TodoItemModel.StatusId" class="control-label">Status</label>
                 <select class="form-control" asp-for="TodoItemModel.StatusId" asp-items="@new SelectList(Model.StatusModels, nameof(StatusModel.Id), nameof(StatusModel.Name), Model.SelectedStatusId)">
                     <option value="" disabled>Select status</option>

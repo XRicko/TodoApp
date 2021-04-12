@@ -70,7 +70,7 @@ namespace ToDoList.UnitTests.MvcClient.Controllers
         }
 
         [Fact]
-        public async Task Get_CreateOrUpdate_ReturnsCreateViewWithNewTodoItemGivenNewIdAndNoParent()
+        public async Task Get_CreateOrUpdate_ReturnsCreateViewWithNewTodoItemGivenNewId()
         {
             // Arrange
             var createTodoItemViewModel = GetCreateTodoItemViewModel();
@@ -90,29 +90,6 @@ namespace ToDoList.UnitTests.MvcClient.Controllers
             // Assert
             Assert.Equal(createOrUpdateViewName, result.ViewName);
             Assert.Equal(checklistId, viewModel.TodoItemModel.ChecklistId);
-
-            createViewModelServiceMock.Verify();
-        }
-
-        [Fact]
-        public async Task Get_CreateOrUpdate_ReturnsCreateViewWithNewTodoItemGivenNewIdAndParent()
-        {
-            // Arrange
-            int parentId = 2;
-            var createTodoItemViewModel = GetCreateTodoItemViewModel();
-
-            createViewModelServiceMock.Setup(x => x.CreateViewModelCreateOrUpdateTodoItemAsync(It.Is<TodoItemModel>(m => m.Id == 0)))
-                                      .ReturnsAsync((TodoItemModel m) => { createTodoItemViewModel.TodoItemModel = m; return createTodoItemViewModel; })
-                                      .Verifiable();
-
-            // Act
-            var result = await todoController.CreateOrUpdateAsync(checklistId, 0, parentId) as ViewResult;
-            var viewModel = (CreateTodoItemViewModel)result.ViewData.Model;
-
-            // Assert
-            Assert.Equal(createOrUpdateViewName, result.ViewName);
-            Assert.Equal(checklistId, viewModel.TodoItemModel.ChecklistId);
-            Assert.Equal(parentId, viewModel.TodoItemModel.ParentId);
 
             createViewModelServiceMock.Verify();
         }

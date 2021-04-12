@@ -34,10 +34,6 @@ namespace ToDoList.Infrastructure.Data.Config
                 .WithMany(p => p.TodoItems)
                 .HasForeignKey(d => d.ImageId);
 
-            builder.HasOne(d => d.Parent)
-                .WithMany(p => p.Children)
-                .HasForeignKey(d => d.ParentId);
-
             builder.HasOne(d => d.Status)
                 .WithMany(p => p.TodoItems)
                 .HasForeignKey(d => d.StatusId);

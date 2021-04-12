@@ -32,18 +32,13 @@ namespace ToDoList.MvcClient.Controllers
             return View("Index", viewModel);
         }
 
-        public async Task<ActionResult> CreateOrUpdateAsync(int checklistId, int todoItemId = 0, int parentId = 0)
+        public async Task<ActionResult> CreateOrUpdateAsync(int checklistId, int todoItemId = 0)
         {
             string viewName = "CreateOrUpdate";
 
             if (todoItemId == 0)
             {
                 TodoItemModel todoItem = new() { ChecklistId = checklistId };
-
-                if (parentId == 0)
-                    return View(viewName, await viewModelService.CreateViewModelCreateOrUpdateTodoItemAsync(todoItem));
-
-                todoItem.ParentId = parentId;
                 return View(viewName, await viewModelService.CreateViewModelCreateOrUpdateTodoItemAsync(todoItem));
             }
 
