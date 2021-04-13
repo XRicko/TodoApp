@@ -25,7 +25,6 @@ namespace ToDoList.MvcClient.Models
         public string Latitude { get; set; }
         public string Longitude { get; set; }
 
-        public int? ParentId { get; set; }
         public int StatusId { get; set; }
         public int? CategoryId { get; set; }
         public int ChecklistId { get; set; }

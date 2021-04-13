@@ -7,7 +7,7 @@ using ToDoList.SharedKernel.Interfaces;
 
 namespace ToDoList.Core.Mediator.Handlers.Checklists
 {
-    internal class GetChecklistByIdQueryHandler : GetByIdQueryHandler<Checklist, ChecklistResponse>
+    public class GetChecklistByIdQueryHandler : GetByIdQueryHandler<Checklist, ChecklistResponse>
     {
         public GetChecklistByIdQueryHandler(IUnitOfWork unitOfWork, IMapper mapper) : base(unitOfWork, mapper)
         {

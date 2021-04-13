@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
 
 using MediatR;
@@ -19,7 +17,6 @@ using ToDoList.Core.Mediator.Queries.Generics;
 using ToDoList.Core.Mediator.Response;
 using ToDoList.Core.Services;
 using ToDoList.Extensions;
-using ToDoList.Infrastructure.Data;
 using ToDoList.Infrastructure.Extensions;
 using ToDoList.WebApi.Jwt;
 

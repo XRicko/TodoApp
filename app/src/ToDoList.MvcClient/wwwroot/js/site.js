@@ -28,11 +28,6 @@ showPopup = (url, title, button) => {
                     $('#resetImage').click(function () {
                         resetImage();
                     });
-
-                    $('#resetLocation').click(function () {
-                        $('#latitude').val('');
-                        $('#longitude').val('');
-                    });
                 }
             }
         }
@@ -140,9 +135,10 @@ function resetFileInput(input) {
 
 let marker;
 
-function placeMarker(location) {
+function placeMarker(location, map) {
     if (marker) {
         marker.setPosition(location);
+        marker.setMap(map);
     } else {
         marker = new google.maps.Marker({
             position: location,
@@ -158,7 +154,7 @@ function initMap() {
     const longitude = document.getElementById("longitude");
 
     if (latitude.value && longitude.value) {
-        location = { lat: parseFloat(latitude.value), lng: parseFloat(longitude.value) };
+        location = { lat: parseFloat(latitude.value.replace(',', '.')), lng: parseFloat(longitude.value.replace(',', '.')) };
     }
     else {
         location = { lat: 50.450001, lng: 30.523333 };
@@ -169,13 +165,16 @@ function initMap() {
         center: location,
     });
 
-    marker = new google.maps.Marker({
-        position: location,
-        map: map,
-    });
+
+    if (latitude.value && longitude.value) {
+        marker = new google.maps.Marker({
+            position: location,
+            map: map,
+        });
+    }
 
     map.addListener("click", (e) => {
-        placeMarker(e.latLng);
+        placeMarker(e.latLng, map);
         map.panTo(e.latLng);
 
         let jsonLatLng = JSON.stringify(e.latLng);
@@ -183,5 +182,12 @@ function initMap() {
 
         latitude.value = latLng.lat;
         longitude.value = latLng.lng;
+    });
+
+    $('#resetLocation').click(function () {
+        $('#latitude').val('');
+        $('#longitude').val('');
+
+        marker.setMap(null);
     });
 }

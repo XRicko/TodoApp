@@ -9,9 +9,9 @@ namespace ToDoList.MvcClient.Services
 {
     public class CreateViewModelService : ICreateViewModelService
     {
-        private readonly IApiCallsService apiCallsService;
+        private readonly IApiInvoker apiCallsService;
 
-        public CreateViewModelService(IApiCallsService apiService)
+        public CreateViewModelService(IApiInvoker apiService)
         {
             apiCallsService = apiService ?? throw new ArgumentNullException(nameof(apiService));
         }

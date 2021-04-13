@@ -10,9 +10,9 @@ namespace ToDoList.MvcClient.Controllers
 {
     public class UserController : Controller
     {
-        private readonly IApiCallsService apiCallsService;
+        private readonly IApiInvoker apiCallsService;
 
-        public UserController(IApiCallsService apiService)
+        public UserController(IApiInvoker apiService)
         {
             apiCallsService = apiService ?? throw new ArgumentNullException(nameof(apiService));
         }

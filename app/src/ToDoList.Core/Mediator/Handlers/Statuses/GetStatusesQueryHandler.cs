@@ -1,5 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
-
+﻿
 using AutoMapper;
 
 using ToDoList.Core.Entities;

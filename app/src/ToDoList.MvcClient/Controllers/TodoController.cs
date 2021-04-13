@@ -16,10 +16,10 @@ namespace ToDoList.MvcClient.Controllers
     public class TodoController : Controller
     {
         private readonly ICreateViewModelService viewModelService;
-        private readonly IApiCallsService apiCallsService;
+        private readonly IApiInvoker apiCallsService;
         private readonly IImageAddingService imageAddingService;
 
-        public TodoController(IApiCallsService apiService, IImageAddingService addingService, ICreateViewModelService modelService) : base()
+        public TodoController(IApiInvoker apiService, IImageAddingService addingService, ICreateViewModelService modelService) : base()
         {
             apiCallsService = apiService ?? throw new ArgumentNullException(nameof(apiService));
             imageAddingService = addingService ?? throw new ArgumentNullException(nameof(addingService));
@@ -32,18 +32,13 @@ namespace ToDoList.MvcClient.Controllers
             return View("Index", viewModel);
         }
 
-        public async Task<ActionResult> CreateOrUpdateAsync(int checklistId, int todoItemId = 0, int parentId = 0)
+        public async Task<ActionResult> CreateOrUpdateAsync(int checklistId, int todoItemId = 0)
         {
             string viewName = "CreateOrUpdate";
 
             if (todoItemId == 0)
             {
                 TodoItemModel todoItem = new() { ChecklistId = checklistId };
-
-                if (parentId == 0)
-                    return View(viewName, await viewModelService.CreateViewModelCreateOrUpdateTodoItemAsync(todoItem));
-
-                todoItem.ParentId = parentId;
                 return View(viewName, await viewModelService.CreateViewModelCreateOrUpdateTodoItemAsync(todoItem));
             }
 
