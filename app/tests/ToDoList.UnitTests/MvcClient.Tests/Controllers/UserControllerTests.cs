@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Localization;
 
 using Moq;
 
@@ -15,6 +16,7 @@ namespace ToDoList.UnitTests.MvcClient.Controllers
 {
     public class UserControllerTests : MvcControllerBaseForTests
     {
+        private readonly Mock<IStringLocalizer<UserController>> localizerMock;
         private readonly UserController userController;
 
         private readonly string registerViewName;
@@ -25,7 +27,8 @@ namespace ToDoList.UnitTests.MvcClient.Controllers
 
         public UserControllerTests() : base()
         {
-            userController = new UserController(ApiCallsServiceMock.Object);
+            localizerMock = new Mock<IStringLocalizer<UserController>>();
+            userController = new UserController(ApiCallsServiceMock.Object, localizerMock.Object);
 
             registerViewName = "Register";
             loginViewName = "Login";
@@ -59,11 +62,18 @@ namespace ToDoList.UnitTests.MvcClient.Controllers
         {
             // Arrange
             var existingUser = new UserModel { Name = "admin", Password = "qwerty", ConfirmPassword = "qwerty" };
+
             string error = "User exists";
+            string key = "UserExists";
+            var localizedString = new LocalizedString(key, error);
+
 
             ApiCallsServiceMock.Setup(x => x.AuthenticateUserAsync("User/Register", existingUser))
                                .ThrowsAsync(new Exception("Unauthorized"))
                                .Verifiable();
+            localizerMock.SetupGet(x => x[key])
+                         .Returns(localizedString)
+                         .Verifiable();
 
             // Act
             var result = await userController.RegisterAsync(existingUser) as ViewResult;
@@ -73,6 +83,7 @@ namespace ToDoList.UnitTests.MvcClient.Controllers
             Assert.Contains(userController.ModelState[string.Empty].Errors, e => e.ErrorMessage == error);
 
             ApiCallsServiceMock.Verify();
+            localizerMock.Verify();
         }
 
         [Fact]
@@ -96,13 +107,19 @@ namespace ToDoList.UnitTests.MvcClient.Controllers
         {
             // Arrange
             var invalidUser = new UserModel { Name = "admin", Password = "invalid_password" };
+
+            string key = "InvalidCredentials";
             string error = "Username or password is incorrect";
+            var localizedString = new LocalizedString(key, error);
 
             userController.ModelState.AddModelError("ConfirmPassword", "Confirm password doesnt match");
 
             ApiCallsServiceMock.Setup(x => x.AuthenticateUserAsync("User/Login", invalidUser))
                                .ThrowsAsync(new Exception("Unauthorized"))
                                .Verifiable();
+            localizerMock.SetupGet(x => x[key])
+                         .Returns(localizedString)
+                         .Verifiable();
 
             // Act
             var result = await userController.LoginAsync(invalidUser) as ViewResult;
@@ -113,6 +130,7 @@ namespace ToDoList.UnitTests.MvcClient.Controllers
             Assert.Empty(userController.ModelState["ConfirmPassword"].Errors);
 
             ApiCallsServiceMock.Verify();
+            localizerMock.Verify();
         }
 
         [Fact]

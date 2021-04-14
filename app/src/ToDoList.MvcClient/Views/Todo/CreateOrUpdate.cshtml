@@ -1,4 +1,5 @@
-﻿@model ToDoList.MvcClient.ViewModels.CreateTodoItemViewModel
+﻿@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer Localizer
+@model ToDoList.MvcClient.ViewModels.CreateTodoItemViewModel
 
 @{
     ViewData["Title"] = "Create";
@@ -24,43 +25,43 @@
 
             <div class="form-group">
                 <label asp-for="TodoItemModel.DueDate" class="control-label"></label>
-                <input asp-for="TodoItemModel.DueDate" class="form-control" />
+                <input asp-for="TodoItemModel.DueDate" type="datetime-local" class="form-control" />
                 <span asp-validation-for="TodoItemModel.DueDate" class="text-danger"></span>
             </div>
 
             <div class="form-group required">
-                <label asp-for="TodoItemModel.ChecklistId" class="control-label">Checklist</label>
+                <label asp-for="TodoItemModel.ChecklistId" class="control-label">@Localizer["Checklist"]</label>
                 <select class="form-control" asp-for="TodoItemModel.ChecklistId" asp-items="@new SelectList(Model.ChecklistModels, nameof(ChecklistModel.Id), nameof(ChecklistModel.Name), Model.SelectedChecklistId)">
-                    <option value="" disabled>Select checklist</option>
+                    <option value="" disabled>@Localizer["SelectChecklist"]</option>
                 </select>
                 <span asp-validation-for="TodoItemModel.ChecklistId" class="text-danger"></span>
             </div>
 
             <div class="form-group required">
-                <label asp-for="TodoItemModel.StatusId" class="control-label">Status</label>
+                <label asp-for="TodoItemModel.StatusId" class="control-label">@Localizer["Status"]</label>
                 <select class="form-control" asp-for="TodoItemModel.StatusId" asp-items="@new SelectList(Model.StatusModels, nameof(StatusModel.Id), nameof(StatusModel.Name), Model.SelectedStatusId)">
-                    <option value="" disabled>Select status</option>
+                    <option value="" disabled>@Localizer["SelectStatus"]</option>
                 </select>
                 <span asp-validation-for="TodoItemModel.StatusId" class="text-danger"></span>
             </div>
 
             <div class="form-group">
-                <label asp-for="TodoItemModel.CategoryId" class="control-label">Category</label>
+                <label asp-for="TodoItemModel.CategoryId" class="control-label">@Localizer["Category"]</label>
                 <select class="form-control" id="categorySelector" asp-for="TodoItemModel.CategoryName" asp-items="@new SelectList(Model.CategoryModels, nameof(CategoryModel.Name), nameof(CategoryModel.Name), Model.SelectedCategoryId)">
-                    <option value="">Select category</option>
+                    <option value="">@Localizer["SelectCategory"]</option>
                 </select>
                 <span asp-validation-for="TodoItemModel.CategoryId" class="text-danger"></span>
             </div>
 
             <div class="form-row mb-2">
                 <div class="col">
-                    <input id="latitude" class="form-control" placeholder="Latitude" readonly asp-for="TodoItemModel.Latitude" value="@Model.TodoItemModel.Latitude" />
+                    <input id="latitude" class="form-control" placeholder="@Localizer["Latitude"]" readonly asp-for="TodoItemModel.Latitude" value="@Model.TodoItemModel.Latitude" />
                 </div>
                 <div class="col">
-                    <input id="longitude" class="form-control" placeholder="Longitude" readonly asp-for="TodoItemModel.Longitude" value="@Model.TodoItemModel.Longitude" />
+                    <input id="longitude" class="form-control" placeholder="@Localizer["Longitude"]" readonly asp-for="TodoItemModel.Longitude" value="@Model.TodoItemModel.Longitude" />
                 </div>    
                 <div class="col flex-grow-0">
-                    <button id="resetLocation" class="btn btn-outline-secondary" type="button">Reset</button>
+                    <button id="resetLocation" class="btn btn-outline-secondary" type="button">@Localizer["Reset"]</button>
                 </div>
             </div>
 
@@ -69,15 +70,15 @@
             </div>
 
             <div class="form-group">
-                <label>Choose image</label>
+                <label>@Localizer["Image"]</label>
 
                 <div class="d-flex">
                     <div class="custom-file mr-2">
                         <input asp-for="TodoItemModel.Image" class="custom-file-input" id="customFile" />
-                        <label asp-for="TodoItemModel.Image" id="fileLabel" class="custom-file-label">Choose image</label>
+                        <label asp-for="TodoItemModel.Image" id="fileLabel" class="custom-file-label">@Localizer["ChooseImage"]</label>
                     </div>
 
-                    <button id="resetImage" class="btn btn-outline-secondary" type="button">Reset</button>
+                    <button id="resetImage" class="btn btn-outline-secondary" type="button">@Localizer["Reset"]</button>
                 </div>
             </div>
             <div class="form-group">
@@ -86,6 +87,12 @@
         </form>
     </div>
 </div>
+
+<style>
+    #fileLabel::after {
+        content: "@Localizer["Browse"]";
+    }
+</style>
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}

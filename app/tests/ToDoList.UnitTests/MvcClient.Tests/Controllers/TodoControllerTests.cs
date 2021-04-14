@@ -110,9 +110,9 @@ namespace ToDoList.UnitTests.MvcClient.Controllers
                                .Verifiable();
 
             createViewModelServiceMock.Setup(x => x.CreateViewModelCreateOrUpdateTodoItemAsync(existingTodoItem))
-                                      .ReturnsAsync((TodoItemModel m) => 
+                                      .ReturnsAsync((TodoItemModel m) =>
                                       {
-                                          createTodoItemViewModel.TodoItemModel = m; 
+                                          createTodoItemViewModel.TodoItemModel = m;
                                           return createTodoItemViewModel;
                                       })
                                       .Verifiable();
@@ -156,10 +156,10 @@ namespace ToDoList.UnitTests.MvcClient.Controllers
                                .Verifiable();
 
             createViewModelServiceMock.Setup(x => x.CreateViewModelCreateOrUpdateTodoItemAsync(existingTodoItem))
-                                      .ReturnsAsync((TodoItemModel m) => 
+                                      .ReturnsAsync((TodoItemModel m) =>
                                       {
-                                          createTodoItemViewModel.TodoItemModel = m; 
-                                          return createTodoItemViewModel; 
+                                          createTodoItemViewModel.TodoItemModel = m;
+                                          return createTodoItemViewModel;
                                       })
                                       .Verifiable();
 

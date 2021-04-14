@@ -1,10 +1,10 @@
 ﻿using System;
-using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
 
 using Microsoft.AspNetCore.Http;
 
+using ToDoList.MvcClient.Resources.Validaton;
 using ToDoList.SharedKernel;
 
 namespace ToDoList.MvcClient.Models
@@ -14,7 +14,7 @@ namespace ToDoList.MvcClient.Models
     {
         public DateTime StartDate { get; set; }
 
-        [DisplayName("Due date")]
+        [Display(Name = "DueDate", ResourceType = typeof(AnnotationResources))]
         [DisplayFormat(DataFormatString = "{0:f}")]
         public DateTime? DueDate { get; set; }
 

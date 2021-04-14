@@ -1,4 +1,6 @@
-﻿<!DOCTYPE html>
+﻿@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer Localizer
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -32,13 +34,13 @@
                         @if (Context.Request.Cookies["Token"] is not null)
                         {
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Todo" asp-action="Index">Home</a>
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Todo" asp-action="Index">@Localizer["Home"]</a>
                             </li>
                         }
                         else
                         {
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">@Localizer["Home"]</a>
                             </li>
                         }
                     </ul>
@@ -47,6 +49,7 @@
             </div>
         </nav>
     </header>
+
     <div class="container">
         <main role="main" class="pb-3">
             @RenderBody()
@@ -69,15 +72,22 @@
         </div>
     </div>
 
-    <footer class="border-top footer text-muted">
+    <footer class="border-top footer">
         <div class="container">
-            &copy; 2021 - ToDoList.MvcClient
+            <div class="row">
+                <div class="col text-muted">
+                    &copy; @System.DateTime.Now.Year - Todo list
+                </div>
+                <div class="col text-right align-self-center">
+                    @await Html.PartialAsync("_SelectLanguagePartial")
+                </div>
+            </div>
         </div>
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDpbZWpbB_u-pkZ0tpm7CrzE9QzvgNimKY&libraries=&v=weekly"
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDpbZWpbB_u-pkZ0tpm7CrzE9QzvgNimKY&libraries=&v=weekly&language=@System.Globalization.CultureInfo.CurrentUICulture"
             async></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)

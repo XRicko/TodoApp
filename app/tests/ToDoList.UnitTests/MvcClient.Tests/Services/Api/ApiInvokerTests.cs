@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Formatting;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -326,7 +324,7 @@ namespace MvcClient.Tests.Services.Api
         {
             // Arrange 
             int id = 4;
-            var uri = new Uri("https://localhost:5001/api/Categories/" + id );
+            var uri = new Uri("https://localhost:5001/api/Categories/" + id);
 
             httpMessageHandlerMock.Protected()
               .Setup<Task<HttpResponseMessage>>("SendAsync",

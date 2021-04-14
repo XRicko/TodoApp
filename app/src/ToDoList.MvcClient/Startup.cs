@@ -1,13 +1,16 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
 using System.Net.Http.Headers;
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 
 using ToDoList.Extensions;
 using ToDoList.MvcClient.API;
@@ -39,10 +42,25 @@ namespace ToDoList.MvcClient
                 client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             });
 
+            services.Configure<RequestLocalizationOptions>(options =>
+            {
+                var cultures = new CultureInfo[]
+                {
+                    new CultureInfo("en"),
+                    new CultureInfo("uk")
+                };
+
+                options.DefaultRequestCulture = new RequestCulture("en");
+                options.SupportedCultures = cultures;
+                options.SupportedUICultures = cultures;
+            });
+
             services.AddScoped<ICreateViewModelService, CreateViewModelService>();
             services.AddScoped<IImageAddingService, ImageAddingService>();
 
-            services.AddControllersWithViews();
+            services.AddLocalization(options => options.ResourcesPath = "Resources");
+            services.AddControllersWithViews()
+                    .AddMvcLocalization();
 
             services.AddSingleton<ITempDataProvider, CookieTempDataProvider>();
             services.AddSession();
@@ -68,6 +86,8 @@ namespace ToDoList.MvcClient
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
+
+            app.UseRequestLocalization(app.ApplicationServices.GetRequiredService<IOptions<RequestLocalizationOptions>>().Value);
 
             app.UseRouting();
 

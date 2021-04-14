@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Localization;
 
 using ToDoList.MvcClient.Models;
 using ToDoList.MvcClient.Services.Api;
@@ -11,10 +12,12 @@ namespace ToDoList.MvcClient.Controllers
     public class UserController : Controller
     {
         private readonly IApiInvoker apiCallsService;
+        private readonly IStringLocalizer<UserController> localizer;
 
-        public UserController(IApiInvoker apiService)
+        public UserController(IApiInvoker apiService, IStringLocalizer<UserController> stringLocalizer)
         {
             apiCallsService = apiService ?? throw new ArgumentNullException(nameof(apiService));
+            localizer = stringLocalizer;
         }
 
         public IActionResult Login()
@@ -42,7 +45,7 @@ namespace ToDoList.MvcClient.Controllers
             {
                 if (e.Message == "Unauthorized")
                 {
-                    ModelState.AddModelError(string.Empty, "User exists");
+                    ModelState.AddModelError(string.Empty, localizer["UserExists"]);
                     return View("Register");
                 }
             }
@@ -67,7 +70,7 @@ namespace ToDoList.MvcClient.Controllers
                     if (ModelState.ContainsKey("ConfirmPassword"))
                         ModelState["ConfirmPassword"].Errors.Clear();
 
-                    ModelState.AddModelError(string.Empty, "Username or password is incorrect");
+                    ModelState.AddModelError(string.Empty, localizer["InvalidCredentials"]);
                     return View("Login");
                 }
             }
