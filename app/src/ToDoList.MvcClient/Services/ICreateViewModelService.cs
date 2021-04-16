@@ -7,7 +7,7 @@ namespace ToDoList.MvcClient.Services
 {
     public interface ICreateViewModelService
     {
-        Task<IndexViewModel> CreateIndexViewModelAsync();
+        Task<IndexViewModel> CreateIndexViewModelAsync(string categoryName = null, string statusName = null);
         Task<CreateTodoItemViewModel> CreateViewModelCreateOrUpdateTodoItemAsync(TodoItemModel todoItemModel);
     }
 }

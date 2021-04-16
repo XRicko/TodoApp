@@ -5,168 +5,293 @@
     int userId = Model.ChecklistModels.First().UserId;
 }
 
+<div class="d-flex align-items-center mb-3">
+    @if (Model.SelectedStatus is not null)
+    {
+        @if (Model.SelectedStatus is "Planned")
+        {
+            <div class="badge badge-secondary position-relative">
+                @Localizer["PlannedStatus"]
+                <a class="close stretched-link" 
+                   href="javascript:void(0)" 
+                   onclick="ajaxGet('@Url.Action("Index", "Todo", new { categoryName = Model.SelectedCategory }, Context.Request.Scheme)')">
+                    <i class="bi bi-x"></i>
+                </a>
+            </div>
+        }
+        else if (Model.SelectedStatus is "Ongoing")
+        {
+            <div class="badge badge-warning position-relative">
+                @Localizer["OngoingStatus"]
+                <a class="close stretched-link" 
+                   href="javascript:void(0)" 
+                   onclick="ajaxGet('@Url.Action("Index", "Todo", new { categoryName = Model.SelectedCategory }, Context.Request.Scheme)')">
+                    <i class="bi bi-x"></i>
+                </a>
+            </div>
+        }
+        else if (Model.SelectedStatus is "Done")
+        {
+            <div class="badge badge-success position-relative">
+                @Localizer["DoneStatus"]
+                <a class="close stretched-link"
+                   href="javascript:void(0)"
+                   onclick="ajaxGet('@Url.Action("Index", "Todo", new { categoryName = Model.SelectedCategory }, Context.Request.Scheme)')">
+                    <i class="bi bi-x"></i>
+                </a>
+            </div>
+        }
+    }
+    @if (Model.SelectedCategory is not null)
+    {
+        <div class="badge badge-pill badge-info position-relative ml-1">
+            #@Model.SelectedCategory
+            <a class="close stretched-link"
+               href="javascript:void(0)"
+               onclick="ajaxGet('@Url.Action("Index", "Todo", new { statusName = Model.SelectedStatus }, Context.Request.Scheme)')">
+                <i class="bi bi-x"></i>
+            </a>
+        </div>
+    }
 
-<div class="text-right mb-3">
-    <button onclick="showPopup('@Url.Action("CreateOrUpdate", "Checklist", new { userId }, Context.Request.Scheme)', '@Localizer["NewChecklist"]')" class="btn btn-primary">@Localizer["NewChecklist"]</button>
+    <div class="ml-auto text-center">
+        <button onclick="showPopup('@Url.Action("CreateOrUpdate", "Checklist", new { userId }, Context.Request.Scheme)', '@Localizer["NewChecklist"]')" 
+                class="btn btn-primary">
+            @Localizer["NewChecklist"]
+        </button>
+    </div>
 </div>
 
 <div class="card-columns">
-        @foreach (var checklist in Model.ChecklistModels)
-        {
-            <div class="card">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    @if (checklist.Name is "Untitled")
-                    {
-                        <div class="text-capitalize font-weight-normal">
-                            <i class="bi bi-list-task"></i>&nbsp;@Localizer["Untitled"]
-                        </div>
-                    }
-                    else
-                    {
-                        <div class="text-capitalize font-weight-normal">
-                            <i class="bi bi-list-task"></i>&nbsp;@checklist.Name
-                        </div>
-                    }
-
-                    <div>
-                        <button onclick="showPopup('@Url.Action("CreateOrUpdate", "Checklist", new { checklist.Id }, Context.Request.Scheme)', '@Localizer["UpdateChecklist"]')" class="border-0 btn-transition btn btn-outline-info"><i class="bi bi-pencil"></i></button>
-
-                        @if (checklist.Name != "Untitled")
-                        {
-                            <form asp-action="Delete" asp-controller="Checklist" method="post" asp-route-id="@checklist.Id" onsubmit="return ajaxDelete(this);" class="d-inline">
-                                <button type="submit" class="border-0 btn-transition btn btn-outline-danger"> <i class="bi bi-trash"></i> </button>
-                            </form>
-                        }
+    @foreach (var checklist in Model.ChecklistModels)
+    {
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                @if (checklist.Name is "Untitled")
+                {
+                    <div class="text-capitalize font-weight-normal">
+                        <i class="bi bi-list-task"></i>&nbsp;@Localizer["Untitled"]
                     </div>
+                }
+                else
+                {
+                    <div class="text-capitalize font-weight-normal">
+                        <i class="bi bi-list-task"></i>&nbsp;@checklist.Name
+                    </div>
+                }
 
+                <div>
+                    <button onclick="showPopup('@Url.Action("CreateOrUpdate", "Checklist", new { checklist.Id }, Context.Request.Scheme)', '@Localizer["UpdateChecklist"]')" 
+                            class="border-0 btn-transition btn btn-outline-info">
+                        <i class="bi bi-pencil"></i>
+                    </button>
+
+                    @if (checklist.Name != "Untitled")
+                    {
+                        <form method="post" 
+                              asp-action="Delete"
+                              asp-controller="Checklist" 
+                              asp-route-id="@checklist.Id"
+                              onsubmit="return ajaxDelete(this);" 
+                              class="d-inline">
+
+                            <button type="submit" 
+                                    class="border-0 btn-transition btn btn-outline-danger"> 
+                                <i class="bi bi-trash"></i> 
+                            </button>
+                        </form>
+                    }
                 </div>
 
-                <div class="card-body">
-                    <ul class="nav nav-tabs border-0 mb-2" style="grid-gap: 12px;">
-                        <li class="nav-item">
-                            <a class="btn btn-outline-primary active" id="notDone-@checklist.Id-tab"
-                               data-toggle="tab" href="#notDone-@checklist.Id">@Localizer["ActiveTab"] 
-                                <span class="badge badge-light">
-                                    @Model.ActiveTodoItems.Where(x => x.ChecklistId == checklist.Id).Count()
-                                </span>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="btn btn-outline-secondary" id="done-@checklist.Id-tab"
-                               data-toggle="tab" href="#done-@checklist.Id"> @Localizer["DoneTab"]
-                                <span class="badge badge-light">
-                                    @Model.DoneTodoItems.Where(x => x.ChecklistId == checklist.Id).Count()
-                                </span>
-                            </a>
-                        </li>
+            </div>
+
+            <div class="card-body">
+                <ul class="nav nav-tabs border-0 mb-2" style="grid-gap: 12px;">
+                    <li class="nav-item">
+                        <a class="btn btn-outline-primary active" 
+                           id="notDone-@checklist.Id-tab"
+                           data-toggle="tab" 
+                           href="#notDone-@checklist.Id">
+                            @Localizer["ActiveTab"]
+                            <span class="badge badge-light">
+                                @Model.TodoItems.Where(x => x.ChecklistId == checklist.Id && x.StatusName != "Done").Count()
+                            </span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="btn btn-outline-secondary" 
+                           id="done-@checklist.Id-tab"
+                           data-toggle="tab"da
+                           href="#done-@checklist.Id">
+                            @Localizer["DoneTab"]
+                            <span class="badge badge-light">
+                                @Model.TodoItems.Where(x => x.ChecklistId == checklist.Id && x.StatusName == "Done").Count()
+                            </span>
+                        </a>
+                    </li>
+                </ul>
+
+                <div class="tab-content">
+                    <ul class=" tab-pane show active list-group list-group-flush" id="notDone-@checklist.Id">
+                        @foreach (var todoItem in Model.TodoItems.Where(i => i.ChecklistId == checklist.Id && i.StatusName != "Done"))
+                        {
+                            <li class="list-group-item">
+                                <div class="d-flex flex-column">
+                                    <div class="d-flex">
+                                        <div class="form-check">
+                                            <input class="form-check-input" 
+                                                   id="@todoItem.Id" 
+                                                   data-url="@Url.Action("MarkTodoItem")" 
+                                                   onchange="return ajaxChangeStatus(this)" 
+                                                   type="checkbox">
+                                            <label class="form-check-label" for="@todoItem.Id">&nbsp;</label>
+                                        </div>
+
+                                        <div>
+                                            @todoItem.Name
+                                            @if (todoItem.StatusName is "Planned")
+                                            {
+                                                <a href="javascript:void(0)" 
+                                                   onclick="ajaxGet('@Url.Action("Index", "Todo", new { todoItem.StatusName, categoryName = Model.SelectedCategory }, Context.Request.Scheme)')"
+                                                   class="badge badge-secondary ml-2">
+                                                    @Localizer["PlannedStatus"]
+                                                </a>
+                                            }
+                                            else if (todoItem.StatusName is "Ongoing")
+                                            {
+                                                <a href="javascript:void(0)" 
+                                                   onclick="ajaxGet('@Url.Action("Index", "Todo", new { todoItem.StatusName, categoryName = Model.SelectedCategory }, Context.Request.Scheme)')"
+                                                   class="badge badge-warning ml-2">
+                                                    @Localizer["OngoingStatus"]
+                                                </a>
+                                            }
+
+                                            @if (todoItem.CategoryName is not null)
+                                            {
+                                                <a href="javascript:void(0)" 
+                                                   onclick="ajaxGet('@Url.Action("Index", "Todo", new { todoItem.CategoryName, statusName = Model.SelectedStatus }, Context.Request.Scheme)')"
+                                                   class="badge badge-pill badge-info">
+                                                    #@todoItem.CategoryName
+                                                </a>
+                                            }
+
+                                        </div>
+                                    </div>
+
+                                    @if (todoItem.DueDate is not null)
+                                    {
+                                        <div class="text-right text-secondary">
+                                            @Localizer["Due"] @todoItem.DueDate
+                                        </div>
+                                    }
+
+                                    <a href="http://maps.google.com/?q=@todoItem.Address" target="_blank">@todoItem.Address</a>
+
+                                    <img src="@Url.Content(todoItem.ImagePath)" 
+                                         class="img-fluid align-self-center" 
+                                         style="max-width: 400px; width: 100%" />
+
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div class="text-muted">
+                                            @todoItem.DaysAgo @Localizer["DaysAgo"]
+                                        </div>
+
+                                        <div>
+                                            <button onclick="showPopup('@Url.Action("CreateOrUpdate", "Todo", new { TodoItemId = todoItem.Id, ChecklistId = checklist.Id }, Context.Request.Scheme)', '@Localizer["UpdateTask"]', this)" 
+                                                    class="border-0 btn-transition btn btn-outline-info todoItem">
+                                                <i class="bi bi-pencil"></i>
+                                            </button>
+
+                                            <form method="post" 
+                                                  asp-action="Delete"
+                                                  asp-route-id="@todoItem.Id" 
+                                                  onsubmit="return ajaxDelete(this);" 
+                                                  class="d-inline">
+
+                                                <button type="submit" 
+                                                        class="border-0 btn-transition btn btn-outline-danger"> 
+                                                    <i class="bi bi-trash"></i> 
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                        }
                     </ul>
 
-                    <div class="tab-content">
-                        <ul class=" tab-pane show active list-group list-group-flush" id="notDone-@checklist.Id">
-                            @foreach (var todoItem in Model.ActiveTodoItems.Where(i => i.ChecklistId == checklist.Id))
-                            {
-                                <li class="list-group-item">
-                                    <div class="d-flex flex-column">
-                                        <div class="d-flex">
-                                            <div class="form-check">
-                                                <input class="form-check-input" id="@todoItem.Id" data-url="@Url.Action("MarkTodoItem")" onchange="return ajaxChangeStatus(this)" type="checkbox">
-                                                <label class="form-check-label" for="@todoItem.Id">&nbsp;</label>
-                                            </div>
-
-                                            <div>
-                                                @todoItem.Name
-                                                @if (todoItem.StatusName is "Planned")
-                                                {
-                                                    <div class="badge badge-secondary ml-2">@Localizer["PlannedStatus"]</div>
-                                                }
-                                                else if (todoItem.StatusName is "Ongoing")
-                                                {
-                                                    <div class="badge badge-warning ml-2">@Localizer["OngoingStatus"]</div>
-                                                }
-
-                                                @if (todoItem.CategoryName is not null)
-                                                {
-                                                    <div class="badge badge-pill badge-info">#@todoItem.CategoryName</div>
-                                                }
-
-                                            </div>
+                    <ul class="tab-pane list-group list-group-flush" id="done-@checklist.Id">
+                        @foreach (var todoItem in Model.TodoItems.Where(i => i.ChecklistId == checklist.Id && i.StatusName == "Done"))
+                        {
+                            <li class="list-group-item">
+                                <div class="d-flex flex-column">
+                                    <div class="d-flex">
+                                        <div class="form-check">
+                                            <input class="form-check-input" 
+                                                   checked 
+                                                   id="@todoItem.Id" 
+                                                   data-url="@Url.Action("MarkTodoItem")" 
+                                                   onchange="return ajaxChangeStatus(this)" 
+                                                   type="checkbox">
+                                            <label class="form-check-label" for="@todoItem.Id">&nbsp;</label>
                                         </div>
 
-                                        @if (todoItem.DueDate is not null)
-                                        {
-                                            <div class="text-right text-secondary">
-                                                @Localizer["Due"] @todoItem.DueDate
-                                            </div>
-                                        }
+                                        <div>
+                                            @todoItem.Name
+                                            <a href="javascript:void(0)" 
+                                               onclick="ajaxGet('@Url.Action("Index", "Todo", new { todoItem.StatusName, categoryName = Model.SelectedCategory }, Context.Request.Scheme)')"
+                                               class="badge badge-success ml-2">
+                                                @Localizer["DoneStatus"]
+                                            </a>
 
-                                        <a href="http://maps.google.com/?q=@todoItem.Address" target="_blank">@todoItem.Address</a>
+                                            @if (todoItem.CategoryName is not null)
+                                            {
+                                                <a href="javascript:void(0)" 
+                                                   onclick="ajaxGet('@Url.Action("Index", "Todo", new { todoItem.CategoryName, statusName = Model.SelectedStatus }, Context.Request.Scheme)')"
+                                                   class="badge badge-pill badge-info">
+                                                    #@todoItem.CategoryName
+                                                </a>
+                                            }
 
-                                        <img src="@Url.Content(todoItem.ImagePath)" class="img-fluid align-self-center" style="max-width: 400px; width: 100%" />
-
-                                        <div class="d-flex justify-content-between align-items-center">
-                                            <div class="text-muted">
-                                                @todoItem.DaysAgo @Localizer["DaysAgo"]
-                                            </div>
-
-                                            <div>
-                                                <button onclick="showPopup('@Url.Action("CreateOrUpdate", "Todo", new { TodoItemId = todoItem.Id, ChecklistId = checklist.Id }, Context.Request.Scheme)', '@Localizer["UpdateTask"]', this)" class="border-0 btn-transition btn btn-outline-info todoItem"><i class="bi bi-pencil"></i></button>
-
-                                                <form asp-action="Delete" method="post" asp-route-id="@todoItem.Id" onsubmit="return ajaxDelete(this);" class="d-inline">
-                                                    <button type="submit" class="border-0 btn-transition btn btn-outline-danger"> <i class="bi bi-trash"></i> </button>
-                                                </form>
-                                            </div>
                                         </div>
                                     </div>
-                                </li>
-                            }
-                        </ul>
 
-                        <ul class="tab-pane list-group list-group-flush" id="done-@checklist.Id">
-                            @foreach (var todoItem in Model.DoneTodoItems.Where(i => i.ChecklistId == checklist.Id))
-                            {
-                                <li class="list-group-item">
-                                    <div class="d-flex flex-column">
-                                        <div class="d-flex">
-                                            <div class="form-check">
-                                                <input class="form-check-input" checked id="@todoItem.Id" data-url="@Url.Action("MarkTodoItem")" onchange="return ajaxChangeStatus(this)" type="checkbox">
-                                                <label class="form-check-label" for="@todoItem.Id">&nbsp;</label>
-                                            </div>
+                                    <img src="@Url.Content(todoItem.ImagePath)" 
+                                         class="img-fluid align-self-center" 
+                                         style="max-width: 400px; width: 100%" />
 
-                                            <div>
-                                                @todoItem.Name
-                                                <div class="badge badge-success ml-2">@Localizer["DoneStatus"]</div>
-
-                                                @if (todoItem.CategoryName is not null)
-                                                {
-                                                    <div class="badge badge-pill badge-info">#@todoItem.CategoryName</div>
-                                                }
-
-                                            </div>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div class="text-muted">
+                                            @todoItem.DaysAgo days ago
                                         </div>
 
-                                        <img src="@Url.Content(todoItem.ImagePath)" class="img-fluid align-self-center" style="max-width: 400px; width: 100%" />
+                                        <div>
+                                            <form method="post"
+                                                  asp-action="Delete" 
+                                                  asp-route-id="@todoItem.Id" 
+                                                  onsubmit="return ajaxDelete(this);" 
+                                                  class="d-inline">
 
-                                        <div class="d-flex justify-content-between align-items-center">
-                                            <div class="text-muted">
-                                                @todoItem.DaysAgo days ago
-                                            </div>
-
-                                            <div>
-                                                <form asp-action="Delete" method="post" asp-route-id="@todoItem.Id" onsubmit="return ajaxDelete(this);" class="d-inline">
-                                                    <button type="submit" class="border-0 btn-transition btn btn-outline-danger"> <i class="bi bi-trash"></i> </button>
-                                                </form>
-                                            </div>
+                                                <button type="submit" 
+                                                        class="border-0 btn-transition btn btn-outline-danger">
+                                                    <i class="bi bi-trash"></i> 
+                                                </button>
+                                            </form>
                                         </div>
                                     </div>
-                                </li>
-                            }
-                        </ul>
-                    </div>
-                </div>
-
-                <div class="d-block text-right card-footer">
-                    <button onclick="showPopup('@Url.Action("CreateOrUpdate", "Todo", new { ChecklistId = checklist.Id }, Context.Request.Scheme)', '@Localizer["NewTask"]', this)" class="btn btn-primary todoItem">@Localizer["NewTask"]</button>
+                                </div>
+                            </li>
+                        }
+                    </ul>
                 </div>
             </div>
-        }
+
+            <div class="d-block text-right card-footer">
+                <button onclick="showPopup('@Url.Action("CreateOrUpdate", "Todo", new { ChecklistId = checklist.Id }, Context.Request.Scheme)', '@Localizer["NewTask"]', this)" 
+                        class="btn btn-primary todoItem">
+                    @Localizer["NewTask"]
+                </button>
+            </div>
+        </div>
+    }
 </div>

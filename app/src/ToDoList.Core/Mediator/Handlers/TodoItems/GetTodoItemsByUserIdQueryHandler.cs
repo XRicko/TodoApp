@@ -17,24 +17,23 @@ using ToDoList.SharedKernel.Interfaces;
 
 namespace ToDoList.Core.Mediator.Handlers.TodoItems
 {
-    public class GetActiveOrDoneTodoItemsByUserQueryHandler : HandlerBase, IRequestHandler<GetActiveOrDoneTodoItemsByUserQuery, IEnumerable<TodoItemResponse>>
+    public class GetTodoItemsByUserIdQueryHandler : HandlerBase, IRequestHandler<GetTodoItemsByUserIdQuery, IEnumerable<TodoItemResponse>>
     {
         private readonly ICreateWithAddressService createWithAddressService;
 
-        public GetActiveOrDoneTodoItemsByUserQueryHandler(IUnitOfWork unitOfWork, IMapper mapper, ICreateWithAddressService addressService) : base(unitOfWork, mapper)
+        public GetTodoItemsByUserIdQueryHandler(IUnitOfWork unitOfWork, IMapper mapper, ICreateWithAddressService addressService) : base(unitOfWork, mapper)
         {
             createWithAddressService = addressService;
         }
 
-        public async Task<IEnumerable<TodoItemResponse>> Handle(GetActiveOrDoneTodoItemsByUserQuery request, CancellationToken cancellationToken)
+        public async Task<IEnumerable<TodoItemResponse>> Handle(GetTodoItemsByUserIdQuery request, CancellationToken cancellationToken)
         {
             _ = request ?? throw new ArgumentNullException(nameof(request));
 
             var todoItems = await UnitOfWork.Repository.GetAllAsync<TodoItem>();
-            var activeOrDoneTodoItemsByUser = todoItems.Where(i => i.Checklist.UserId == request.UserId
-                                                             && i.Status.IsDone == request.IsDone);
+            var todoItemsByUser = todoItems.Where(i => i.Checklist.UserId == request.UserId);
 
-            var responses = Mapper.Map<IEnumerable<TodoItemResponse>>(activeOrDoneTodoItemsByUser);
+            var responses = Mapper.Map<IEnumerable<TodoItemResponse>>(todoItemsByUser);
             var responsesWithAddress = await createWithAddressService.GetItemsWithAddressAsync(responses);
 
             return responsesWithAddress;

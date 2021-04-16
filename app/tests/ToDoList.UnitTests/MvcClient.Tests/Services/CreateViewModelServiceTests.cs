@@ -14,57 +14,116 @@ namespace ToDoList.UnitTests.MvcClient.Services
 {
     public class CreateViewModelServiceTests
     {
-        private readonly Mock<IApiInvoker> apiCallsServiceMock;
+        private readonly Mock<IApiInvoker> apiInvokerMock;
         private readonly CreateViewModelService createViewModelService;
 
         private readonly List<ChecklistModel> checklists;
 
         public CreateViewModelServiceTests()
         {
-            apiCallsServiceMock = new Mock<IApiInvoker>();
-            createViewModelService = new CreateViewModelService(apiCallsServiceMock.Object);
+            apiInvokerMock = new Mock<IApiInvoker>();
+            createViewModelService = new CreateViewModelService(apiInvokerMock.Object);
 
             checklists = GetChecklistsSample();
 
-            apiCallsServiceMock.Setup(x => x.GetItemsAsync<ChecklistModel>("Checklists"))
+            apiInvokerMock.Setup(x => x.GetItemsAsync<ChecklistModel>("Checklists"))
                                .ReturnsAsync(checklists)
                                .Verifiable();
         }
 
         [Fact]
-        public async Task CreateIndexViewModel_ReturnsIndexViewModel()
+        public async Task CreateIndexViewModel_ReturnsIndexViewModelWithAll()
         {
             // Arrange
-            var activeTodoItems = new List<TodoItemModel>
-            {
-                new TodoItemModel {Id = 5, Name = "Prepare for exam", ChecklistId = 1, StatusId = 1 },
-                new TodoItemModel {Id = 10, Name = "Prepare a gift", ChecklistId = 2, StatusId = 2 },
-                new TodoItemModel {Id = 15, Name = "Clean up the room", ChecklistId = 3, StatusId = 1 }
-            };
+            var todoItems = GetActiveTodoItems();
 
-            var doneTodoItems = new List<TodoItemModel>
-            {
-                new TodoItemModel {Id = 1, Name = "Visit", ChecklistId = 1, StatusId = 3 },
-                new TodoItemModel {Id = 9, Name = "Choose some gift", ChecklistId = 2, StatusId = 3 },
-                new TodoItemModel {Id = 14, Name = "Change smth", ChecklistId = 3, StatusId = 3 }
-            };
-
-            apiCallsServiceMock.Setup(x => x.GetItemsAsync<TodoItemModel>("TodoItems/GetActiveOrDone/" + false))
-                               .ReturnsAsync(activeTodoItems)
-                               .Verifiable();
-            apiCallsServiceMock.Setup(x => x.GetItemsAsync<TodoItemModel>("TodoItems/GetActiveOrDone/" + true))
-                               .ReturnsAsync(doneTodoItems)
-                               .Verifiable();
+            apiInvokerMock.Setup(x => x.GetItemsAsync<TodoItemModel>("TodoItems"))
+                   .ReturnsAsync(todoItems)
+                   .Verifiable();
 
             // Act
             var indexViewModel = await createViewModelService.CreateIndexViewModelAsync();
 
             // Assert
-            Assert.Equal(activeTodoItems, indexViewModel.ActiveTodoItems);
-            Assert.Equal(doneTodoItems, indexViewModel.DoneTodoItems);
+            Assert.Equal(todoItems, indexViewModel.TodoItems);
             Assert.Equal(checklists, indexViewModel.ChecklistModels);
 
-            apiCallsServiceMock.Verify();
+            apiInvokerMock.Verify();
+        }
+
+        [Fact]
+        public async Task CreateIndexViewModel_ReturnsIndexViewModelByCategoryGivenCategoryName()
+        {
+            // Arrange
+            string categoryName = "Important";
+
+            var todoItems = GetActiveTodoItems();
+
+            apiInvokerMock.Setup(x => x.GetItemsAsync<TodoItemModel>("TodoItems"))
+                   .ReturnsAsync(todoItems)
+                   .Verifiable();
+
+            // Act
+            var indexViewModel = await createViewModelService.CreateIndexViewModelAsync(categoryName);
+
+            // Assert
+            Assert.All(indexViewModel.TodoItems, x => Assert.Equal(x.CategoryName, categoryName));
+
+            Assert.Equal(checklists, indexViewModel.ChecklistModels);
+            Assert.Equal(categoryName, indexViewModel.SelectedCategory);
+
+            apiInvokerMock.Verify();
+        }
+
+        [Fact]
+        public async Task CreateIndexViewModel_ReturnsIndexViewModelByStatusGivenStatusName()
+        {
+            // Arrange
+            string statusName = "Planned";
+
+            var todoItems = GetActiveTodoItems();
+
+            apiInvokerMock.Setup(x => x.GetItemsAsync<TodoItemModel>("TodoItems"))
+                   .ReturnsAsync(todoItems)
+                   .Verifiable();
+
+            // Act
+            var indexViewModel = await createViewModelService.CreateIndexViewModelAsync(statusName: statusName);
+
+            // Assert
+            Assert.All(indexViewModel.TodoItems, x => Assert.Equal(x.StatusName, statusName));
+
+            Assert.Equal(checklists, indexViewModel.ChecklistModels);
+            Assert.Equal(statusName, indexViewModel.SelectedStatus);
+
+            apiInvokerMock.Verify();
+        }
+
+        [Fact]
+        public async Task CreateIndexViewModel_ReturnsIndexViewModelByCategoryAndStatusGivenBoth()
+        {
+            // Arrange
+            string categoryName = "Important";
+            string statusName = "Planned";
+
+            var todoItems = GetActiveTodoItems();
+
+            apiInvokerMock.Setup(x => x.GetItemsAsync<TodoItemModel>("TodoItems"))
+                   .ReturnsAsync(todoItems)
+                   .Verifiable();
+
+            // Act
+            var indexViewModel = await createViewModelService.CreateIndexViewModelAsync(categoryName, statusName);
+
+            // Assert
+            Assert.All(indexViewModel.TodoItems, x => Assert.Equal(x.CategoryName, categoryName));
+            Assert.All(indexViewModel.TodoItems, x => Assert.Equal(x.StatusName, statusName));
+
+            Assert.Equal(checklists, indexViewModel.ChecklistModels);
+            Assert.Equal(categoryName, indexViewModel.SelectedCategory);
+            Assert.Equal(statusName, indexViewModel.SelectedStatus);
+
+            apiInvokerMock.Verify();
         }
 
         [Fact]
@@ -81,14 +140,14 @@ namespace ToDoList.UnitTests.MvcClient.Services
 
             var todoItem = new TodoItemModel { Name = "Do something", ChecklistId = selectedChecklist, CategoryId = selectedCategory };
 
-            apiCallsServiceMock.Setup(x => x.GetItemsAsync<CategoryModel>("Categories"))
+            apiInvokerMock.Setup(x => x.GetItemsAsync<CategoryModel>("Categories"))
                                .ReturnsAsync(categorires)
                                .Verifiable();
-            apiCallsServiceMock.Setup(x => x.GetItemsAsync<StatusModel>("Statuses"))
+            apiInvokerMock.Setup(x => x.GetItemsAsync<StatusModel>("Statuses"))
                                .ReturnsAsync(statuses)
                                .Verifiable();
 
-            apiCallsServiceMock.Setup(x => x.GetItemAsync<StatusModel>("Statuses/GetByName/Planned"))
+            apiInvokerMock.Setup(x => x.GetItemAsync<StatusModel>("Statuses/GetByName/Planned"))
                                .ReturnsAsync(statusPlanned)
                                .Verifiable();
 
@@ -104,7 +163,17 @@ namespace ToDoList.UnitTests.MvcClient.Services
             Assert.Equal(selectedChecklist, viewModel.SelectedChecklistId);
             Assert.Equal(statusPlanned.Id, viewModel.SelectedStatusId);
 
-            apiCallsServiceMock.Verify();
+            apiInvokerMock.Verify();
+        }
+
+        private static List<TodoItemModel> GetActiveTodoItems()
+        {
+            return new List<TodoItemModel>
+            {
+                new TodoItemModel {Id = 5, Name = "Prepare for exam", ChecklistId = 1, StatusId = 1, StatusName = "Planned", CategoryName = "Important" },
+                new TodoItemModel {Id = 10, Name = "Prepare a gift", ChecklistId = 2, StatusId = 2, StatusName = "Ongoing" },
+                new TodoItemModel {Id = 15, Name = "Clean up the room", ChecklistId = 3, StatusId = 1, StatusName = "Planned", CategoryName = "Important" }
+            };
         }
 
         private static List<ChecklistModel> GetChecklistsSample()

@@ -16,19 +16,19 @@ namespace ToDoList.MvcClient.Controllers
     public class TodoController : Controller
     {
         private readonly ICreateViewModelService viewModelService;
-        private readonly IApiInvoker apiCallsService;
+        private readonly IApiInvoker apiInvoker;
         private readonly IImageAddingService imageAddingService;
 
-        public TodoController(IApiInvoker apiService, IImageAddingService addingService, ICreateViewModelService modelService) : base()
+        public TodoController(IApiInvoker invoker, IImageAddingService addingService, ICreateViewModelService modelService) : base()
         {
-            apiCallsService = apiService ?? throw new ArgumentNullException(nameof(apiService));
+            apiInvoker = invoker ?? throw new ArgumentNullException(nameof(invoker));
             imageAddingService = addingService ?? throw new ArgumentNullException(nameof(addingService));
             viewModelService = modelService ?? throw new ArgumentNullException(nameof(modelService));
         }
 
-        public async Task<ActionResult> IndexAsync()
+        public async Task<ActionResult> IndexAsync(string categoryName = null, string statusName = null)
         {
-            IndexViewModel viewModel = await viewModelService.CreateIndexViewModelAsync();
+            IndexViewModel viewModel = await viewModelService.CreateIndexViewModelAsync(categoryName, statusName);
             return View("Index", viewModel);
         }
 
@@ -42,7 +42,7 @@ namespace ToDoList.MvcClient.Controllers
                 return View(viewName, await viewModelService.CreateViewModelCreateOrUpdateTodoItemAsync(todoItem));
             }
 
-            var todoItemModel = await apiCallsService.GetItemAsync<TodoItemModel>("TodoItems/" + todoItemId);
+            var todoItemModel = await apiInvoker.GetItemAsync<TodoItemModel>("TodoItems/" + todoItemId);
 
             if (todoItemModel?.GeoPoint is not null)
             {
@@ -83,7 +83,7 @@ namespace ToDoList.MvcClient.Controllers
         [HttpPost]
         public async Task<ActionResult> DeleteAsync(int id)
         {
-            await apiCallsService.DeleteItemAsync("TodoItems/", id);
+            await apiInvoker.DeleteItemAsync("TodoItems/", id);
             var viewModel = await viewModelService.CreateIndexViewModelAsync();
 
             return PartialView("_ViewAll", viewModel);
@@ -92,7 +92,7 @@ namespace ToDoList.MvcClient.Controllers
         [HttpPost]
         public async Task<IActionResult> MarkTodoItemAsync(int id, bool isDone)
         {
-            var todoItemModel = await apiCallsService.GetItemAsync<TodoItemModel>("TodoItems/" + id);
+            var todoItemModel = await apiInvoker.GetItemAsync<TodoItemModel>("TodoItems/" + id);
 
             if (isDone)
                 await ChangeStatusToAsync(todoItemModel, "Done");
@@ -109,10 +109,10 @@ namespace ToDoList.MvcClient.Controllers
 
         private async Task ChangeStatusToAsync(TodoItemModel todoItemModel, string statusName)
         {
-            var status = await apiCallsService.GetItemAsync<StatusModel>("Statuses/GetByName/" + statusName);
+            var status = await apiInvoker.GetItemAsync<StatusModel>("Statuses/GetByName/" + statusName);
             todoItemModel.StatusId = status.Id;
 
-            await apiCallsService.PutItemAsync("TodoItems", todoItemModel);
+            await apiInvoker.PutItemAsync("TodoItems", todoItemModel);
         }
 
         private static void AddGeoPoint(TodoItemModel todoItemModel)
@@ -125,9 +125,9 @@ namespace ToDoList.MvcClient.Controllers
 
         private async Task AddCategory(TodoItemModel todoItemModel)
         {
-            await apiCallsService.PostItemAsync("Categories", new CategoryModel { Name = todoItemModel.CategoryName });
+            await apiInvoker.PostItemAsync("Categories", new CategoryModel { Name = todoItemModel.CategoryName });
 
-            var category = await apiCallsService.GetItemAsync<CategoryModel>("Categories/GetByName/" + todoItemModel.CategoryName);
+            var category = await apiInvoker.GetItemAsync<CategoryModel>("Categories/GetByName/" + todoItemModel.CategoryName);
             todoItemModel.CategoryId = category.Id;
         }
 
@@ -142,7 +142,7 @@ namespace ToDoList.MvcClient.Controllers
             if (todoItemModel.Image is not null)
                 await imageAddingService.AddImageInTodoItemAsync(todoItemModel);
 
-            await apiCallsService.PostItemAsync("TodoItems", todoItemModel);
+            await apiInvoker.PostItemAsync("TodoItems", todoItemModel);
         }
 
         private async Task UpdateTodoItem(TodoItemModel todoItemModel)
@@ -150,7 +150,7 @@ namespace ToDoList.MvcClient.Controllers
             if (todoItemModel.Image is not null)
                 await imageAddingService.AddImageInTodoItemAsync(todoItemModel);
 
-            await apiCallsService.PutItemAsync("TodoItems", todoItemModel);
+            await apiInvoker.PutItemAsync("TodoItems", todoItemModel);
         }
     }
 }

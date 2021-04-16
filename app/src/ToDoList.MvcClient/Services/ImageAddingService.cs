@@ -15,12 +15,12 @@ namespace ToDoList.MvcClient.Services
     public class ImageAddingService : IImageAddingService
     {
         private readonly IWebHostEnvironment webHostEnvironment;
-        private readonly IApiInvoker apiCallsService;
+        private readonly IApiInvoker apiInvoker;
 
-        public ImageAddingService(IWebHostEnvironment hostEnvironment, IApiInvoker service)
+        public ImageAddingService(IWebHostEnvironment hostEnvironment, IApiInvoker invoker)
         {
             webHostEnvironment = hostEnvironment ?? throw new ArgumentNullException(nameof(hostEnvironment));
-            apiCallsService = service ?? throw new ArgumentNullException(nameof(service));
+            apiInvoker = invoker ?? throw new ArgumentNullException(nameof(invoker));
         }
 
         public async Task AddImageInTodoItemAsync(TodoItemModel todoItem)
@@ -36,7 +36,7 @@ namespace ToDoList.MvcClient.Services
                 await SaveImageInFolder(todoItem.Image, absolutePath);
             }
 
-            var image = await apiCallsService.GetItemAsync<ImageModel>("Images/GetByName/" + todoItem.Image.FileName);
+            var image = await apiInvoker.GetItemAsync<ImageModel>("Images/GetByName/" + todoItem.Image.FileName);
             todoItem.ImageId = image.Id;
         }
 
@@ -45,7 +45,7 @@ namespace ToDoList.MvcClient.Services
             _ = image ?? throw new ArgumentNullException(nameof(image));
 
             string relativePath = @"~/images/" + image.FileName;
-            await apiCallsService.PostItemAsync("Images", new ImageModel { Name = image.FileName, Path = relativePath });
+            await apiInvoker.PostItemAsync("Images", new ImageModel { Name = image.FileName, Path = relativePath });
         }
 
         private string MakeAbsoluteImagePath(string fileName)

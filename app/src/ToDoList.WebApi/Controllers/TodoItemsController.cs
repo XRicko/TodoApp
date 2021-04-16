@@ -29,10 +29,9 @@ namespace ToDoList.WebApi.Controllers
         public TodoItemsController(IMediator mediator) : base(mediator) { }
 
         [HttpGet]
-        [Route("[action]/{isDone}")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        public async Task<IEnumerable<TodoItemResponse>> GetActiveOrDone(bool isDone) =>
-            await Mediator.Send(new GetActiveOrDoneTodoItemsByUserQuery(Convert.ToInt32(UserId), isDone));
+        public async Task<IEnumerable<TodoItemResponse>> Get() =>
+            await Mediator.Send(new GetTodoItemsByUserIdQuery(Convert.ToInt32(UserId)));
 
         [HttpGet("{id}")]
         public async Task<TodoItemResponse> Get(int id) =>

@@ -15,38 +15,26 @@ using Xunit;
 
 namespace Core.Tests.Handlers.TodoItems
 {
-    public class GetActiveOrDoneTodoItemsByUserQueryHandlerTests : HandlerBaseForTests
+    public class GetTodoItemsByUserQueryHandlerTests : HandlerBaseForTests
     {
         private readonly Mock<ICreateWithAddressService> addressServiceMock;
-        private readonly GetActiveOrDoneTodoItemsByUserQueryHandler getTodoItemsHandler;
+        private readonly GetTodoItemsByUserIdQueryHandler getTodoItemsHandler;
 
-        public GetActiveOrDoneTodoItemsByUserQueryHandlerTests()
+        public GetTodoItemsByUserQueryHandlerTests()
         {
             addressServiceMock = new Mock<ICreateWithAddressService>();
 
-            getTodoItemsHandler = new GetActiveOrDoneTodoItemsByUserQueryHandler(UnitOfWorkMock.Object, Mapper, addressServiceMock.Object);
+            getTodoItemsHandler = new GetTodoItemsByUserIdQueryHandler(UnitOfWorkMock.Object, Mapper, addressServiceMock.Object);
         }
 
         [Fact]
-        public async Task Handle_ReturnsActiveTodoItems()
-        {
-            await TestGetActiveOrDone(false);
-        }
-
-        [Fact]
-        public async Task Handle_ReturnsDoneTodoItems()
-        {
-            await TestGetActiveOrDone(true);
-        }
-
-        private async Task TestGetActiveOrDone(bool isDone)
+        public async Task Handle_ReturnsTodoItems()
         {
             // Arrange
             var todoItems = GetSampleTodoItems();
-            var activeOrDoneTodoItems = todoItems.Where(i => i.Checklist.UserId == 1
-                                                       && i.Status.IsDone == isDone);
+            var todoItemsByUser = todoItems.Where(i => i.Checklist.UserId == 1);
 
-            var responses = Mapper.Map<IEnumerable<TodoItemResponse>>(activeOrDoneTodoItems);
+            var responses = Mapper.Map<IEnumerable<TodoItemResponse>>(todoItemsByUser);
             var expected = GetWithAddress(responses);
 
             RepoMock.Setup(x => x.GetAllAsync<TodoItem>())
@@ -56,7 +44,7 @@ namespace Core.Tests.Handlers.TodoItems
                               .ReturnsAsync(expected);
 
             // Act
-            var actual = await getTodoItemsHandler.Handle(new GetActiveOrDoneTodoItemsByUserQuery(1, isDone), new CancellationToken());
+            var actual = await getTodoItemsHandler.Handle(new GetTodoItemsByUserIdQuery(1), new CancellationToken());
 
             // Assert
             Assert.Equal(expected, actual);

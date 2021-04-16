@@ -12,11 +12,11 @@ namespace ToDoList.MvcClient.Controllers
     public class ChecklistController : Controller
     {
         private readonly ICreateViewModelService viewModelService;
-        private readonly IApiInvoker apiCallsService;
+        private readonly IApiInvoker apiInvoker;
 
-        public ChecklistController(IApiInvoker apiService, ICreateViewModelService modelService)
+        public ChecklistController(IApiInvoker invoker, ICreateViewModelService modelService)
         {
-            apiCallsService = apiService ?? throw new ArgumentNullException(nameof(apiService));
+            apiInvoker = invoker ?? throw new ArgumentNullException(nameof(invoker));
             viewModelService = modelService ?? throw new ArgumentNullException(nameof(modelService));
         }
 
@@ -26,7 +26,7 @@ namespace ToDoList.MvcClient.Controllers
             if (id == 0)
                 return View("CreateOrUpdate", new ChecklistModel { UserId = userId });
 
-            var checklistModel = await apiCallsService.GetItemAsync<ChecklistModel>("Checklists/" + id);
+            var checklistModel = await apiInvoker.GetItemAsync<ChecklistModel>("Checklists/" + id);
             return checklistModel is not null
                 ? View("CreateOrUpdate", checklistModel)
                 : NotFound();
@@ -43,10 +43,10 @@ namespace ToDoList.MvcClient.Controllers
                 return PartialView("CreateOrUpdate", checklistModel);
 
             if (checklistModel.Id == 0)
-                await apiCallsService.PostItemAsync("Checklists", checklistModel);
+                await apiInvoker.PostItemAsync("Checklists", checklistModel);
 
             if (checklistModel.Id != 0)
-                await apiCallsService.PutItemAsync("Checklists", checklistModel);
+                await apiInvoker.PutItemAsync("Checklists", checklistModel);
 
             var viewModel = await viewModelService.CreateIndexViewModelAsync();
             return PartialView("_ViewAll", viewModel);
@@ -57,7 +57,7 @@ namespace ToDoList.MvcClient.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> DeleteAsync(int id)
         {
-            await apiCallsService.DeleteItemAsync("Checklists/", id);
+            await apiInvoker.DeleteItemAsync("Checklists/", id);
             var viewModel = await viewModelService.CreateIndexViewModelAsync();
 
             return PartialView("_ViewAll", viewModel);

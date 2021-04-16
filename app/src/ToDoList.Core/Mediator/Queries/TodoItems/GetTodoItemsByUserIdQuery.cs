@@ -6,15 +6,13 @@ using ToDoList.Core.Mediator.Response;
 
 namespace ToDoList.Core.Mediator.Queries.TodoItems
 {
-    public class GetActiveOrDoneTodoItemsByUserQuery : IRequest<IEnumerable<TodoItemResponse>>
+    public class GetTodoItemsByUserIdQuery : IRequest<IEnumerable<TodoItemResponse>>
     {
         public int UserId { get; }
-        public bool IsDone { get; set; }
 
-        public GetActiveOrDoneTodoItemsByUserQuery(int userId, bool isDone)
+        public GetTodoItemsByUserIdQuery(int userId)
         {
             UserId = userId;
-            IsDone = isDone;
         }
     }
 }

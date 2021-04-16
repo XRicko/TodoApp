@@ -29,15 +29,24 @@ namespace ToDoList.UnitTests.WebApi.Controllers
         }
 
         [Fact]
-        public async Task Get_ReturnsListOfActiveTodoItemResponsesByUser()
+        public async Task Get_ReturnsListOfTodoItemResponsesByUser()
         {
-            await TestGet(4, false);
-        }
+            int userId = 4;
 
-        [Fact]
-        public async Task Get_ReturnsListOfDoneTodoItemResponsesByUser()
-        {
-            await TestGet(2, true);
+            var contextMock = new Mock<HttpContext>();
+            todoItemsController.ControllerContext.HttpContext = contextMock.Object;
+
+            var claims = new List<Claim> { new Claim(ClaimTypes.NameIdentifier, userId.ToString()) };
+
+            contextMock.SetupGet(x => x.User.Claims)
+                       .Returns(claims);
+
+            // Act
+            var actual = await todoItemsController.Get();
+
+            // Assert
+            MediatorMock.Verify(x => x.Send(It.Is<GetTodoItemsByUserIdQuery>(q => q.UserId == userId),
+                                            It.IsAny<CancellationToken>()), Times.Once);
         }
 
         [Fact]
@@ -86,25 +95,6 @@ namespace ToDoList.UnitTests.WebApi.Controllers
 
             // Assert
             MediatorMock.Verify();
-        }
-
-        private async Task TestGet(int userId, bool isDone)
-        {
-            var contextMock = new Mock<HttpContext>();
-            todoItemsController.ControllerContext.HttpContext = contextMock.Object;
-
-            var claims = new List<Claim> { new Claim(ClaimTypes.NameIdentifier, userId.ToString()) };
-
-            contextMock.SetupGet(x => x.User.Claims)
-                       .Returns(claims);
-
-            // Act
-            var actual = await todoItemsController.GetActiveOrDone(isDone);
-
-            // Assert
-            MediatorMock.Verify(x => x.Send(It.Is<GetActiveOrDoneTodoItemsByUserQuery>(q => q.UserId == userId
-                                                                                           && q.IsDone == isDone),
-                                            It.IsAny<CancellationToken>()), Times.Once);
         }
     }
 }

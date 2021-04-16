@@ -31,7 +31,21 @@ showPopup = (url, title, button) => {
                 }
             }
         }
-    })
+    });
+}
+
+ajaxGet = url => {
+    $.ajax({
+        type: 'GET',
+        url: url,
+        success: function (result) {
+            const viewAllFromResult = $($.parseHTML(result)).find("#view-all").html();
+            $('#view-all').html(viewAllFromResult);
+        },
+        error: function (err) {
+            console.log(err);
+        }
+    });
 }
 
 ajaxPost = form => {
@@ -82,6 +96,8 @@ ajaxDelete = form => {
 
         return false;
     }
+
+    return false;
 }
 
 ajaxChangeStatus = checkbox => {

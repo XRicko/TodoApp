@@ -127,7 +127,7 @@ namespace ToDoList.UnitTests.MvcClient.Controllers
                                    checklists.Add(newChecklist);
                                    indexViewModel.ChecklistModels = checklists;
                                });
-            viewModelServiceMock.Setup(x => x.CreateIndexViewModelAsync())
+            viewModelServiceMock.Setup(x => x.CreateIndexViewModelAsync(null, null))
                                 .ReturnsAsync(indexViewModel)
                                 .Verifiable();
 
@@ -158,7 +158,7 @@ namespace ToDoList.UnitTests.MvcClient.Controllers
                                    checklists.SingleOrDefault(c => c.Id == checklistToUpdate.Id).Name = checklistToUpdate.Name;
                                    indexViewModel.ChecklistModels = checklists;
                                });
-            viewModelServiceMock.Setup(x => x.CreateIndexViewModelAsync())
+            viewModelServiceMock.Setup(x => x.CreateIndexViewModelAsync(null, null))
                                 .ReturnsAsync(indexViewModel)
                                 .Verifiable();
 
@@ -193,7 +193,7 @@ namespace ToDoList.UnitTests.MvcClient.Controllers
                                    checklists.Remove(checklists.SingleOrDefault(c => c.Id == idToDelete));
                                    indexViewModel.ChecklistModels = checklists;
                                });
-            viewModelServiceMock.Setup(x => x.CreateIndexViewModelAsync()).ReturnsAsync(indexViewModel).Verifiable();
+            viewModelServiceMock.Setup(x => x.CreateIndexViewModelAsync(null, null)).ReturnsAsync(indexViewModel).Verifiable();
 
             // Act
             var result = await checklistController.DeleteAsync(idToDelete) as PartialViewResult;

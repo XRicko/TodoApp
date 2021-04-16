@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 using ToDoList.MvcClient.Models;
@@ -9,25 +10,40 @@ namespace ToDoList.MvcClient.Services
 {
     public class CreateViewModelService : ICreateViewModelService
     {
-        private readonly IApiInvoker apiCallsService;
+        private readonly IApiInvoker apiInvoker;
 
-        public CreateViewModelService(IApiInvoker apiService)
+        public CreateViewModelService(IApiInvoker invoker)
         {
-            apiCallsService = apiService ?? throw new ArgumentNullException(nameof(apiService));
+            apiInvoker = invoker ?? throw new ArgumentNullException(nameof(invoker));
         }
 
-        public async Task<IndexViewModel> CreateIndexViewModelAsync()
+        public async Task<IndexViewModel> CreateIndexViewModelAsync(string categoryName = null, string statusName = null)
         {
-            var activeTodoItems = await apiCallsService.GetItemsAsync<TodoItemModel>("TodoItems/GetActiveOrDone/" + false);
-            var doneTodoItems = await apiCallsService.GetItemsAsync<TodoItemModel>("TodoItems/GetActiveOrDone/" + true);
+            var todoItems = await apiInvoker.GetItemsAsync<TodoItemModel>("TodoItems");
 
-            var checklistModels = await apiCallsService.GetItemsAsync<ChecklistModel>("Checklists");
+            string selectedCategory = null;
+            string selectedStatus = null;
+
+            if (!string.IsNullOrWhiteSpace(categoryName))
+            {
+                todoItems = todoItems.Where(x => x.CategoryName?.ToLower() == categoryName.ToLower());
+                selectedCategory = categoryName;
+            }
+            if (!string.IsNullOrWhiteSpace(statusName))
+            {
+                todoItems = todoItems.Where(x => x.StatusName?.ToLower() == statusName.ToLower());
+                selectedStatus = statusName;
+            }
+
+            var checklistModels = await apiInvoker.GetItemsAsync<ChecklistModel>("Checklists");
 
             IndexViewModel viewModel = new()
             {
-                ActiveTodoItems = activeTodoItems,
-                DoneTodoItems = doneTodoItems,
-                ChecklistModels = checklistModels
+                TodoItems = todoItems,
+                ChecklistModels = checklistModels,
+
+                SelectedCategory = selectedCategory,
+                SelectedStatus = selectedStatus
             };
 
             return viewModel;
@@ -37,9 +53,9 @@ namespace ToDoList.MvcClient.Services
         {
             _ = todoItemModel ?? throw new ArgumentNullException(nameof(todoItemModel));
 
-            var checklistModels = await apiCallsService.GetItemsAsync<ChecklistModel>("Checklists");
-            var categoryModels = await apiCallsService.GetItemsAsync<CategoryModel>("Categories");
-            var statusModels = await apiCallsService.GetItemsAsync<StatusModel>("Statuses");
+            var checklistModels = await apiInvoker.GetItemsAsync<ChecklistModel>("Checklists");
+            var categoryModels = await apiInvoker.GetItemsAsync<CategoryModel>("Categories");
+            var statusModels = await apiInvoker.GetItemsAsync<StatusModel>("Statuses");
 
             int selectedChecklist = todoItemModel.ChecklistId;
             int? selectedCategory = todoItemModel.CategoryId;
@@ -47,7 +63,7 @@ namespace ToDoList.MvcClient.Services
 
             if (todoItemModel.StatusId is 0)
             {
-                var plannedStatus = await apiCallsService.GetItemAsync<StatusModel>("Statuses/GetByName/Planned");
+                var plannedStatus = await apiInvoker.GetItemAsync<StatusModel>("Statuses/GetByName/Planned");
                 selectedStatus = plannedStatus.Id;
             }
 

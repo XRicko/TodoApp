@@ -11,12 +11,12 @@ namespace ToDoList.MvcClient.Controllers
 {
     public class UserController : Controller
     {
-        private readonly IApiInvoker apiCallsService;
+        private readonly IApiInvoker apiInvoker;
         private readonly IStringLocalizer<UserController> localizer;
 
-        public UserController(IApiInvoker apiService, IStringLocalizer<UserController> stringLocalizer)
+        public UserController(IApiInvoker invoker, IStringLocalizer<UserController> stringLocalizer)
         {
-            apiCallsService = apiService ?? throw new ArgumentNullException(nameof(apiService));
+            apiInvoker = invoker ?? throw new ArgumentNullException(nameof(invoker));
             localizer = stringLocalizer;
         }
 
@@ -39,7 +39,7 @@ namespace ToDoList.MvcClient.Controllers
 
             try
             {
-                await apiCallsService.AuthenticateUserAsync("User/Register", userModel);
+                await apiInvoker.AuthenticateUserAsync("User/Register", userModel);
             }
             catch (Exception e)
             {
@@ -61,7 +61,7 @@ namespace ToDoList.MvcClient.Controllers
 
             try
             {
-                await apiCallsService.AuthenticateUserAsync("User/Login", userModel);
+                await apiInvoker.AuthenticateUserAsync("User/Login", userModel);
             }
             catch (Exception e)
             {

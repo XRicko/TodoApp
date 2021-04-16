@@ -8,9 +8,10 @@ namespace ToDoList.MvcClient.ViewModels
     [ExcludeFromCodeCoverage]
     public class IndexViewModel
     {
-        public IEnumerable<TodoItemModel> ActiveTodoItems { get; set; }
-        public IEnumerable<TodoItemModel> DoneTodoItems { get; set; }
-
+        public IEnumerable<TodoItemModel> TodoItems { get; set; }
         public IEnumerable<ChecklistModel> ChecklistModels { get; set; }
+
+        public string SelectedCategory { get; set; }
+        public string SelectedStatus { get; set; }
     }
 }
