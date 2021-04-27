@@ -1,6 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
+
+using MockQueryable.Moq;
 
 using Moq;
 
@@ -23,6 +28,8 @@ namespace Core.Tests.Handlers.Checklists
 
         private readonly ChecklistUpdateRequest request;
 
+        private readonly Expression<Func<Checklist, bool>> expression;
+
         public UpdateChecklistsCommandHandlerTest() : base()
         {
             updateCommandHandler = new UpdateChecklistCommandHandler(UnitOfWorkMock.Object, Mapper);
@@ -32,24 +39,28 @@ namespace Core.Tests.Handlers.Checklists
             defaultChecklistName = "Untitled";
 
             request = new ChecklistUpdateRequest(checklistId, "Birthday", userId);
+
+            expression = x => x.Name == defaultChecklistName && x.UserId == userId;
         }
 
         [Fact]
         public async Task Handle_UpdatesChecklistAndAddsDefaultChecklistGivenUserWithoutIt()
         {
             // Arrange
-            var checklists = new List<Checklist> { new Checklist { Id = 1, Name = "Chores", UserId = userId } };
+            var checklists = new List<Checklist> { new Checklist { Id = 13, Name = "Chores", UserId = 134 } };
+            var checklistsMock = checklists.AsQueryable().BuildMock();
 
-            RepoMock.Setup(x => x.GetAllAsync<Checklist>())
-                   .ReturnsAsync(checklists);
+            RepoMock.Setup(x => x.GetAll<Checklist>())
+                    .Returns(checklistsMock.Object)
+                    .Verifiable();
 
             // Act
             await updateCommandHandler.Handle(new UpdateCommand<ChecklistUpdateRequest>(request), new CancellationToken());
 
             // Assert
-            RepoMock.Verify(x => x.GetAllAsync<Checklist>(), Times.Once);
+            RepoMock.Verify();
             RepoMock.Verify(x => x.Update(It.Is<Checklist>(l => l.Id == checklistId)), Times.Once);
-            RepoMock.Verify(x => x.AddAsync(It.Is<Checklist>(l => l.Name == defaultChecklistName && l.UserId == userId)), Times.Once);
+            RepoMock.Verify(x => x.AddAsync(It.Is(expression)), Times.Once);
 
             UnitOfWorkMock.Verify(x => x.SaveAsync(), Times.Exactly(2));
         }
@@ -59,17 +70,19 @@ namespace Core.Tests.Handlers.Checklists
         {
             // Arrange
             var checklists = new List<Checklist> { new Checklist { Id = 3, Name = "Untitled", UserId = userId } };
+            var checklistsMock = checklists.AsQueryable().BuildMock();
 
-            RepoMock.Setup(x => x.GetAllAsync<Checklist>())
-                    .ReturnsAsync(checklists);
+            RepoMock.Setup(x => x.GetAll<Checklist>())
+                    .Returns(checklistsMock.Object)
+                    .Verifiable();
 
             // Act
             await updateCommandHandler.Handle(new UpdateCommand<ChecklistUpdateRequest>(request), new CancellationToken());
 
             // Assert
-            RepoMock.Verify(x => x.GetAllAsync<Checklist>(), Times.Once);
+            RepoMock.Verify();
             RepoMock.Verify(x => x.Update(It.Is<Checklist>(l => l.Id == checklistId)), Times.Once);
-            RepoMock.Verify(x => x.AddAsync(It.Is<Checklist>(l => l.Name == "Untitled" && l.UserId == userId)), Times.Never);
+            RepoMock.Verify(x => x.AddAsync(It.Is(expression)), Times.Never);
 
             UnitOfWorkMock.Verify(x => x.SaveAsync(), Times.Once);
         }

@@ -26,9 +26,9 @@ namespace ToDoList.Core.Mediator.Handlers.Checklists
         {
             _ = request ?? throw new ArgumentNullException(nameof(request));
 
-            var checklists = await UnitOfWork.Repository.GetAllAsync<Checklist>();
-            var checklist = checklists.SingleOrDefault(e => e.Name == request.Request.Name
-                                                            && e.UserId == request.Request.UserId);
+            var checklist = UnitOfWork.Repository.GetAll<Checklist>()
+                                                 .SingleOrDefault(e => e.Name == request.Request.Name
+                                                                       && e.UserId == request.Request.UserId);
 
             if (checklist is null)
             {

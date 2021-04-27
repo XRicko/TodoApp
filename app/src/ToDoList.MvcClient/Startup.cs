@@ -12,6 +12,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 
+using ToDoList.Diagnostic;
 using ToDoList.Extensions;
 using ToDoList.MvcClient.API;
 using ToDoList.MvcClient.Services;
@@ -58,8 +59,10 @@ namespace ToDoList.MvcClient
             services.AddScoped<ICreateViewModelService, CreateViewModelService>();
             services.AddScoped<IImageAddingService, ImageAddingService>();
 
+            services.AddSingleton<ProccessTimeCounterSource>();
+
             services.AddLocalization(options => options.ResourcesPath = "Resources");
-            services.AddControllersWithViews()
+            services.AddControllersWithViews(options => options.Filters.Add<ProccesTimeActionFilterAttribute>())
                     .AddMvcLocalization();
 
             services.AddSingleton<ITempDataProvider, CookieTempDataProvider>();

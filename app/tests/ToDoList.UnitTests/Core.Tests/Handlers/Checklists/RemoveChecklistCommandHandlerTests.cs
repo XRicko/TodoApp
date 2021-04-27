@@ -31,14 +31,14 @@ namespace Core.Tests.Handlers.Checklists
             // Arrange
             var entity = GetSampleChecklist("Birthday");
 
-            RepoMock.Setup(x => x.GetAsync<Checklist>(id))
+            RepoMock.Setup(x => x.FindByPrimaryKeysAsync<Checklist>(id))
                     .ReturnsAsync(entity);
 
             // Act
             await removeChecklistHandler.Handle(new RemoveCommand<Checklist>(id), new CancellationToken());
 
             // Arrange
-            RepoMock.Verify(x => x.GetAsync<Checklist>(id), Times.Once);
+            RepoMock.Verify(x => x.FindByPrimaryKeysAsync<Checklist>(id), Times.Once);
             RepoMock.Verify(x => x.Remove(entity), Times.Once);
             RepoMock.Verify(x => x.Remove(It.Is<TodoItem>(i => i.ChecklistId == id)), Times.Exactly(entity.TodoItems.Count));
 
@@ -48,14 +48,14 @@ namespace Core.Tests.Handlers.Checklists
         [Fact]
         public async Task Handle_DoesntDeleteChecklistGivenInvalidId()
         {
-            RepoMock.Setup(x => x.GetAsync<TodoItem>(id))
+            RepoMock.Setup(x => x.FindByPrimaryKeysAsync<TodoItem>(id))
                     .ReturnsAsync(() => null);
 
             // Act
             await removeChecklistHandler.Handle(new RemoveCommand<Checklist>(id), new CancellationToken());
 
             // Assert
-            RepoMock.Verify(x => x.GetAsync<Checklist>(id), Times.Once);
+            RepoMock.Verify(x => x.FindByPrimaryKeysAsync<Checklist>(id), Times.Once);
             RepoMock.Verify(x => x.Remove(It.IsAny<Checklist>()), Times.Never);
             RepoMock.Verify(x => x.Remove(It.IsAny<TodoItem>()), Times.Never);
 
@@ -68,14 +68,14 @@ namespace Core.Tests.Handlers.Checklists
             // Arrange
             var entity = GetSampleChecklist("Untitled");
 
-            RepoMock.Setup(x => x.GetAsync<Checklist>(id))
+            RepoMock.Setup(x => x.FindByPrimaryKeysAsync<Checklist>(id))
                     .ReturnsAsync(entity);
 
             // Act
             await removeChecklistHandler.Handle(new RemoveCommand<Checklist>(id), new CancellationToken());
 
             // Assert
-            RepoMock.Verify(x => x.GetAsync<Checklist>(id), Times.Once);
+            RepoMock.Verify(x => x.FindByPrimaryKeysAsync<Checklist>(id), Times.Once);
             RepoMock.Verify(x => x.Remove(It.IsAny<Checklist>()), Times.Never);
             RepoMock.Verify(x => x.Remove(It.Is<TodoItem>(i => i.ChecklistId == id)), Times.Never);
 

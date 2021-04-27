@@ -16,7 +16,9 @@ using ToDoList.Core;
 using ToDoList.Core.Mediator.Queries.Generics;
 using ToDoList.Core.Mediator.Response;
 using ToDoList.Core.Services;
+using ToDoList.Diagnostic;
 using ToDoList.Extensions;
+using ToDoList.Infrastructure.Data;
 using ToDoList.Infrastructure.Extensions;
 using ToDoList.WebApi.Jwt;
 
@@ -78,7 +80,9 @@ namespace ToDoList.WebApi
                     };
                 });
 
-            services.AddControllers();
+            services.AddSingleton<ProccessTimeCounterSource>();
+
+            services.AddControllers(options => options.Filters.Add<ProccesTimeActionFilterAttribute>());
 
             services.AddSwaggerGen(c =>
             {
@@ -89,6 +93,12 @@ namespace ToDoList.WebApi
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            using (var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
+            {
+                var context = serviceScope.ServiceProvider.GetService<TodoListContext>();
+                context.Database.Migrate();
+            }
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();

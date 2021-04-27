@@ -1,6 +1,9 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+
+using MockQueryable.Moq;
 
 using Moq;
 
@@ -33,18 +36,20 @@ namespace Core.Tests.Handlers.Checklists
             int userId = 1;
 
             var newChecklist = new ChecklistCreateRequest(name, userId);
-            var checklists = GetSampleChecklists();
+            var checklists = new List<Checklist> { new Checklist { Id = 12, Name = "Chores" } };
 
-            RepoMock.Setup(x => x.GetAllAsync<Checklist>())
-                    .ReturnsAsync(checklists);
+            var checklistsMock = checklists.AsQueryable().BuildMock();
+
+            RepoMock.Setup(x => x.GetAll<Checklist>())
+                    .Returns(checklistsMock.Object)
+                    .Verifiable();
 
             // Act
             await addChecklistHandler.Handle(new AddCommand<ChecklistCreateRequest>(newChecklist), new CancellationToken());
 
             // Assert
-            RepoMock.Verify(x => x.GetAllAsync<Checklist>(), Times.Once);
-            RepoMock.Verify(x => x.AddAsync(It.Is<Checklist>(l => l.Name == newChecklist.Name
-                                                                  && l.UserId == newChecklist.UserId)), Times.Once);
+            RepoMock.Verify();
+            RepoMock.Verify(x => x.AddAsync(It.Is<Checklist>(e => e.Name == name && e.UserId == userId)), Times.Once);
 
             UnitOfWorkMock.Verify(x => x.SaveAsync(), Times.Once);
         }
@@ -55,32 +60,24 @@ namespace Core.Tests.Handlers.Checklists
             // Arrange
             int userId = 2;
 
-            var existingChecklist = new ChecklistCreateRequest(name, userId);
-            var checklists = GetSampleChecklists();
+            var existingChecklist = new Checklist { Id = 3, Name = name, UserId = userId };
+            var request = new ChecklistCreateRequest(name, userId);
 
-            RepoMock.Setup(x => x.GetAllAsync<Checklist>())
-                    .ReturnsAsync(checklists);
+            var checklists = new List<Checklist> { existingChecklist };
+            var checklistsMock = checklists.AsQueryable().BuildMock();
+
+            RepoMock.Setup(x => x.GetAll<Checklist>())
+                    .Returns(checklistsMock.Object)
+                    .Verifiable();
 
             // Act
-            await addChecklistHandler.Handle(new AddCommand<ChecklistCreateRequest>(existingChecklist), new CancellationToken());
+            await addChecklistHandler.Handle(new AddCommand<ChecklistCreateRequest>(request), new CancellationToken());
 
             // Assert
-            RepoMock.Verify(x => x.GetAllAsync<Checklist>(), Times.Once);
-            RepoMock.Verify(x => x.AddAsync(It.Is<Checklist>(l => l.Name == existingChecklist.Name
-                                                                  && l.UserId == existingChecklist.UserId)), Times.Never);
+            RepoMock.Verify();
+            RepoMock.Verify(x => x.AddAsync(It.Is<Checklist>(e => e.Name == name && e.UserId == userId)), Times.Never);
 
             UnitOfWorkMock.Verify(x => x.SaveAsync(), Times.Never);
-        }
-
-        private IEnumerable<Checklist> GetSampleChecklists()
-        {
-            return new List<Checklist>
-            {
-                new Checklist { Id = 1, Name = "Chores", UserId = 2 },
-                new Checklist { Id = 3, Name = "Work", UserId = 2 },
-                new Checklist { Id = 4, Name = "Chores", UserId = 1 },
-                new Checklist { Id = 5, Name = name, UserId = 2 },
-            };
         }
     }
 }

@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 
 using AutoMapper;
+using AutoMapper.QueryableExtensions;
 
 using MediatR;
 
@@ -30,13 +31,15 @@ namespace ToDoList.Core.Mediator.Handlers.TodoItems
         {
             _ = request ?? throw new ArgumentNullException(nameof(request));
 
-            var todoItems = await UnitOfWork.Repository.GetAllAsync<TodoItem>();
-            var todoItemsByUser = todoItems.Where(i => i.Checklist.UserId == request.UserId);
+            var responsesByUser = UnitOfWork.Repository.GetAll<TodoItem>()
+                                                       .Where(x => x.Checklist.UserId == request.UserId)
+                                                       .ProjectTo<TodoItemResponse>(Mapper.ConfigurationProvider)
+                                                       .AsEnumerable();
+                                                       //.ToListAsync();
 
-            var responses = Mapper.Map<IEnumerable<TodoItemResponse>>(todoItemsByUser);
-            var responsesWithAddress = await createWithAddressService.GetItemsWithAddressAsync(responses);
-
-            return responsesWithAddress;
+            //var responsesWithAddress = await createWithAddressService.GetItemsWithAddressAsync(responsesByUser);
+            // return responsesWithAddress;
+            return responsesByUser;
         }
     }
 }

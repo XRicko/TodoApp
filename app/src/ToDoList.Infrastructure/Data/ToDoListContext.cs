@@ -13,7 +13,6 @@ namespace ToDoList.Infrastructure.Data
         public TodoListContext(DbContextOptions<TodoListContext> options)
             : base(options)
         {
-            Database.Migrate();
         }
 
         public virtual DbSet<Category> Categories { get; set; }

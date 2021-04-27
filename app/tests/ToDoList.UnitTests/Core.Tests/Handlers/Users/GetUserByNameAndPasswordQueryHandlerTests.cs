@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 
 using Moq;
@@ -34,10 +33,11 @@ namespace Core.Tests.Handlers.Users
         public async Task Handle_ReturnsUserGivenProperCredentials()
         {
             // Arrange
-            var users = GetSampleUsers();
+            var user = new User { Id = 31, Name = username, Password = passwordHasher.Hash(password) };
 
-            RepoMock.Setup(x => x.GetAllAsync<User>())
-                    .ReturnsAsync(users);
+            RepoMock.Setup(x => x.GetByNameAsync<User>(username))
+                    .ReturnsAsync(() => user)
+                    .Verifiable();
 
             // Act
             var actual = await getUserByNameAndPasswordHandler.Handle(new GetUserByNameAndPasswordQuery(username, password), new CancellationToken());
@@ -46,35 +46,23 @@ namespace Core.Tests.Handlers.Users
             Assert.Equal(username, actual.Name);
             Assert.True(passwordHasher.VerifyPassword(password, actual.Password));
 
-            RepoMock.Verify(x => x.GetAllAsync<User>(), Times.Once);
+            RepoMock.Verify();
         }
 
         [Fact]
         public async Task Handle_ReturnsNullGivenInvalidCredentials()
         {
             // Arrange
-            var users = GetSampleUsers();
-
-            RepoMock.Setup(x => x.GetAllAsync<User>())
-                    .ReturnsAsync(users);
+            RepoMock.Setup(x => x.GetByNameAsync<User>(username))
+                    .ReturnsAsync(() => null)
+                    .Verifiable();
 
             // Act
-            var actual = await getUserByNameAndPasswordHandler.Handle(new GetUserByNameAndPasswordQuery(username, "ivalid_credentials"), new CancellationToken());
+            var actual = await getUserByNameAndPasswordHandler.Handle(new GetUserByNameAndPasswordQuery(username, password), new CancellationToken());
 
             // Assert
             Assert.Null(actual);
-            RepoMock.Verify(x => x.GetAllAsync<User>(), Times.Once);
-        }
-
-        private IEnumerable<User> GetSampleUsers()
-        {
-            return new List<User>
-            {
-                new User { Name = username, Password = passwordHasher.Hash(password) },
-                new User { Name = "qwerty", Password = passwordHasher.Hash("admin") },
-                new User { Name = "anonim", Password = passwordHasher.Hash("123456") },
-                new User { Name = "anonim", Password = passwordHasher.Hash(password) }
-            };
+            RepoMock.Verify();
         }
     }
 }

@@ -1,6 +1,9 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+
+using MockQueryable.Moq;
 
 using Moq;
 
@@ -13,11 +16,11 @@ using Xunit;
 
 namespace Core.Tests.Handlers.Generic
 {
-    public class GetAllQueryHandlderTests : HandlerBaseForTests
+    public class GetAllQueryHandlerTests : HandlerBaseForTests
     {
         private readonly GetCategoriesQueryHandler getAllHandler;
 
-        public GetAllQueryHandlderTests() : base()
+        public GetAllQueryHandlerTests() : base()
         {
             getAllHandler = new GetCategoriesQueryHandler(UnitOfWorkMock.Object, Mapper);
         }
@@ -29,15 +32,17 @@ namespace Core.Tests.Handlers.Generic
             var entities = GetSampleEntities();
             var expected = GetSampleResponses();
 
-            RepoMock.Setup(x => x.GetAllAsync<Category>())
-                    .ReturnsAsync(entities);
+            var entitiesMock = entities.AsQueryable().BuildMock();
+
+            RepoMock.Setup(x => x.GetAll<Category>())
+                    .Returns(entitiesMock.Object);
 
             // Act
             var actual = await getAllHandler.Handle(new GetAllQuery<Category, CategoryResponse>(), new CancellationToken());
 
             // Assert
             Assert.Equal(expected, actual);
-            RepoMock.Verify(x => x.GetAllAsync<Category>(), Times.Once);
+            RepoMock.Verify(x => x.GetAll<Category>(), Times.Once);
         }
 
         private static IEnumerable<Category> GetSampleEntities()

@@ -26,7 +26,7 @@ namespace ToDoList.Core.Mediator.Handlers.Generics
         {
             _ = request ?? throw new ArgumentNullException(nameof(request));
 
-            var entity = await UnitOfWork.Repository.GetAsync<TEntity>(request.Name);
+            var entity = await UnitOfWork.Repository.GetByNameAsync<TEntity>(request.Name);
             var response = Mapper.Map<TResponse>(entity);
 
             return response;

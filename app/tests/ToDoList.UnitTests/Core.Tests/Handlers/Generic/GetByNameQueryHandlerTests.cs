@@ -32,7 +32,7 @@ namespace Core.Tests.Handlers.Generic
             var expected = new CategoryResponse(5, name);
             var entity = new Category { Id = 5, Name = name };
 
-            RepoMock.Setup(x => x.GetAsync<Category>(name))
+            RepoMock.Setup(x => x.GetByNameAsync<Category>(name))
                     .ReturnsAsync(entity);
 
             // Act
@@ -40,14 +40,14 @@ namespace Core.Tests.Handlers.Generic
 
             // Assert
             Assert.Equal(expected, actual);
-            RepoMock.Verify(x => x.GetAsync<Category>(name), Times.Once);
+            RepoMock.Verify(x => x.GetByNameAsync<Category>(name), Times.Once);
         }
 
         [Fact]
         public async Task Handle_ReturnsNullGivenInvalidName()
         {
             // Arrange
-            RepoMock.Setup(x => x.GetAsync<Category>(name))
+            RepoMock.Setup(x => x.GetByNameAsync<Category>(name))
                     .ReturnsAsync(() => null);
 
             // Act
@@ -55,7 +55,7 @@ namespace Core.Tests.Handlers.Generic
 
             // Assert
             Assert.Null(actual);
-            RepoMock.Verify(x => x.GetAsync<Category>(name), Times.Once);
+            RepoMock.Verify(x => x.GetByNameAsync<Category>(name), Times.Once);
         }
     }
 }

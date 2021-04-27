@@ -34,13 +34,13 @@ namespace ToDoList.Core.Services
         {
             _ = todoItemResponse ?? throw new ArgumentNullException(nameof(todoItemResponse));
 
-            if (todoItemResponse.GeoPoint is not null)
-            {
-                string address = await geocodingService.GetAddressAsync(todoItemResponse.GeoPoint.Latitude, todoItemResponse.GeoPoint.Longitude);
-                var todoItemResponseWithAddress = todoItemResponse with { Address = address };
+            //if (todoItemResponse.GeoPoint is not null)
+            //{
+            //    string address = await geocodingService.GetAddressAsync(todoItemResponse.GeoPoint.Latitude, todoItemResponse.GeoPoint.Longitude);
+            //    var todoItemResponseWithAddress = todoItemResponse with { Address = address };
 
-                return todoItemResponseWithAddress;
-            }
+            //    return todoItemResponseWithAddress;
+            //}
 
             return todoItemResponse;
         }

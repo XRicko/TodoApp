@@ -14,7 +14,7 @@ namespace ToDoList.Infrastructure.Data.Config
         {
             builder.ToTable("User");
 
-            builder.HasIndex(e => new { e.Name, e.Password })
+            builder.HasIndex(e => e.Name)
                 .IsUnique();
 
             builder.Property(e => e.Name)

@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
 using AutoMapper;
+using AutoMapper.QueryableExtensions;
 
 using MediatR;
 
@@ -20,14 +22,13 @@ namespace ToDoList.Core.Mediator.Handlers.Generics
     {
         protected GetAllQueryHandler(IUnitOfWork unitOfWork, IMapper mapper) : base(unitOfWork, mapper) { }
 
-        public virtual async Task<IEnumerable<TResponse>> Handle(GetAllQuery<TEntity, TResponse> request, CancellationToken cancellationToken)
+        public virtual Task<IEnumerable<TResponse>> Handle(GetAllQuery<TEntity, TResponse> request, CancellationToken cancellationToken)
         {
             _ = request ?? throw new ArgumentNullException(nameof(request));
 
-            var entities = await UnitOfWork.Repository.GetAllAsync<TEntity>();
-            var responses = Mapper.Map<IEnumerable<TResponse>>(entities);
-
-            return responses;
+            return Task.FromResult(UnitOfWork.Repository.GetAll<TEntity>()
+                                                        .ProjectTo<TResponse>(Mapper.ConfigurationProvider)
+                                                        .AsEnumerable());
         }
     }
 }

@@ -1,6 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
+
+using MockQueryable.Moq;
 
 using Moq;
 
@@ -18,32 +23,39 @@ namespace Core.Tests.Handlers.TodoItems
         private readonly AddTodoItemCommandHandler addTodoItemHandler;
 
         private readonly string name;
+        private readonly int checklistId;
+
+        private readonly Expression<Func<TodoItem, bool>> expression;
 
         public AddTodoItemCommandHandlerTests() : base()
         {
             addTodoItemHandler = new AddTodoItemCommandHandler(UnitOfWorkMock.Object, Mapper);
 
             name = "Buy everyting needed";
+            checklistId = 3;
+
+            expression = e => e.Name == name && e.ChecklistId == checklistId;
         }
 
         [Fact]
         public async Task Handle_AddsTodoItemGivenNew()
         {
             // Arrange
-            var newRequest = new TodoItemCreateRequest(name, 3, 1);
-            var todoItems = GetSampleTodoItems();
+            var todoItems = new List<TodoItem> { new TodoItem { Id = 3256, Name = "Sommething", ChecklistId = 12, StatusId = 1 } };
+            var newRequest = new TodoItemCreateRequest(name, checklistId, 1);
 
+            var todoItemsMock = todoItems.AsQueryable().BuildMock();
 
-            RepoMock.Setup(x => x.GetAllAsync<TodoItem>())
-                    .ReturnsAsync(todoItems);
+            RepoMock.Setup(x => x.GetAll<TodoItem>())
+                    .Returns(todoItemsMock.Object)
+                    .Verifiable();
 
             // Act
             await addTodoItemHandler.Handle(new AddCommand<TodoItemCreateRequest>(newRequest), new CancellationToken());
 
             // Assert
-            RepoMock.Verify(x => x.GetAllAsync<TodoItem>(), Times.Once);
-            RepoMock.Verify(x => x.AddAsync(It.Is<TodoItem>(i => i.Name == newRequest.Name
-                                                                  && i.ChecklistId == newRequest.ChecklistId)), Times.Once);
+            RepoMock.Verify();
+            RepoMock.Verify(x => x.AddAsync(It.Is(expression)), Times.Once);
 
             UnitOfWorkMock.Verify(x => x.SaveAsync(), Times.Once);
         }
@@ -52,32 +64,24 @@ namespace Core.Tests.Handlers.TodoItems
         public async Task Handle_DoesntAddTodoItemGivenExisting()
         {
             // Arrange
-            var existingRequest = new TodoItemCreateRequest(name, 2, 2);
-            var todoItems = GetSampleTodoItems();
+            var existingTodoItem = new TodoItem { Id = 3, Name = name, ChecklistId = checklistId, StatusId = 2 };
+            var request = new TodoItemCreateRequest(name, checklistId, 2);
 
-            RepoMock.Setup(x => x.GetAllAsync<TodoItem>())
-                    .ReturnsAsync(todoItems);
+            var todoItems = new List<TodoItem> { existingTodoItem };
+            var todoItemsMock = todoItems.AsQueryable().BuildMock();
+
+            RepoMock.Setup(x => x.GetAll<TodoItem>())
+                    .Returns(todoItemsMock.Object)
+                    .Verifiable();
 
             // Act
-            await addTodoItemHandler.Handle(new AddCommand<TodoItemCreateRequest>(existingRequest), new CancellationToken());
+            await addTodoItemHandler.Handle(new AddCommand<TodoItemCreateRequest>(request), new CancellationToken());
 
             // Assert
-            RepoMock.Verify(x => x.GetAllAsync<TodoItem>(), Times.Once);
-            RepoMock.Verify(x => x.AddAsync(It.Is<TodoItem>(i => i.Name == existingRequest.Name
-                                                                  && i.ChecklistId == existingRequest.ChecklistId)), Times.Never);
+            RepoMock.Verify();
+            RepoMock.Verify(x => x.AddAsync(It.Is(expression)), Times.Never);
 
             UnitOfWorkMock.Verify(x => x.SaveAsync(), Times.Never);
-        }
-
-        private IEnumerable<TodoItem> GetSampleTodoItems()
-        {
-            return new List<TodoItem>
-            {
-                new TodoItem { Name = name, ChecklistId = 2 },
-                new TodoItem { Name = "Invite friends", ChecklistId = 2 },
-                new TodoItem { Name = "Prepare a party", ChecklistId = 2 },
-                new TodoItem { Name = name, ChecklistId = 1 }
-            };
         }
     }
 }

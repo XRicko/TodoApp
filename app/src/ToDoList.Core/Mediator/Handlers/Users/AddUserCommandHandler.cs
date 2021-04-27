@@ -29,9 +29,8 @@ namespace ToDoList.Core.Mediator.Handlers.Users
         {
             _ = request ?? throw new ArgumentNullException(nameof(request));
 
-            var users = await UnitOfWork.Repository.GetAllAsync<User>();
-            var item = users.SingleOrDefault(u => u.Name == request.Request.Name
-                                                  && passwordHasher.VerifyPassword(request.Request.Password, u.Password));
+            var item = UnitOfWork.Repository.GetAll<User>()
+                                            .SingleOrDefault(u => u.Name == request.Request.Name);
 
             if (item is null)
             {

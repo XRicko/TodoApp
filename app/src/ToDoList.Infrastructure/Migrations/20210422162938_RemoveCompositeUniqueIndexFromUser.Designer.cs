@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NetTopologySuite.Geometries;
 using ToDoList.Infrastructure.Data;
@@ -10,9 +11,10 @@ using ToDoList.Infrastructure.Data;
 namespace ToDoList.Infrastructure.Migrations
 {
     [DbContext(typeof(TodoListContext))]
-    partial class TodoListContextModelSnapshot : ModelSnapshot
+    [Migration("20210422162938_RemoveCompositeUniqueIndexFromUser")]
+    partial class RemoveCompositeUniqueIndexFromUser
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

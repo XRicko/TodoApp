@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -29,13 +28,16 @@ namespace ToDoList.Core.Mediator.Handlers.Users
         {
             _ = request ?? throw new ArgumentNullException(nameof(request));
 
-            var users = await UnitOfWork.Repository.GetAllAsync<User>();
-            var user = users.SingleOrDefault(u => u.Name == request.Name
-                                                  && passwordHasher.VerifyPassword(request.Password, u.Password));
+            var user = await UnitOfWork.Repository.GetByNameAsync<User>(request.Name);
 
-            var response = Mapper.Map<UserResponse>(user);
+            if (user is null)
+                return null;
 
-            return response;
+            bool isValidPassword = passwordHasher.VerifyPassword(request.Password, user.Password);
+
+            return isValidPassword
+                ? Mapper.Map<UserResponse>(user)
+                : null;
         }
     }
 }

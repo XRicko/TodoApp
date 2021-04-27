@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 using Microsoft.EntityFrameworkCore;
@@ -18,14 +18,22 @@ namespace ToDoList.Infrastructure.Data
             context = toDoListContext ?? throw new ArgumentNullException(nameof(toDoListContext));
         }
 
-        public Task<T> GetAsync<T>(int id) where T : BaseEntity =>
-            context.Set<T>().SingleOrDefaultAsync(x => x.Id == id);
+        public Task<T> GetByNameAsync<T>(string name) where T : BaseEntity
+        {
+            if (string.IsNullOrWhiteSpace(name))
+                throw new ArgumentException($"'{nameof(name)}' cannot be null or whitespace", nameof(name));
 
-        public Task<T> GetAsync<T>(string name) where T : BaseEntity =>
-            context.Set<T>().SingleOrDefaultAsync(x => x.Name == name);
+            return context.Set<T>().SingleOrDefaultAsync(x => x.Name == name);
+        }
 
-        public async Task<IEnumerable<T>> GetAllAsync<T>() where T : BaseEntity =>
-            await context.Set<T>().ToListAsync();
+        public async Task<T> FindByPrimaryKeysAsync<T>(params object[] keys) where T : BaseEntity
+        {
+            _ = keys ?? throw new ArgumentNullException(nameof(keys));
+            return await context.FindAsync<T>(keys);
+        }
+
+        public IQueryable<T> GetAll<T>() where T : BaseEntity =>
+            context.Set<T>().AsQueryable().AsNoTrackingWithIdentityResolution();
 
         public async Task AddAsync<T>(T entity) where T : BaseEntity
         {

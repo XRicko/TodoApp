@@ -18,8 +18,8 @@ namespace ToDoList.Infrastructure.Data.Config
                 .IsUnique();
 
             builder.Property(e => e.Name)
-                    .IsRequired()
-                    .HasMaxLength(75);
+                   .IsRequired()
+                   .HasMaxLength(75);
         }
     }
 }

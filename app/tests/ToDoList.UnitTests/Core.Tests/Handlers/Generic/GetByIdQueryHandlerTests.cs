@@ -36,7 +36,7 @@ namespace Core.Tests.Handlers.Generic
             var expected = new ChecklistResponse(id, name, userId);
             var entity = new Checklist { Id = id, Name = name, UserId = userId };
 
-            RepoMock.Setup(x => x.GetAsync<Checklist>(id))
+            RepoMock.Setup(x => x.FindByPrimaryKeysAsync<Checklist>(id))
                     .ReturnsAsync(entity);
 
             // Act
@@ -45,14 +45,14 @@ namespace Core.Tests.Handlers.Generic
             // Assert
             // Assert
             Assert.Equal(expected, actual);
-            RepoMock.Verify(x => x.GetAsync<Checklist>(id), Times.Once);
+            RepoMock.Verify(x => x.FindByPrimaryKeysAsync<Checklist>(id), Times.Once);
         }
 
         [Fact]
         public async Task Handle_ReturnsNullGivenInvalidId()
         {
             // Arrange
-            RepoMock.Setup(x => x.GetAsync<Checklist>(id))
+            RepoMock.Setup(x => x.FindByPrimaryKeysAsync<Checklist>(id))
                     .ReturnsAsync(() => null);
 
             // Act
@@ -60,7 +60,7 @@ namespace Core.Tests.Handlers.Generic
 
             // Assert
             Assert.Null(actual);
-            RepoMock.Verify(x => x.GetAsync<Checklist>(id), Times.Once);
+            RepoMock.Verify(x => x.FindByPrimaryKeysAsync<Checklist>(id), Times.Once);
         }
     }
 }

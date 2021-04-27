@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-using Moq;
+using MockQueryable.Moq;
 
 using ToDoList.Core.Entities;
 using ToDoList.Core.Mediator.Handlers.Checklists;
@@ -30,37 +31,37 @@ namespace Core.Tests.Handlers.Checklists
         public async Task Handle_ReturnsListOfChecklistResponsesByUser()
         {
             // Arrange
-            var expected = GetSampleChecklistResponses();
+            var expected = GetSampleChecklistResponsesByUser();
             var checklists = GetSampleChecklists();
 
-            RepoMock.Setup(x => x.GetAllAsync<Checklist>())
-                    .ReturnsAsync(checklists);
+            var checklistsMock = checklists.AsQueryable().BuildMock();
+
+            RepoMock.Setup(x => x.GetAll<Checklist>())
+                    .Returns(checklistsMock.Object)
+                    .Verifiable();
 
             // Act
             var actual = await getChecklistsByUserIdHandler.Handle(new GetChecklistsByUserIdQuery(desirableUserId), new CancellationToken());
 
             // Assert
             Assert.Equal(expected, actual);
-            RepoMock.Verify(x => x.GetAllAsync<Checklist>(), Times.Once);
+            RepoMock.Verify();
         }
 
         private IEnumerable<Checklist> GetSampleChecklists()
         {
             return new List<Checklist>
             {
-                new Checklist { Id = 1, Name= "Chores", UserId = desirableUserId },
-                new Checklist { Id = 2, Name= "Birthday", UserId = 1 },
+                new Checklist { Id = 1, Name= "Chores", UserId = 31 },
                 new Checklist { Id = 3, Name= "Work", UserId = desirableUserId },
-                new Checklist { Id = 4, Name= "Chores", UserId = 1 },
                 new Checklist { Id = 5, Name= "Birthday", UserId = desirableUserId },
             };
         }
 
-        private IEnumerable<ChecklistResponse> GetSampleChecklistResponses()
+        private IEnumerable<ChecklistResponse> GetSampleChecklistResponsesByUser()
         {
             return new List<ChecklistResponse>
             {
-                new(1, "Chores", desirableUserId),
                 new(3, "Work", desirableUserId),
                 new(5, "Birthday", desirableUserId)
             };

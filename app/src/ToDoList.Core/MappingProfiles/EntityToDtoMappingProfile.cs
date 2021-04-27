@@ -13,29 +13,16 @@ namespace ToDoList.Core.MappingProfiles
 {
     public class EntityToDtoMappingProfile : Profile
     {
-        private const int SRID = 4326;
-
         public EntityToDtoMappingProfile()
         {
             CreateMap<Point, GeoCoordinate>()
-              .ForMember(dest => dest.Longitude,
-                         opt => opt.MapFrom(src => src.X))
-              .ForMember(dest => dest.Latitude,
-                         opt => opt.MapFrom(src => src.Y))
-              .ForCtorParam("Longitude",
-                            opt => opt.MapFrom(src => src.X))
-              .ForCtorParam("Latitude",
-                            opt => opt.MapFrom(src => src.Y))
-              .ReverseMap()
-              .ForAllOtherMembers(opt => opt.Ignore());
-
-            CreateMap<GeoCoordinate, Point>()
-                .ForCtorParam("x",
-                              opt => opt.MapFrom(src => src.Longitude))
-                .ForCtorParam("y",
-                              opt => opt.MapFrom(src => src.Latitude))
+                .ForMember(dest => dest.Longitude,
+                           opt => opt.MapFrom(src => src.X))
+                .ForMember(dest => dest.Latitude,
+                           opt => opt.MapFrom(src => src.Y))
+                .ReverseMap()
                 .ForMember(dest => dest.SRID,
-                           opt => opt.MapFrom(src => SRID))
+                           opt => opt.MapFrom(src => GeoCoordinate.SRID))
                 .ForAllOtherMembers(opt => opt.Ignore());
 
             CreateMap<User, UserResponse>();
@@ -64,6 +51,7 @@ namespace ToDoList.Core.MappingProfiles
                            opt => opt.MapFrom(src => src.Image.Path))
                 .ForMember(dest => dest.ImageName,
                            opt => opt.MapFrom(src => src.Image.Name))
+                .ForMember(dest => dest.Category, opt => opt.AllowNull())
                 .ForAllOtherMembers(opt => opt.Ignore());
 
             CreateMap<TodoItemCreateRequest, TodoItem>(MemberList.Source);

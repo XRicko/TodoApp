@@ -26,9 +26,9 @@ namespace ToDoList.Core.Mediator.Handlers.TodoItems
         {
             _ = request ?? throw new ArgumentNullException(nameof(request));
 
-            var todoItems = await UnitOfWork.Repository.GetAllAsync<TodoItem>();
-            var todoItem = todoItems.SingleOrDefault(e => e.Name == request.Request.Name
-                                                          && e.ChecklistId == request.Request.ChecklistId);
+            var todoItem = UnitOfWork.Repository.GetAll<TodoItem>()
+                                                .SingleOrDefault(e => e.Name == request.Request.Name
+                                                                      && e.ChecklistId == request.Request.ChecklistId);
 
             if (todoItem is null)
             {

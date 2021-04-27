@@ -3,6 +3,8 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
+using MockQueryable.Moq;
+
 using Moq;
 
 using ToDoList.Core.Entities;
@@ -31,25 +33,28 @@ namespace Core.Tests.Handlers.TodoItems
         public async Task Handle_ReturnsTodoItems()
         {
             // Arrange
-            var todoItems = GetSampleTodoItems();
-            var todoItemsByUser = todoItems.Where(i => i.Checklist.UserId == 1);
+            int userId = 12;
 
-            var responses = Mapper.Map<IEnumerable<TodoItemResponse>>(todoItemsByUser);
+            var todoItems = GetSampleTodoItems();
+            var todoItemsMock = todoItems.AsQueryable().BuildMock();
+
+            var responses = Mapper.Map<IEnumerable<TodoItemResponse>>(todoItems);
             var expected = GetWithAddress(responses);
 
-            RepoMock.Setup(x => x.GetAllAsync<TodoItem>())
-                    .ReturnsAsync(todoItems);
+            RepoMock.Setup(x => x.GetAll<TodoItem>())
+                    .Returns(todoItemsMock.Object)
+                    .Verifiable();
 
             addressServiceMock.Setup(x => x.GetItemsWithAddressAsync(It.IsAny<IEnumerable<TodoItemResponse>>()))
                               .ReturnsAsync(expected);
 
             // Act
-            var actual = await getTodoItemsHandler.Handle(new GetTodoItemsByUserIdQuery(1), new CancellationToken());
+            var actual = await getTodoItemsHandler.Handle(new GetTodoItemsByUserIdQuery(userId), new CancellationToken());
 
             // Assert
             Assert.Equal(expected, actual);
 
-            RepoMock.Verify(x => x.GetAllAsync<TodoItem>(), Times.Once);
+            RepoMock.Verify();
             addressServiceMock.Verify(x => x.GetItemsWithAddressAsync(It.IsAny<IEnumerable<TodoItemResponse>>()), Times.Once);
         }
 
@@ -72,55 +77,25 @@ namespace Core.Tests.Handlers.TodoItems
 
         private static IEnumerable<TodoItem> GetSampleTodoItems()
         {
-            var personal = new Checklist { Id = 1, Name = "Personal", UserId = 1 };
-            var birthday = new Checklist { Id = 2, Name = "Birthday", UserId = 1 };
-
-            var statusUndone = new Status { Id = 1, Name = "Ongoing", IsDone = false };
-            var statusDone = new Status { Id = 2, Name = "Done", IsDone = true };
+            var checklist1 = new Checklist { Id = 12, Name = "Chores", UserId = 4 };
+            var checklist2 = new Checklist { Id = 22, Name = "Chores", UserId = 12 };
 
             var todoItems = new List<TodoItem>
             {
                 new TodoItem
                 {
                     Name = "Complete some course",
-
-                    ChecklistId = personal.Id,
-                    Checklist = personal,
-
-                    StatusId = statusUndone.Id,
-                    Status = statusUndone,
-
+                    ChecklistId = 1,
+                    Checklist = checklist1,
+                    StatusId = 1,
                     GeoPoint = new NetTopologySuite.Geometries.Point(33.42041, 49.06802)
                 },
-                new TodoItem
-                {
-                    Name = "Invite friends",
-
-                    ChecklistId = birthday.Id,
-                    Checklist = birthday,
-
-                    StatusId = statusDone.Id,
-                    Status = statusDone,
-
-                    GeoPoint = new NetTopologySuite.Geometries.Point(33.42041, 49.06802)
-                },
-                new TodoItem
-                {
-                    Name = "Prepare a party",
-
-                    ChecklistId = birthday.Id,
-                    Checklist = birthday,
-
-                    StatusId = statusUndone.Id,
-                    Status = statusUndone,                },
                 new TodoItem
                 {
                     Name = "Finish the book",
-                    ChecklistId = personal.Id,
-                    Checklist = personal,
-
-                    StatusId = statusDone.Id,
-                    Status = statusDone,
+                    ChecklistId = 1,
+                    Checklist = checklist2,
+                    StatusId = 2,
                 }
             };
 

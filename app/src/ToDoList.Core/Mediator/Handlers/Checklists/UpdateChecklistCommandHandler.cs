@@ -28,9 +28,9 @@ namespace ToDoList.Core.Mediator.Handlers.Checklists
 
             await base.Handle(request, cancellationToken);
 
-            var checklists = await UnitOfWork.Repository.GetAllAsync<Checklist>();
-            var defaultChecklist = checklists.SingleOrDefault(x => x.Name == "Untitled"
-                                                                   && x.UserId == request.Request.UserId);
+            var defaultChecklist = UnitOfWork.Repository.GetAll<Checklist>()
+                                                        .SingleOrDefault(x => x.Name == "Untitled"
+                                                                              && x.UserId == request.Request.UserId);
 
             if (defaultChecklist is null)
             {

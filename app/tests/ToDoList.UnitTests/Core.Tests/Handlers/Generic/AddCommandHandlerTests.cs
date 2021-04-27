@@ -31,14 +31,14 @@ namespace Core.Tests.Handlers.Generic
             // Arrange
             var request = new CategoryCreateRequest(name);
 
-            RepoMock.Setup(x => x.GetAsync<Category>(request.Name))
+            RepoMock.Setup(x => x.GetByNameAsync<Category>(request.Name))
                     .ReturnsAsync(() => null);
 
             // Act
             await addCommandHandler.Handle(new AddCommand<CategoryCreateRequest>(request), new CancellationToken());
 
             // Assert
-            RepoMock.Verify(x => x.GetAsync<Category>(request.Name), Times.Once);
+            RepoMock.Verify(x => x.GetByNameAsync<Category>(request.Name), Times.Once);
             RepoMock.Verify(x => x.AddAsync(It.Is<Category>(c => c.Name == request.Name)), Times.Once);
 
             UnitOfWorkMock.Verify(x => x.SaveAsync(), Times.Once);
@@ -51,14 +51,14 @@ namespace Core.Tests.Handlers.Generic
             var request = new CategoryCreateRequest(name);
             var entity = new Category { Name = name };
 
-            RepoMock.Setup(x => x.GetAsync<Category>(request.Name))
+            RepoMock.Setup(x => x.GetByNameAsync<Category>(request.Name))
                     .ReturnsAsync(entity);
 
             // Act
             await addCommandHandler.Handle(new AddCommand<CategoryCreateRequest>(request), new CancellationToken());
 
             // Assert
-            RepoMock.Verify(x => x.GetAsync<Category>(request.Name), Times.Once);
+            RepoMock.Verify(x => x.GetByNameAsync<Category>(request.Name), Times.Once);
             RepoMock.Verify(x => x.AddAsync(entity), Times.Never);
 
             UnitOfWorkMock.Verify(x => x.SaveAsync(), Times.Never);
