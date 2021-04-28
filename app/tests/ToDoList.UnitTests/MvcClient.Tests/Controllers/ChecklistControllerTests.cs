@@ -17,7 +17,7 @@ namespace ToDoList.UnitTests.MvcClient.Controllers
 {
     public class ChecklistControllerTests : MvcControllerBaseForTests
     {
-        private readonly Mock<ICreateViewModelService> viewModelServiceMock;
+        private readonly Mock<IViewModelService> viewModelServiceMock;
 
         private readonly ChecklistController checklistController;
 
@@ -29,7 +29,7 @@ namespace ToDoList.UnitTests.MvcClient.Controllers
 
         public ChecklistControllerTests() : base()
         {
-            viewModelServiceMock = new Mock<ICreateViewModelService>();
+            viewModelServiceMock = new Mock<IViewModelService>();
 
             checklistController = new ChecklistController(ApiCallsServiceMock.Object, viewModelServiceMock.Object);
 

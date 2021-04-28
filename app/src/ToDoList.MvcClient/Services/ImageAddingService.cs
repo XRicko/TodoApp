@@ -50,8 +50,8 @@ namespace ToDoList.MvcClient.Services
 
         private string MakeAbsoluteImagePath(string fileName)
         {
-            if (string.IsNullOrEmpty(fileName))
-                throw new ArgumentException($"'{nameof(fileName)}' cannot be null or empty", nameof(fileName));
+            if (string.IsNullOrWhiteSpace(fileName))
+                throw new ArgumentException($"'{nameof(fileName)}' cannot be null or whitespace", nameof(fileName));
 
             string folder = Path.Combine(webHostEnvironment.WebRootPath, "images");
             string imagePath = Path.Combine(folder, fileName);
@@ -62,8 +62,8 @@ namespace ToDoList.MvcClient.Services
         private static async Task SaveImageInFolder(IFormFile image, string imagePath)
         {
             _ = image ?? throw new ArgumentNullException(nameof(image));
-            if (string.IsNullOrEmpty(imagePath))
-                throw new ArgumentException($"'{nameof(imagePath)}' cannot be null or empty", nameof(imagePath));
+            if (string.IsNullOrWhiteSpace(imagePath))
+                throw new ArgumentException($"'{nameof(imagePath)}' cannot be null or whitespace", nameof(imagePath));
 
             using var fileStream = new FileStream(imagePath, FileMode.Create);
             await image.CopyToAsync(fileStream);

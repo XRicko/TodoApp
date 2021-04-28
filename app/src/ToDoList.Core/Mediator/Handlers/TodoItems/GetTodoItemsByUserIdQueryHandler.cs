@@ -34,8 +34,8 @@ namespace ToDoList.Core.Mediator.Handlers.TodoItems
             var responsesByUser = UnitOfWork.Repository.GetAll<TodoItem>()
                                                        .Where(x => x.Checklist.UserId == request.UserId)
                                                        .ProjectTo<TodoItemResponse>(Mapper.ConfigurationProvider)
-                                                       .AsEnumerable();
-                                                       //.ToListAsync();
+                                                       .ToList();
+            //.ToListAsync();
 
             //var responsesWithAddress = await createWithAddressService.GetItemsWithAddressAsync(responsesByUser);
             // return responsesWithAddress;

@@ -13,7 +13,7 @@
     var cultureItems = LocalizationOptions.Value.SupportedUICultures
         .Select(c => new SelectListItem { Value = c.Name, Text = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(c.NativeName) })
         .ToList();
-    var returnUrl = string.IsNullOrEmpty(Context.Request.Path) ? "~/" : $"~{Context.Request.Path.Value}{Context.Request.QueryString}";
+    var returnUrl = string.IsNullOrWhiteSpace(Context.Request.Path) ? "~/" : $"~{Context.Request.Path.Value}{Context.Request.QueryString}";
 }
 <div>
     <form id="selectLanguage"

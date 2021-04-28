@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -23,12 +24,14 @@ namespace ToDoList.Core.Mediator.Handlers.Generics
         {
             _ = request ?? throw new ArgumentNullException(nameof(request));
 
-            var entity = Mapper.Map<TEntity>(request.Request);
-            var item = await UnitOfWork.Repository.GetByNameAsync<TEntity>(entity.Name);
+            bool itemExists = UnitOfWork.Repository.GetAll<TEntity>()
+                                                   .Any(x => x.Name == request.Request.Name);
 
-            if (item is null)
+            if (!itemExists)
             {
-                await UnitOfWork.Repository.AddAsync(entity);
+                var entity = Mapper.Map<TEntity>(request.Request);
+
+                UnitOfWork.Repository.Add(entity);
                 await UnitOfWork.SaveAsync();
             }
 

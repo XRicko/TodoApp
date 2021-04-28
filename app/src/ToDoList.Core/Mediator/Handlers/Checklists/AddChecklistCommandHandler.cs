@@ -26,15 +26,15 @@ namespace ToDoList.Core.Mediator.Handlers.Checklists
         {
             _ = request ?? throw new ArgumentNullException(nameof(request));
 
-            var checklist = UnitOfWork.Repository.GetAll<Checklist>()
-                                                 .SingleOrDefault(e => e.Name == request.Request.Name
-                                                                       && e.UserId == request.Request.UserId);
+            bool recordExists = UnitOfWork.Repository.GetAll<Checklist>()
+                                                     .Any(e => e.Name == request.Request.Name
+                                                               && e.UserId == request.Request.UserId);
 
-            if (checklist is null)
+            if (!recordExists)
             {
                 var entity = Mapper.Map<Checklist>(request.Request);
 
-                await UnitOfWork.Repository.AddAsync(entity);
+                UnitOfWork.Repository.Add(entity);
                 await UnitOfWork.SaveAsync();
             }
 

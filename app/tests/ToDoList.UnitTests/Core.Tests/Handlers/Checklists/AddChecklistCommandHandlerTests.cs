@@ -49,7 +49,7 @@ namespace Core.Tests.Handlers.Checklists
 
             // Assert
             RepoMock.Verify();
-            RepoMock.Verify(x => x.AddAsync(It.Is<Checklist>(e => e.Name == name && e.UserId == userId)), Times.Once);
+            RepoMock.Verify(x => x.Add(It.Is<Checklist>(e => e.Name == name && e.UserId == userId)), Times.Once);
 
             UnitOfWorkMock.Verify(x => x.SaveAsync(), Times.Once);
         }
@@ -75,7 +75,7 @@ namespace Core.Tests.Handlers.Checklists
 
             // Assert
             RepoMock.Verify();
-            RepoMock.Verify(x => x.AddAsync(It.Is<Checklist>(e => e.Name == name && e.UserId == userId)), Times.Never);
+            RepoMock.Verify(x => x.Add(It.Is<Checklist>(e => e.Name == name && e.UserId == userId)), Times.Never);
 
             UnitOfWorkMock.Verify(x => x.SaveAsync(), Times.Never);
         }

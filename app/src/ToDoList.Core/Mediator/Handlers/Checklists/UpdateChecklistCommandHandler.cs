@@ -28,13 +28,13 @@ namespace ToDoList.Core.Mediator.Handlers.Checklists
 
             await base.Handle(request, cancellationToken);
 
-            var defaultChecklist = UnitOfWork.Repository.GetAll<Checklist>()
-                                                        .SingleOrDefault(x => x.Name == "Untitled"
-                                                                              && x.UserId == request.Request.UserId);
+            bool defaultChecklistExists = UnitOfWork.Repository.GetAll<Checklist>()
+                                                               .Any(x => x.Name == "Untitled"
+                                                                         && x.UserId == request.Request.UserId);
 
-            if (defaultChecklist is null)
+            if (!defaultChecklistExists)
             {
-                await UnitOfWork.Repository.AddAsync(new Checklist { Name = "Untitled", UserId = request.Request.UserId });
+                UnitOfWork.Repository.Add(new Checklist { Name = "Untitled", UserId = request.Request.UserId });
                 await UnitOfWork.SaveAsync();
             }
 

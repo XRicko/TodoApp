@@ -15,11 +15,11 @@ namespace ToDoList.MvcClient.Controllers
 {
     public class TodoController : Controller
     {
-        private readonly ICreateViewModelService viewModelService;
+        private readonly IViewModelService viewModelService;
         private readonly IApiInvoker apiInvoker;
         private readonly IImageAddingService imageAddingService;
 
-        public TodoController(IApiInvoker invoker, IImageAddingService addingService, ICreateViewModelService modelService) : base()
+        public TodoController(IApiInvoker invoker, IImageAddingService addingService, IViewModelService modelService) : base()
         {
             apiInvoker = invoker ?? throw new ArgumentNullException(nameof(invoker));
             imageAddingService = addingService ?? throw new ArgumentNullException(nameof(addingService));
@@ -44,15 +44,16 @@ namespace ToDoList.MvcClient.Controllers
 
             var todoItemModel = await apiInvoker.GetItemAsync<TodoItemModel>("TodoItems/" + todoItemId);
 
-            if (todoItemModel?.GeoPoint is not null)
+            if (todoItemModel is null)
+                return NotFound();
+
+            if (todoItemModel.GeoPoint is not null)
             {
                 todoItemModel.Latitude = todoItemModel.GeoPoint.Latitude.ToString();
                 todoItemModel.Longitude = todoItemModel.GeoPoint.Longitude.ToString();
             }
 
-            return todoItemModel is not null
-                ? View(viewName, await viewModelService.CreateViewModelCreateOrUpdateTodoItemAsync(todoItemModel))
-                : NotFound();
+            return View(viewName, await viewModelService.CreateViewModelCreateOrUpdateTodoItemAsync(todoItemModel));
         }
 
         [HttpPost]

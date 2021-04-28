@@ -15,7 +15,7 @@ namespace ToDoList.Core.Entities
             TodoItems = new HashSet<TodoItem>();
         }
 
-        public virtual User User { get; set; }
-        public virtual ICollection<TodoItem> TodoItems { get; set; }
+        public User User { get; set; }
+        public ICollection<TodoItem> TodoItems { get; set; }
     }
 }

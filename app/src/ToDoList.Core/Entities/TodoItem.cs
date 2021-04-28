@@ -19,10 +19,10 @@ namespace ToDoList.Core.Entities
         public int ChecklistId { get; set; }
         public int? ImageId { get; set; }
 
-        public virtual Category Category { get; set; }
-        public virtual Checklist Checklist { get; set; }
-        public virtual Image Image { get; set; }
-        public virtual Status Status { get; set; }
+        public Category Category { get; set; }
+        public Checklist Checklist { get; set; }
+        public Image Image { get; set; }
+        public Status Status { get; set; }
 
         public TodoItem() : base()
         {

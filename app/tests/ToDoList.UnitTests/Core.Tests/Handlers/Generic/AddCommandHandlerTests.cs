@@ -1,5 +1,9 @@
-﻿using System.Threading;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
+
+using MockQueryable.Moq;
 
 using Moq;
 
@@ -17,29 +21,34 @@ namespace Core.Tests.Handlers.Generic
         private readonly AddCategoryCommandHandler addCommandHandler;
 
         private readonly string name;
+        private readonly Mock<IQueryable<Category>> categoriesMock;
 
         public AddCommandHandlerTests() : base()
         {
             addCommandHandler = new AddCategoryCommandHandler(UnitOfWorkMock.Object, Mapper);
 
             name = "Misc";
+
+            var categories = GetSampleCategories();
+            categoriesMock = categories.AsQueryable().BuildMock();
         }
 
         [Fact]
         public async Task Handle_AddsItemGivenNew()
         {
             // Arrange
-            var request = new CategoryCreateRequest(name);
+            var request = new CategoryCreateRequest("New category");
 
-            RepoMock.Setup(x => x.GetByNameAsync<Category>(request.Name))
-                    .ReturnsAsync(() => null);
+            RepoMock.Setup(x => x.GetAll<Category>())
+                    .Returns(categoriesMock.Object)
+                    .Verifiable();
 
             // Act
             await addCommandHandler.Handle(new AddCommand<CategoryCreateRequest>(request), new CancellationToken());
 
             // Assert
-            RepoMock.Verify(x => x.GetByNameAsync<Category>(request.Name), Times.Once);
-            RepoMock.Verify(x => x.AddAsync(It.Is<Category>(c => c.Name == request.Name)), Times.Once);
+            RepoMock.Verify();
+            RepoMock.Verify(x => x.Add(It.Is<Category>(c => c.Name == request.Name)), Times.Once);
 
             UnitOfWorkMock.Verify(x => x.SaveAsync(), Times.Once);
         }
@@ -49,19 +58,28 @@ namespace Core.Tests.Handlers.Generic
         {
             // Arrange
             var request = new CategoryCreateRequest(name);
-            var entity = new Category { Name = name };
 
-            RepoMock.Setup(x => x.GetByNameAsync<Category>(request.Name))
-                    .ReturnsAsync(entity);
+            RepoMock.Setup(x => x.GetAll<Category>())
+                    .Returns(categoriesMock.Object)
+                    .Verifiable();
 
             // Act
             await addCommandHandler.Handle(new AddCommand<CategoryCreateRequest>(request), new CancellationToken());
 
             // Assert
-            RepoMock.Verify(x => x.GetByNameAsync<Category>(request.Name), Times.Once);
-            RepoMock.Verify(x => x.AddAsync(entity), Times.Never);
+            RepoMock.Verify();
+            RepoMock.Verify(x => x.Add(It.Is<Category>(x => x.Name == request.Name)), Times.Never);
 
             UnitOfWorkMock.Verify(x => x.SaveAsync(), Times.Never);
+        }
+
+        private List<Category> GetSampleCategories()
+        {
+            return new List<Category>
+            {
+                new Category { Id = 13, Name = name },
+                new Category { Id = 63, Name = "Inro"}
+            };
         }
     }
 }

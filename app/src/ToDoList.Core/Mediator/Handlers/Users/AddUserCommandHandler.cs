@@ -29,22 +29,22 @@ namespace ToDoList.Core.Mediator.Handlers.Users
         {
             _ = request ?? throw new ArgumentNullException(nameof(request));
 
-            var item = UnitOfWork.Repository.GetAll<User>()
-                                            .SingleOrDefault(u => u.Name == request.Request.Name);
+            bool recordExists = UnitOfWork.Repository.GetAll<User>()
+                                                     .Any(u => u.Name == request.Request.Name);
 
-            if (item is null)
+            if (!recordExists)
             {
                 string hashedPassword = passwordHasher.Hash(request.Request.Password, 10000);
 
                 var user = Mapper.Map<User>(request.Request);
                 user.Password = hashedPassword;
 
-                await UnitOfWork.Repository.AddAsync(user);
+                UnitOfWork.Repository.Add(user);
                 await UnitOfWork.SaveAsync();
 
                 var defaultCheckilst = new Checklist { Name = "Untitled", UserId = user.Id };
 
-                await UnitOfWork.Repository.AddAsync(defaultCheckilst);
+                UnitOfWork.Repository.Add(defaultCheckilst);
                 await UnitOfWork.SaveAsync();
             }
 

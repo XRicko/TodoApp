@@ -35,10 +35,10 @@ namespace ToDoList.Infrastructure.Data
         public IQueryable<T> GetAll<T>() where T : BaseEntity =>
             context.Set<T>().AsQueryable().AsNoTrackingWithIdentityResolution();
 
-        public async Task AddAsync<T>(T entity) where T : BaseEntity
+        public void Add<T>(T entity) where T : BaseEntity
         {
             _ = entity ?? throw new ArgumentNullException(nameof(entity));
-            await context.Set<T>().AddAsync(entity);
+            context.Set<T>().Add(entity);
         }
 
         public void Update<T>(T entity) where T : BaseEntity

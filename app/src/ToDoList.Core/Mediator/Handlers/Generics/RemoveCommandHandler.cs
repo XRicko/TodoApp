@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -13,7 +14,7 @@ using ToDoList.SharedKernel.Interfaces;
 namespace ToDoList.Core.Mediator.Handlers.Generics
 {
     public class RemoveCommandHandler<TEntity> : HandlerBase, IRequestHandler<RemoveCommand<TEntity>>
-        where TEntity : BaseEntity
+        where TEntity : BaseEntity, new()
     {
         public RemoveCommandHandler(IUnitOfWork unitOfWork, IMapper mapper) : base(unitOfWork, mapper) { }
 
@@ -21,7 +22,9 @@ namespace ToDoList.Core.Mediator.Handlers.Generics
         {
             _ = request ?? throw new ArgumentNullException(nameof(request));
 
-            var entity = await UnitOfWork.Repository.FindByPrimaryKeysAsync<TEntity>(request.Id);
+            var entity = UnitOfWork.Repository.GetAll<TEntity>()
+                                              .Select(x => new TEntity { Id = x.Id})
+                                              .SingleOrDefault(x => x.Id == request.Id);
 
             if (entity is not null)
             {

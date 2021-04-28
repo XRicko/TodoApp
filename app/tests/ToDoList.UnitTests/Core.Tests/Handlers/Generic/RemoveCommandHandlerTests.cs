@@ -1,5 +1,9 @@
-﻿using System.Threading;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
+
+using MockQueryable.Moq;
 
 using Moq;
 
@@ -16,29 +20,34 @@ namespace Core.Tests.Handlers.Generic
         private readonly RemoveTodoItemCommandHandler removeCommandHandler;
 
         private readonly int id;
+        private readonly string name;
+
+        private readonly Mock<IQueryable<TodoItem>> todoItemsMock;
 
         public RemoveCommandHandlerTests() : base()
         {
             removeCommandHandler = new RemoveTodoItemCommandHandler(UnitOfWorkMock.Object, Mapper);
 
             id = 420;
+            name = "Clean my room";
+
+            var todoItems = GetSampleTodoItems();
+            todoItemsMock = todoItems.AsQueryable().BuildMock();
+
+            RepoMock.Setup(x => x.GetAll<TodoItem>())
+                    .Returns(todoItemsMock.Object)
+                    .Verifiable();
         }
 
         [Fact]
         public async Task Handle_DeletesItemGivenExisting()
         {
-            // Arrange
-            var entity = new TodoItem { Id = id, Name = "Clean my room" };
-
-            RepoMock.Setup(x => x.FindByPrimaryKeysAsync<TodoItem>(id))
-                    .ReturnsAsync(entity);
-
             // Act
             await removeCommandHandler.Handle(new RemoveCommand<TodoItem>(id), new CancellationToken());
 
             // Assert
-            RepoMock.Verify(x => x.FindByPrimaryKeysAsync<TodoItem>(id), Times.Once);
-            RepoMock.Verify(x => x.Remove(entity), Times.Once);
+            RepoMock.Verify();
+            RepoMock.Verify(x => x.Remove(It.Is<TodoItem>(x => x.Id == id)), Times.Once);
 
             UnitOfWorkMock.Verify(x => x.SaveAsync(), Times.Once);
         }
@@ -48,17 +57,33 @@ namespace Core.Tests.Handlers.Generic
         public async Task Handle_DoesntDeleteItemGivenInvalidId()
         {
             // Arrange
-            RepoMock.Setup(x => x.FindByPrimaryKeysAsync<TodoItem>(id))
-                               .ReturnsAsync(() => null);
+            int invalidId = 13;
 
             // Act
-            await removeCommandHandler.Handle(new RemoveCommand<TodoItem>(id), new CancellationToken());
+            await removeCommandHandler.Handle(new RemoveCommand<TodoItem>(invalidId), new CancellationToken());
 
             // Assert
-            RepoMock.Verify(x => x.FindByPrimaryKeysAsync<TodoItem>(id), Times.Once);
+            RepoMock.Verify();
             RepoMock.Verify(x => x.Remove(It.IsAny<TodoItem>()), Times.Never);
 
             UnitOfWorkMock.Verify(x => x.SaveAsync(), Times.Never);
+        }
+
+        private List<TodoItem> GetSampleTodoItems()
+        {
+            return new List<TodoItem>
+            {
+                new TodoItem
+                {
+                    Id = id,
+                    Name = name
+                },
+                new TodoItem
+                {
+                    Id = 12,
+                    Name = "Something random"
+                }
+            };
         }
     }
 }

@@ -56,7 +56,7 @@ namespace ToDoList.MvcClient
                 options.SupportedUICultures = cultures;
             });
 
-            services.AddScoped<ICreateViewModelService, CreateViewModelService>();
+            services.AddScoped<IViewModelService, ViewModelService>();
             services.AddScoped<IImageAddingService, ImageAddingService>();
 
             services.AddSingleton<ProccessTimeCounterSource>();

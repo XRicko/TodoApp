@@ -15,14 +15,14 @@ namespace ToDoList.UnitTests.MvcClient.Services
     public class CreateViewModelServiceTests
     {
         private readonly Mock<IApiInvoker> apiInvokerMock;
-        private readonly CreateViewModelService createViewModelService;
+        private readonly ViewModelService createViewModelService;
 
         private readonly List<ChecklistModel> checklists;
 
         public CreateViewModelServiceTests()
         {
             apiInvokerMock = new Mock<IApiInvoker>();
-            createViewModelService = new CreateViewModelService(apiInvokerMock.Object);
+            createViewModelService = new ViewModelService(apiInvokerMock.Object);
 
             checklists = GetChecklistsSample();
 

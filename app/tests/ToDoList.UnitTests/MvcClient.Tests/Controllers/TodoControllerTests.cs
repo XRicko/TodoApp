@@ -21,7 +21,7 @@ namespace ToDoList.UnitTests.MvcClient.Controllers
         private readonly TodoController todoController;
 
         private readonly Mock<IImageAddingService> imageAddingServiceMock;
-        private readonly Mock<ICreateViewModelService> createViewModelServiceMock;
+        private readonly Mock<IViewModelService> createViewModelServiceMock;
 
         private readonly string createOrUpdateViewName;
         private readonly string viewAllViewName;
@@ -33,7 +33,7 @@ namespace ToDoList.UnitTests.MvcClient.Controllers
         public TodoControllerTests()
         {
             imageAddingServiceMock = new Mock<IImageAddingService>();
-            createViewModelServiceMock = new Mock<ICreateViewModelService>();
+            createViewModelServiceMock = new Mock<IViewModelService>();
 
             todoController = new TodoController(ApiCallsServiceMock.Object, imageAddingServiceMock.Object, createViewModelServiceMock.Object);
 

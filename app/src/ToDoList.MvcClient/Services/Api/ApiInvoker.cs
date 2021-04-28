@@ -26,8 +26,8 @@ namespace ToDoList.MvcClient.Services.Api
 
         public async Task<IEnumerable<T>> GetItemsAsync<T>(string route) where T : BaseModel
         {
-            if (string.IsNullOrEmpty(route))
-                throw new ArgumentException($"'{nameof(route)}' cannot be null or empty", nameof(route));
+            if (string.IsNullOrWhiteSpace(route))
+                throw new ArgumentException($"'{nameof(route)}' cannot be null or whitespace", nameof(route));
 
             AddAuthenticationHeader();
             using var response = await httpClient.GetAsync(route);
@@ -39,8 +39,8 @@ namespace ToDoList.MvcClient.Services.Api
 
         public async Task<T> GetItemAsync<T>(string routeWithParemeters) where T : BaseModel
         {
-            if (string.IsNullOrEmpty(routeWithParemeters))
-                throw new ArgumentException($"'{nameof(routeWithParemeters)}' cannot be null or empty", nameof(routeWithParemeters));
+            if (string.IsNullOrWhiteSpace(routeWithParemeters))
+                throw new ArgumentException($"'{nameof(routeWithParemeters)}' cannot be null or whitespace", nameof(routeWithParemeters));
 
             using var response = await httpClient.GetAsync(routeWithParemeters);
             ValidateStatusCode(response);
@@ -50,8 +50,8 @@ namespace ToDoList.MvcClient.Services.Api
 
         public async Task PostItemAsync<T>(string route, T item) where T : BaseModel
         {
-            if (string.IsNullOrEmpty(route))
-                throw new ArgumentException($"'{nameof(route)}' cannot be null or empty", nameof(route));
+            if (string.IsNullOrWhiteSpace(route))
+                throw new ArgumentException($"'{nameof(route)}' cannot be null or whitespace", nameof(route));
             _ = item ?? throw new ArgumentNullException(nameof(item));
 
             using var response = await httpClient.PostAsJsonAsync(route, item);
@@ -60,8 +60,8 @@ namespace ToDoList.MvcClient.Services.Api
 
         public async Task PutItemAsync<T>(string route, T item) where T : BaseModel
         {
-            if (string.IsNullOrEmpty(route))
-                throw new ArgumentException($"'{nameof(route)}' cannot be null or empty", nameof(route));
+            if (string.IsNullOrWhiteSpace(route))
+                throw new ArgumentException($"'{nameof(route)}' cannot be null or whitespace", nameof(route));
             _ = item ?? throw new ArgumentNullException(nameof(item));
 
             using var response = await httpClient.PutAsJsonAsync(route, item);
@@ -70,8 +70,8 @@ namespace ToDoList.MvcClient.Services.Api
 
         public async Task DeleteItemAsync(string route, int id)
         {
-            if (string.IsNullOrEmpty(route))
-                throw new ArgumentException($"'{nameof(route)}' cannot be null or empty", nameof(route));
+            if (string.IsNullOrWhiteSpace(route))
+                throw new ArgumentException($"'{nameof(route)}' cannot be null or whitespace", nameof(route));
 
             using var response = await httpClient.DeleteAsync(route + id);
             ValidateStatusCode(response);
@@ -79,8 +79,8 @@ namespace ToDoList.MvcClient.Services.Api
 
         public async Task AuthenticateUserAsync(string route, UserModel userModel)
         {
-            if (string.IsNullOrEmpty(route))
-                throw new ArgumentException($"'{nameof(route)}' cannot be null or empty", nameof(route));
+            if (string.IsNullOrWhiteSpace(route))
+                throw new ArgumentException($"'{nameof(route)}' cannot be null or whitespace", nameof(route));
             _ = userModel ?? throw new ArgumentNullException(nameof(userModel));
 
             using var response = await httpClient.PostAsJsonAsync(route, userModel);

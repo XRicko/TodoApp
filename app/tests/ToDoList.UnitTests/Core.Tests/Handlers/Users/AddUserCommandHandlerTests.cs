@@ -58,8 +58,8 @@ namespace Core.Tests.Handlers.Users
 
             // Assert
             RepoMock.Verify();
-            RepoMock.Verify(x => x.AddAsync(It.Is(expression)), Times.Once);
-            RepoMock.Verify(x => x.AddAsync(It.Is<Checklist>(l => l.Name == "Untitled")), Times.Once);
+            RepoMock.Verify(x => x.Add(It.Is(expression)), Times.Once);
+            RepoMock.Verify(x => x.Add(It.Is<Checklist>(l => l.Name == "Untitled")), Times.Once);
 
             UnitOfWorkMock.Verify(x => x.SaveAsync(), Times.Exactly(2));
         }
@@ -83,8 +83,8 @@ namespace Core.Tests.Handlers.Users
 
             // Assert
             RepoMock.Verify();
-            RepoMock.Verify(x => x.AddAsync(It.Is(expression)), Times.Never);
-            RepoMock.Verify(x => x.AddAsync(It.Is<Checklist>(l => l.Name == "Untitled")), Times.Never);
+            RepoMock.Verify(x => x.Add(It.Is(expression)), Times.Never);
+            RepoMock.Verify(x => x.Add(It.Is<Checklist>(l => l.Name == "Untitled")), Times.Never);
 
             UnitOfWorkMock.Verify(x => x.SaveAsync(), Times.Never);
         }

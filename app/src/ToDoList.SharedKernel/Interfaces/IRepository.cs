@@ -10,7 +10,7 @@ namespace ToDoList.SharedKernel.Interfaces
 
         IQueryable<T> GetAll<T>() where T : BaseEntity;
 
-        Task AddAsync<T>(T entity) where T : BaseEntity;
+        void Add<T>(T entity) where T : BaseEntity;
         void Update<T>(T entity) where T : BaseEntity;
         void Remove<T>(T entity) where T : BaseEntity;
     }

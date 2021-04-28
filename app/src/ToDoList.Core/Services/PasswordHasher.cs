@@ -10,8 +10,8 @@ namespace ToDoList.Core.Services
 
         public string Hash(string password, int iterations = 10000)
         {
-            if (string.IsNullOrEmpty(password))
-                throw new ArgumentException($"'{nameof(password)}' cannot be null or empty", nameof(password));
+            if (string.IsNullOrWhiteSpace(password))
+                throw new ArgumentException($"'{nameof(password)}' cannot be null or whitespace", nameof(password));
 
             byte[] salt;
             new RNGCryptoServiceProvider().GetBytes(salt = new byte[SaltSize]);
@@ -30,10 +30,10 @@ namespace ToDoList.Core.Services
 
         public bool VerifyPassword(string password, string hashedPassword)
         {
-            if (string.IsNullOrEmpty(password))
-                throw new ArgumentException($"'{nameof(password)}' cannot be null or empty", nameof(password));
-            if (string.IsNullOrEmpty(hashedPassword))
-                throw new ArgumentException($"'{nameof(hashedPassword)}' cannot be null or empty", nameof(hashedPassword));
+            if (string.IsNullOrWhiteSpace(password))
+                throw new ArgumentException($"'{nameof(password)}' cannot be null or whitespace", nameof(password));
+            if (string.IsNullOrWhiteSpace(hashedPassword))
+                throw new ArgumentException($"'{nameof(hashedPassword)}' cannot be null or whitespace", nameof(hashedPassword));
 
             if (!IsHashSupported(hashedPassword))
                 throw new NotSupportedException("The hashtype is not supported");

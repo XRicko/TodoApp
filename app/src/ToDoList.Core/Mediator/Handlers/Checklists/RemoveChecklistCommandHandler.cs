@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -24,7 +25,18 @@ namespace ToDoList.Core.Mediator.Handlers.Checklists
         {
             _ = request ?? throw new ArgumentNullException(nameof(request));
 
-            var checklist = await UnitOfWork.Repository.FindByPrimaryKeysAsync<Checklist>(request.Id);
+            var checklist = UnitOfWork.Repository.GetAll<Checklist>()
+                                                 .Select(x => new Checklist
+                                                 {
+                                                     Id = x.Id,
+                                                     Name = x.Name,
+                                                     TodoItems = x.TodoItems.Select(x => new TodoItem
+                                                     { 
+                                                         Id = x.Id,
+                                                         ChecklistId = x.ChecklistId
+                                                     }).ToList()
+                                                 })
+                                                 .SingleOrDefault(x => x.Id == request.Id);
 
             if (checklist is not null && checklist.Name != "Untitled")
             {

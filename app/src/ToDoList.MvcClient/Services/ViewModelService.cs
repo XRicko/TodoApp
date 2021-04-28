@@ -8,11 +8,11 @@ using ToDoList.MvcClient.ViewModels;
 
 namespace ToDoList.MvcClient.Services
 {
-    public class CreateViewModelService : ICreateViewModelService
+    public class ViewModelService : IViewModelService
     {
         private readonly IApiInvoker apiInvoker;
 
-        public CreateViewModelService(IApiInvoker invoker)
+        public ViewModelService(IApiInvoker invoker)
         {
             apiInvoker = invoker ?? throw new ArgumentNullException(nameof(invoker));
         }
@@ -21,19 +21,10 @@ namespace ToDoList.MvcClient.Services
         {
             var todoItems = await apiInvoker.GetItemsAsync<TodoItemModel>("TodoItems");
 
-            string selectedCategory = null;
-            string selectedStatus = null;
-
             if (!string.IsNullOrWhiteSpace(categoryName))
-            {
-                todoItems = todoItems.Where(x => x.CategoryName?.ToLower() == categoryName.ToLower());
-                selectedCategory = categoryName;
-            }
+                todoItems = todoItems.Where(x => string.Equals(x.CategoryName, categoryName, StringComparison.CurrentCultureIgnoreCase));
             if (!string.IsNullOrWhiteSpace(statusName))
-            {
-                todoItems = todoItems.Where(x => x.StatusName?.ToLower() == statusName.ToLower());
-                selectedStatus = statusName;
-            }
+                todoItems = todoItems.Where(x => string.Equals(x.StatusName, statusName, StringComparison.CurrentCultureIgnoreCase));
 
             var checklistModels = await apiInvoker.GetItemsAsync<ChecklistModel>("Checklists");
 
@@ -42,8 +33,8 @@ namespace ToDoList.MvcClient.Services
                 TodoItems = todoItems,
                 ChecklistModels = checklistModels,
 
-                SelectedCategory = selectedCategory,
-                SelectedStatus = selectedStatus
+                SelectedCategory = categoryName,
+                SelectedStatus = statusName
             };
 
             return viewModel;

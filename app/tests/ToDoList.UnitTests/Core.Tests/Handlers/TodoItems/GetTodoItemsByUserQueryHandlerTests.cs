@@ -38,42 +38,44 @@ namespace Core.Tests.Handlers.TodoItems
             var todoItems = GetSampleTodoItems();
             var todoItemsMock = todoItems.AsQueryable().BuildMock();
 
-            var responses = Mapper.Map<IEnumerable<TodoItemResponse>>(todoItems);
-            var expected = GetWithAddress(responses);
+            var todoItemsByUser = todoItems.Where(x => x.Checklist.UserId == userId);
+            var responses = Mapper.Map<IEnumerable<TodoItemResponse>>(todoItemsByUser);
+            //var expected = GetWithAddress(responses);
 
             RepoMock.Setup(x => x.GetAll<TodoItem>())
                     .Returns(todoItemsMock.Object)
                     .Verifiable();
 
-            addressServiceMock.Setup(x => x.GetItemsWithAddressAsync(It.IsAny<IEnumerable<TodoItemResponse>>()))
-                              .ReturnsAsync(expected);
+            //addressServiceMock.Setup(x => x.GetItemsWithAddressAsync(It.IsAny<IEnumerable<TodoItemResponse>>()))
+            //                  .ReturnsAsync(expected)
+            //                  .Verifiable();
 
             // Act
             var actual = await getTodoItemsHandler.Handle(new GetTodoItemsByUserIdQuery(userId), new CancellationToken());
 
             // Assert
-            Assert.Equal(expected, actual);
+            Assert.Equal(responses, actual);
 
             RepoMock.Verify();
-            addressServiceMock.Verify(x => x.GetItemsWithAddressAsync(It.IsAny<IEnumerable<TodoItemResponse>>()), Times.Once);
+            addressServiceMock.Verify();
         }
 
-        private static IEnumerable<TodoItemResponse> GetWithAddress(IEnumerable<TodoItemResponse> responses)
-        {
-            List<TodoItemResponse> expected = new();
+        //private static IEnumerable<TodoItemResponse> GetWithAddress(IEnumerable<TodoItemResponse> responses)
+        //{
+        //    List<TodoItemResponse> expected = new();
 
-            foreach (var response in responses)
-            {
-                if (response.GeoPoint is not null && response.GeoPoint.Latitude == 49.06802 && response.GeoPoint.Longitude == 33.42041)
-                {
-                    expected.Add(response with { Address = "Khalamenyuka St, 4, Kremenchuk, Poltavs'ka oblast, Ukraine, 39600" });
-                }
-                else
-                    expected.Add(response);
-            }
+        //    foreach (var response in responses)
+        //    {
+        //        if (response.GeoPoint is not null && response.GeoPoint.Latitude == 49.06802 && response.GeoPoint.Longitude == 33.42041)
+        //        {
+        //            expected.Add(response with { Address = "Khalamenyuka St, 4, Kremenchuk, Poltavs'ka oblast, Ukraine, 39600" });
+        //        }
+        //        else
+        //            expected.Add(response);
+        //    }
 
-            return expected;
-        }
+        //    return expected;
+        //}
 
         private static IEnumerable<TodoItem> GetSampleTodoItems()
         {
@@ -85,17 +87,19 @@ namespace Core.Tests.Handlers.TodoItems
                 new TodoItem
                 {
                     Name = "Complete some course",
-                    ChecklistId = 1,
                     Checklist = checklist1,
-                    StatusId = 1,
-                    GeoPoint = new NetTopologySuite.Geometries.Point(33.42041, 49.06802)
+                    Status = new Status(),
+                    Category = new Category(),
+                    Image = new Image()
+                    //GeoPoint = new NetTopologySuite.Geometries.Point(33.42041, 49.06802)
                 },
                 new TodoItem
                 {
                     Name = "Finish the book",
-                    ChecklistId = 1,
                     Checklist = checklist2,
-                    StatusId = 2,
+                    Status = new Status(),
+                    Category = new Category(),
+                    Image = new Image()
                 }
             };
 

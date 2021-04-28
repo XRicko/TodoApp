@@ -51,7 +51,6 @@ namespace ToDoList.Core.MappingProfiles
                            opt => opt.MapFrom(src => src.Image.Path))
                 .ForMember(dest => dest.ImageName,
                            opt => opt.MapFrom(src => src.Image.Name))
-                .ForMember(dest => dest.Category, opt => opt.AllowNull())
                 .ForAllOtherMembers(opt => opt.Ignore());
 
             CreateMap<TodoItemCreateRequest, TodoItem>(MemberList.Source);
