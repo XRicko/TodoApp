@@ -22,13 +22,13 @@ namespace ToDoList.Core.Mediator.Handlers.Generics
     {
         protected GetAllQueryHandler(IUnitOfWork unitOfWork, IMapper mapper) : base(unitOfWork, mapper) { }
 
-        public virtual Task<IEnumerable<TResponse>> Handle(GetAllQuery<TEntity, TResponse> request, CancellationToken cancellationToken)
+        public virtual async Task<IEnumerable<TResponse>> Handle(GetAllQuery<TEntity, TResponse> request, CancellationToken cancellationToken)
         {
             _ = request ?? throw new ArgumentNullException(nameof(request));
 
-            return Task.FromResult(UnitOfWork.Repository.GetAll<TEntity>()
-                                                        .ProjectTo<TResponse>(Mapper.ConfigurationProvider)
-                                                        .AsEnumerable());
+            return await Task.FromResult(UnitOfWork.Repository.GetAll<TEntity>()
+                                                              .ProjectTo<TResponse>(Mapper.ConfigurationProvider)
+                                                              .ToList());
         }
     }
 }

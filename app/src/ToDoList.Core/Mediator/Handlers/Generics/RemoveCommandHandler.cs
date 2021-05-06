@@ -23,7 +23,7 @@ namespace ToDoList.Core.Mediator.Handlers.Generics
             _ = request ?? throw new ArgumentNullException(nameof(request));
 
             var entity = UnitOfWork.Repository.GetAll<TEntity>()
-                                              .Select(x => new TEntity { Id = x.Id})
+                                              .Select(x => new TEntity { Id = x.Id })
                                               .SingleOrDefault(x => x.Id == request.Id);
 
             if (entity is not null)

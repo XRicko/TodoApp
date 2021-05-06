@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -9,6 +10,7 @@ using ToDoList.Core.Mediator.Handlers.Generics;
 using ToDoList.Core.Mediator.Queries.Generics;
 using ToDoList.Core.Mediator.Response;
 using ToDoList.Core.Services;
+using ToDoList.SharedKernel;
 using ToDoList.SharedKernel.Interfaces;
 
 namespace ToDoList.Core.Mediator.Handlers.TodoItems
@@ -26,10 +28,17 @@ namespace ToDoList.Core.Mediator.Handlers.TodoItems
         {
             _ = request ?? throw new ArgumentNullException(nameof(request));
 
-            var response = await base.Handle(request, cancellationToken);
-            var responseWithAddress = await createAddressService.GetItemWithAddressAsync(response);
+            var response = UnitOfWork.Repository.GetAll<TodoItem>()
+                                                .Where(x => x.Id == request.Id)
+                                                .Select(x => new TodoItemResponse(x.Id, x.Name, x.StartDate,
+                                                                                  x.ChecklistId, x.Checklist.Name,
+                                                                                  x.StatusId, x.Status.Name, x.DueDate,
+                                                                                  Mapper.Map<GeoCoordinate>(x.GeoPoint),
+                                                                                  x.CategoryId, x.Category.Name,
+                                                                                  x.ImageId, x.Image.Name, x.Image.Path))
+                                                .SingleOrDefault();
 
-            return responseWithAddress;
+            return await createAddressService.GetItemWithAddressAsync(response);
         }
     }
 }

@@ -65,7 +65,8 @@ namespace ToDoList.UnitTests.WebApi.Controllers
             // Arrange
             string expectedMessage = "Username or password is incorrect";
 
-            MediatorMock.Setup(x => x.Send(It.Is<GetUserByNameAndPasswordQuery>(q => q.Name == userRequest.Name && q.Password == userRequest.Password), It.IsAny<CancellationToken>()))
+            MediatorMock.Setup(x => x.Send(It.Is<GetUserByNameAndPasswordQuery>(q => q.Name == userRequest.Name
+                                                                                     && q.Password == userRequest.Password), It.IsAny<CancellationToken>()))
                         .ReturnsAsync(() => null)
                         .Verifiable();
 

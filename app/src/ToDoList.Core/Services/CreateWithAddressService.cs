@@ -2,17 +2,22 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
+using Microsoft.Extensions.Caching.Distributed;
+
 using ToDoList.Core.Mediator.Response;
+using ToDoList.Extensions;
 
 namespace ToDoList.Core.Services
 {
     public class CreateWithAddressService : ICreateWithAddressService
     {
         private readonly IGeocodingService geocodingService;
+        private readonly IDistributedCache cache;
 
-        public CreateWithAddressService(IGeocodingService service)
+        public CreateWithAddressService(IGeocodingService service, IDistributedCache distributedCache)
         {
-            geocodingService = service;
+            geocodingService = service ?? throw new ArgumentNullException(nameof(service));
+            cache = distributedCache ?? throw new ArgumentNullException(nameof(distributedCache));
         }
 
         public async Task<IEnumerable<TodoItemResponse>> GetItemsWithAddressAsync(IEnumerable<TodoItemResponse> todoItemResponses)
@@ -34,13 +39,19 @@ namespace ToDoList.Core.Services
         {
             _ = todoItemResponse ?? throw new ArgumentNullException(nameof(todoItemResponse));
 
-            //if (todoItemResponse.GeoPoint is not null)
-            //{
-            //    string address = await geocodingService.GetAddressAsync(todoItemResponse.GeoPoint.Latitude, todoItemResponse.GeoPoint.Longitude);
-            //    var todoItemResponseWithAddress = todoItemResponse with { Address = address };
+            if (todoItemResponse.GeoPoint is not null)
+            {
+                string recordKey = $"Address_{todoItemResponse.GeoPoint.Latitude}_{todoItemResponse.GeoPoint.Longitude}";
+                string address = await cache.GetRecordAsync<string>(recordKey);
 
-            //    return todoItemResponseWithAddress;
-            //}
+                if (address is null)
+                {
+                    address = await geocodingService.GetAddressAsync(todoItemResponse.GeoPoint.Latitude, todoItemResponse.GeoPoint.Longitude);
+                    await cache.SetRecordAsync(recordKey, address, TimeSpan.FromDays(1));
+                }
+
+                return todoItemResponse with { Address = address };
+            }
 
             return todoItemResponse;
         }

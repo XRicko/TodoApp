@@ -14,6 +14,7 @@ using ToDoList.Core.Mediator.Handlers.Generics;
 using ToDoList.Core.Mediator.Queries.TodoItems;
 using ToDoList.Core.Mediator.Response;
 using ToDoList.Core.Services;
+using ToDoList.SharedKernel;
 using ToDoList.SharedKernel.Interfaces;
 
 namespace ToDoList.Core.Mediator.Handlers.TodoItems
@@ -33,13 +34,20 @@ namespace ToDoList.Core.Mediator.Handlers.TodoItems
 
             var responsesByUser = UnitOfWork.Repository.GetAll<TodoItem>()
                                                        .Where(x => x.Checklist.UserId == request.UserId)
-                                                       .ProjectTo<TodoItemResponse>(Mapper.ConfigurationProvider)
+                                                       .Select(x => new TodoItemResponse(x.Id, x.Name, x.StartDate,
+                                                                                         x.ChecklistId, x.Checklist.Name,
+                                                                                         x.StatusId, x.Status.Name,
+                                                                                         x.DueDate,
+                                                                                         Mapper.Map<GeoCoordinate>(x.GeoPoint),
+                                                                                         x.CategoryId, x.Category.Name,
+                                                                                         x.ImageId, x.Image.Name,
+                                                                                         x.Image.Path))
+                                                       //.ProjectTo<TodoItemResponse>(Mapper.ConfigurationProvider)
                                                        .ToList();
             //.ToListAsync();
 
-            //var responsesWithAddress = await createWithAddressService.GetItemsWithAddressAsync(responsesByUser);
-            // return responsesWithAddress;
-            return responsesByUser;
+            var responsesWithAddress = await createWithAddressService.GetItemsWithAddressAsync(responsesByUser);
+            return responsesWithAddress;
         }
     }
 }

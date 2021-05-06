@@ -21,6 +21,10 @@ namespace ToDoList.Core.MappingProfiles
                 .ForMember(dest => dest.Latitude,
                            opt => opt.MapFrom(src => src.Y))
                 .ReverseMap()
+                .ForCtorParam("x",
+                              opt => opt.MapFrom(src => src.Longitude))
+                .ForCtorParam("y",
+                              opt => opt.MapFrom(src => src.Latitude))
                 .ForMember(dest => dest.SRID,
                            opt => opt.MapFrom(src => GeoCoordinate.SRID))
                 .ForAllOtherMembers(opt => opt.Ignore());

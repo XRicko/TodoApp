@@ -31,7 +31,7 @@ namespace ToDoList.Core.Mediator.Handlers.Checklists
                                                      Id = x.Id,
                                                      Name = x.Name,
                                                      TodoItems = x.TodoItems.Select(x => new TodoItem
-                                                     { 
+                                                     {
                                                          Id = x.Id,
                                                          ChecklistId = x.ChecklistId
                                                      }).ToList()

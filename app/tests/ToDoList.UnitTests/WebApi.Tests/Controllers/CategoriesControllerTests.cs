@@ -1,6 +1,11 @@
 using System.Collections.Generic;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+
+using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Options;
 
 using Moq;
 
@@ -17,15 +22,19 @@ namespace ToDoList.UnitTests.WebApi.Controllers
 {
     public class CategoriesControllerTests : ApiControllerBaseForTests
     {
+        private readonly IDistributedCache cache;
         private readonly CategoriesController categoriesController;
 
         public CategoriesControllerTests() : base()
         {
-            categoriesController = new CategoriesController(MediatorMock.Object);
+            var opts = Options.Create(new MemoryDistributedCacheOptions());
+            cache = new MemoryDistributedCache(opts);
+
+            categoriesController = new CategoriesController(MediatorMock.Object, cache);
         }
 
         [Fact]
-        public async Task Get_ReturnsListOfCategoryResponses()
+        public async Task Get_ReturnsNewListOfCategoryResponses()
         {
             // Arrange
             var expected = new List<CategoryResponse>
@@ -45,6 +54,28 @@ namespace ToDoList.UnitTests.WebApi.Controllers
             // Assert
             Assert.Equal(expected, actual);
             MediatorMock.Verify();
+        }
+
+        [Fact]
+        public async Task Get_ReturnsListOfCategoryResponsesFromCache()
+        {
+            // Arrange
+            var expected = new List<CategoryResponse>
+            {
+                new(1, "Important"),
+                new(2, "Unimportant"),
+                new(3, "Uncategorized")
+            };
+
+            string recordKey = "Categories";
+            cache.SetString(recordKey, JsonSerializer.Serialize(expected));
+
+            // Act
+            var actual = await categoriesController.Get();
+
+            // Assert
+            Assert.Equal(expected, actual);
+            MediatorMock.Verify(x => x.Send(It.IsAny<GetAllQuery<Category, CategoryResponse>>(), It.IsAny<CancellationToken>()), Times.Never);
         }
 
         [Fact]

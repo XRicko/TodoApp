@@ -20,18 +20,17 @@ namespace ToDoList.MvcClient.Services
         public async Task<IndexViewModel> CreateIndexViewModelAsync(string categoryName = null, string statusName = null)
         {
             var todoItems = await apiInvoker.GetItemsAsync<TodoItemModel>("TodoItems");
+            var checklists = await apiInvoker.GetItemsAsync<ChecklistModel>("Checklists");
 
             if (!string.IsNullOrWhiteSpace(categoryName))
                 todoItems = todoItems.Where(x => string.Equals(x.CategoryName, categoryName, StringComparison.CurrentCultureIgnoreCase));
             if (!string.IsNullOrWhiteSpace(statusName))
                 todoItems = todoItems.Where(x => string.Equals(x.StatusName, statusName, StringComparison.CurrentCultureIgnoreCase));
 
-            var checklistModels = await apiInvoker.GetItemsAsync<ChecklistModel>("Checklists");
-
             IndexViewModel viewModel = new()
             {
                 TodoItems = todoItems,
-                ChecklistModels = checklistModels,
+                ChecklistModels = checklists,
 
                 SelectedCategory = categoryName,
                 SelectedStatus = statusName
@@ -44,9 +43,9 @@ namespace ToDoList.MvcClient.Services
         {
             _ = todoItemModel ?? throw new ArgumentNullException(nameof(todoItemModel));
 
-            var checklistModels = await apiInvoker.GetItemsAsync<ChecklistModel>("Checklists");
-            var categoryModels = await apiInvoker.GetItemsAsync<CategoryModel>("Categories");
-            var statusModels = await apiInvoker.GetItemsAsync<StatusModel>("Statuses");
+            var checklists = await apiInvoker.GetItemsAsync<ChecklistModel>("Checklists");
+            var categories = await apiInvoker.GetItemsAsync<CategoryModel>("Categories");
+            var statuses = await apiInvoker.GetItemsAsync<StatusModel>("Statuses");
 
             int selectedChecklist = todoItemModel.ChecklistId;
             int? selectedCategory = todoItemModel.CategoryId;
@@ -54,7 +53,7 @@ namespace ToDoList.MvcClient.Services
 
             if (todoItemModel.StatusId is 0)
             {
-                var plannedStatus = await apiInvoker.GetItemAsync<StatusModel>("Statuses/GetByName/Planned");
+                var plannedStatus = statuses.SingleOrDefault(x => x.Name == "Planned");
                 selectedStatus = plannedStatus.Id;
             }
 
@@ -62,9 +61,9 @@ namespace ToDoList.MvcClient.Services
             {
                 TodoItemModel = todoItemModel,
 
-                ChecklistModels = checklistModels,
-                CategoryModels = categoryModels,
-                StatusModels = statusModels,
+                ChecklistModels = checklists,
+                CategoryModels = categories,
+                StatusModels = statuses,
 
                 SelectedChecklistId = selectedChecklist,
                 SelectedCategoryId = selectedCategory,

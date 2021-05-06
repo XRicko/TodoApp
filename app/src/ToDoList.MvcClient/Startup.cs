@@ -6,7 +6,6 @@ using System.Net.Http.Headers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Localization;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -65,11 +64,7 @@ namespace ToDoList.MvcClient
             services.AddControllersWithViews(options => options.Filters.Add<ProccesTimeActionFilterAttribute>())
                     .AddMvcLocalization();
 
-            services.AddSingleton<ITempDataProvider, CookieTempDataProvider>();
             services.AddSession();
-
-            services.AddDistributedMemoryCache();
-
             services.AddHttpContextAccessor();
         }
 

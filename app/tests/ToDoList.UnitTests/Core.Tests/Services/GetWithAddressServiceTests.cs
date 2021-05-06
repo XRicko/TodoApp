@@ -1,6 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.Json;
 using System.Threading.Tasks;
+
+using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Options;
 
 using Moq;
 
@@ -15,73 +20,108 @@ namespace Core.Tests.Services
     public class GetWithAddressServiceTests
     {
         private readonly Mock<IGeocodingService> geocodingMock;
+
+        private readonly IDistributedCache cache;
         private readonly CreateWithAddressService addressService;
+
+        private readonly string address;
 
         private readonly double latitude;
         private readonly double longitude;
 
         public GetWithAddressServiceTests()
         {
+            var opts = Options.Create(new MemoryDistributedCacheOptions());
+
             geocodingMock = new Mock<IGeocodingService>();
-            addressService = new CreateWithAddressService(geocodingMock.Object);
+
+            cache = new MemoryDistributedCache(opts);
+            addressService = new CreateWithAddressService(geocodingMock.Object, cache);
+
+            address = "Khalamenyuka St, 4, Kremenchuk, Poltavs'ka oblast, Ukraine, 39600";
 
             latitude = 49.06802;
             longitude = 33.42041;
-
-            geocodingMock.Setup(x => x.GetAddressAsync(latitude, longitude))
-                         .ReturnsAsync("Khalamenyuka St, 4, Kremenchuk, Poltavs'ka oblast, Ukraine, 39600");
         }
 
-        //[Fact]
-        //public async Task GetItemsWithAddressAsync_ReturnsItemWithAddressGivenGeoPoint()
-        //{
-        //    // Arrange
-        //    var todoRespones = new List<TodoItemResponse>
-        //    {
-        //        new(0, "Party", DateTime.Now, 2, "Birthday", 1, "Planned", null, new GeoCoordinate(longitude, latitude)),
-        //        new(0, "Party", DateTime.Now, 2, "Birthday", 1, "Planned")
-        //    };
-        //    var expected = GetWithAddress(todoRespones);
+        [Fact]
+        public async Task GetItemsWithAddressAsync_ReturnsItemWithAddressGivenGeoPoint()
+        {
+            // Arrange
+            var todoRespones = new List<TodoItemResponse>
+            {
+                new(0, "Party", DateTime.Now, 2, "Birthday", 1, "Planned", null, new GeoCoordinate(longitude, latitude)),
+                new(0, "Party", DateTime.Now, 2, "Birthday", 1, "Planned")
+            };
 
-        //    // Act
-        //    var actual = await addressService.GetItemsWithAddressAsync(todoRespones);
+            var expected = GetWithAddress(todoRespones);
 
-        //    // Assert
-        //    Assert.Equal(expected, actual);
-        //    geocodingMock.Verify(x => x.GetAddressAsync(latitude, longitude), Times.Once);
-        //}
+            geocodingMock.Setup(x => x.GetAddressAsync(latitude, longitude))
+                         .ReturnsAsync(address)
+                         .Verifiable();
 
-        //[Fact]
-        //public async Task GetItemWithAddressAsync_ReturnsItemWithAddressGivenGeoPoint()
-        //{
-        //    // Arrange
-        //    TodoItemResponse todoItemResponse = new(0, "Party", DateTime.Now, 2, "Birthday", 1, "Planned", null, new GeoCoordinate(longitude, latitude));
+            // Act
+            var actual = await addressService.GetItemsWithAddressAsync(todoRespones);
 
-        //    var expected = todoItemResponse with { Address = "Khalamenyuka St, 4, Kremenchuk, Poltavs'ka oblast, Ukraine, 39600" };
+            // Assert
+            Assert.Equal(expected, actual);
+            geocodingMock.Verify();
+        }
 
-        //    // Act
-        //    var actual = await addressService.GetItemWithAddressAsync(todoItemResponse);
+        [Fact]
+        public async Task GetItemWithAddressAsync_ReturnsFromCacheIfExistsGivenGeoPoint()
+        {
+            // Arrange
+            TodoItemResponse todoItemResponse = new(0, "Party", DateTime.Now, 2, "Birthday", 1, "Planned", null, new GeoCoordinate(longitude, latitude));
 
-        //    // Assert
-        //    Assert.Equal(expected, actual);
-        //    geocodingMock.Verify(x => x.GetAddressAsync(latitude, longitude), Times.Once);
-        //}
+            var expected = todoItemResponse with { Address = address };
 
-        //private static IEnumerable<TodoItemResponse> GetWithAddress(IEnumerable<TodoItemResponse> responses)
-        //{
-        //    List<TodoItemResponse> expected = new();
+            string recordKey = $"Address_{todoItemResponse.GeoPoint.Latitude}_{todoItemResponse.GeoPoint.Longitude}";
+            cache.SetString(recordKey, JsonSerializer.Serialize(address));
 
-        //    foreach (var response in responses)
-        //    {
-        //        if (response.GeoPoint is not null && response.GeoPoint.Latitude == 49.06802 && response.GeoPoint.Longitude == 33.42041)
-        //        {
-        //            expected.Add(response with { Address = "Khalamenyuka St, 4, Kremenchuk, Poltavs'ka oblast, Ukraine, 39600" });
-        //        }
-        //        else
-        //            expected.Add(response);
-        //    }
+            // Act
+            var actual = await addressService.GetItemWithAddressAsync(todoItemResponse);
 
-        //    return expected;
-        //}
+            // Assert
+            Assert.Equal(expected, actual);
+            geocodingMock.Verify(x => x.GetAddressAsync(latitude, longitude), Times.Never);
+        }
+
+        [Fact]
+        public async Task GetItemWithAddressAsync_ReturnsFromGeocodingApiIfNoCachedGivenGeoPoint()
+        {
+            // Arrange
+            TodoItemResponse todoItemResponse = new(0, "Party", DateTime.Now, 2, "Birthday", 1, "Planned", null, new GeoCoordinate(longitude, latitude));
+
+            var expected = todoItemResponse with { Address = address };
+
+            geocodingMock.Setup(x => x.GetAddressAsync(latitude, longitude))
+                         .ReturnsAsync(address)
+                         .Verifiable();
+
+            // Act
+            var actual = await addressService.GetItemWithAddressAsync(todoItemResponse);
+
+            // Assert
+            Assert.Equal(expected, actual);
+            geocodingMock.Verify();
+        }
+
+        private IEnumerable<TodoItemResponse> GetWithAddress(IEnumerable<TodoItemResponse> responses)
+        {
+            List<TodoItemResponse> expected = new();
+
+            foreach (var response in responses)
+            {
+                if (response.GeoPoint is not null && response.GeoPoint.Latitude == 49.06802 && response.GeoPoint.Longitude == 33.42041)
+                {
+                    expected.Add(response with { Address = address });
+                }
+                else
+                    expected.Add(response);
+            }
+
+            return expected;
+        }
     }
 }

@@ -9,11 +9,13 @@
     <PackageReference Include="Geocoding.Core" Version="4.0.1" />
     <PackageReference Include="Geocoding.Google" Version="4.0.1" />
     <PackageReference Include="MediatR" Version="9.0.0" />
-    <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="6.10.2" />
+    <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="5.0.0" />
+    <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="6.11.0" />
     <PackageReference Include="NetTopologySuite" Version="2.2.0" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\ToDoList.Extensions\ToDoList.Extensions.csproj" />
     <ProjectReference Include="..\ToDoList.SharedKernel\ToDoList.SharedKernel.csproj" />
   </ItemGroup>
 

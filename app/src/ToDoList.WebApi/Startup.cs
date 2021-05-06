@@ -49,8 +49,8 @@ namespace ToDoList.WebApi
             services.AddMediatR(typeof(GetAllQuery<,>));
 
             var jwtTokenConfig = Configuration.GetSection("JwtTokenConfigs").GetValid<JwtTokenConfig>();
-            services.AddSingleton(jwtTokenConfig);
 
+            services.AddSingleton(jwtTokenConfig);
             services.AddScoped<ITokenGenerator, TokenGenerator>();
 
             services.AddCors();
@@ -81,6 +81,12 @@ namespace ToDoList.WebApi
                 });
 
             services.AddSingleton<ProccessTimeCounterSource>();
+
+            services.AddStackExchangeRedisCache(options =>
+            {
+                options.Configuration = Configuration.GetConnectionString("Redis");
+                options.InstanceName = "TodoListApp_";
+            });
 
             services.AddControllers(options => options.Filters.Add<ProccesTimeActionFilterAttribute>());
 

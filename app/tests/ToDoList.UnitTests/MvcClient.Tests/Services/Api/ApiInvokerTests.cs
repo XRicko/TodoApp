@@ -32,11 +32,18 @@ namespace MvcClient.Tests.Services.Api
         {
             httpContextAccessorMock = new Mock<IHttpContextAccessor>();
             httpMessageHandlerMock = new Mock<HttpMessageHandler>();
+
             httpClient = new HttpClient(httpMessageHandlerMock.Object) { BaseAddress = new Uri("https://localhost:5001/api/") };
 
             apiInvoker = new ApiInvoker(httpContextAccessorMock.Object, httpClient);
 
             category = new CategoryModel { Id = 543, Name = "Important" };
+
+            var cookiesMock = new Mock<IRequestCookieCollection>();
+
+            httpContextAccessorMock.SetupGet(x => x.HttpContext.Request.Cookies)
+                                   .Returns(cookiesMock.Object)
+                                   .Verifiable();
         }
 
         [Fact]
@@ -65,6 +72,7 @@ namespace MvcClient.Tests.Services.Api
             Assert.Equal(category.Id, result.Id);
 
             httpMessageHandlerMock.Verify();
+            httpContextAccessorMock.Verify();
         }
 
         [Fact]
@@ -88,7 +96,9 @@ namespace MvcClient.Tests.Services.Api
             var exception = await Assert.ThrowsAsync<Exception>(() => apiInvoker.GetItemAsync<CategoryModel>("Categories/GetByName/Important"));
 
             Assert.Equal("Internal Server Error", exception.Message);
+
             httpMessageHandlerMock.Verify();
+            httpContextAccessorMock.Verify();
         }
 
         [Fact]
@@ -113,6 +123,7 @@ namespace MvcClient.Tests.Services.Api
 
             // Assert
             httpMessageHandlerMock.Verify();
+            httpContextAccessorMock.Verify();
         }
 
         [Fact]
@@ -136,7 +147,9 @@ namespace MvcClient.Tests.Services.Api
             var exception = await Assert.ThrowsAsync<Exception>(() => apiInvoker.PostItemAsync("Categories", category));
 
             Assert.Equal("Bad Request", exception.Message);
+
             httpMessageHandlerMock.Verify();
+            httpContextAccessorMock.Verify();
         }
 
         [Fact]
@@ -161,6 +174,7 @@ namespace MvcClient.Tests.Services.Api
 
             // Assert
             httpMessageHandlerMock.Verify();
+            httpContextAccessorMock.Verify();
         }
 
         [Fact]
@@ -184,7 +198,9 @@ namespace MvcClient.Tests.Services.Api
             var exception = await Assert.ThrowsAsync<Exception>(() => apiInvoker.PostItemAsync("Categories", category));
 
             Assert.Equal("Bad Request", exception.Message);
+
             httpMessageHandlerMock.Verify();
+            httpContextAccessorMock.Verify();
         }
 
         [Fact]
@@ -205,12 +221,6 @@ namespace MvcClient.Tests.Services.Api
                  Content = new ObjectContent<IEnumerable<CategoryModel>>(categories, new JsonMediaTypeFormatter())
              })
              .Verifiable();
-
-            var cookiesMock = new Mock<IRequestCookieCollection>();
-
-            httpContextAccessorMock.SetupGet(x => x.HttpContext.Request.Cookies)
-                                   .Returns(cookiesMock.Object)
-                                   .Verifiable();
 
             // Act
             var result = await apiInvoker.GetItemsAsync<CategoryModel>("Categories");
@@ -288,7 +298,6 @@ namespace MvcClient.Tests.Services.Api
 
             // Assert
             httpMessageHandlerMock.Verify();
-            httpContextAccessorMock.Verify();
             httpContextAccessorMock.Verify(x => x.HttpContext.Response.Cookies.Append("Token", token, It.IsAny<CookieOptions>()), Times.Once);
         }
 

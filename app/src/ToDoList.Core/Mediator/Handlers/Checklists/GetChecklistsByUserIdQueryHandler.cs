@@ -23,14 +23,14 @@ namespace ToDoList.Core.Mediator.Handlers.Checklists
         {
         }
 
-        public Task<IEnumerable<ChecklistResponse>> Handle(GetChecklistsByUserIdQuery request, CancellationToken cancellationToken)
+        public async Task<IEnumerable<ChecklistResponse>> Handle(GetChecklistsByUserIdQuery request, CancellationToken cancellationToken)
         {
             _ = request ?? throw new ArgumentNullException(nameof(request));
 
-            return Task.FromResult(UnitOfWork.Repository.GetAll<Checklist>()
-                                                        .Where(x => x.UserId == request.UserId)
-                                                        .ProjectTo<ChecklistResponse>(Mapper.ConfigurationProvider)
-                                                        .AsEnumerable());
+            return await Task.FromResult(UnitOfWork.Repository.GetAll<Checklist>()
+                                                              .Where(x => x.UserId == request.UserId)
+                                                              .ProjectTo<ChecklistResponse>(Mapper.ConfigurationProvider)
+                                                              .ToList());
         }
     }
 }

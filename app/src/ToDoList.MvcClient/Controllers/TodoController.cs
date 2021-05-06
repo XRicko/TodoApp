@@ -71,15 +71,18 @@ namespace ToDoList.MvcClient.Controllers
             if (createViewModel.TodoItemModel.CategoryName is not null)
                 await AddCategory(createViewModel.TodoItemModel);
 
-            if (createViewModel.TodoItemModel.Id == 0)
+            if (IsNewItem(createViewModel.TodoItemModel))
                 await AddTodoItem(createViewModel.TodoItemModel);
 
-            if (createViewModel.TodoItemModel.Id != 0)
+            if (!IsNewItem(createViewModel.TodoItemModel))
                 await UpdateTodoItem(createViewModel.TodoItemModel);
 
             IndexViewModel viewModel = await viewModelService.CreateIndexViewModelAsync();
             return PartialView("_ViewAll", viewModel);
         }
+
+        private static bool IsNewItem(TodoItemModel todoItemModel) =>
+            todoItemModel.Id is 0;
 
         [HttpPost]
         public async Task<ActionResult> DeleteAsync(int id)

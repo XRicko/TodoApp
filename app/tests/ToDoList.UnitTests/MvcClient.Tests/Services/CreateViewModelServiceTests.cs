@@ -147,10 +147,6 @@ namespace ToDoList.UnitTests.MvcClient.Services
                                .ReturnsAsync(statuses)
                                .Verifiable();
 
-            apiInvokerMock.Setup(x => x.GetItemAsync<StatusModel>("Statuses/GetByName/Planned"))
-                               .ReturnsAsync(statusPlanned)
-                               .Verifiable();
-
             // Act
             var viewModel = await createViewModelService.CreateViewModelCreateOrUpdateTodoItemAsync(todoItem);
 

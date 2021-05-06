@@ -30,8 +30,8 @@ namespace ToDoList.MvcClient.Services.Api
                 throw new ArgumentException($"'{nameof(route)}' cannot be null or whitespace", nameof(route));
 
             AddAuthenticationHeader();
-            using var response = await httpClient.GetAsync(route);
 
+            using var response = await httpClient.GetAsync(route);
             ValidateStatusCode(response);
 
             return await response.Content.ReadAsAsync<IEnumerable<T>>();
@@ -41,6 +41,8 @@ namespace ToDoList.MvcClient.Services.Api
         {
             if (string.IsNullOrWhiteSpace(routeWithParemeters))
                 throw new ArgumentException($"'{nameof(routeWithParemeters)}' cannot be null or whitespace", nameof(routeWithParemeters));
+
+            AddAuthenticationHeader();
 
             using var response = await httpClient.GetAsync(routeWithParemeters);
             ValidateStatusCode(response);
@@ -54,6 +56,8 @@ namespace ToDoList.MvcClient.Services.Api
                 throw new ArgumentException($"'{nameof(route)}' cannot be null or whitespace", nameof(route));
             _ = item ?? throw new ArgumentNullException(nameof(item));
 
+            AddAuthenticationHeader();
+
             using var response = await httpClient.PostAsJsonAsync(route, item);
             ValidateStatusCode(response);
         }
@@ -64,6 +68,8 @@ namespace ToDoList.MvcClient.Services.Api
                 throw new ArgumentException($"'{nameof(route)}' cannot be null or whitespace", nameof(route));
             _ = item ?? throw new ArgumentNullException(nameof(item));
 
+            AddAuthenticationHeader();
+
             using var response = await httpClient.PutAsJsonAsync(route, item);
             ValidateStatusCode(response);
         }
@@ -72,6 +78,8 @@ namespace ToDoList.MvcClient.Services.Api
         {
             if (string.IsNullOrWhiteSpace(route))
                 throw new ArgumentException($"'{nameof(route)}' cannot be null or whitespace", nameof(route));
+
+            AddAuthenticationHeader();
 
             using var response = await httpClient.DeleteAsync(route + id);
             ValidateStatusCode(response);
