@@ -90,6 +90,29 @@ namespace ToDoList.Infrastructure.Migrations
                     b.ToTable("Image");
                 });
 
+            modelBuilder.Entity("ToDoList.Core.Entities.RefreshToken", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)")
+                        .HasColumnName("Token");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("RefreshToknen");
+                });
+
             modelBuilder.Entity("ToDoList.Core.Entities.Status", b =>
                 {
                     b.Property<int>("Id")
@@ -215,6 +238,17 @@ namespace ToDoList.Infrastructure.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("ToDoList.Core.Entities.RefreshToken", b =>
+                {
+                    b.HasOne("ToDoList.Core.Entities.User", "User")
+                        .WithMany("RefreshTokens")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("ToDoList.Core.Entities.TodoItem", b =>
                 {
                     b.HasOne("ToDoList.Core.Entities.Category", "Category")
@@ -268,6 +302,8 @@ namespace ToDoList.Infrastructure.Migrations
             modelBuilder.Entity("ToDoList.Core.Entities.User", b =>
                 {
                     b.Navigation("Checklists");
+
+                    b.Navigation("RefreshTokens");
                 });
 #pragma warning restore 612, 618
         }

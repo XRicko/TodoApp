@@ -1,3 +1,4 @@
+using System;
 using System.Diagnostics.CodeAnalysis;
 
 using MediatR;
@@ -21,6 +22,8 @@ using ToDoList.Extensions;
 using ToDoList.Infrastructure.Data;
 using ToDoList.Infrastructure.Extensions;
 using ToDoList.WebApi.Jwt;
+using ToDoList.WebApi.Jwt.Models;
+using ToDoList.WebApi.Services;
 
 namespace ToDoList.WebApi
 {
@@ -48,12 +51,32 @@ namespace ToDoList.WebApi
             services.AddAutoMapper(typeof(CategoryResponse));
             services.AddMediatR(typeof(GetAllQuery<,>));
 
-            var jwtTokenConfig = Configuration.GetSection("JwtTokenConfigs").GetValid<JwtTokenConfig>();
+            var jwtTokenConfig = Configuration.GetSection("AuthenticationConfigs").GetValid<AuthenticationConfig>();
 
             services.AddSingleton(jwtTokenConfig);
+
             services.AddScoped<ITokenGenerator, TokenGenerator>();
+            services.AddScoped<ITokenValidator, TokenValidator>();
+            services.AddScoped<IAuthenticator, Authenticator>();
 
             services.AddCors();
+
+            var tokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateIssuer = true,
+                ValidIssuer = jwtTokenConfig.Issuer,
+
+                ValidateAudience = true,
+                ValidAudience = jwtTokenConfig.Audience,
+
+                ValidateLifetime = true,
+                ValidateIssuerSigningKey = true,
+
+                IssuerSigningKey = jwtTokenConfig.SymmetricSecurityAccessKey,
+                ClockSkew = TimeSpan.Zero
+            };
+
+            services.AddSingleton(tokenValidationParameters);
 
             services.AddAuthentication(options =>
             {
@@ -64,35 +87,48 @@ namespace ToDoList.WebApi
                 {
                     options.RequireHttpsMetadata = false;
                     options.SaveToken = true;
-
-                    options.TokenValidationParameters = new TokenValidationParameters
-                    {
-                        ValidateIssuer = true,
-                        ValidIssuer = jwtTokenConfig.Issuer,
-
-                        ValidateAudience = true,
-                        ValidAudience = jwtTokenConfig.Audience,
-
-                        ValidateLifetime = true,
-                        ValidateIssuerSigningKey = true,
-
-                        IssuerSigningKey = jwtTokenConfig.GetSymmetricSecurityKey()
-                    };
+                    options.TokenValidationParameters = tokenValidationParameters;
                 });
 
             services.AddSingleton<ProccessTimeCounterSource>();
 
-            services.AddStackExchangeRedisCache(options =>
-            {
-                options.Configuration = Configuration.GetConnectionString("Redis");
-                options.InstanceName = "TodoListApp_";
-            });
+            // Uncomment when using Redis
+            //services.AddStackExchangeRedisCache(options =>
+            //{
+            //    options.Configuration = Configuration.GetConnectionString("Redis");
+            //    options.InstanceName = "TodoListApp_";
+            //});
+
+            // Uncomment when not using Redis
+            services.AddDistributedMemoryCache();
 
             services.AddControllers(options => options.Filters.Add<ProccesTimeActionFilterAttribute>());
 
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "ToDoList.WebApi", Version = "v1" });
+                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.ApiKey,
+                    Scheme = "Bearer",
+                    In = ParameterLocation.Header,
+                    Description = "JWT Authorization header using the Bearer scheme"
+                });
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "Bearer"
+                            }
+                        },
+                        Array.Empty<string>()
+                    }
+                });
             });
         }
 

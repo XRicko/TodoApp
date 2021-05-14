@@ -8,7 +8,7 @@ using AutoMapper;
 using MediatR;
 
 using ToDoList.Core.Entities;
-using ToDoList.Core.Mediator.Commands;
+using ToDoList.Core.Mediator.Commands.Generics;
 using ToDoList.Core.Mediator.Handlers.Generics;
 using ToDoList.Core.Mediator.Requests.Create;
 using ToDoList.SharedKernel.Interfaces;

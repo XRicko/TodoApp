@@ -1,36 +1,54 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 
 using Microsoft.IdentityModel.Tokens;
 
+using ToDoList.Core.Mediator.Response;
+using ToDoList.WebApi.Jwt.Models;
+
 namespace ToDoList.WebApi.Jwt
 {
     public class TokenGenerator : ITokenGenerator
     {
-        private readonly JwtTokenConfig jwtTokenConfig;
+        private readonly AuthenticationConfig authenticationConfig;
 
-        public TokenGenerator(JwtTokenConfig tokenConfig)
+        public TokenGenerator(AuthenticationConfig config)
         {
-            jwtTokenConfig = tokenConfig ?? throw new ArgumentNullException(nameof(tokenConfig));
+            authenticationConfig = config ?? throw new ArgumentNullException(nameof(config));
         }
 
-        public string GenerateToken(int id, string username)
+        public string GenerateAccessToken(UserResponse user)
         {
-            var securityKey = jwtTokenConfig.GetSymmetricSecurityKey();
-            var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+            _ = user ?? throw new ArgumentNullException(nameof(user));
 
             var claims = new[]
             {
-                new Claim(ClaimTypes.Name, username),
-                new Claim(ClaimTypes.NameIdentifier, id.ToString())
+                new Claim(ClaimTypes.Name, user.Name),
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
             };
 
-            var token = new JwtSecurityToken(jwtTokenConfig.Issuer,
-                                             jwtTokenConfig.Audience,
+            return GenerateToken(authenticationConfig.AccessTokenExpiryMinutes,
+                                 authenticationConfig.SymmetricSecurityAccessKey,
+                                 claims);
+        }
+
+        public string GenerateRefreshToken()
+        {
+            return GenerateToken(authenticationConfig.RefreshTokenExpiryMinutes,
+                                 authenticationConfig.SymmetricSecurityRefreshKey);
+        }
+
+        private string GenerateToken(int expiryMinutes, SymmetricSecurityKey securityKey, IEnumerable<Claim> claims = null)
+        {
+            SigningCredentials credentials = new(securityKey, SecurityAlgorithms.HmacSha256);
+
+            var token = new JwtSecurityToken(authenticationConfig.Issuer,
+                                             authenticationConfig.Audience,
                                              claims,
                                              signingCredentials: credentials,
-                                             expires: DateTime.Now.AddDays(1));
+                                             expires: DateTime.Now.AddMinutes(expiryMinutes));
 
             return new JwtSecurityTokenHandler().WriteToken(token);
         }

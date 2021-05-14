@@ -15,7 +15,7 @@ namespace ToDoList.Infrastructure.Data.Config
             builder.ToTable("Category");
 
             builder.HasIndex(e => e.Name)
-                .IsUnique();
+                   .IsUnique();
 
             builder.Property(e => e.Name)
                    .IsRequired()

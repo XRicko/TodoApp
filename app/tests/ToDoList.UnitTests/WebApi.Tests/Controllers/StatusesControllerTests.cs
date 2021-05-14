@@ -29,7 +29,7 @@ namespace ToDoList.UnitTests.WebApi.Controllers
         {
             var opts = Options.Create(new MemoryDistributedCacheOptions());
             cache = new MemoryDistributedCache(opts);
-            
+
             statusesController = new StatusesController(MediatorMock.Object, cache);
 
             recordKey = "Statuses";

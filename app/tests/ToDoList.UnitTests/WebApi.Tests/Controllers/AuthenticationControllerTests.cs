@@ -10,22 +10,27 @@ using ToDoList.Core.Mediator.Requests;
 using ToDoList.Core.Mediator.Response;
 using ToDoList.WebApi.Controllers;
 using ToDoList.WebApi.Jwt;
+using ToDoList.WebApi.Services;
 
 using Xunit;
 
 namespace ToDoList.UnitTests.WebApi.Controllers
 {
-    public class UserControllerTests : ApiControllerBaseForTests
+    public class AuthenticationControllerTests : ApiControllerBaseForTests
     {
-        private readonly UserController userController;
-        private readonly Mock<ITokenGenerator> tockenGeneratorMock;
+        private readonly Mock<IAuthenticator> authenticatorMock;
+        private readonly Mock<ITokenValidator> tokenValidatorMock;
+
+        private readonly AuthenticationController authenticationController;
 
         private readonly UserRequest userRequest;
 
-        public UserControllerTests() : base()
+        public AuthenticationControllerTests() : base()
         {
-            tockenGeneratorMock = new Mock<ITokenGenerator>();
-            userController = new UserController(MediatorMock.Object, tockenGeneratorMock.Object);
+            authenticatorMock = new Mock<IAuthenticator>();
+            tokenValidatorMock = new Mock<ITokenValidator>();
+
+            authenticationController = new AuthenticationController(MediatorMock.Object, authenticatorMock.Object, tokenValidatorMock.Object);
 
             userRequest = new UserRequest("admin", "password");
         }
@@ -38,15 +43,17 @@ namespace ToDoList.UnitTests.WebApi.Controllers
 
             string expected = "eUnfjsnaqqopd_sOPmNaj";
 
-            MediatorMock.Setup(x => x.Send(It.Is<GetUserByNameAndPasswordQuery>(q => q.Name == userRequest.Name && q.Password == userRequest.Password), It.IsAny<CancellationToken>()))
+            MediatorMock.Setup(x => x.Send(It.Is<GetUserByNameAndPasswordQuery>(q => q.Name == userRequest.Name
+                                                                                     && q.Password == userRequest.Password), 
+                                           It.IsAny<CancellationToken>()))
                         .ReturnsAsync(userResponse)
                         .Verifiable();
 
-            tockenGeneratorMock.Setup(x => x.GenerateToken(userResponse.Id, userResponse.Name))
+            tockenGeneratorMock.Setup(x => x.GenerateAccessToken(userResponse))
                                .Returns(expected)
                                .Verifiable();
             // Act
-            var actionResult = await userController.LoginAsync(userRequest);
+            var actionResult = await authenticationController.LoginAsync(userRequest);
             var okResult = actionResult as OkObjectResult;
 
             string actual = okResult.Value as string;
@@ -71,7 +78,7 @@ namespace ToDoList.UnitTests.WebApi.Controllers
                         .Verifiable();
 
             // Act
-            var actionResult = await userController.LoginAsync(userRequest);
+            var actionResult = await authenticationController.LoginAsync(userRequest);
             var unauthorizedResult = actionResult as UnauthorizedObjectResult;
 
             string actual = unauthorizedResult.Value as string;
@@ -97,12 +104,12 @@ namespace ToDoList.UnitTests.WebApi.Controllers
                         .ReturnsAsync(() => null)
                         .ReturnsAsync(userResponse);
 
-            tockenGeneratorMock.Setup(x => x.GenerateToken(userResponse.Id, userResponse.Name))
+            tockenGeneratorMock.Setup(x => x.GenerateAccessToken(userResponse))
                                .Returns(expected)
                                .Verifiable();
 
             // Act
-            var actionResult = await userController.RegisterAsync(userRequest);
+            var actionResult = await authenticationController.RegisterAsync(userRequest);
             var okResult = actionResult as OkObjectResult;
 
             string actual = okResult.Value as string;
@@ -127,7 +134,7 @@ namespace ToDoList.UnitTests.WebApi.Controllers
                         .Verifiable();
 
             // Act
-            var actionResult = await userController.RegisterAsync(userRequest);
+            var actionResult = await authenticationController.RegisterAsync(userRequest);
             var unauthorizedResult = actionResult as UnauthorizedObjectResult;
 
             string actual = unauthorizedResult.Value as string;

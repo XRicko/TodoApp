@@ -24,7 +24,7 @@ namespace ToDoList.WebApi.Controllers
 
         public StatusesController(IMediator mediator, IDistributedCache distributedCache) : base(mediator)
         {
-            cache = distributedCache ?? throw new System.ArgumentNullException(nameof(distributedCache));
+            cache = distributedCache ?? throw new ArgumentNullException(nameof(distributedCache));
         }
 
         [HttpGet]

@@ -24,9 +24,8 @@ namespace ToDoList.Core.Mediator.Handlers.Generics
             _ = request ?? throw new ArgumentNullException(nameof(request));
 
             var entity = await UnitOfWork.Repository.FindByPrimaryKeysAsync<TEntity>(request.Id);
-            var response = Mapper.Map<TResponse>(entity);
 
-            return response;
+            return Mapper.Map<TResponse>(entity);
         }
     }
 }

@@ -81,9 +81,6 @@ namespace ToDoList.MvcClient.Controllers
             return PartialView("_ViewAll", viewModel);
         }
 
-        private static bool IsNewItem(TodoItemModel todoItemModel) =>
-            todoItemModel.Id is 0;
-
         [HttpPost]
         public async Task<ActionResult> DeleteAsync(int id)
         {
@@ -140,6 +137,9 @@ namespace ToDoList.MvcClient.Controllers
             return !string.IsNullOrWhiteSpace(todoItemModel.Latitude)
                    && !string.IsNullOrWhiteSpace(todoItemModel.Latitude);
         }
+
+        private static bool IsNewItem(TodoItemModel todoItemModel) =>
+            todoItemModel.Id is 0;
 
         private async Task AddTodoItem(TodoItemModel todoItemModel)
         {

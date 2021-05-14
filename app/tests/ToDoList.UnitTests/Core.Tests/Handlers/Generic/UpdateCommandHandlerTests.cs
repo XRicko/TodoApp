@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Moq;
 
 using ToDoList.Core.Entities;
-using ToDoList.Core.Mediator.Commands;
+using ToDoList.Core.Mediator.Commands.Generics;
 using ToDoList.Core.Mediator.Handlers.TodoItems;
 using ToDoList.Core.Mediator.Requests.Update;
 

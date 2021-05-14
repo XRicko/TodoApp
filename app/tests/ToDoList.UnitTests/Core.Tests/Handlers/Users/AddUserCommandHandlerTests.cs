@@ -10,7 +10,7 @@ using MockQueryable.Moq;
 using Moq;
 
 using ToDoList.Core.Entities;
-using ToDoList.Core.Mediator.Commands;
+using ToDoList.Core.Mediator.Commands.Generics;
 using ToDoList.Core.Mediator.Handlers.Users;
 using ToDoList.Core.Mediator.Requests;
 using ToDoList.Core.Services;

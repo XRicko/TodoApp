@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
@@ -11,7 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Distributed;
 
 using ToDoList.Core.Entities;
-using ToDoList.Core.Mediator.Commands;
+using ToDoList.Core.Mediator.Commands.Generics;
 using ToDoList.Core.Mediator.Queries.Generics;
 using ToDoList.Core.Mediator.Queries.TodoItems;
 using ToDoList.Core.Mediator.Requests.Create;
@@ -21,14 +20,14 @@ using ToDoList.Extensions;
 
 namespace ToDoList.WebApi.Controllers
 {
-    [Route("api/[controller]")]
     [Authorize]
+    [Route("api/[controller]")]
     [ApiController]
     public class TodoItemsController : Base
     {
         private readonly IDistributedCache cache;
 
-        private int UserId => Convert.ToInt32(User.Claims.Single(x => x.Type == ClaimTypes.NameIdentifier).Value);
+        private int UserId => Convert.ToInt32(User.FindFirstValue(ClaimTypes.NameIdentifier));
         private string RecordKey => $"TodoItems_User_{UserId}";
 
         public TodoItemsController(IMediator mediator, IDistributedCache distributedCache) : base(mediator)
@@ -55,7 +54,7 @@ namespace ToDoList.WebApi.Controllers
             await Mediator.Send(new GetByIdQuery<TodoItem, TodoItemResponse>(id));
 
         [HttpPost]
-        public async Task Add([FromBody] TodoItemCreateRequest createRequest)
+        public async Task Add(TodoItemCreateRequest createRequest)
         {
             _ = createRequest ?? throw new ArgumentNullException(nameof(createRequest));
 
@@ -71,7 +70,7 @@ namespace ToDoList.WebApi.Controllers
         }
 
         [HttpPut]
-        public async Task Update([FromBody] TodoItemUpdateRequest updateRequest)
+        public async Task Update(TodoItemUpdateRequest updateRequest)
         {
             _ = updateRequest ?? throw new ArgumentNullException(nameof(updateRequest));
 

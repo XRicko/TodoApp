@@ -5,7 +5,6 @@ using System.Threading;
 using System.Threading.Tasks;
 
 using AutoMapper;
-using AutoMapper.QueryableExtensions;
 
 using MediatR;
 

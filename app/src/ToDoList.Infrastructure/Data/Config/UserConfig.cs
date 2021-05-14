@@ -15,10 +15,10 @@ namespace ToDoList.Infrastructure.Data.Config
             builder.ToTable("User");
 
             builder.HasIndex(e => e.Name)
-                .IsUnique();
+                   .IsUnique();
 
             builder.Property(e => e.Name)
-                .HasMaxLength(125);
+                   .HasMaxLength(125);
         }
     }
 }

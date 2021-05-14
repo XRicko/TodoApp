@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using System.Security.Claims;
 using System.Text.Json;
 using System.Threading;
@@ -13,7 +12,7 @@ using Microsoft.Extensions.Options;
 using Moq;
 
 using ToDoList.Core.Entities;
-using ToDoList.Core.Mediator.Commands;
+using ToDoList.Core.Mediator.Commands.Generics;
 using ToDoList.Core.Mediator.Queries.Checklists;
 using ToDoList.Core.Mediator.Requests.Create;
 using ToDoList.Core.Mediator.Requests.Update;

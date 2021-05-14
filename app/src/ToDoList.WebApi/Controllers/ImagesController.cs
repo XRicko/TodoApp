@@ -6,7 +6,7 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 using ToDoList.Core.Entities;
-using ToDoList.Core.Mediator.Commands;
+using ToDoList.Core.Mediator.Commands.Generics;
 using ToDoList.Core.Mediator.Queries.Generics;
 using ToDoList.Core.Mediator.Requests.Create;
 using ToDoList.Core.Mediator.Response;
@@ -28,7 +28,7 @@ namespace ToDoList.WebApi.Controllers
           await Mediator.Send(new GetByNameQuery<Image, ImageResponse>(name));
 
         [HttpPost]
-        public async Task Add([FromBody] ImageCreateRequest createRequest)
+        public async Task Add(ImageCreateRequest createRequest)
         {
             _ = createRequest ?? throw new ArgumentNullException(nameof(createRequest));
             await Mediator.Send(new AddCommand<ImageCreateRequest>(createRequest));

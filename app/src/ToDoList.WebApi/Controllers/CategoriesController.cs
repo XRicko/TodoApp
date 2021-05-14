@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Distributed;
 
 using ToDoList.Core.Entities;
-using ToDoList.Core.Mediator.Commands;
+using ToDoList.Core.Mediator.Commands.Generics;
 using ToDoList.Core.Mediator.Queries.Generics;
 using ToDoList.Core.Mediator.Requests.Create;
 using ToDoList.Core.Mediator.Response;
@@ -26,7 +26,7 @@ namespace ToDoList.WebApi.Controllers
 
         public CategoriesController(IMediator mediator, IDistributedCache distributedCache) : base(mediator)
         {
-            cache = distributedCache ?? throw new System.ArgumentNullException(nameof(distributedCache));
+            cache = distributedCache ?? throw new ArgumentNullException(nameof(distributedCache));
         }
 
         [HttpGet]
@@ -49,9 +49,9 @@ namespace ToDoList.WebApi.Controllers
             await Mediator.Send(new GetByNameQuery<Category, CategoryResponse>(name));
 
         [HttpPost]
-        public async Task Add([FromBody] CategoryCreateRequest createRequest)
+        public async Task Add(CategoryCreateRequest createRequest)
         {
-            _ = createRequest ?? throw new System.ArgumentNullException(nameof(createRequest));
+            _ = createRequest ?? throw new ArgumentNullException(nameof(createRequest));
 
             await Mediator.Send(new AddCommand<CategoryCreateRequest>(createRequest));
             await cache.RemoveAsync(recordKey);

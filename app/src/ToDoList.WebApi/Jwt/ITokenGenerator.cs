@@ -1,7 +1,10 @@
-﻿namespace ToDoList.WebApi.Jwt
+﻿using ToDoList.Core.Mediator.Response;
+
+namespace ToDoList.WebApi.Jwt
 {
     public interface ITokenGenerator
     {
-        string GenerateToken(int id, string username);
+        string GenerateAccessToken(UserResponse user);
+        string GenerateRefreshToken();
     }
 }

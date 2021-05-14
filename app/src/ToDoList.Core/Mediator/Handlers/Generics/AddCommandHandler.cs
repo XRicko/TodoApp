@@ -7,7 +7,7 @@ using AutoMapper;
 
 using MediatR;
 
-using ToDoList.Core.Mediator.Commands;
+using ToDoList.Core.Mediator.Commands.Generics;
 using ToDoList.Core.Mediator.Requests;
 using ToDoList.SharedKernel;
 using ToDoList.SharedKernel.Interfaces;

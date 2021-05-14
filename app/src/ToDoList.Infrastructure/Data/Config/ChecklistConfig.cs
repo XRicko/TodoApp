@@ -18,12 +18,12 @@ namespace ToDoList.Infrastructure.Data.Config
                 .IsUnique();
 
             builder.Property(e => e.Name)
-                .HasMaxLength(75);
+                   .HasMaxLength(75);
 
             builder.HasOne(d => d.User)
-                .WithMany(p => p.Checklists)
-                .HasForeignKey(d => d.UserId)
-                .OnDelete(DeleteBehavior.ClientSetNull);
+                   .WithMany(p => p.Checklists)
+                   .HasForeignKey(d => d.UserId)
+                   .OnDelete(DeleteBehavior.ClientSetNull);
         }
     }
 }

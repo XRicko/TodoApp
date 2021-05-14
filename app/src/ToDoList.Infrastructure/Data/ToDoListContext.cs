@@ -21,14 +21,16 @@ namespace ToDoList.Infrastructure.Data
         public virtual DbSet<Status> Statuses { get; set; }
         public virtual DbSet<TodoItem> TodoItems { get; set; }
         public virtual DbSet<User> Users { get; set; }
+        public virtual DbSet<RefreshToken> RefreshTokens { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
+            modelBuilder.ApplyConfiguration(new UserConfig());
+            modelBuilder.ApplyConfiguration(new RefreshTokenConfig());
             modelBuilder.ApplyConfiguration(new ImageConfig());
             modelBuilder.ApplyConfiguration(new CategoryConfig());
-            modelBuilder.ApplyConfiguration(new UserConfig());
             modelBuilder.ApplyConfiguration(new StatusConfig());
             modelBuilder.ApplyConfiguration(new ChecklistConfig());
             modelBuilder.ApplyConfiguration(new ChecklistConfig());

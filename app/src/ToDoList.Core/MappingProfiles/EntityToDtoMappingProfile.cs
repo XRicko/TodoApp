@@ -32,6 +32,9 @@ namespace ToDoList.Core.MappingProfiles
             CreateMap<User, UserResponse>();
             CreateMap<UserRequest, User>(MemberList.Source);
 
+            CreateMap<RefreshToken, RefreshTokenResponse>();
+            CreateMap<RefreshTokenCreateRequest, RefreshToken>(MemberList.Source);
+
             CreateMap<Image, ImageResponse>();
             CreateMap<ImageCreateRequest, Image>(MemberList.Source);
 

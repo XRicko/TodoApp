@@ -16,5 +16,6 @@ namespace ToDoList.Core.Entities
         public string Password { get; set; }
 
         public ICollection<Checklist> Checklists { get; set; }
+        public ICollection<RefreshToken> RefreshTokens { get; set; }
     }
 }

@@ -2,7 +2,9 @@
 using System.Linq;
 using System.Security.Claims;
 
+using ToDoList.Core.Mediator.Response;
 using ToDoList.WebApi.Jwt;
+using ToDoList.WebApi.Jwt.Models;
 
 using Xunit;
 
@@ -10,12 +12,18 @@ namespace ToDoList.UnitTests.WebApi.Jwt
 {
     public class TokenGeneratorTest
     {
-        private readonly JwtTokenConfig jwtTokenConfig;
+        private readonly AuthenticationConfig jwtTokenConfig;
         private readonly TokenGenerator tokenGenerator;
 
         public TokenGeneratorTest()
         {
-            jwtTokenConfig = new JwtTokenConfig { Audience = "RandomAud", Issuer = "RandomIss", Secret = "ewowghewuoghefuqehfiqwuhfieqwofhqweoi" };
+            jwtTokenConfig = new AuthenticationConfig
+            {
+                Audience = "RandomAud",
+                Issuer = "RandomIss",
+                AccessTokenSecret = "ewowghewuoghefuqehfiqwuhfieqwofhqweoi"
+            };
+
             tokenGenerator = new TokenGenerator(jwtTokenConfig);
         }
 
@@ -23,16 +31,15 @@ namespace ToDoList.UnitTests.WebApi.Jwt
         public void GenerateToken_ReturnsTokenGivenIdAndName()
         {
             // Arrange
-            int id = 4;
-            string name = "John";
+            UserResponse user = new(4, "John", "qwerty");
 
             // Act
-            string token = tokenGenerator.GenerateToken(id, name);
+            string token = tokenGenerator.GenerateAccessToken(user);
             var jwtToken = new JwtSecurityTokenHandler().ReadJwtToken(token);
 
             // Assert
-            Assert.Equal(id.ToString(), jwtToken.Claims.SingleOrDefault(x => x.Type == ClaimTypes.NameIdentifier).Value);
-            Assert.Equal(name, jwtToken.Claims.SingleOrDefault(x => x.Type == ClaimTypes.Name).Value);
+            Assert.Equal(user.Id.ToString(), jwtToken.Claims.SingleOrDefault(x => x.Type == ClaimTypes.NameIdentifier).Value);
+            Assert.Equal(user.Name, jwtToken.Claims.SingleOrDefault(x => x.Type == ClaimTypes.Name).Value);
         }
     }
 }
