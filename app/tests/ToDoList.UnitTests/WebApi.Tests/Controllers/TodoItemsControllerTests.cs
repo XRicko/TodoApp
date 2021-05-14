@@ -22,7 +22,7 @@ using ToDoList.WebApi.Controllers;
 
 using Xunit;
 
-namespace ToDoList.UnitTests.WebApi.Controllers
+namespace WebApi.Tests.Controllers
 {
     public class TodoItemsControllerTests : ApiControllerBaseForTests
     {
@@ -45,10 +45,10 @@ namespace ToDoList.UnitTests.WebApi.Controllers
             var contextMock = new Mock<HttpContext>();
             todoItemsController.ControllerContext.HttpContext = contextMock.Object;
 
-            var claims = new List<Claim> { new Claim(ClaimTypes.NameIdentifier, userId.ToString()) };
+            var claim = new Claim(ClaimTypes.NameIdentifier, userId.ToString());
 
-            contextMock.SetupGet(x => x.User.Claims)
-                       .Returns(claims);
+            contextMock.Setup(x => x.User.FindFirst(ClaimTypes.NameIdentifier))
+                       .Returns(claim);
         }
 
         [Fact]
@@ -56,7 +56,8 @@ namespace ToDoList.UnitTests.WebApi.Controllers
         {
             var expected = GetSampleTodoItemResponsesByUser();
 
-            MediatorMock.Setup(x => x.Send(It.Is<GetTodoItemsByUserIdQuery>(q => q.UserId == userId), It.IsAny<CancellationToken>()))
+            MediatorMock.Setup(x => x.Send(It.Is<GetTodoItemsByUserIdQuery>(q => q.UserId == userId),
+                                           It.IsAny<CancellationToken>()))
                         .ReturnsAsync(expected)
                         .Verifiable();
 
@@ -83,7 +84,8 @@ namespace ToDoList.UnitTests.WebApi.Controllers
 
             // Assert
             Assert.Equal(expected, actual);
-            MediatorMock.Verify(x => x.Send(It.Is<GetTodoItemsByUserIdQuery>(q => q.UserId == userId), It.IsAny<CancellationToken>()), Times.Never);
+            MediatorMock.Verify(x => x.Send(It.Is<GetTodoItemsByUserIdQuery>(q => q.UserId == userId),
+                                            It.IsAny<CancellationToken>()), Times.Never);
         }
 
         [Fact]
@@ -95,15 +97,13 @@ namespace ToDoList.UnitTests.WebApi.Controllers
 
             cache.SetString(recordKey, JsonSerializer.Serialize(responses));
 
-            MediatorMock.Setup(x => x.Send(It.Is<AddCommand<TodoItemCreateRequest>>(q => q.Request == createRequest), It.IsAny<CancellationToken>()))
-                        .Verifiable();
-
             // Act
             await todoItemsController.Add(createRequest);
 
             // Assert
             Assert.Null(cache.Get(recordKey));
-            MediatorMock.Verify();
+            MediatorMock.Verify(x => x.Send(It.Is<AddCommand<TodoItemCreateRequest>>(q => q.Request == createRequest),
+                                            It.IsAny<CancellationToken>()), Times.Once);
         }
 
         [Fact]
@@ -115,15 +115,13 @@ namespace ToDoList.UnitTests.WebApi.Controllers
 
             cache.SetString(recordKey, JsonSerializer.Serialize(responses));
 
-            MediatorMock.Setup(x => x.Send(It.Is<RemoveCommand<TodoItem>>(q => q.Id == id), It.IsAny<CancellationToken>()))
-                        .Verifiable();
-
             // Act
             await todoItemsController.Delete(id);
 
             // Assert
             Assert.Null(cache.Get(recordKey));
-            MediatorMock.Verify();
+            MediatorMock.Verify(x => x.Send(It.Is<RemoveCommand<TodoItem>>(q => q.Id == id),
+                                            It.IsAny<CancellationToken>()), Times.Once);
         }
 
         [Fact]
@@ -135,15 +133,13 @@ namespace ToDoList.UnitTests.WebApi.Controllers
 
             cache.SetString(recordKey, JsonSerializer.Serialize(responses));
 
-            MediatorMock.Setup(x => x.Send(It.Is<UpdateCommand<TodoItemUpdateRequest>>(q => q.Request == updateRequest), It.IsAny<CancellationToken>()))
-                        .Verifiable();
-
             // Act
             await todoItemsController.Update(updateRequest);
 
             // Assert
             Assert.Null(cache.Get(recordKey));
-            MediatorMock.Verify();
+            MediatorMock.Verify(x => x.Send(It.Is<UpdateCommand<TodoItemUpdateRequest>>(q => q.Request == updateRequest),
+                                            It.IsAny<CancellationToken>()), Times.Once);
         }
 
         private List<TodoItemResponse> GetSampleTodoItemResponsesByUser()

@@ -12,7 +12,7 @@ using ToDoList.WebApi.Controllers;
 
 using Xunit;
 
-namespace ToDoList.UnitTests.WebApi.Controllers
+namespace WebApi.Tests.Controllers
 {
     public class ImagesControllerTests : ApiControllerBaseForTests
     {
@@ -30,7 +30,8 @@ namespace ToDoList.UnitTests.WebApi.Controllers
             string name = "image.png";
             var expected = new ImageResponse(2, name, "C:\\users\\image.png");
 
-            MediatorMock.Setup(x => x.Send(It.Is<GetByNameQuery<Image, ImageResponse>>(q => q.Name == name), It.IsAny<CancellationToken>()))
+            MediatorMock.Setup(x => x.Send(It.Is<GetByNameQuery<Image, ImageResponse>>(q => q.Name == name),
+                                           It.IsAny<CancellationToken>()))
                         .ReturnsAsync(expected)
                         .Verifiable();
 
@@ -48,7 +49,8 @@ namespace ToDoList.UnitTests.WebApi.Controllers
             // Arrange
             string name = "wrong_name";
 
-            MediatorMock.Setup(x => x.Send(It.Is<GetByNameQuery<Image, ImageResponse>>(q => q.Name == name), It.IsAny<CancellationToken>()))
+            MediatorMock.Setup(x => x.Send(It.Is<GetByNameQuery<Image, ImageResponse>>(q => q.Name == name),
+                                           It.IsAny<CancellationToken>()))
                         .ReturnsAsync(() => null)
                         .Verifiable();
 
@@ -66,14 +68,12 @@ namespace ToDoList.UnitTests.WebApi.Controllers
             // Arrange
             var createRequest = new ImageCreateRequest("Essential", "C:\\");
 
-            MediatorMock.Setup(x => x.Send(It.Is<AddCommand<ImageCreateRequest>>(q => q.Request == createRequest), It.IsAny<CancellationToken>()))
-                        .Verifiable();
-
             // Act
             await imagesController.Add(createRequest);
 
             // Assert
-            MediatorMock.Verify();
+            MediatorMock.Verify(x => x.Send(It.Is<AddCommand<ImageCreateRequest>>(q => q.Request == createRequest),
+                                            It.IsAny<CancellationToken>()), Times.Once);
         }
     }
 }

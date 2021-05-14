@@ -36,7 +36,8 @@ namespace Core.Tests.Handlers.Generic
                     .ReturnsAsync(entity);
 
             // Act
-            var actual = await getByNameHandler.Handle(new GetByNameQuery<Category, CategoryResponse>(name), new CancellationToken());
+            var actual = await getByNameHandler.Handle(new GetByNameQuery<Category, CategoryResponse>(name),
+                                                       new CancellationToken());
 
             // Assert
             Assert.Equal(expected, actual);
@@ -51,7 +52,8 @@ namespace Core.Tests.Handlers.Generic
                     .ReturnsAsync(() => null);
 
             // Act
-            var actual = await getByNameHandler.Handle(new GetByNameQuery<Category, CategoryResponse>(name), new CancellationToken());
+            var actual = await getByNameHandler.Handle(new GetByNameQuery<Category, CategoryResponse>(name),
+                                                       new CancellationToken());
 
             // Assert
             Assert.Null(actual);

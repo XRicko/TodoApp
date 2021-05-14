@@ -21,7 +21,7 @@ using ToDoList.WebApi.Controllers;
 
 using Xunit;
 
-namespace ToDoList.UnitTests.WebApi.Controllers
+namespace WebApi.Tests.Controllers
 {
     public class ChecklistsControllerTests : ApiControllerBaseForTests
     {
@@ -44,10 +44,10 @@ namespace ToDoList.UnitTests.WebApi.Controllers
             userId = 2;
             recordKey = $"Checklists_User_{userId}";
 
-            var claims = new List<Claim> { new Claim(ClaimTypes.NameIdentifier, userId.ToString()) };
+            var claim = new Claim(ClaimTypes.NameIdentifier, userId.ToString());
 
-            contextMock.SetupGet(x => x.User.Claims)
-                       .Returns(claims);
+            contextMock.Setup(x => x.User.FindFirst(ClaimTypes.NameIdentifier))
+                       .Returns(claim);
         }
 
         [Fact]
@@ -56,7 +56,8 @@ namespace ToDoList.UnitTests.WebApi.Controllers
             // Arrange
             var expected = GetSampleChecklistResponsesByUser();
 
-            MediatorMock.Setup(x => x.Send(It.Is<GetChecklistsByUserIdQuery>(q => q.UserId == userId), It.IsAny<CancellationToken>()))
+            MediatorMock.Setup(x => x.Send(It.Is<GetChecklistsByUserIdQuery>(q => q.UserId == userId),
+                                           It.IsAny<CancellationToken>()))
                         .ReturnsAsync(expected)
                         .Verifiable();
 
@@ -84,7 +85,8 @@ namespace ToDoList.UnitTests.WebApi.Controllers
 
             // Assert
             Assert.Equal(expected, actual);
-            MediatorMock.Verify(x => x.Send(It.Is<GetChecklistsByUserIdQuery>(q => q.UserId == userId), It.IsAny<CancellationToken>()), Times.Never);
+            MediatorMock.Verify(x => x.Send(It.Is<GetChecklistsByUserIdQuery>(q => q.UserId == userId),
+                                            It.IsAny<CancellationToken>()), Times.Never);
         }
 
         [Fact]
@@ -96,15 +98,13 @@ namespace ToDoList.UnitTests.WebApi.Controllers
 
             cache.SetString(recordKey, JsonSerializer.Serialize(responses));
 
-            MediatorMock.Setup(x => x.Send(It.Is<AddCommand<ChecklistCreateRequest>>(q => q.Request == createRequest), It.IsAny<CancellationToken>()))
-                        .Verifiable();
-
             // Act
             await checklistsController.Add(createRequest);
 
             // Assert
             Assert.Null(cache.Get(recordKey));
-            MediatorMock.Verify();
+            MediatorMock.Verify(x => x.Send(It.Is<AddCommand<ChecklistCreateRequest>>(q => q.Request == createRequest),
+                                            It.IsAny<CancellationToken>()), Times.Once);
         }
 
         [Fact]
@@ -116,15 +116,13 @@ namespace ToDoList.UnitTests.WebApi.Controllers
 
             cache.SetString(recordKey, JsonSerializer.Serialize(responses));
 
-            MediatorMock.Setup(x => x.Send(It.Is<RemoveCommand<Checklist>>(q => q.Id == id), It.IsAny<CancellationToken>()))
-                        .Verifiable();
-
             // Act
             await checklistsController.Delete(id);
 
             // Assert
             Assert.Null(cache.Get(recordKey));
-            MediatorMock.Verify();
+            MediatorMock.Verify(x => x.Send(It.Is<RemoveCommand<Checklist>>(q => q.Id == id),
+                                            It.IsAny<CancellationToken>()), Times.Once);
         }
 
         [Fact]
@@ -136,15 +134,13 @@ namespace ToDoList.UnitTests.WebApi.Controllers
 
             cache.SetString(recordKey, JsonSerializer.Serialize(responses));
 
-            MediatorMock.Setup(x => x.Send(It.Is<UpdateCommand<ChecklistUpdateRequest>>(q => q.Request == updateRequest), It.IsAny<CancellationToken>()))
-                        .Verifiable();
-
             // Act
             await checklistsController.Update(updateRequest);
 
             // Assert
             Assert.Null(cache.Get(recordKey));
-            MediatorMock.Verify();
+            MediatorMock.Verify(x => x.Send(It.Is<UpdateCommand<ChecklistUpdateRequest>>(q => q.Request == updateRequest),
+                                            It.IsAny<CancellationToken>()), Times.Once);
         }
 
 

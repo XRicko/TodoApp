@@ -10,7 +10,7 @@ using ToDoList.MvcClient.Services.Api;
 
 using Xunit;
 
-namespace ToDoList.UnitTests.MvcClient.Services
+namespace MvcClient.Tests.Services
 {
     public class CreateViewModelServiceTests
     {

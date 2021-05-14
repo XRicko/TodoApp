@@ -51,12 +51,12 @@ namespace ToDoList.WebApi
             services.AddAutoMapper(typeof(CategoryResponse));
             services.AddMediatR(typeof(GetAllQuery<,>));
 
-            var jwtTokenConfig = Configuration.GetSection("AuthenticationConfigs").GetValid<AuthenticationConfig>();
+            var authenticationConfig = Configuration.GetSection("AuthenticationConfigs").GetValid<AuthenticationConfig>();
 
-            services.AddSingleton(jwtTokenConfig);
+            services.AddSingleton(authenticationConfig);
 
-            services.AddScoped<ITokenGenerator, TokenGenerator>();
-            services.AddScoped<ITokenValidator, TokenValidator>();
+            services.AddScoped<ITokenGenerator, JwtTokenGenerator>();
+            services.AddScoped<ITokenValidator, JwtTokenValidator>();
             services.AddScoped<IAuthenticator, Authenticator>();
 
             services.AddCors();
@@ -64,15 +64,15 @@ namespace ToDoList.WebApi
             var tokenValidationParameters = new TokenValidationParameters
             {
                 ValidateIssuer = true,
-                ValidIssuer = jwtTokenConfig.Issuer,
+                ValidIssuer = authenticationConfig.Issuer,
 
                 ValidateAudience = true,
-                ValidAudience = jwtTokenConfig.Audience,
+                ValidAudience = authenticationConfig.Audience,
 
                 ValidateLifetime = true,
                 ValidateIssuerSigningKey = true,
 
-                IssuerSigningKey = jwtTokenConfig.SymmetricSecurityAccessKey,
+                IssuerSigningKey = authenticationConfig.SymmetricSecurityAccessKey,
                 ClockSkew = TimeSpan.Zero
             };
 

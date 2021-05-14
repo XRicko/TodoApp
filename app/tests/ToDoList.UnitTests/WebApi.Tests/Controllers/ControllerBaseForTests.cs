@@ -2,7 +2,7 @@
 
 using Moq;
 
-namespace ToDoList.UnitTests.WebApi.Controllers
+namespace WebApi.Tests.Controllers
 {
     public abstract class ApiControllerBaseForTests
     {

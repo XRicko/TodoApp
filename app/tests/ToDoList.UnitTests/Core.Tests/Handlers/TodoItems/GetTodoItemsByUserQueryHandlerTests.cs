@@ -52,7 +52,8 @@ namespace Core.Tests.Handlers.TodoItems
                               .Verifiable();
 
             // Act
-            var actual = await getTodoItemsHandler.Handle(new GetTodoItemsByUserIdQuery(userId), new CancellationToken());
+            var actual = await getTodoItemsHandler.Handle(new GetTodoItemsByUserIdQuery(userId),
+                                                          new CancellationToken());
 
             // Assert
             Assert.Equal(expected, actual);
@@ -67,7 +68,9 @@ namespace Core.Tests.Handlers.TodoItems
 
             foreach (var response in responses)
             {
-                if (response.GeoPoint is not null && response.GeoPoint.Latitude == 49.06802 && response.GeoPoint.Longitude == 33.42041)
+                if (response.GeoPoint is not null
+                    && response.GeoPoint.Latitude == 49.06802
+                    && response.GeoPoint.Longitude == 33.42041)
                 {
                     expected.Add(response with { Address = "Khalamenyuka St, 4, Kremenchuk, Poltavs'ka oblast, Ukraine, 39600" });
                 }

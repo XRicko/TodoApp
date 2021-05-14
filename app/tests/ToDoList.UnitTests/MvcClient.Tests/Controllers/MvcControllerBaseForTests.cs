@@ -2,7 +2,7 @@
 
 using ToDoList.MvcClient.Services.Api;
 
-namespace ToDoList.UnitTests.MvcClient.Controllers
+namespace MvcClient.Tests.Controllers
 {
     public abstract class MvcControllerBaseForTests
     {

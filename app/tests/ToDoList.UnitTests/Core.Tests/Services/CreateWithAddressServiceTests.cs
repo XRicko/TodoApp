@@ -17,7 +17,7 @@ using Xunit;
 
 namespace Core.Tests.Services
 {
-    public class GetWithAddressServiceTests
+    public class CreateWithAddressServiceTests
     {
         private readonly Mock<IGeocodingService> geocodingMock;
 
@@ -29,7 +29,7 @@ namespace Core.Tests.Services
         private readonly double latitude;
         private readonly double longitude;
 
-        public GetWithAddressServiceTests()
+        public CreateWithAddressServiceTests()
         {
             var opts = Options.Create(new MemoryDistributedCacheOptions());
 

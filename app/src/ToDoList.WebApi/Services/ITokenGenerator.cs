@@ -1,6 +1,6 @@
 ﻿using ToDoList.Core.Mediator.Response;
 
-namespace ToDoList.WebApi.Jwt
+namespace ToDoList.WebApi.Services
 {
     public interface ITokenGenerator
     {

@@ -14,7 +14,7 @@ using ToDoList.SharedKernel;
 
 using Xunit;
 
-namespace ToDoList.UnitTests.MvcClient.Controllers
+namespace MvcClient.Tests.Controllers
 {
     public class TodoControllerTests : MvcControllerBaseForTests
     {

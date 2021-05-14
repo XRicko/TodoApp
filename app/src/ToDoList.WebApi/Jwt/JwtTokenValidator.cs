@@ -4,15 +4,16 @@ using System.IdentityModel.Tokens.Jwt;
 using Microsoft.IdentityModel.Tokens;
 
 using ToDoList.WebApi.Jwt.Models;
+using ToDoList.WebApi.Services;
 
-namespace ToDoList.WebApi.Services
+namespace ToDoList.WebApi.Jwt
 {
-    internal class TokenValidator : ITokenValidator
+    public class JwtTokenValidator : ITokenValidator
     {
         private readonly TokenValidationParameters tokenValidationParameters;
         private readonly AuthenticationConfig authenticationConfig;
 
-        public TokenValidator(TokenValidationParameters validationParameters, AuthenticationConfig config)
+        public JwtTokenValidator(TokenValidationParameters validationParameters, AuthenticationConfig config)
         {
             tokenValidationParameters = validationParameters ?? throw new ArgumentNullException(nameof(validationParameters));
             authenticationConfig = config ?? throw new ArgumentNullException(nameof(config));
@@ -24,7 +25,7 @@ namespace ToDoList.WebApi.Services
 
             try
             {
-                new JwtSecurityTokenHandler().ValidateToken(refreshToken, tokenValidationParameters, out SecurityToken validatedToken);
+                new JwtSecurityTokenHandler().ValidateToken(refreshToken, tokenValidationParameters, out var validatedToken);
                 return true;
             }
             catch (Exception)

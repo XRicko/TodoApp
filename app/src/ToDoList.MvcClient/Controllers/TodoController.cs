@@ -138,8 +138,7 @@ namespace ToDoList.MvcClient.Controllers
                    && !string.IsNullOrWhiteSpace(todoItemModel.Latitude);
         }
 
-        private static bool IsNewItem(TodoItemModel todoItemModel) =>
-            todoItemModel.Id is 0;
+        private static bool IsNewItem(TodoItemModel todoItemModel) => todoItemModel.Id is 0;
 
         private async Task AddTodoItem(TodoItemModel todoItemModel)
         {

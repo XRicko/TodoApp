@@ -13,7 +13,7 @@ using ToDoList.MvcClient.ViewModels;
 
 using Xunit;
 
-namespace ToDoList.UnitTests.MvcClient.Controllers
+namespace MvcClient.Tests.Controllers
 {
     public class ChecklistControllerTests : MvcControllerBaseForTests
     {

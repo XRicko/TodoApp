@@ -7,14 +7,15 @@ using Microsoft.IdentityModel.Tokens;
 
 using ToDoList.Core.Mediator.Response;
 using ToDoList.WebApi.Jwt.Models;
+using ToDoList.WebApi.Services;
 
 namespace ToDoList.WebApi.Jwt
 {
-    public class TokenGenerator : ITokenGenerator
+    public class JwtTokenGenerator : ITokenGenerator
     {
         private readonly AuthenticationConfig authenticationConfig;
 
-        public TokenGenerator(AuthenticationConfig config)
+        public JwtTokenGenerator(AuthenticationConfig config)
         {
             authenticationConfig = config ?? throw new ArgumentNullException(nameof(config));
         }

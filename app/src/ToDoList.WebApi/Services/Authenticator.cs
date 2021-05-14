@@ -6,12 +6,11 @@ using MediatR;
 using ToDoList.Core.Mediator.Commands.Generics;
 using ToDoList.Core.Mediator.Requests.Create;
 using ToDoList.Core.Mediator.Response;
-using ToDoList.WebApi.Jwt;
 using ToDoList.WebApi.Jwt.Models;
 
 namespace ToDoList.WebApi.Services
 {
-    internal class Authenticator : IAuthenticator
+    public class Authenticator : IAuthenticator
     {
         private readonly ITokenGenerator tokenGenerator;
         private readonly IMediator mediator;

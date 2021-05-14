@@ -18,7 +18,7 @@ using ToDoList.WebApi.Controllers;
 
 using Xunit;
 
-namespace ToDoList.UnitTests.WebApi.Controllers
+namespace WebApi.Tests.Controllers
 {
     public class CategoriesControllerTests : ApiControllerBaseForTests
     {
@@ -44,7 +44,8 @@ namespace ToDoList.UnitTests.WebApi.Controllers
                 new(3, "Uncategorized")
             };
 
-            MediatorMock.Setup(x => x.Send(It.IsAny<GetAllQuery<Category, CategoryResponse>>(), It.IsAny<CancellationToken>()))
+            MediatorMock.Setup(x => x.Send(It.IsAny<GetAllQuery<Category, CategoryResponse>>(),
+                                           It.IsAny<CancellationToken>()))
                         .ReturnsAsync(expected)
                         .Verifiable();
 
@@ -75,7 +76,8 @@ namespace ToDoList.UnitTests.WebApi.Controllers
 
             // Assert
             Assert.Equal(expected, actual);
-            MediatorMock.Verify(x => x.Send(It.IsAny<GetAllQuery<Category, CategoryResponse>>(), It.IsAny<CancellationToken>()), Times.Never);
+            MediatorMock.Verify(x => x.Send(It.IsAny<GetAllQuery<Category, CategoryResponse>>(),
+                                            It.IsAny<CancellationToken>()), Times.Never);
         }
 
         [Fact]
@@ -85,7 +87,8 @@ namespace ToDoList.UnitTests.WebApi.Controllers
             string name = "Imp";
             var expected = new CategoryResponse(0, name);
 
-            MediatorMock.Setup(x => x.Send(It.Is<GetByNameQuery<Category, CategoryResponse>>(q => q.Name == name), It.IsAny<CancellationToken>()))
+            MediatorMock.Setup(x => x.Send(It.Is<GetByNameQuery<Category, CategoryResponse>>(q => q.Name == name),
+                                           It.IsAny<CancellationToken>()))
                         .ReturnsAsync(expected)
                         .Verifiable();
 
@@ -103,7 +106,8 @@ namespace ToDoList.UnitTests.WebApi.Controllers
             // Arrange
             string invalidName = "invalid_name";
 
-            MediatorMock.Setup(x => x.Send(It.Is<GetByNameQuery<Category, CategoryResponse>>(q => q.Name == invalidName), It.IsAny<CancellationToken>()))
+            MediatorMock.Setup(x => x.Send(It.Is<GetByNameQuery<Category, CategoryResponse>>(q => q.Name == invalidName),
+                                           It.IsAny<CancellationToken>()))
                         .ReturnsAsync(() => null)
                         .Verifiable();
 
@@ -121,14 +125,12 @@ namespace ToDoList.UnitTests.WebApi.Controllers
             // Arrange
             var createRequest = new CategoryCreateRequest("Essential");
 
-            MediatorMock.Setup(x => x.Send(It.Is<AddCommand<CategoryCreateRequest>>(q => q.Request == createRequest), It.IsAny<CancellationToken>()))
-                        .Verifiable();
-
             // Act
             await categoriesController.Add(createRequest);
 
             // Assert
-            MediatorMock.Verify();
+            MediatorMock.Verify(x => x.Send(It.Is<AddCommand<CategoryCreateRequest>>(q => q.Request == createRequest),
+                                            It.IsAny<CancellationToken>()), Times.Once);
         }
     }
 }

@@ -12,7 +12,7 @@ using ToDoList.MvcClient.Models;
 
 using Xunit;
 
-namespace ToDoList.UnitTests.MvcClient.Controllers
+namespace MvcClient.Tests.Controllers
 {
     public class UserControllerTests : MvcControllerBaseForTests
     {

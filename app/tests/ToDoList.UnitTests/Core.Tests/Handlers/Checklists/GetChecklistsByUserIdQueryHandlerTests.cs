@@ -41,7 +41,8 @@ namespace Core.Tests.Handlers.Checklists
                     .Verifiable();
 
             // Act
-            var actual = await getChecklistsByUserIdHandler.Handle(new GetChecklistsByUserIdQuery(desirableUserId), new CancellationToken());
+            var actual = await getChecklistsByUserIdHandler.Handle(new GetChecklistsByUserIdQuery(desirableUserId),
+                                                                   new CancellationToken());
 
             // Assert
             Assert.Equal(expected, actual);

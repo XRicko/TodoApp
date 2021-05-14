@@ -16,7 +16,7 @@ using ToDoList.WebApi.Controllers;
 
 using Xunit;
 
-namespace ToDoList.UnitTests.WebApi.Controllers
+namespace WebApi.Tests.Controllers
 {
     public class StatusesControllerTests : ApiControllerBaseForTests
     {
@@ -41,7 +41,8 @@ namespace ToDoList.UnitTests.WebApi.Controllers
             // Arrange
             var expected = GetSampleStatusResponses();
 
-            MediatorMock.Setup(x => x.Send(It.IsAny<GetAllQuery<Status, StatusResponse>>(), It.IsAny<CancellationToken>()))
+            MediatorMock.Setup(x => x.Send(It.IsAny<GetAllQuery<Status, StatusResponse>>(),
+                                           It.IsAny<CancellationToken>()))
                         .ReturnsAsync(expected)
                         .Verifiable();
 
@@ -68,7 +69,8 @@ namespace ToDoList.UnitTests.WebApi.Controllers
 
             // Assert
             Assert.Equal(expected, actual);
-            MediatorMock.Verify(x => x.Send(It.IsAny<GetAllQuery<Status, StatusResponse>>(), It.IsAny<CancellationToken>()), Times.Never);
+            MediatorMock.Verify(x => x.Send(It.IsAny<GetAllQuery<Status, StatusResponse>>(),
+                                            It.IsAny<CancellationToken>()), Times.Never);
         }
 
         [Fact]
@@ -78,7 +80,8 @@ namespace ToDoList.UnitTests.WebApi.Controllers
             string name = "Planned";
             var expected = new StatusResponse(2, name, false);
 
-            MediatorMock.Setup(x => x.Send(It.Is<GetByNameQuery<Status, StatusResponse>>(q => q.Name == name), It.IsAny<CancellationToken>()))
+            MediatorMock.Setup(x => x.Send(It.Is<GetByNameQuery<Status, StatusResponse>>(q => q.Name == name),
+                                           It.IsAny<CancellationToken>()))
                         .ReturnsAsync(expected)
                         .Verifiable();
 
@@ -96,7 +99,8 @@ namespace ToDoList.UnitTests.WebApi.Controllers
             // Arrange
             string invalidName = "invalid_name";
 
-            MediatorMock.Setup(x => x.Send(It.Is<GetByNameQuery<Status, StatusResponse>>(q => q.Name == invalidName), It.IsAny<CancellationToken>()))
+            MediatorMock.Setup(x => x.Send(It.Is<GetByNameQuery<Status, StatusResponse>>(q => q.Name == invalidName),
+                                           It.IsAny<CancellationToken>()))
                         .ReturnsAsync(() => null)
                         .Verifiable();
 

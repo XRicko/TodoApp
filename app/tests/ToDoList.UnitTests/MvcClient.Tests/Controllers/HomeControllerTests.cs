@@ -4,7 +4,7 @@ using ToDoList.MvcClient.Controllers;
 
 using Xunit;
 
-namespace ToDoList.UnitTests.MvcClient.Controllers
+namespace MvcClient.Tests.Controllers
 {
     public class HomeControllerTests
     {

@@ -40,7 +40,8 @@ namespace Core.Tests.Handlers.Generic
                     .ReturnsAsync(entity);
 
             // Act
-            var actual = await getByIdQueryHandler.Handle(new GetByIdQuery<Checklist, ChecklistResponse>(id), new CancellationToken());
+            var actual = await getByIdQueryHandler.Handle(new GetByIdQuery<Checklist, ChecklistResponse>(id),
+                                                          new CancellationToken());
 
             // Assert
             // Assert
@@ -56,7 +57,8 @@ namespace Core.Tests.Handlers.Generic
                     .ReturnsAsync(() => null);
 
             // Act
-            var actual = await getByIdQueryHandler.Handle(new GetByIdQuery<Checklist, ChecklistResponse>(id), new CancellationToken());
+            var actual = await getByIdQueryHandler.Handle(new GetByIdQuery<Checklist, ChecklistResponse>(id),
+                                                          new CancellationToken());
 
             // Assert
             Assert.Null(actual);

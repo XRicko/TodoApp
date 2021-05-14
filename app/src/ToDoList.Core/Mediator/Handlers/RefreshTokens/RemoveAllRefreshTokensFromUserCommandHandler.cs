@@ -14,7 +14,7 @@ using ToDoList.SharedKernel.Interfaces;
 
 namespace ToDoList.Core.Mediator.Handlers.RefreshTokens
 {
-    internal class RemoveAllRefreshTokensFromUserCommandHandler : HandlerBase, IRequestHandler<RemoveAllRefreshTokensFromUserCommand>
+    public class RemoveAllRefreshTokensFromUserCommandHandler : HandlerBase, IRequestHandler<RemoveAllRefreshTokensFromUserCommand>
     {
         public RemoveAllRefreshTokensFromUserCommandHandler(IUnitOfWork unitOfWork, IMapper mapper) : base(unitOfWork, mapper)
         {

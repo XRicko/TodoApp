@@ -89,14 +89,14 @@ namespace ToDoList.WebApi.Controllers
         [Route("[action]")]
         public async Task<IActionResult> Logout()
         {
-            string id = User?.FindFirstValue(ClaimTypes.NameIdentifier);
+            string id = User?.FindFirst(ClaimTypes.NameIdentifier).Value;
 
             if (string.IsNullOrWhiteSpace(id))
                 return Unauthorized();
 
             await Mediator.Send(new RemoveAllRefreshTokensFromUserCommand(Convert.ToInt32(id)));
 
-            return NoContent();
+            return Ok();
         }
     }
 }

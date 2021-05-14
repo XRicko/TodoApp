@@ -52,7 +52,8 @@ namespace Core.Tests.Handlers.Checklists
             // Arrange
             RepoMock.Verify();
             RepoMock.Verify(x => x.Remove(It.Is<Checklist>(x => x.Id == id)), Times.Once);
-            RepoMock.Verify(x => x.Remove(It.Is<TodoItem>(i => i.ChecklistId == id)), Times.Exactly(checklistToDelete.TodoItems.Count));
+            RepoMock.Verify(x => x.Remove(It.Is<TodoItem>(i => i.ChecklistId == id)),
+                            Times.Exactly(checklistToDelete.TodoItems.Count));
 
             UnitOfWorkMock.Verify(x => x.SaveAsync(), Times.Once);
         }

@@ -40,7 +40,8 @@ namespace Core.Tests.Handlers.Users
                     .Verifiable();
 
             // Act
-            var actual = await getUserByNameAndPasswordHandler.Handle(new GetUserByNameAndPasswordQuery(username, password), new CancellationToken());
+            var actual = await getUserByNameAndPasswordHandler.Handle(new GetUserByNameAndPasswordQuery(username, password),
+                                                                      new CancellationToken());
 
             // Assert
             Assert.Equal(username, actual.Name);
@@ -58,7 +59,8 @@ namespace Core.Tests.Handlers.Users
                     .Verifiable();
 
             // Act
-            var actual = await getUserByNameAndPasswordHandler.Handle(new GetUserByNameAndPasswordQuery(username, password), new CancellationToken());
+            var actual = await getUserByNameAndPasswordHandler.Handle(new GetUserByNameAndPasswordQuery(username, password),
+                                                                      new CancellationToken());
 
             // Assert
             Assert.Null(actual);
