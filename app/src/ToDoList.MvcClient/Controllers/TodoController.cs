@@ -77,8 +77,11 @@ namespace ToDoList.MvcClient.Controllers
             if (!IsNewItem(createViewModel.TodoItemModel))
                 await UpdateTodoItem(createViewModel.TodoItemModel);
 
-            IndexViewModel viewModel = await viewModelService.CreateIndexViewModelAsync();
-            return PartialView("_ViewAll", viewModel);
+            return base.PartialView("_ViewAll", await viewModelService.CreateIndexViewModelAsync());
+
+            static bool LatLongExists(TodoItemModel todoItemModel) => !string.IsNullOrWhiteSpace(todoItemModel.Latitude)
+                                                                      && !string.IsNullOrWhiteSpace(todoItemModel.Latitude);
+            static bool IsNewItem(TodoItemModel todoItemModel) => todoItemModel.Id is 0;
         }
 
         [HttpPost]
@@ -131,14 +134,6 @@ namespace ToDoList.MvcClient.Controllers
             var category = await apiInvoker.GetItemAsync<CategoryModel>("Categories/GetByName/" + todoItemModel.CategoryName);
             todoItemModel.CategoryId = category.Id;
         }
-
-        private static bool LatLongExists(TodoItemModel todoItemModel)
-        {
-            return !string.IsNullOrWhiteSpace(todoItemModel.Latitude)
-                   && !string.IsNullOrWhiteSpace(todoItemModel.Latitude);
-        }
-
-        private static bool IsNewItem(TodoItemModel todoItemModel) => todoItemModel.Id is 0;
 
         private async Task AddTodoItem(TodoItemModel todoItemModel)
         {

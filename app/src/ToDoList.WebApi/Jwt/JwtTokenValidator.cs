@@ -10,18 +10,29 @@ namespace ToDoList.WebApi.Jwt
 {
     public class JwtTokenValidator : ITokenValidator
     {
-        private readonly TokenValidationParameters tokenValidationParameters;
         private readonly AuthenticationConfig authenticationConfig;
 
-        public JwtTokenValidator(TokenValidationParameters validationParameters, AuthenticationConfig config)
+        public JwtTokenValidator(AuthenticationConfig config)
         {
-            tokenValidationParameters = validationParameters ?? throw new ArgumentNullException(nameof(validationParameters));
             authenticationConfig = config ?? throw new ArgumentNullException(nameof(config));
         }
 
         public bool ValidateRefreshKey(string refreshToken)
         {
-            tokenValidationParameters.IssuerSigningKey = authenticationConfig.SymmetricSecurityRefreshKey;
+            var tokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateIssuer = true,
+                ValidIssuer = authenticationConfig.Issuer,
+
+                ValidateAudience = true,
+                ValidAudience = authenticationConfig.Audience,
+
+                ValidateLifetime = true,
+                ValidateIssuerSigningKey = true,
+
+                IssuerSigningKey = authenticationConfig.SymmetricSecurityRefreshKey,
+                ClockSkew = TimeSpan.Zero
+            };
 
             try
             {

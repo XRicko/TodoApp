@@ -61,23 +61,6 @@ namespace ToDoList.WebApi
 
             services.AddCors();
 
-            var tokenValidationParameters = new TokenValidationParameters
-            {
-                ValidateIssuer = true,
-                ValidIssuer = authenticationConfig.Issuer,
-
-                ValidateAudience = true,
-                ValidAudience = authenticationConfig.Audience,
-
-                ValidateLifetime = true,
-                ValidateIssuerSigningKey = true,
-
-                IssuerSigningKey = authenticationConfig.SymmetricSecurityAccessKey,
-                ClockSkew = TimeSpan.Zero
-            };
-
-            services.AddSingleton(tokenValidationParameters);
-
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -87,7 +70,20 @@ namespace ToDoList.WebApi
                 {
                     options.RequireHttpsMetadata = false;
                     options.SaveToken = true;
-                    options.TokenValidationParameters = tokenValidationParameters;
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = true,
+                        ValidIssuer = authenticationConfig.Issuer,
+
+                        ValidateAudience = true,
+                        ValidAudience = authenticationConfig.Audience,
+
+                        ValidateLifetime = true,
+                        ValidateIssuerSigningKey = true,
+
+                        IssuerSigningKey = authenticationConfig.SymmetricSecurityAccessKey,
+                        ClockSkew = TimeSpan.Zero
+                    };
                 });
 
             services.AddSingleton<ProccessTimeCounterSource>();

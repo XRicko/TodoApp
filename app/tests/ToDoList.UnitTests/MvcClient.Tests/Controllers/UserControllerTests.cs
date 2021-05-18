@@ -150,7 +150,7 @@ namespace MvcClient.Tests.Controllers
         }
 
         [Fact]
-        public void Get_Logout_ReturnsRedirectToIndexActionInHome()
+        public async Task Get_Logout_ReturnsRedirectToIndexActionInHome()
         {
             // Arrange
             Mock<ControllerContext> controllerContextMock = new();
@@ -165,7 +165,7 @@ namespace MvcClient.Tests.Controllers
             string homeControllerName = "Home";
 
             // Act 
-            var result = userController.Logout() as RedirectToActionResult;
+            var result = await userController.LogoutAsync() as RedirectToActionResult;
 
             // Assert
             Assert.Equal(indexViewName, result.ActionName);

@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Text.Json;
 using System.Threading.Tasks;
 
 using Microsoft.AspNetCore.Http;
@@ -31,10 +31,20 @@ namespace ToDoList.MvcClient.Services.Api
 
             AddAuthenticationHeader();
 
-            using var response = await httpClient.GetAsync(route);
-            ValidateStatusCode(response);
+            using var response = await GetItems();
 
-            return await response.Content.ReadAsAsync<IEnumerable<T>>();
+            if (response.StatusCode == HttpStatusCode.Unauthorized)
+            {
+                using var newResponse = await RefreshTokenAndMakeNewRequest(GetItems);
+                return await ReadItems(newResponse);
+            }
+
+            ValidateStatusCodeForSuccess(response);
+
+            return await ReadItems(response);
+
+            async Task<HttpResponseMessage> GetItems() => await httpClient.GetAsync(route);
+            static async Task<IEnumerable<T>> ReadItems(HttpResponseMessage response) => await response.Content.ReadAsAsync<IEnumerable<T>>();
         }
 
         public async Task<T> GetItemAsync<T>(string routeWithParemeters) where T : BaseModel
@@ -44,10 +54,20 @@ namespace ToDoList.MvcClient.Services.Api
 
             AddAuthenticationHeader();
 
-            using var response = await httpClient.GetAsync(routeWithParemeters);
-            ValidateStatusCode(response);
+            using var response = await GetItem();
 
-            return await response.Content.ReadAsAsync<T>();
+            if (response.StatusCode == HttpStatusCode.Unauthorized)
+            {
+                using var newResponse = await RefreshTokenAndMakeNewRequest(GetItem);
+                return await ReadItem(newResponse);
+            }
+
+            ValidateStatusCodeForSuccess(response);
+
+            return await ReadItem(response);
+
+            async Task<HttpResponseMessage> GetItem() => await httpClient.GetAsync(routeWithParemeters);
+            static async Task<T> ReadItem(HttpResponseMessage response) => await response.Content.ReadAsAsync<T>();
         }
 
         public async Task PostItemAsync<T>(string route, T item) where T : BaseModel
@@ -58,8 +78,17 @@ namespace ToDoList.MvcClient.Services.Api
 
             AddAuthenticationHeader();
 
-            using var response = await httpClient.PostAsJsonAsync(route, item);
-            ValidateStatusCode(response);
+            using var response = await Post();
+
+            if (response.StatusCode == HttpStatusCode.Unauthorized)
+            {
+                using var newResponse = await RefreshTokenAndMakeNewRequest(Post);
+                return;
+            }
+
+            ValidateStatusCodeForSuccess(response);
+
+            async Task<HttpResponseMessage> Post() => await httpClient.PostAsJsonAsync(route, item);
         }
 
         public async Task PutItemAsync<T>(string route, T item) where T : BaseModel
@@ -70,8 +99,17 @@ namespace ToDoList.MvcClient.Services.Api
 
             AddAuthenticationHeader();
 
-            using var response = await httpClient.PutAsJsonAsync(route, item);
-            ValidateStatusCode(response);
+            using var response = await Put();
+
+            if (response.StatusCode == HttpStatusCode.Unauthorized)
+            {
+                using var newResponse = await RefreshTokenAndMakeNewRequest(Put);
+                return;
+            }
+
+            ValidateStatusCodeForSuccess(response);
+
+            async Task<HttpResponseMessage> Put() => await httpClient.PutAsJsonAsync(route, item);
         }
 
         public async Task DeleteItemAsync(string route, int id)
@@ -81,8 +119,17 @@ namespace ToDoList.MvcClient.Services.Api
 
             AddAuthenticationHeader();
 
-            using var response = await httpClient.DeleteAsync(route + id);
-            ValidateStatusCode(response);
+            using var response = await Delete();
+
+            if (response.StatusCode == HttpStatusCode.Unauthorized)
+            {
+                using var newResponse = await RefreshTokenAndMakeNewRequest(Delete);
+                return;
+            }
+
+            ValidateStatusCodeForSuccess(response);
+
+            async Task<HttpResponseMessage> Delete() => await httpClient.DeleteAsync(route + id);
         }
 
         public async Task AuthenticateUserAsync(string route, UserModel userModel)
@@ -92,24 +139,76 @@ namespace ToDoList.MvcClient.Services.Api
             _ = userModel ?? throw new ArgumentNullException(nameof(userModel));
 
             using var response = await httpClient.PostAsJsonAsync(route, userModel);
+            ValidateStatusCodeForSuccess(response);
 
-            ValidateStatusCode(response);
-
-            string tokenJson = await response.Content.ReadAsStringAsync();
-            string token = JsonSerializer.Deserialize<string>(tokenJson);
-
-            httpContextAccessor.HttpContext.Response.Cookies.Append("Token", token, new CookieOptions { Expires = DateTime.Now.AddHours(3) });
+            var authenticatedModel = await response.Content.ReadAsAsync<AuthenticatedModel>();
+            SetTokensInCookies(authenticatedModel.AccessToken, authenticatedModel.RefreshToken);
         }
 
-        private static void ValidateStatusCode(HttpResponseMessage response)
+        public async Task LogoutAsync()
+        {
+            AddAuthenticationHeader();
+
+            using var respone = await Logout();
+
+            if (respone.StatusCode == HttpStatusCode.Unauthorized)
+            {
+                using var newResponse = await RefreshTokenAndMakeNewRequest(Logout);
+                return;
+            }
+
+            ValidateStatusCodeForSuccess(respone);
+
+            async Task<HttpResponseMessage> Logout() => await httpClient.DeleteAsync("Authentication/Logout");
+        }
+
+        private static void ValidateStatusCodeForSuccess(HttpResponseMessage response)
         {
             if (!response.IsSuccessStatusCode)
                 throw new Exception(response.ReasonPhrase);
         }
 
-        private void AddAuthenticationHeader()
+        private void AddAuthenticationHeader(string token = null)
         {
-            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", httpContextAccessor.HttpContext.Request.Cookies["Token"]);
+            if (AuthorizationHeaderMissing())
+            {
+                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(
+                    "Bearer",
+                    token ?? httpContextAccessor.HttpContext.Request.Cookies["Token"]);
+            }
+
+            bool AuthorizationHeaderMissing() => httpClient.DefaultRequestHeaders.Authorization?.Parameter is null;
+        }
+
+        private async Task<HttpResponseMessage> RefreshTokenAndMakeNewRequest(Func<Task<HttpResponseMessage>> request)
+        {
+            await RefreshToken();
+
+            var response = await request();
+            ValidateStatusCodeForSuccess(response);
+
+            return response;
+        }
+
+        private async Task RefreshToken()
+        {
+            string refreshToken = httpContextAccessor.HttpContext.Request.Cookies["RefreshToken"];
+
+            using var response = await httpClient.PostAsJsonAsync("Authentication/Refresh", refreshToken);
+            var authenticatedModel = await response.Content.ReadAsAsync<AuthenticatedModel>();
+
+            SetTokensInCookies(authenticatedModel.AccessToken, authenticatedModel.RefreshToken);
+            AddAuthenticationHeader(authenticatedModel.AccessToken);
+        }
+
+        private void SetTokensInCookies(string accessToken, string refreshToken)
+        {
+            httpContextAccessor.HttpContext.Response.Cookies.Append("Token",
+                                                                    accessToken,
+                                                                    new CookieOptions { Expires = DateTime.Now.AddMinutes(1) });
+            httpContextAccessor.HttpContext.Response.Cookies.Append("RefreshToken",
+                                                                    refreshToken,
+                                                                    new CookieOptions { Expires = DateTime.Now.AddMonths(3) });
         }
     }
 }

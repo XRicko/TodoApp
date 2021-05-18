@@ -15,5 +15,6 @@ namespace ToDoList.MvcClient.Services.Api
         Task DeleteItemAsync(string route, int id);
 
         Task AuthenticateUserAsync(string route, UserModel userModel);
+        Task LogoutAsync();
     }
 }

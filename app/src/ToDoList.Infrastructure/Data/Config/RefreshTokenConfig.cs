@@ -12,7 +12,7 @@ namespace ToDoList.Infrastructure.Data.Config
     {
         public void Configure(EntityTypeBuilder<RefreshToken> builder)
         {
-            builder.ToTable("RefreshToknen");
+            builder.ToTable("RefreshToken");
 
             builder.Property(e => e.Name)
                    .HasColumnName("Token")

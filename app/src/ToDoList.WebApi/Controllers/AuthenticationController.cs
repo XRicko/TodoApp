@@ -67,6 +67,9 @@ namespace ToDoList.WebApi.Controllers
         [Route("[action]")]
         public async Task<IActionResult> RefreshAsync([FromBody] string refreshToken)
         {
+            if (string.IsNullOrWhiteSpace(refreshToken))
+                throw new ArgumentException($"'{nameof(refreshToken)}' cannot be null or whitespace", nameof(refreshToken));
+
             bool isValidRefreshToken = tokenValidator.ValidateRefreshKey(refreshToken);
             if (!isValidRefreshToken)
                 return BadRequest("Invalid refresh token");
