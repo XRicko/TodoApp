@@ -5,6 +5,10 @@ services:
     image: mcr.microsoft.com/mssql/server
     container_name: mssql-server
 
+  redis:
+    image: redis
+    container_name: redis
+
   todolist.webapi:
     container_name: webapi
     build:
@@ -13,6 +17,7 @@ services:
     restart: on-failure
     depends_on:
       - mssql
+      - redis
 
   todolist.mvcclient:
     build:

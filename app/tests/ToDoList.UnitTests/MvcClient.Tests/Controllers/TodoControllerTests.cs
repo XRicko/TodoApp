@@ -35,7 +35,7 @@ namespace MvcClient.Tests.Controllers
             imageAddingServiceMock = new Mock<IImageAddingService>();
             createViewModelServiceMock = new Mock<IViewModelService>();
 
-            todoController = new TodoController(ApiCallsServiceMock.Object, imageAddingServiceMock.Object, createViewModelServiceMock.Object);
+            todoController = new TodoController(ApiInvokerMock.Object, imageAddingServiceMock.Object, createViewModelServiceMock.Object);
 
             createOrUpdateViewName = "CreateOrUpdate";
             viewAllViewName = "_ViewAll";
@@ -175,7 +175,7 @@ namespace MvcClient.Tests.Controllers
 
             var createTodoItemViewModel = GetCreateTodoItemViewModel();
 
-            ApiCallsServiceMock.Setup(x => x.GetItemAsync<TodoItemModel>(routeWithId))
+            ApiInvokerMock.Setup(x => x.GetItemAsync<TodoItemModel>(routeWithId))
                                .ReturnsAsync(existingTodoItem)
                                .Verifiable();
 
@@ -196,7 +196,7 @@ namespace MvcClient.Tests.Controllers
             Assert.Equal(checklistId, viewModel.TodoItemModel.ChecklistId);
             Assert.Equal(existingId, viewModel.TodoItemModel.Id);
 
-            ApiCallsServiceMock.Verify();
+            ApiInvokerMock.Verify();
             createViewModelServiceMock.Verify();
         }
 
@@ -221,7 +221,7 @@ namespace MvcClient.Tests.Controllers
 
             var createTodoItemViewModel = GetCreateTodoItemViewModel();
 
-            ApiCallsServiceMock.Setup(x => x.GetItemAsync<TodoItemModel>(routeWithId))
+            ApiInvokerMock.Setup(x => x.GetItemAsync<TodoItemModel>(routeWithId))
                                .ReturnsAsync(existingTodoItem)
                                .Verifiable();
 
@@ -244,7 +244,7 @@ namespace MvcClient.Tests.Controllers
             Assert.Equal(lat.ToString(), viewModel.TodoItemModel.Latitude);
             Assert.Equal(lng.ToString(), viewModel.TodoItemModel.Longitude);
 
-            ApiCallsServiceMock.Verify();
+            ApiInvokerMock.Verify();
             createViewModelServiceMock.Verify();
         }
 
@@ -255,7 +255,7 @@ namespace MvcClient.Tests.Controllers
             int invalidId = 45;
             string routeWithId = $"{route}/{invalidId}";
 
-            ApiCallsServiceMock.Setup(x => x.GetItemAsync<TodoItemModel>(routeWithId))
+            ApiInvokerMock.Setup(x => x.GetItemAsync<TodoItemModel>(routeWithId))
                                .ReturnsAsync(() => null)
                                .Verifiable();
 
@@ -264,7 +264,7 @@ namespace MvcClient.Tests.Controllers
 
             // Assert
             Assert.Equal(404, result.StatusCode);
-            ApiCallsServiceMock.Verify();
+            ApiInvokerMock.Verify();
         }
 
         [Fact]
@@ -301,14 +301,14 @@ namespace MvcClient.Tests.Controllers
 
             IndexViewModel indexViewModel = new();
 
-            ApiCallsServiceMock.Setup(x => x.PostItemAsync(route, newTodoItem))
+            ApiInvokerMock.Setup(x => x.PostItemAsync(route, newTodoItem))
                                .Callback(() =>
                                {
                                    newTodoItem.Id = todoItems.Last().Id++;
                                    todoItems.Add(newTodoItem);
                                    indexViewModel.TodoItems = todoItems;
                                });
-            ApiCallsServiceMock.Setup(x => x.GetItemAsync<CategoryModel>("Categories/GetByName/" + category.Name))
+            ApiInvokerMock.Setup(x => x.GetItemAsync<CategoryModel>("Categories/GetByName/" + category.Name))
                                .ReturnsAsync(category);
 
             createViewModelServiceMock.Setup(x => x.CreateIndexViewModelAsync(null, null))
@@ -328,8 +328,8 @@ namespace MvcClient.Tests.Controllers
             Assert.Equal(category.Id, newTodoItem.CategoryId);
             Assert.Equal(geoCoordinate, todoItemWithGeoPoint.GeoPoint);
 
-            ApiCallsServiceMock.VerifyAll();
-            ApiCallsServiceMock.Verify(x => x.PostItemAsync("Categories", It.Is<CategoryModel>(m => m.Name == category.Name)), Times.Once);
+            ApiInvokerMock.VerifyAll();
+            ApiInvokerMock.Verify(x => x.PostItemAsync("Categories", It.Is<CategoryModel>(m => m.Name == category.Name)), Times.Once);
 
             createViewModelServiceMock.Verify();
         }
@@ -346,7 +346,7 @@ namespace MvcClient.Tests.Controllers
 
             IndexViewModel indexViewModel = new();
 
-            ApiCallsServiceMock.Setup(x => x.PutItemAsync(route, todoItemToUpdate))
+            ApiInvokerMock.Setup(x => x.PutItemAsync(route, todoItemToUpdate))
                                .Callback(() =>
                                {
                                    todoItems.SingleOrDefault(c => c.Id == todoItemToUpdate.Id).Name = todoItemToUpdate.Name;
@@ -365,7 +365,7 @@ namespace MvcClient.Tests.Controllers
             Assert.Equal(todoItemToUpdate.Name, viewModel.TodoItems.SingleOrDefault(c => c.Id == todoItemToUpdate.Id).Name);
             Assert.Equal(viewAllViewName, result.ViewName);
 
-            ApiCallsServiceMock.VerifyAll();
+            ApiInvokerMock.VerifyAll();
             createViewModelServiceMock.Verify();
         }
 
@@ -382,7 +382,7 @@ namespace MvcClient.Tests.Controllers
 
             IndexViewModel indexViewModel = new();
 
-            ApiCallsServiceMock.Setup(x => x.DeleteItemAsync(route + "/", idToDelete))
+            ApiInvokerMock.Setup(x => x.DeleteItemAsync(route + "/", idToDelete))
                                .Callback(() =>
                                {
                                    todoItems.Remove(todoItems.SingleOrDefault(c => c.Id == idToDelete));
@@ -401,7 +401,7 @@ namespace MvcClient.Tests.Controllers
             Assert.Equal(viewAllViewName, result.ViewName);
             Assert.DoesNotContain(It.Is<TodoItemModel>(m => m.Id == idToDelete), todoItems);
 
-            ApiCallsServiceMock.VerifyAll();
+            ApiInvokerMock.VerifyAll();
             createViewModelServiceMock.Verify();
         }
 
@@ -431,12 +431,12 @@ namespace MvcClient.Tests.Controllers
 
             IndexViewModel indexViewModel = new();
 
-            ApiCallsServiceMock.Setup(x => x.GetItemAsync<TodoItemModel>(routeWithId))
+            ApiInvokerMock.Setup(x => x.GetItemAsync<TodoItemModel>(routeWithId))
                                .ReturnsAsync(todoItem);
-            ApiCallsServiceMock.Setup(x => x.GetItemAsync<StatusModel>(routeForStatus))
+            ApiInvokerMock.Setup(x => x.GetItemAsync<StatusModel>(routeForStatus))
                                .ReturnsAsync(status);
 
-            ApiCallsServiceMock.Setup(x => x.PutItemAsync(route, todoItem))
+            ApiInvokerMock.Setup(x => x.PutItemAsync(route, todoItem))
                              .Callback((string s, TodoItemModel m) =>
                              {
                                  todoItems.SingleOrDefault(c => c.Id == todoItem.Id).StatusId = m.StatusId;
@@ -457,7 +457,7 @@ namespace MvcClient.Tests.Controllers
             Assert.NotNull(indexViewModel.TodoItems);
             Assert.NotEmpty(indexViewModel.TodoItems);
 
-            ApiCallsServiceMock.VerifyAll();
+            ApiInvokerMock.VerifyAll();
             createViewModelServiceMock.Verify();
         }
 

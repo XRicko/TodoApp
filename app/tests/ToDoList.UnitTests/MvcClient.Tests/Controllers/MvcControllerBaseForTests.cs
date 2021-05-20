@@ -6,11 +6,11 @@ namespace MvcClient.Tests.Controllers
 {
     public abstract class MvcControllerBaseForTests
     {
-        protected Mock<IApiInvoker> ApiCallsServiceMock { get; }
+        protected Mock<IApiInvoker> ApiInvokerMock { get; }
 
         public MvcControllerBaseForTests()
         {
-            ApiCallsServiceMock = new Mock<IApiInvoker>();
+            ApiInvokerMock = new Mock<IApiInvoker>();
         }
     }
 }

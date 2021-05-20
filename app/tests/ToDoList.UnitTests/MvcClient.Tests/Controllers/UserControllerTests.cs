@@ -28,7 +28,7 @@ namespace MvcClient.Tests.Controllers
         public UserControllerTests() : base()
         {
             localizerMock = new Mock<IStringLocalizer<UserController>>();
-            userController = new UserController(ApiCallsServiceMock.Object, localizerMock.Object);
+            userController = new UserController(ApiInvokerMock.Object, localizerMock.Object);
 
             registerViewName = "Register";
             loginViewName = "Login";
@@ -68,7 +68,7 @@ namespace MvcClient.Tests.Controllers
             var localizedString = new LocalizedString(key, error);
 
 
-            ApiCallsServiceMock.Setup(x => x.AuthenticateUserAsync("User/Register", existingUser))
+            ApiInvokerMock.Setup(x => x.AuthenticateUserAsync("Authentication/Register", existingUser))
                                .ThrowsAsync(new Exception("Unauthorized"))
                                .Verifiable();
             localizerMock.SetupGet(x => x[key])
@@ -82,7 +82,7 @@ namespace MvcClient.Tests.Controllers
             Assert.Equal(registerViewName, result.ViewName);
             Assert.Contains(userController.ModelState[string.Empty].Errors, e => e.ErrorMessage == error);
 
-            ApiCallsServiceMock.Verify();
+            ApiInvokerMock.Verify();
             localizerMock.Verify();
         }
 
@@ -99,7 +99,7 @@ namespace MvcClient.Tests.Controllers
             Assert.Equal(indexViewName, result.ActionName);
             Assert.Equal(todoControllerName, result.ControllerName);
 
-            ApiCallsServiceMock.Verify(x => x.AuthenticateUserAsync("User/Register", newUser), Times.Once);
+            ApiInvokerMock.Verify(x => x.AuthenticateUserAsync("Authentication/Register", newUser), Times.Once);
         }
 
         [Fact]
@@ -114,7 +114,7 @@ namespace MvcClient.Tests.Controllers
 
             userController.ModelState.AddModelError("ConfirmPassword", "Confirm password doesnt match");
 
-            ApiCallsServiceMock.Setup(x => x.AuthenticateUserAsync("User/Login", invalidUser))
+            ApiInvokerMock.Setup(x => x.AuthenticateUserAsync("Authentication/Login", invalidUser))
                                .ThrowsAsync(new Exception("Unauthorized"))
                                .Verifiable();
             localizerMock.SetupGet(x => x[key])
@@ -129,7 +129,7 @@ namespace MvcClient.Tests.Controllers
             Assert.Contains(userController.ModelState[string.Empty].Errors, e => e.ErrorMessage == error);
             Assert.Empty(userController.ModelState["ConfirmPassword"].Errors);
 
-            ApiCallsServiceMock.Verify();
+            ApiInvokerMock.Verify();
             localizerMock.Verify();
         }
 
@@ -146,7 +146,7 @@ namespace MvcClient.Tests.Controllers
             Assert.Equal(indexViewName, result.ActionName);
             Assert.Equal(todoControllerName, result.ControllerName);
 
-            ApiCallsServiceMock.Verify(x => x.AuthenticateUserAsync("User/Login", existingUser), Times.Once);
+            ApiInvokerMock.Verify(x => x.AuthenticateUserAsync("Authentication/Login", existingUser), Times.Once);
         }
 
         [Fact]
@@ -158,8 +158,10 @@ namespace MvcClient.Tests.Controllers
 
             httpContextMock.Setup(x => x.Response.Cookies.Delete("Token"))
                            .Verifiable();
-            controllerContextMock.Object.HttpContext = httpContextMock.Object;
+            httpContextMock.Setup(x => x.Response.Cookies.Delete("RefreshToken"))
+                           .Verifiable();
 
+            controllerContextMock.Object.HttpContext = httpContextMock.Object;
             userController.ControllerContext = controllerContextMock.Object;
 
             string homeControllerName = "Home";
@@ -171,6 +173,7 @@ namespace MvcClient.Tests.Controllers
             Assert.Equal(indexViewName, result.ActionName);
             Assert.Equal(homeControllerName, result.ControllerName);
 
+            ApiInvokerMock.Verify(x => x.LogoutAsync(), Times.Once);
             httpContextMock.Verify();
         }
     }

@@ -47,7 +47,7 @@ namespace ToDoList.Core.Services
                 if (address is null)
                 {
                     address = await geocodingService.GetAddressAsync(todoItemResponse.GeoPoint.Latitude, todoItemResponse.GeoPoint.Longitude);
-                    await cache.SetRecordAsync(recordKey, address, TimeSpan.FromDays(1));
+                    await cache.SetRecordAsync(recordKey, address, TimeSpan.FromDays(3));
                 }
 
                 return todoItemResponse with { Address = address };

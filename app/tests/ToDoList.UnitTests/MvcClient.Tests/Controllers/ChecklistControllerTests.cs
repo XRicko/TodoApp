@@ -31,7 +31,7 @@ namespace MvcClient.Tests.Controllers
         {
             viewModelServiceMock = new Mock<IViewModelService>();
 
-            checklistController = new ChecklistController(ApiCallsServiceMock.Object, viewModelServiceMock.Object);
+            checklistController = new ChecklistController(ApiInvokerMock.Object, viewModelServiceMock.Object);
 
             userId = 5;
             route = "Checklists";
@@ -61,7 +61,7 @@ namespace MvcClient.Tests.Controllers
 
             string routeWithId = $"{route}/{checklist.Id}";
 
-            ApiCallsServiceMock.Setup(x => x.GetItemAsync<ChecklistModel>(routeWithId))
+            ApiInvokerMock.Setup(x => x.GetItemAsync<ChecklistModel>(routeWithId))
                                .ReturnsAsync(checklist)
                                .Verifiable();
 
@@ -73,7 +73,7 @@ namespace MvcClient.Tests.Controllers
             Assert.Same(checklist, viewModel);
             Assert.Equal(createOrUpdateViewName, result.ViewName);
 
-            ApiCallsServiceMock.Verify();
+            ApiInvokerMock.Verify();
         }
 
         [Fact]
@@ -83,7 +83,7 @@ namespace MvcClient.Tests.Controllers
             int invalidId = 45;
             string routeWithId = $"{route}/{invalidId}";
 
-            ApiCallsServiceMock.Setup(x => x.GetItemAsync<ChecklistModel>(routeWithId))
+            ApiInvokerMock.Setup(x => x.GetItemAsync<ChecklistModel>(routeWithId))
                               .ReturnsAsync(() => null)
                               .Verifiable();
 
@@ -92,7 +92,7 @@ namespace MvcClient.Tests.Controllers
 
             // Assert
             Assert.Equal(404, result.StatusCode);
-            ApiCallsServiceMock.Verify();
+            ApiInvokerMock.Verify();
         }
 
         [Fact]
@@ -120,7 +120,7 @@ namespace MvcClient.Tests.Controllers
 
             IndexViewModel indexViewModel = new();
 
-            ApiCallsServiceMock.Setup(x => x.PostItemAsync(route, newChecklist))
+            ApiInvokerMock.Setup(x => x.PostItemAsync(route, newChecklist))
                                .Callback(() =>
                                {
                                    newChecklist.Id = checklists.Last().Id++;
@@ -139,7 +139,7 @@ namespace MvcClient.Tests.Controllers
             Assert.Contains(newChecklist, viewModel.ChecklistModels);
             Assert.Equal(viewAllViewName, result.ViewName);
 
-            ApiCallsServiceMock.VerifyAll();
+            ApiInvokerMock.VerifyAll();
             viewModelServiceMock.Verify();
         }
 
@@ -152,7 +152,7 @@ namespace MvcClient.Tests.Controllers
 
             IndexViewModel indexViewModel = new();
 
-            ApiCallsServiceMock.Setup(x => x.PutItemAsync(route, checklistToUpdate))
+            ApiInvokerMock.Setup(x => x.PutItemAsync(route, checklistToUpdate))
                                .Callback(() =>
                                {
                                    checklists.SingleOrDefault(c => c.Id == checklistToUpdate.Id).Name = checklistToUpdate.Name;
@@ -170,7 +170,7 @@ namespace MvcClient.Tests.Controllers
             Assert.Equal(checklistToUpdate.Name, viewModel.ChecklistModels.SingleOrDefault(c => c.Id == checklistToUpdate.Id).Name);
             Assert.Equal(viewAllViewName, result.ViewName);
 
-            ApiCallsServiceMock.VerifyAll();
+            ApiInvokerMock.VerifyAll();
             viewModelServiceMock.Verify();
         }
 
@@ -187,7 +187,7 @@ namespace MvcClient.Tests.Controllers
 
             IndexViewModel indexViewModel = new();
 
-            ApiCallsServiceMock.Setup(x => x.DeleteItemAsync(route + "/", idToDelete))
+            ApiInvokerMock.Setup(x => x.DeleteItemAsync(route + "/", idToDelete))
                                .Callback(() =>
                                {
                                    checklists.Remove(checklists.SingleOrDefault(c => c.Id == idToDelete));
@@ -202,7 +202,7 @@ namespace MvcClient.Tests.Controllers
             Assert.Equal(viewAllViewName, result.ViewName);
             Assert.DoesNotContain(It.Is<ChecklistModel>(m => m.Id == idToDelete), viewModel.ChecklistModels);
 
-            ApiCallsServiceMock.VerifyAll();
+            ApiInvokerMock.VerifyAll();
             viewModelServiceMock.Verify();
         }
     }

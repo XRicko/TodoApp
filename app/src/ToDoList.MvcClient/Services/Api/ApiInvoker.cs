@@ -15,10 +15,10 @@ namespace ToDoList.MvcClient.Services.Api
     [ExcludeFromCodeCoverage]
     public class ApiInvoker : IApiInvoker
     {
-        private readonly IHttpContextAccessor httpContextAccessor;
         private readonly HttpClient httpClient;
+        private readonly IHttpContextAccessor httpContextAccessor;
 
-        public ApiInvoker(IHttpContextAccessor httpAccessor, HttpClient client)
+        public ApiInvoker(HttpClient client, IHttpContextAccessor httpAccessor)
         {
             httpContextAccessor = httpAccessor ?? throw new ArgumentNullException(nameof(httpAccessor));
             httpClient = client ?? throw new ArgumentNullException(nameof(client));
