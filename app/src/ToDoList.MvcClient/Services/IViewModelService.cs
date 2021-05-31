@@ -8,6 +8,6 @@ namespace ToDoList.MvcClient.Services
     public interface IViewModelService
     {
         Task<IndexViewModel> CreateIndexViewModelAsync(string categoryName = null, string statusName = null);
-        Task<CreateTodoItemViewModel> CreateViewModelCreateOrUpdateTodoItemAsync(TodoItemModel todoItemModel);
+        Task<CreateTodoItemViewModel> CreateViewModelCreateOrUpdateTodoItemAsync(TodoItemModelWithFile todoItemModel);
     }
 }

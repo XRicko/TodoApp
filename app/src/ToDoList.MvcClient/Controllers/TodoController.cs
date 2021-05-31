@@ -8,8 +8,9 @@ using Microsoft.AspNetCore.Mvc;
 
 using ToDoList.MvcClient.Models;
 using ToDoList.MvcClient.Services;
-using ToDoList.MvcClient.Services.Api;
 using ToDoList.MvcClient.ViewModels;
+using ToDoList.SharedClientLibrary.Models;
+using ToDoList.SharedClientLibrary.Services;
 
 namespace ToDoList.MvcClient.Controllers
 {
@@ -38,11 +39,11 @@ namespace ToDoList.MvcClient.Controllers
 
             if (todoItemId == 0)
             {
-                TodoItemModel todoItem = new() { ChecklistId = checklistId };
+                TodoItemModelWithFile todoItem = new() { ChecklistId = checklistId };
                 return View(viewName, await viewModelService.CreateViewModelCreateOrUpdateTodoItemAsync(todoItem));
             }
 
-            var todoItemModel = await apiInvoker.GetItemAsync<TodoItemModel>("TodoItems/" + todoItemId);
+            var todoItemModel = await apiInvoker.GetItemAsync<TodoItemModelWithFile>("TodoItems/" + todoItemId);
 
             if (todoItemModel is null)
                 return NotFound();
@@ -79,9 +80,9 @@ namespace ToDoList.MvcClient.Controllers
 
             return base.PartialView("_ViewAll", await viewModelService.CreateIndexViewModelAsync());
 
-            static bool LatLongExists(TodoItemModel todoItemModel) => !string.IsNullOrWhiteSpace(todoItemModel.Latitude)
+            static bool LatLongExists(TodoItemModelWithFile todoItemModel) => !string.IsNullOrWhiteSpace(todoItemModel.Latitude)
                                                                       && !string.IsNullOrWhiteSpace(todoItemModel.Latitude);
-            static bool IsNewItem(TodoItemModel todoItemModel) => todoItemModel.Id is 0;
+            static bool IsNewItem(TodoItemModelWithFile todoItemModel) => todoItemModel.Id is 0;
         }
 
         [HttpPost]
@@ -96,7 +97,7 @@ namespace ToDoList.MvcClient.Controllers
         [HttpPost]
         public async Task<IActionResult> MarkTodoItemAsync(int id, bool isDone)
         {
-            var todoItemModel = await apiInvoker.GetItemAsync<TodoItemModel>("TodoItems/" + id);
+            var todoItemModel = await apiInvoker.GetItemAsync<TodoItemModelWithFile>("TodoItems/" + id);
 
             if (isDone)
                 await ChangeStatusToAsync(todoItemModel, "Done");
@@ -111,7 +112,7 @@ namespace ToDoList.MvcClient.Controllers
         public IActionResult Error() =>
             View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
 
-        private async Task ChangeStatusToAsync(TodoItemModel todoItemModel, string statusName)
+        private async Task ChangeStatusToAsync(TodoItemModelWithFile todoItemModel, string statusName)
         {
             var status = await apiInvoker.GetItemAsync<StatusModel>("Statuses/GetByName/" + statusName);
             todoItemModel.StatusId = status.Id;
@@ -119,7 +120,7 @@ namespace ToDoList.MvcClient.Controllers
             await apiInvoker.PutItemAsync("TodoItems", todoItemModel);
         }
 
-        private static void AddGeoPoint(TodoItemModel todoItemModel)
+        private static void AddGeoPoint(TodoItemModelWithFile todoItemModel)
         {
             double latitude = double.Parse(todoItemModel.Latitude.Replace(',', '.'), CultureInfo.InvariantCulture);
             double longitude = double.Parse(todoItemModel.Longitude.Replace(',', '.'), CultureInfo.InvariantCulture);
@@ -127,7 +128,7 @@ namespace ToDoList.MvcClient.Controllers
             todoItemModel.GeoPoint = new(longitude, latitude);
         }
 
-        private async Task AddCategory(TodoItemModel todoItemModel)
+        private async Task AddCategory(TodoItemModelWithFile todoItemModel)
         {
             await apiInvoker.PostItemAsync("Categories", new CategoryModel { Name = todoItemModel.CategoryName });
 
@@ -135,7 +136,7 @@ namespace ToDoList.MvcClient.Controllers
             todoItemModel.CategoryId = category.Id;
         }
 
-        private async Task AddTodoItem(TodoItemModel todoItemModel)
+        private async Task AddTodoItem(TodoItemModelWithFile todoItemModel)
         {
             if (todoItemModel.Image is not null)
                 await imageAddingService.AddImageInTodoItemAsync(todoItemModel);
@@ -143,7 +144,7 @@ namespace ToDoList.MvcClient.Controllers
             await apiInvoker.PostItemAsync("TodoItems", todoItemModel);
         }
 
-        private async Task UpdateTodoItem(TodoItemModel todoItemModel)
+        private async Task UpdateTodoItem(TodoItemModelWithFile todoItemModel)
         {
             if (todoItemModel.Image is not null)
                 await imageAddingService.AddImageInTodoItemAsync(todoItemModel);

@@ -3,14 +3,8 @@
 @{
     ViewData["Title"] = Localizer["Title"];
 }
-@if (Context.Request.Cookies["Token"] is null && Context.Request.Cookies["RefreshToken"] is null)
-{
-    <div class="text-center">
-        <h1 class="display-4">@Localizer["Welcome"]</h1>
-        <p>@Localizer["WelcomeInformation"]</p>
-    </div>
-}
-else
-{
-    Context.Response.Redirect("/Todo/Index");
-}
+
+<div class="text-center">
+    <h1 class="display-4">@Localizer["Welcome"]</h1>
+    <p>@Localizer["WelcomeInformation"]</p>
+</div>

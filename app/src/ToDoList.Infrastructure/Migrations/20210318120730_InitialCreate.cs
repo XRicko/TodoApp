@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics.CodeAnalysis;
 
 using Microsoft.EntityFrameworkCore.Migrations;
 
@@ -7,7 +6,6 @@ using NetTopologySuite.Geometries;
 
 namespace ToDoList.Infrastructure.Migrations
 {
-    [ExcludeFromCodeCoverage]
     public partial class InitialCreate : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)

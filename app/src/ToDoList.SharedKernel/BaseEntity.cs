@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Diagnostics.CodeAnalysis;
 
 namespace ToDoList.SharedKernel
 {
-    [ExcludeFromCodeCoverage]
     public abstract class BaseEntity
     {
         private string name;

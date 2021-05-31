@@ -1,6 +1,6 @@
 ﻿using Moq;
 
-using ToDoList.MvcClient.Services.Api;
+using ToDoList.SharedClientLibrary.Services;
 
 namespace MvcClient.Tests.Controllers
 {

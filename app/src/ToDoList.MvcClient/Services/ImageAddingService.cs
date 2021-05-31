@@ -7,7 +7,8 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 
 using ToDoList.MvcClient.Models;
-using ToDoList.MvcClient.Services.Api;
+using ToDoList.SharedClientLibrary.Models;
+using ToDoList.SharedClientLibrary.Services;
 
 namespace ToDoList.MvcClient.Services
 {
@@ -23,7 +24,7 @@ namespace ToDoList.MvcClient.Services
             apiInvoker = invoker ?? throw new ArgumentNullException(nameof(invoker));
         }
 
-        public async Task AddImageInTodoItemAsync(TodoItemModel todoItem)
+        public async Task AddImageInTodoItemAsync(TodoItemModelWithFile todoItem)
         {
             _ = todoItem ?? throw new ArgumentNullException(nameof(todoItem));
             _ = todoItem.Image ?? throw new ArgumentNullException(nameof(todoItem.Image));

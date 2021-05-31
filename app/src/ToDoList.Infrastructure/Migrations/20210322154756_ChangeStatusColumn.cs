@@ -1,10 +1,8 @@
-﻿using System.Diagnostics.CodeAnalysis;
-
+﻿
 using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace ToDoList.Infrastructure.Migrations
 {
-    [ExcludeFromCodeCoverage]
     public partial class ChangeStatusColumn : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)

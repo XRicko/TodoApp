@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace ToDoList.MvcClient.Resources.Validaton {
+namespace ToDoList.SharedClientLibrary.Resources.Validaton {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace ToDoList.MvcClient.Resources.Validaton {
         public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("ToDoList.MvcClient.Resources.Validaton.AnnotationResources", typeof(AnnotationResources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("ToDoList.SharedClientLibrary.Resources.Validaton.AnnotationResources", typeof(AnnotationResources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;

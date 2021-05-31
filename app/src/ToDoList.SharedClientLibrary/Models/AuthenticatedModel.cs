@@ -1,4 +1,4 @@
-﻿namespace ToDoList.MvcClient.Models
+﻿namespace ToDoList.SharedClientLibrary.Models
 {
     public class AuthenticatedModel
     {

@@ -1,15 +1,11 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
-using System.Diagnostics.CodeAnalysis;
 
-using Microsoft.AspNetCore.Http;
-
-using ToDoList.MvcClient.Resources.Validaton;
+using ToDoList.SharedClientLibrary.Resources.Validaton;
 using ToDoList.SharedKernel;
 
-namespace ToDoList.MvcClient.Models
+namespace ToDoList.SharedClientLibrary.Models
 {
-    [ExcludeFromCodeCoverage]
     public class TodoItemModel : BaseModel
     {
         public DateTime StartDate { get; set; }
@@ -35,8 +31,6 @@ namespace ToDoList.MvcClient.Models
         public string ChecklistName { get; set; }
         public string ImageName { get; set; }
         public string ImagePath { get; set; }
-
-        public IFormFile Image { get; set; }
 
         public string Address { get; set; }
     }

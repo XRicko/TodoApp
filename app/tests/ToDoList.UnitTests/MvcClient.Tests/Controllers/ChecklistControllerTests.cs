@@ -7,9 +7,9 @@ using Microsoft.AspNetCore.Mvc;
 using Moq;
 
 using ToDoList.MvcClient.Controllers;
-using ToDoList.MvcClient.Models;
 using ToDoList.MvcClient.Services;
 using ToDoList.MvcClient.ViewModels;
+using ToDoList.SharedClientLibrary.Models;
 
 using Xunit;
 
@@ -121,12 +121,12 @@ namespace MvcClient.Tests.Controllers
             IndexViewModel indexViewModel = new();
 
             ApiInvokerMock.Setup(x => x.PostItemAsync(route, newChecklist))
-                               .Callback(() =>
-                               {
-                                   newChecklist.Id = checklists.Last().Id++;
-                                   checklists.Add(newChecklist);
-                                   indexViewModel.ChecklistModels = checklists;
-                               });
+                          .Callback(() =>
+                          {
+                              newChecklist.Id = checklists.Last().Id++;
+                              checklists.Add(newChecklist);
+                              indexViewModel.ChecklistModels = checklists;
+                          });
             viewModelServiceMock.Setup(x => x.CreateIndexViewModelAsync(null, null))
                                 .ReturnsAsync(indexViewModel)
                                 .Verifiable();
@@ -153,11 +153,11 @@ namespace MvcClient.Tests.Controllers
             IndexViewModel indexViewModel = new();
 
             ApiInvokerMock.Setup(x => x.PutItemAsync(route, checklistToUpdate))
-                               .Callback(() =>
-                               {
-                                   checklists.SingleOrDefault(c => c.Id == checklistToUpdate.Id).Name = checklistToUpdate.Name;
-                                   indexViewModel.ChecklistModels = checklists;
-                               });
+                          .Callback(() =>
+                          {
+                              checklists.SingleOrDefault(c => c.Id == checklistToUpdate.Id).Name = checklistToUpdate.Name;
+                              indexViewModel.ChecklistModels = checklists;
+                          });
             viewModelServiceMock.Setup(x => x.CreateIndexViewModelAsync(null, null))
                                 .ReturnsAsync(indexViewModel)
                                 .Verifiable();
@@ -188,11 +188,11 @@ namespace MvcClient.Tests.Controllers
             IndexViewModel indexViewModel = new();
 
             ApiInvokerMock.Setup(x => x.DeleteItemAsync(route + "/", idToDelete))
-                               .Callback(() =>
-                               {
-                                   checklists.Remove(checklists.SingleOrDefault(c => c.Id == idToDelete));
-                                   indexViewModel.ChecklistModels = checklists;
-                               });
+                          .Callback(() =>
+                          {
+                              checklists.Remove(checklists.SingleOrDefault(c => c.Id == idToDelete));
+                              indexViewModel.ChecklistModels = checklists;
+                          });
             viewModelServiceMock.Setup(x => x.CreateIndexViewModelAsync(null, null)).ReturnsAsync(indexViewModel).Verifiable();
 
             // Act

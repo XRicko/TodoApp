@@ -10,6 +10,7 @@ using ToDoList.MvcClient.Controllers;
 using ToDoList.MvcClient.Models;
 using ToDoList.MvcClient.Services;
 using ToDoList.MvcClient.ViewModels;
+using ToDoList.SharedClientLibrary.Models;
 using ToDoList.SharedKernel;
 
 using Xunit;
@@ -145,8 +146,8 @@ namespace MvcClient.Tests.Controllers
             // Arrange
             var createTodoItemViewModel = GetCreateTodoItemViewModel();
 
-            createViewModelServiceMock.Setup(x => x.CreateViewModelCreateOrUpdateTodoItemAsync(It.Is<TodoItemModel>(m => m.Id == 0)))
-                                      .ReturnsAsync((TodoItemModel m) =>
+            createViewModelServiceMock.Setup(x => x.CreateViewModelCreateOrUpdateTodoItemAsync(It.Is<TodoItemModelWithFile>(m => m.Id == 0)))
+                                      .ReturnsAsync((TodoItemModelWithFile m) =>
                                       {
                                           createTodoItemViewModel.TodoItemModel = m;
                                           return createTodoItemViewModel;
@@ -169,18 +170,18 @@ namespace MvcClient.Tests.Controllers
         {
             // Arrange
             int existingId = 3;
-            var existingTodoItem = new TodoItemModel { Id = existingId, Name = "Somehting", ChecklistId = checklistId, StatusId = 1 };
+            var existingTodoItem = new TodoItemModelWithFile { Id = existingId, Name = "Somehting", ChecklistId = checklistId, StatusId = 1 };
 
             string routeWithId = $"{route}/{existingId}";
 
             var createTodoItemViewModel = GetCreateTodoItemViewModel();
 
-            ApiInvokerMock.Setup(x => x.GetItemAsync<TodoItemModel>(routeWithId))
-                               .ReturnsAsync(existingTodoItem)
-                               .Verifiable();
+            ApiInvokerMock.Setup(x => x.GetItemAsync<TodoItemModelWithFile>(routeWithId))
+                          .ReturnsAsync(existingTodoItem)
+                          .Verifiable();
 
             createViewModelServiceMock.Setup(x => x.CreateViewModelCreateOrUpdateTodoItemAsync(existingTodoItem))
-                                      .ReturnsAsync((TodoItemModel m) =>
+                                      .ReturnsAsync((TodoItemModelWithFile m) =>
                                       {
                                           createTodoItemViewModel.TodoItemModel = m;
                                           return createTodoItemViewModel;
@@ -208,7 +209,7 @@ namespace MvcClient.Tests.Controllers
             double lng = 54.76547;
 
             int existingId = 3;
-            var existingTodoItem = new TodoItemModel
+            var existingTodoItem = new TodoItemModelWithFile
             {
                 Id = existingId,
                 Name = "Somehting",
@@ -221,12 +222,12 @@ namespace MvcClient.Tests.Controllers
 
             var createTodoItemViewModel = GetCreateTodoItemViewModel();
 
-            ApiInvokerMock.Setup(x => x.GetItemAsync<TodoItemModel>(routeWithId))
-                               .ReturnsAsync(existingTodoItem)
-                               .Verifiable();
+            ApiInvokerMock.Setup(x => x.GetItemAsync<TodoItemModelWithFile>(routeWithId))
+                          .ReturnsAsync(existingTodoItem)
+                          .Verifiable();
 
             createViewModelServiceMock.Setup(x => x.CreateViewModelCreateOrUpdateTodoItemAsync(existingTodoItem))
-                                      .ReturnsAsync((TodoItemModel m) =>
+                                      .ReturnsAsync((TodoItemModelWithFile m) =>
                                       {
                                           createTodoItemViewModel.TodoItemModel = m;
                                           return createTodoItemViewModel;
@@ -255,9 +256,9 @@ namespace MvcClient.Tests.Controllers
             int invalidId = 45;
             string routeWithId = $"{route}/{invalidId}";
 
-            ApiInvokerMock.Setup(x => x.GetItemAsync<TodoItemModel>(routeWithId))
-                               .ReturnsAsync(() => null)
-                               .Verifiable();
+            ApiInvokerMock.Setup(x => x.GetItemAsync<TodoItemModelWithFile>(routeWithId))
+                          .ReturnsAsync(() => null)
+                          .Verifiable();
 
             // Act
             var result = await todoController.CreateOrUpdateAsync(checklistId, invalidId) as NotFoundResult;
@@ -278,12 +279,12 @@ namespace MvcClient.Tests.Controllers
 
             var category = new CategoryModel { Id = 1, Name = "Important" };
 
-            var todoItems = new List<TodoItemModel>
+            var todoItems = new List<TodoItemModelWithFile>
             {
-                new TodoItemModel { Id = 1, Name = "Read a book", ChecklistId = checklistId }
+                new TodoItemModelWithFile { Id = 1, Name = "Read a book", ChecklistId = checklistId }
             };
 
-            var newTodoItem = new TodoItemModel
+            var newTodoItem = new TodoItemModelWithFile
             {
                 Id = 0,
                 Name = "Wath some film",
@@ -302,14 +303,14 @@ namespace MvcClient.Tests.Controllers
             IndexViewModel indexViewModel = new();
 
             ApiInvokerMock.Setup(x => x.PostItemAsync(route, newTodoItem))
-                               .Callback(() =>
-                               {
-                                   newTodoItem.Id = todoItems.Last().Id++;
-                                   todoItems.Add(newTodoItem);
-                                   indexViewModel.TodoItems = todoItems;
-                               });
+                          .Callback(() =>
+                          {
+                              newTodoItem.Id = todoItems.Last().Id++;
+                              todoItems.Add(newTodoItem);
+                              indexViewModel.TodoItems = todoItems;
+                          });
             ApiInvokerMock.Setup(x => x.GetItemAsync<CategoryModel>("Categories/GetByName/" + category.Name))
-                               .ReturnsAsync(category);
+                          .ReturnsAsync(category);
 
             createViewModelServiceMock.Setup(x => x.CreateIndexViewModelAsync(null, null))
                                       .ReturnsAsync(indexViewModel)
@@ -338,8 +339,8 @@ namespace MvcClient.Tests.Controllers
         public async Task Post_CreateOrUpdate_ReturnsViewAllWithUpdatedTodoItemGivenExisting()
         {
             // Arrange
-            var todoItemToUpdate = new TodoItemModel { Id = 2, Name = "Clean my room", ChecklistId = checklistId };
-            var todoItems = new List<TodoItemModel> { new TodoItemModel { Id = 2, Name = "Do nothing", ChecklistId = checklistId } };
+            var todoItemToUpdate = new TodoItemModelWithFile { Id = 2, Name = "Clean my room", ChecklistId = checklistId };
+            var todoItems = new List<TodoItemModelWithFile> { new TodoItemModelWithFile { Id = 2, Name = "Do nothing", ChecklistId = checklistId } };
 
             var createTodoItemViewModel = GetCreateTodoItemViewModel();
             createTodoItemViewModel.TodoItemModel = todoItemToUpdate;
@@ -347,11 +348,11 @@ namespace MvcClient.Tests.Controllers
             IndexViewModel indexViewModel = new();
 
             ApiInvokerMock.Setup(x => x.PutItemAsync(route, todoItemToUpdate))
-                               .Callback(() =>
-                               {
-                                   todoItems.SingleOrDefault(c => c.Id == todoItemToUpdate.Id).Name = todoItemToUpdate.Name;
-                                   indexViewModel.TodoItems = todoItems;
-                               });
+                          .Callback(() =>
+                          {
+                              todoItems.SingleOrDefault(c => c.Id == todoItemToUpdate.Id).Name = todoItemToUpdate.Name;
+                              indexViewModel.TodoItems = todoItems;
+                          });
 
             createViewModelServiceMock.Setup(x => x.CreateIndexViewModelAsync(null, null))
                                       .ReturnsAsync(indexViewModel)
@@ -373,21 +374,21 @@ namespace MvcClient.Tests.Controllers
         public async Task Post_Delete_ReturnsViewAllWithDeletedTodoItem()
         {
             // Arrange
-            var todoItems = new List<TodoItemModel>
+            var todoItems = new List<TodoItemModelWithFile>
             {
-                new TodoItemModel { Id = 1, Name = "somethuing", ChecklistId = checklistId },
-                new TodoItemModel { Id = 2, Name = "ToBeDeleted", ChecklistId = checklistId }
+                new TodoItemModelWithFile { Id = 1, Name = "somethuing", ChecklistId = checklistId },
+                new TodoItemModelWithFile { Id = 2, Name = "ToBeDeleted", ChecklistId = checklistId }
             };
             int idToDelete = 2;
 
             IndexViewModel indexViewModel = new();
 
             ApiInvokerMock.Setup(x => x.DeleteItemAsync(route + "/", idToDelete))
-                               .Callback(() =>
-                               {
-                                   todoItems.Remove(todoItems.SingleOrDefault(c => c.Id == idToDelete));
-                                   indexViewModel.TodoItems = todoItems;
-                               });
+                          .Callback(() =>
+                          {
+                              todoItems.Remove(todoItems.SingleOrDefault(c => c.Id == idToDelete));
+                              indexViewModel.TodoItems = todoItems;
+                          });
 
             createViewModelServiceMock.Setup(x => x.CreateIndexViewModelAsync(null, null))
                                       .ReturnsAsync(indexViewModel)
@@ -399,7 +400,7 @@ namespace MvcClient.Tests.Controllers
 
             Assert.Same(indexViewModel, viewModel);
             Assert.Equal(viewAllViewName, result.ViewName);
-            Assert.DoesNotContain(It.Is<TodoItemModel>(m => m.Id == idToDelete), todoItems);
+            Assert.DoesNotContain(It.Is<TodoItemModelWithFile>(m => m.Id == idToDelete), todoItems);
 
             ApiInvokerMock.VerifyAll();
             createViewModelServiceMock.Verify();
@@ -420,8 +421,8 @@ namespace MvcClient.Tests.Controllers
         private async Task TestMarkTodoItem(bool isDone)
         {
             // Arrange
-            var todoItem = new TodoItemModel { Id = 1, Name = "Read a book", ChecklistId = checklistId };
-            var todoItems = new List<TodoItemModel> { todoItem };
+            var todoItem = new TodoItemModelWithFile { Id = 1, Name = "Read a book", ChecklistId = checklistId };
+            var todoItems = new List<TodoItemModelWithFile> { todoItem };
 
             string statusName = isDone ? "Done" : "Ongoing";
             var status = new StatusModel { Id = 3, Name = statusName, IsDone = isDone };
@@ -431,17 +432,17 @@ namespace MvcClient.Tests.Controllers
 
             IndexViewModel indexViewModel = new();
 
-            ApiInvokerMock.Setup(x => x.GetItemAsync<TodoItemModel>(routeWithId))
-                               .ReturnsAsync(todoItem);
+            ApiInvokerMock.Setup(x => x.GetItemAsync<TodoItemModelWithFile>(routeWithId))
+                          .ReturnsAsync(todoItem);
             ApiInvokerMock.Setup(x => x.GetItemAsync<StatusModel>(routeForStatus))
-                               .ReturnsAsync(status);
+                          .ReturnsAsync(status);
 
             ApiInvokerMock.Setup(x => x.PutItemAsync(route, todoItem))
-                             .Callback((string s, TodoItemModel m) =>
-                             {
-                                 todoItems.SingleOrDefault(c => c.Id == todoItem.Id).StatusId = m.StatusId;
-                                 indexViewModel.TodoItems = todoItems;
-                             });
+                          .Callback((string s, TodoItemModelWithFile m) =>
+                          {
+                              todoItems.SingleOrDefault(c => c.Id == todoItem.Id).StatusId = m.StatusId;
+                              indexViewModel.TodoItems = todoItems;
+                          });
 
             createViewModelServiceMock.Setup(x => x.CreateIndexViewModelAsync(null, null))
                                       .ReturnsAsync(indexViewModel)
@@ -465,7 +466,7 @@ namespace MvcClient.Tests.Controllers
         {
             return new IndexViewModel
             {
-                TodoItems = new List<TodoItemModel>(),
+                TodoItems = new List<TodoItemModelWithFile>(),
                 ChecklistModels = new List<ChecklistModel> { new ChecklistModel { Id = 1, Name = "Chores" } },
 
                 SelectedCategory = category,

@@ -4,8 +4,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 
-using ToDoList.MvcClient.Models;
-using ToDoList.MvcClient.Services.Api;
+using ToDoList.SharedClientLibrary.Models;
+using ToDoList.SharedClientLibrary.Services;
 
 namespace ToDoList.MvcClient.Controllers
 {
@@ -17,7 +17,7 @@ namespace ToDoList.MvcClient.Controllers
         public UserController(IApiInvoker invoker, IStringLocalizer<UserController> stringLocalizer)
         {
             apiInvoker = invoker ?? throw new ArgumentNullException(nameof(invoker));
-            localizer = stringLocalizer;
+            localizer = stringLocalizer ?? throw new ArgumentNullException(nameof(stringLocalizer));
         }
 
         public IActionResult Login()
@@ -30,7 +30,6 @@ namespace ToDoList.MvcClient.Controllers
             return View("Register");
         }
 
-
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> RegisterAsync(UserModel userModel)
@@ -39,7 +38,7 @@ namespace ToDoList.MvcClient.Controllers
 
             try
             {
-                await apiInvoker.AuthenticateUserAsync("Authentication/Register", userModel);
+                _ = await apiInvoker.AuthenticateUserAsync("Authentication/Register", userModel);
             }
             catch (Exception e)
             {
@@ -61,7 +60,7 @@ namespace ToDoList.MvcClient.Controllers
 
             try
             {
-                await apiInvoker.AuthenticateUserAsync("Authentication/Login", userModel);
+                _ = await apiInvoker.AuthenticateUserAsync("Authentication/Login", userModel);
             }
             catch (Exception e)
             {
@@ -80,11 +79,7 @@ namespace ToDoList.MvcClient.Controllers
 
         public async Task<IActionResult> LogoutAsync()
         {
-            HttpContext.Response.Cookies.Delete("Token");
-            HttpContext.Response.Cookies.Delete("RefreshToken");
-
             await apiInvoker.LogoutAsync();
-
             return RedirectToAction("Index", "Home");
         }
     }

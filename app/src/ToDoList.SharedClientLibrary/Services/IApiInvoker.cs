@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 
-using ToDoList.MvcClient.Models;
+using ToDoList.SharedClientLibrary.Models;
 
-namespace ToDoList.MvcClient.Services.Api
+namespace ToDoList.SharedClientLibrary.Services
 {
     public interface IApiInvoker
     {
@@ -14,7 +14,7 @@ namespace ToDoList.MvcClient.Services.Api
         Task PutItemAsync<T>(string route, T item) where T : BaseModel;
         Task DeleteItemAsync(string route, int id);
 
-        Task AuthenticateUserAsync(string route, UserModel userModel);
+        Task<AuthenticatedModel> AuthenticateUserAsync(string route, UserModel userModel);
         Task LogoutAsync();
     }
 }

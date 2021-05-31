@@ -1,11 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.Diagnostics.CodeAnalysis;
 
-using ToDoList.MvcClient.Resources.Validaton;
+using ToDoList.SharedClientLibrary.Resources.Validaton;
 
-namespace ToDoList.MvcClient.Models
+namespace ToDoList.SharedClientLibrary.Models
 {
-    [ExcludeFromCodeCoverage]
     public abstract class BaseModel
     {
         public int Id { get; set; }

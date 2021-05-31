@@ -3,9 +3,9 @@ using System.Threading.Tasks;
 
 using Microsoft.AspNetCore.Mvc;
 
-using ToDoList.MvcClient.Models;
 using ToDoList.MvcClient.Services;
-using ToDoList.MvcClient.Services.Api;
+using ToDoList.SharedClientLibrary.Models;
+using ToDoList.SharedClientLibrary.Services;
 
 namespace ToDoList.MvcClient.Controllers
 {

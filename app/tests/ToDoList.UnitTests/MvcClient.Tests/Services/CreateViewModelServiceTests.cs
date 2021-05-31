@@ -6,7 +6,8 @@ using Moq;
 
 using ToDoList.MvcClient.Models;
 using ToDoList.MvcClient.Services;
-using ToDoList.MvcClient.Services.Api;
+using ToDoList.SharedClientLibrary.Models;
+using ToDoList.SharedClientLibrary.Services;
 
 using Xunit;
 
@@ -37,7 +38,7 @@ namespace MvcClient.Tests.Services
             // Arrange
             var todoItems = GetActiveTodoItems();
 
-            apiInvokerMock.Setup(x => x.GetItemsAsync<TodoItemModel>("TodoItems"))
+            apiInvokerMock.Setup(x => x.GetItemsAsync<TodoItemModelWithFile>("TodoItems"))
                    .ReturnsAsync(todoItems)
                    .Verifiable();
 
@@ -59,7 +60,7 @@ namespace MvcClient.Tests.Services
 
             var todoItems = GetActiveTodoItems();
 
-            apiInvokerMock.Setup(x => x.GetItemsAsync<TodoItemModel>("TodoItems"))
+            apiInvokerMock.Setup(x => x.GetItemsAsync<TodoItemModelWithFile>("TodoItems"))
                    .ReturnsAsync(todoItems)
                    .Verifiable();
 
@@ -83,7 +84,7 @@ namespace MvcClient.Tests.Services
 
             var todoItems = GetActiveTodoItems();
 
-            apiInvokerMock.Setup(x => x.GetItemsAsync<TodoItemModel>("TodoItems"))
+            apiInvokerMock.Setup(x => x.GetItemsAsync<TodoItemModelWithFile>("TodoItems"))
                    .ReturnsAsync(todoItems)
                    .Verifiable();
 
@@ -108,7 +109,7 @@ namespace MvcClient.Tests.Services
 
             var todoItems = GetActiveTodoItems();
 
-            apiInvokerMock.Setup(x => x.GetItemsAsync<TodoItemModel>("TodoItems"))
+            apiInvokerMock.Setup(x => x.GetItemsAsync<TodoItemModelWithFile>("TodoItems"))
                    .ReturnsAsync(todoItems)
                    .Verifiable();
 
@@ -138,7 +139,7 @@ namespace MvcClient.Tests.Services
 
             var statusPlanned = statuses.SingleOrDefault(s => s.Name == "Planned");
 
-            var todoItem = new TodoItemModel { Name = "Do something", ChecklistId = selectedChecklist, CategoryId = selectedCategory };
+            var todoItem = new TodoItemModelWithFile { Name = "Do something", ChecklistId = selectedChecklist, CategoryId = selectedCategory };
 
             apiInvokerMock.Setup(x => x.GetItemsAsync<CategoryModel>("Categories"))
                                .ReturnsAsync(categorires)
@@ -162,13 +163,13 @@ namespace MvcClient.Tests.Services
             apiInvokerMock.Verify();
         }
 
-        private static List<TodoItemModel> GetActiveTodoItems()
+        private static List<TodoItemModelWithFile> GetActiveTodoItems()
         {
-            return new List<TodoItemModel>
+            return new List<TodoItemModelWithFile>
             {
-                new TodoItemModel {Id = 5, Name = "Prepare for exam", ChecklistId = 1, StatusId = 1, StatusName = "Planned", CategoryName = "Important" },
-                new TodoItemModel {Id = 10, Name = "Prepare a gift", ChecklistId = 2, StatusId = 2, StatusName = "Ongoing" },
-                new TodoItemModel {Id = 15, Name = "Clean up the room", ChecklistId = 3, StatusId = 1, StatusName = "Planned", CategoryName = "Important" }
+                new TodoItemModelWithFile {Id = 5, Name = "Prepare for exam", ChecklistId = 1, StatusId = 1, StatusName = "Planned", CategoryName = "Important" },
+                new TodoItemModelWithFile {Id = 10, Name = "Prepare a gift", ChecklistId = 2, StatusId = 2, StatusName = "Ongoing" },
+                new TodoItemModelWithFile {Id = 15, Name = "Clean up the room", ChecklistId = 3, StatusId = 1, StatusName = "Planned", CategoryName = "Important" }
             };
         }
 

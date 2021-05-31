@@ -1,8 +1,5 @@
-using System.Diagnostics.CodeAnalysis;
-
-namespace ToDoList.MvcClient.Models
+﻿namespace ToDoList.MvcClient.Models
 {
-    [ExcludeFromCodeCoverage]
     public class ErrorViewModel
     {
         public string RequestId { get; set; }

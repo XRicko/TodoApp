@@ -1,5 +1,4 @@
 using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Net.Http.Headers;
 
@@ -15,11 +14,10 @@ using ToDoList.Diagnostic;
 using ToDoList.Extensions;
 using ToDoList.MvcClient.API;
 using ToDoList.MvcClient.Services;
-using ToDoList.MvcClient.Services.Api;
+using ToDoList.SharedClientLibrary.Services;
 
 namespace ToDoList.MvcClient
 {
-    [ExcludeFromCodeCoverage]
     public class Startup
     {
         public Startup(IConfiguration configuration)
@@ -57,6 +55,9 @@ namespace ToDoList.MvcClient
 
             services.AddScoped<IViewModelService, ViewModelService>();
             services.AddScoped<IImageAddingService, ImageAddingService>();
+
+            services.AddScoped<ITokenStorage, CookieTokenStorage>();
+            services.AddTransient<ITokenParser, JwtTokenParser>();
 
             services.AddSingleton<ProccessTimeCounterSource>();
 

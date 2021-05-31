@@ -1,11 +1,9 @@
 ﻿using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 
-using ToDoList.MvcClient.Models;
+using ToDoList.SharedClientLibrary.Models;
 
 namespace ToDoList.MvcClient.ViewModels
 {
-    [ExcludeFromCodeCoverage]
     public class IndexViewModel
     {
         public IEnumerable<TodoItemModel> TodoItems { get; set; }

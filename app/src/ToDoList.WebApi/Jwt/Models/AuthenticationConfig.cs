@@ -1,12 +1,10 @@
 using System.ComponentModel.DataAnnotations;
-using System.Diagnostics.CodeAnalysis;
 using System.Text;
 
 using Microsoft.IdentityModel.Tokens;
 
 namespace ToDoList.WebApi.Jwt.Models
 {
-    [ExcludeFromCodeCoverage]
     public class AuthenticationConfig
     {
         [Required(AllowEmptyStrings = false)]
@@ -29,7 +27,7 @@ namespace ToDoList.WebApi.Jwt.Models
         [Required]
         public int RefreshTokenExpiryMinutes { get; set; }
 
-        public SymmetricSecurityKey SymmetricSecurityAccessKey => new SymmetricSecurityKey(Encoding.UTF8.GetBytes(AccessTokenSecret));
-        public SymmetricSecurityKey SymmetricSecurityRefreshKey => new SymmetricSecurityKey(Encoding.UTF8.GetBytes(RefreshTokenSecret));
+        public SymmetricSecurityKey SymmetricSecurityAccessKey => new(Encoding.UTF8.GetBytes(AccessTokenSecret));
+        public SymmetricSecurityKey SymmetricSecurityRefreshKey => new(Encoding.UTF8.GetBytes(RefreshTokenSecret));
     }
 }

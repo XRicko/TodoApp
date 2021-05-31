@@ -6,6 +6,6 @@ namespace ToDoList.MvcClient.Services
 {
     public interface IImageAddingService
     {
-        Task AddImageInTodoItemAsync(TodoItemModel todoItem);
+        Task AddImageInTodoItemAsync(TodoItemModelWithFile todoItem);
     }
 }

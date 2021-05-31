@@ -8,7 +8,7 @@ using Microsoft.Extensions.Localization;
 using Moq;
 
 using ToDoList.MvcClient.Controllers;
-using ToDoList.MvcClient.Models;
+using ToDoList.SharedClientLibrary.Models;
 
 using Xunit;
 

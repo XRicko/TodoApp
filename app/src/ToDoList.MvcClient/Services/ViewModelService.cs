@@ -3,8 +3,9 @@ using System.Linq;
 using System.Threading.Tasks;
 
 using ToDoList.MvcClient.Models;
-using ToDoList.MvcClient.Services.Api;
 using ToDoList.MvcClient.ViewModels;
+using ToDoList.SharedClientLibrary.Models;
+using ToDoList.SharedClientLibrary.Services;
 
 namespace ToDoList.MvcClient.Services
 {
@@ -39,7 +40,7 @@ namespace ToDoList.MvcClient.Services
             return viewModel;
         }
 
-        public async Task<CreateTodoItemViewModel> CreateViewModelCreateOrUpdateTodoItemAsync(TodoItemModel todoItemModel)
+        public async Task<CreateTodoItemViewModel> CreateViewModelCreateOrUpdateTodoItemAsync(TodoItemModelWithFile todoItemModel)
         {
             _ = todoItemModel ?? throw new ArgumentNullException(nameof(todoItemModel));
 

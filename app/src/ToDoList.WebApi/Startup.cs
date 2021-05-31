@@ -1,5 +1,4 @@
 using System;
-using System.Diagnostics.CodeAnalysis;
 
 using MediatR;
 
@@ -27,7 +26,6 @@ using ToDoList.WebApi.Services;
 
 namespace ToDoList.WebApi
 {
-    [ExcludeFromCodeCoverage]
     public class Startup
     {
         public Startup(IConfiguration configuration)

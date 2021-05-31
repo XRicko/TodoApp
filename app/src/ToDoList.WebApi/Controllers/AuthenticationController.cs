@@ -65,10 +65,12 @@ namespace ToDoList.WebApi.Controllers
 
         [HttpPost]
         [Route("[action]")]
-        public async Task<IActionResult> RefreshAsync([FromBody] string refreshToken)
+        public async Task<IActionResult> RefreshAsync([FromBody] string jsonRefreshToken)
         {
-            if (string.IsNullOrWhiteSpace(refreshToken))
-                throw new ArgumentException($"'{nameof(refreshToken)}' cannot be null or whitespace", nameof(refreshToken));
+            if (string.IsNullOrWhiteSpace(jsonRefreshToken))
+                throw new ArgumentException($"'{nameof(jsonRefreshToken)}' cannot be null or whitespace", nameof(jsonRefreshToken));
+
+            string refreshToken = (jsonRefreshToken);
 
             bool isValidRefreshToken = tokenValidator.ValidateRefreshKey(refreshToken);
             if (!isValidRefreshToken)

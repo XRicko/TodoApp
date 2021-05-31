@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics.CodeAnalysis;
 
 using NetTopologySuite.Geometries;
 
@@ -7,7 +6,6 @@ using ToDoList.SharedKernel;
 
 namespace ToDoList.Core.Entities
 {
-    [ExcludeFromCodeCoverage]
     public class TodoItem : BaseEntity
     {
         public DateTime StartDate { get; init; }

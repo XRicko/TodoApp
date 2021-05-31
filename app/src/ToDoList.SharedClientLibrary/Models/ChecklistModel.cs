@@ -1,8 +1,5 @@
-﻿using System.Diagnostics.CodeAnalysis;
-
-namespace ToDoList.MvcClient.Models
+﻿namespace ToDoList.SharedClientLibrary.Models
 {
-    [ExcludeFromCodeCoverage]
     public class ChecklistModel : BaseModel
     {
         public int UserId { get; set; }

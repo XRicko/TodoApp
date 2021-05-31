@@ -11,8 +11,7 @@ using Microsoft.AspNetCore.Http;
 using Moq;
 using Moq.Protected;
 
-using ToDoList.MvcClient.Models;
-using ToDoList.MvcClient.Services.Api;
+using ToDoList.SharedClientLibrary.Models;
 
 using Xunit;
 
@@ -20,7 +19,7 @@ namespace MvcClient.Tests.Services.Api
 {
     public class ApiInvokerTests
     {
-        private readonly ApiInvoker apiInvoker;
+        private readonly MvcApiInvoker apiInvoker;
 
         private readonly Mock<IHttpContextAccessor> httpContextAccessorMock;
         private readonly Mock<HttpMessageHandler> httpMessageHandlerMock;
@@ -37,7 +36,7 @@ namespace MvcClient.Tests.Services.Api
             httpMessageHandlerMock = new Mock<HttpMessageHandler>();
 
             httpClient = new HttpClient(httpMessageHandlerMock.Object) { BaseAddress = new Uri("https://localhost:5001/api/") };
-            apiInvoker = new ApiInvoker(httpClient, httpContextAccessorMock.Object);
+            apiInvoker = new MvcApiInvoker(httpClient, httpContextAccessorMock.Object);
 
             category = new CategoryModel { Id = 543, Name = "Important" };
 

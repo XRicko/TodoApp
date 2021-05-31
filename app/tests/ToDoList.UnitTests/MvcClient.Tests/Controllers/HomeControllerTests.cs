@@ -22,7 +22,7 @@ namespace MvcClient.Tests.Controllers
             string viewName = "Index";
 
             // Act
-            var result = homeController.Index() as ViewResult;
+            var result = homeController.IndexAsync() as ViewResult;
 
             // Assert
             Assert.Equal(viewName, result.ViewName);
