@@ -1,6 +1,9 @@
 ﻿@inherits LayoutComponentBase
+
 @using System.Security.Claims
-@using ToDoList.BlazorClient.Pages.Authenctication
+@using ToDoList.BlazorClient.Pages.Authentication
+
+@inject IStringLocalizer<MainLayout> Localizer
 
 <div class="page">
     <div class="sidebar">
@@ -11,14 +14,14 @@
         <div class="top-row px-4">
             <AuthorizeView>
                 <Authorized>
-                    Welcome @context.User.FindFirst(ClaimTypes.Name).Value!
+                    @Localizer["Welcome"], @context.User.FindFirst(ClaimTypes.Name).Value!
                     <NavLink class="nav-link" href="logout">
-                        <span class="oi oi-account-logout"></span> Log Out
+                        <span class="oi oi-account-logout"></span> @Localizer["LogOut"]
                     </NavLink>
                 </Authorized>
                 <NotAuthorized>
                     <Login />
-                    <a class="btn btn-primary" href="register">Register</a>
+                    <a class="btn btn-primary" href="register">@Localizer["Register"]</a>
                 </NotAuthorized>
             </AuthorizeView>
         </div>

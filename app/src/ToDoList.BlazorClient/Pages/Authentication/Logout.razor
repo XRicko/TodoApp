@@ -2,7 +2,7 @@
 @inject NavigationManager NavManager
 @inject IApiInvoker ApiInvoker
 
-@code { 
+@code {
     protected override async Task OnInitializedAsync()
     {
         await ApiInvoker.LogoutAsync();

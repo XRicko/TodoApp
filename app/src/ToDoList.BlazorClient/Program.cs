@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 
 using ToDoList.BlazorClient.Authentication;
+using ToDoList.BlazorClient.Extensions;
 using ToDoList.BlazorClient.Services;
 using ToDoList.SharedClientLibrary.Services;
 
@@ -31,6 +32,8 @@ namespace ToDoList.BlazorClient
             builder.Services.AddBlazoredLocalStorage();
             builder.Services.AddAuthorizationCore();
 
+            builder.Services.AddLocalization(opt => opt.ResourcesPath = "Resources");
+
             builder.Services.AddScoped(sp =>
             {
                 var httpClient = new HttpClient
@@ -44,7 +47,10 @@ namespace ToDoList.BlazorClient
                 return httpClient;
             });
 
-            await builder.Build().RunAsync();
+            var webAssemblyHost = builder.Build();
+
+            await webAssemblyHost.SetDefaultCultureAsync();
+            await webAssemblyHost.RunAsync();
         }
     }
 }

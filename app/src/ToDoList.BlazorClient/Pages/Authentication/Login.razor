@@ -1,0 +1,31 @@
+﻿@inject NavigationManager NavManager
+@inject IApiInvoker ApiInvoker
+@inject IStringLocalizer<Login> Localizer
+
+<EditForm Model="user" OnValidSubmit="LogIn">
+    <div class="form-row">
+        <div class="col-auto">
+            <label for="username" class="sr-only">@Localizer["Username"]</label>
+            <InputText id="username" class="form-control" @bind-Value="user.Name" placeholder="@Localizer["Username"]" />
+        </div>
+
+        <div class="col-auto">
+            <label for="password" class="sr-only">@Localizer["Password"]</label>
+            <InputText id="password" type="password" class="form-control" @bind-Value="user.Password" placeholder="@Localizer["Password"]" />
+        </div>
+
+        <div class="col-auto">
+            <button type="submit" class="btn btn-success">@Localizer["LogIn"]</button>
+        </div>
+    </div>
+</EditForm>
+
+@code {
+    private UserModel user = new();
+
+    private async Task LogIn()
+    {
+        _ = await ApiInvoker.AuthenticateUserAsync("Authentication/Login", user);
+        NavManager.NavigateTo("/");
+    }
+}
