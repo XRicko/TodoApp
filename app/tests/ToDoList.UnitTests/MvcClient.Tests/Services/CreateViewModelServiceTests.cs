@@ -28,8 +28,8 @@ namespace MvcClient.Tests.Services
             checklists = GetChecklistsSample();
 
             apiInvokerMock.Setup(x => x.GetItemsAsync<ChecklistModel>("Checklists"))
-                               .ReturnsAsync(checklists)
-                               .Verifiable();
+                          .ReturnsAsync(checklists)
+                          .Verifiable();
         }
 
         [Fact]
@@ -39,8 +39,8 @@ namespace MvcClient.Tests.Services
             var todoItems = GetActiveTodoItems();
 
             apiInvokerMock.Setup(x => x.GetItemsAsync<TodoItemModelWithFile>("TodoItems"))
-                   .ReturnsAsync(todoItems)
-                   .Verifiable();
+                          .ReturnsAsync(todoItems)
+                          .Verifiable();
 
             // Act
             var indexViewModel = await createViewModelService.CreateIndexViewModelAsync();
@@ -61,8 +61,8 @@ namespace MvcClient.Tests.Services
             var todoItems = GetActiveTodoItems();
 
             apiInvokerMock.Setup(x => x.GetItemsAsync<TodoItemModelWithFile>("TodoItems"))
-                   .ReturnsAsync(todoItems)
-                   .Verifiable();
+                          .ReturnsAsync(todoItems)
+                          .Verifiable();
 
             // Act
             var indexViewModel = await createViewModelService.CreateIndexViewModelAsync(categoryName);
@@ -85,8 +85,8 @@ namespace MvcClient.Tests.Services
             var todoItems = GetActiveTodoItems();
 
             apiInvokerMock.Setup(x => x.GetItemsAsync<TodoItemModelWithFile>("TodoItems"))
-                   .ReturnsAsync(todoItems)
-                   .Verifiable();
+                          .ReturnsAsync(todoItems)
+                          .Verifiable();
 
             // Act
             var indexViewModel = await createViewModelService.CreateIndexViewModelAsync(statusName: statusName);
@@ -110,8 +110,8 @@ namespace MvcClient.Tests.Services
             var todoItems = GetActiveTodoItems();
 
             apiInvokerMock.Setup(x => x.GetItemsAsync<TodoItemModelWithFile>("TodoItems"))
-                   .ReturnsAsync(todoItems)
-                   .Verifiable();
+                          .ReturnsAsync(todoItems)
+                          .Verifiable();
 
             // Act
             var indexViewModel = await createViewModelService.CreateIndexViewModelAsync(categoryName, statusName);
@@ -142,11 +142,11 @@ namespace MvcClient.Tests.Services
             var todoItem = new TodoItemModelWithFile { Name = "Do something", ChecklistId = selectedChecklist, CategoryId = selectedCategory };
 
             apiInvokerMock.Setup(x => x.GetItemsAsync<CategoryModel>("Categories"))
-                               .ReturnsAsync(categorires)
-                               .Verifiable();
+                          .ReturnsAsync(categorires)
+                          .Verifiable();
             apiInvokerMock.Setup(x => x.GetItemsAsync<StatusModel>("Statuses"))
-                               .ReturnsAsync(statuses)
-                               .Verifiable();
+                          .ReturnsAsync(statuses)
+                          .Verifiable();
 
             // Act
             var viewModel = await createViewModelService.CreateViewModelCreateOrUpdateTodoItemAsync(todoItem);

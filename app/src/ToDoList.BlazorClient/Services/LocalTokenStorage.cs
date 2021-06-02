@@ -20,7 +20,7 @@ namespace ToDoList.BlazorClient.Services
             await localStorage.GetItemAsStringAsync(key);
 
         public async Task SetTokenAsync(string key, string token) =>
-            await localStorage.SetItemAsync(key, token);
+            await localStorage.SetItemAsStringAsync(key, token);
 
         public async Task RemoveTokenAsync(string key) =>
             await localStorage.RemoveItemAsync(key);

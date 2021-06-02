@@ -31,5 +31,3 @@ namespace ToDoList.MvcClient.Services
             await Task.Run(() => httpContextAccessor.HttpContext.Response.Cookies.Delete(key));
     }
 }
-
-// TODO: cookie expiry time, refreshToken deserialization, continue refactroring

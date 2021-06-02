@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
 
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 
@@ -153,17 +152,6 @@ namespace MvcClient.Tests.Controllers
         public async Task Get_Logout_ReturnsRedirectToIndexActionInHome()
         {
             // Arrange
-            Mock<ControllerContext> controllerContextMock = new();
-            Mock<HttpContext> httpContextMock = new();
-
-            httpContextMock.Setup(x => x.Response.Cookies.Delete("Token"))
-                           .Verifiable();
-            httpContextMock.Setup(x => x.Response.Cookies.Delete("RefreshToken"))
-                           .Verifiable();
-
-            controllerContextMock.Object.HttpContext = httpContextMock.Object;
-            userController.ControllerContext = controllerContextMock.Object;
-
             string homeControllerName = "Home";
 
             // Act 
@@ -174,7 +162,6 @@ namespace MvcClient.Tests.Controllers
             Assert.Equal(homeControllerName, result.ControllerName);
 
             ApiInvokerMock.Verify(x => x.LogoutAsync(), Times.Once);
-            httpContextMock.Verify();
         }
     }
 }

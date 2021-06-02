@@ -20,9 +20,7 @@ namespace ToDoList.SharedClientLibrary.Services
             if (string.IsNullOrWhiteSpace(token))
                 throw new ArgumentException($"'{nameof(token)}' cannot be null or whitespace.", nameof(token));
 
-            var claims = ParseClaimsFromToken(token);
-            claimsPrincipal ??= new(new ClaimsIdentity(claims, "jwtAuthentication"));
-
+            claimsPrincipal ??= new(new ClaimsIdentity(ParseClaimsFromToken(token), "jwtAuthentication"));
             string expiryDate = claimsPrincipal.FindFirst("exp").Value;
 
             return DateTimeOffset.FromUnixTimeSeconds(long.Parse(expiryDate));

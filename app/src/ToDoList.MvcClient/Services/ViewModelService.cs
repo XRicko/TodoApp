@@ -20,7 +20,7 @@ namespace ToDoList.MvcClient.Services
 
         public async Task<IndexViewModel> CreateIndexViewModelAsync(string categoryName = null, string statusName = null)
         {
-            var todoItems = await apiInvoker.GetItemsAsync<TodoItemModel>("TodoItems");
+            var todoItems = await apiInvoker.GetItemsAsync<TodoItemModelWithFile>("TodoItems");
             var checklists = await apiInvoker.GetItemsAsync<ChecklistModel>("Checklists");
 
             if (!string.IsNullOrWhiteSpace(categoryName))

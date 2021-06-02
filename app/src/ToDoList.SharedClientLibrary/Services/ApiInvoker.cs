@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
@@ -31,7 +32,7 @@ namespace ToDoList.SharedClientLibrary.Services
             {
                 return await GetItems();
             }
-            catch (Exception)
+            catch (HttpRequestException ex) when (ex.StatusCode == HttpStatusCode.Unauthorized)
             {
                 await RefreshTokenAsync();
                 return await GetItems();
@@ -51,7 +52,7 @@ namespace ToDoList.SharedClientLibrary.Services
             {
                 return await GetItem();
             }
-            catch (Exception)
+            catch (HttpRequestException ex) when (ex.StatusCode == HttpStatusCode.Unauthorized)
             {
                 await RefreshTokenAsync();
                 return await GetItem();
@@ -73,10 +74,12 @@ namespace ToDoList.SharedClientLibrary.Services
                 using var respone = await Post();
                 ValidateStatusCodeForSuccess(respone);
             }
-            catch (Exception)
+            catch (HttpRequestException ex) when (ex.StatusCode == HttpStatusCode.Unauthorized)
             {
-                using var respone = await RefreshTokenAndMakeNewRequest(Post);
-                ValidateStatusCodeForSuccess(respone);
+                await RefreshTokenAsync();
+
+                using var response = await Post();
+                ValidateStatusCodeForSuccess(response);
             }
 
             async Task<HttpResponseMessage> Post() => await HttpClient.PostAsJsonAsync(route, item);
@@ -95,10 +98,12 @@ namespace ToDoList.SharedClientLibrary.Services
                 using var respone = await Put();
                 ValidateStatusCodeForSuccess(respone);
             }
-            catch (Exception)
+            catch (HttpRequestException ex) when (ex.StatusCode == HttpStatusCode.Unauthorized)
             {
-                using var respone = await RefreshTokenAndMakeNewRequest(Put);
-                ValidateStatusCodeForSuccess(respone);
+                await RefreshTokenAsync();
+
+                using var response = await Put();
+                ValidateStatusCodeForSuccess(response);
             }
 
             async Task<HttpResponseMessage> Put() => await HttpClient.PutAsJsonAsync(route, item);
@@ -117,10 +122,12 @@ namespace ToDoList.SharedClientLibrary.Services
                 using var respone = await Delete();
                 ValidateStatusCodeForSuccess(respone);
             }
-            catch (Exception)
+            catch (HttpRequestException ex) when (ex.StatusCode == HttpStatusCode.Unauthorized)
             {
-                using var respone = await RefreshTokenAndMakeNewRequest(Delete);
-                ValidateStatusCodeForSuccess(respone);
+                await RefreshTokenAsync();
+
+                using var response = await Delete();
+                ValidateStatusCodeForSuccess(response);
             }
 
             async Task<HttpResponseMessage> Delete() => await HttpClient.DeleteAsync(route + id);
@@ -135,10 +142,12 @@ namespace ToDoList.SharedClientLibrary.Services
                 using var respone = await Logout();
                 ValidateStatusCodeForSuccess(respone);
             }
-            catch (Exception)
+            catch (HttpRequestException ex) when (ex.StatusCode == HttpStatusCode.Unauthorized)
             {
-                using var respone = await RefreshTokenAndMakeNewRequest(Logout);
-                ValidateStatusCodeForSuccess(respone);
+                await RefreshTokenAsync();
+
+                using var response = await Logout();
+                ValidateStatusCodeForSuccess(response);
             }
 
             await RemoveTokensFromStorageAsync();
@@ -164,18 +173,6 @@ namespace ToDoList.SharedClientLibrary.Services
             return authenticatedModel;
         }
 
-        private async Task<HttpResponseMessage> RefreshTokenAndMakeNewRequest(Func<Task<HttpResponseMessage>> request)
-        {
-            _ = request ?? throw new ArgumentNullException(nameof(request));
-
-            await RefreshTokenAsync();
-
-            var response = await request();
-            ValidateStatusCodeForSuccess(response);
-
-            return response;
-        }
-
         private async Task RefreshTokenAsync()
         {
             string refreshToken = await TokenStorage.GetTokenAsync("refreshToken");
@@ -194,7 +191,10 @@ namespace ToDoList.SharedClientLibrary.Services
             _ = response ?? throw new ArgumentNullException(nameof(response));
 
             if (!response.IsSuccessStatusCode)
-                throw new Exception(response.ReasonPhrase);
+            {
+                throw new HttpRequestException($"Response status code does not indicate success: " +
+                    $"{(int)response.StatusCode} ({response.ReasonPhrase}).", null, response.StatusCode);
+            }
         }
 
         private async Task SetTokensInStorage(AuthenticatedModel authenticatedModel)
@@ -216,11 +216,7 @@ namespace ToDoList.SharedClientLibrary.Services
             string accessToken = token ?? await TokenStorage.GetTokenAsync("accessToken");
 
             if (AuthorizationHeaderMissing() && !string.IsNullOrWhiteSpace(accessToken))
-            {
-                HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(
-                    "bearer",
-                    token ?? await TokenStorage.GetTokenAsync("accessToken"));
-            }
+                HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", accessToken);
 
             bool AuthorizationHeaderMissing() => HttpClient.DefaultRequestHeaders.Authorization?.Parameter is null;
         }

@@ -1,28 +1,29 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Formatting;
 using System.Threading;
 using System.Threading.Tasks;
 
-using Microsoft.AspNetCore.Http;
-
 using Moq;
 using Moq.Protected;
 
 using ToDoList.SharedClientLibrary.Models;
+using ToDoList.SharedClientLibrary.Services;
 
 using Xunit;
 
-namespace MvcClient.Tests.Services.Api
+namespace SharedClientLibrary.Tests.Services
 {
     public class ApiInvokerTests
     {
-        private readonly MvcApiInvoker apiInvoker;
+        private readonly ApiInvoker apiInvoker;
 
-        private readonly Mock<IHttpContextAccessor> httpContextAccessorMock;
+        private readonly Mock<ITokenStorage> tokenStorageMock;
         private readonly Mock<HttpMessageHandler> httpMessageHandlerMock;
+
         private readonly HttpClient httpClient;
 
         private readonly CategoryModel category;
@@ -32,27 +33,27 @@ namespace MvcClient.Tests.Services.Api
 
         public ApiInvokerTests()
         {
-            httpContextAccessorMock = new Mock<IHttpContextAccessor>();
+            tokenStorageMock = new Mock<ITokenStorage>();
             httpMessageHandlerMock = new Mock<HttpMessageHandler>();
 
             httpClient = new HttpClient(httpMessageHandlerMock.Object) { BaseAddress = new Uri("https://localhost:5001/api/") };
-            apiInvoker = new MvcApiInvoker(httpClient, httpContextAccessorMock.Object);
+            apiInvoker = new ApiInvoker(httpClient, tokenStorageMock.Object);
 
             category = new CategoryModel { Id = 543, Name = "Important" };
 
             token = "eyhJfepcmve_FEpimfpi.ceFGNJOewipqm";
             refreshToken = "eyjhFNjpz[pxlwxnc.zegvEcverGX";
-
-            httpContextAccessorMock.SetupGet(x => x.HttpContext.Request.Cookies["Token"])
-                                   .Returns(token)
-                                   .Verifiable();
         }
 
         [Fact]
-        public async Task GetItemAsync_ReturnsItemIfSuccess()
+        public async Task GetItemAsync_ReturnsItemIfNoError()
         {
             // Arrange
             var uri = new Uri("https://localhost:5001/api/Categories/GetByName/Important");
+
+            tokenStorageMock.Setup(x => x.GetTokenAsync("accessToken"))
+                            .ReturnsAsync(token)
+                            .Verifiable();
 
             httpMessageHandlerMock.Protected()
                 .Setup<Task<HttpResponseMessage>>("SendAsync",
@@ -70,12 +71,11 @@ namespace MvcClient.Tests.Services.Api
             var actual = await apiInvoker.GetItemAsync<CategoryModel>("Categories/GetByName/Important");
 
             // Assert
-            Assert.Equal(category, actual);
             Assert.Equal(category.Id, actual.Id);
             Assert.Equal(httpClient.DefaultRequestHeaders.Authorization.Parameter, token);
 
             httpMessageHandlerMock.Verify();
-            httpContextAccessorMock.Verify();
+            tokenStorageMock.Verify();
         }
 
         [Fact]
@@ -84,7 +84,11 @@ namespace MvcClient.Tests.Services.Api
             // Arrange
             var uri = new Uri("https://localhost:5001/api/Categories/GetByName/Important");
 
-            SetupRefreshToken();
+            SetupRefreshingToken();
+
+            tokenStorageMock.Setup(x => x.GetTokenAsync("accessToken"))
+                            .ReturnsAsync(token)
+                            .Verifiable();
 
             httpMessageHandlerMock.Protected()
                 .SetupSequence<Task<HttpResponseMessage>>("SendAsync",
@@ -105,24 +109,26 @@ namespace MvcClient.Tests.Services.Api
             var actual = await apiInvoker.GetItemAsync<CategoryModel>("Categories/GetByName/Important");
 
             // Assert
-            Assert.Equal(category, actual);
             Assert.Equal(category.Id, actual.Id);
             Assert.Equal(httpClient.DefaultRequestHeaders.Authorization.Parameter, token);
 
-            httpMessageHandlerMock.Verify();
             httpMessageHandlerMock.Protected().Verify("SendAsync", Times.Exactly(2),
                                                       ItExpr.Is<HttpRequestMessage>(x => x.Method == HttpMethod.Get
                                                                                          && x.RequestUri == uri),
                                                       ItExpr.IsAny<CancellationToken>());
-
-            httpContextAccessorMock.Verify();
+            tokenStorageMock.Verify();
         }
 
         [Fact]
-        public async Task GetItemAsync_ThrowsExceptionIfNotSuccess()
+        public async Task GetItemAsync_ThrowsException()
         {
             // Arrange
             var uri = new Uri("https://localhost:5001/api/Categories/GetByName/Important");
+            var statusCode = HttpStatusCode.InternalServerError;
+
+            tokenStorageMock.Setup(x => x.GetTokenAsync("accessToken"))
+                            .ReturnsAsync(token)
+                            .Verifiable();
 
             httpMessageHandlerMock.Protected()
                 .Setup<Task<HttpResponseMessage>>("SendAsync",
@@ -131,18 +137,18 @@ namespace MvcClient.Tests.Services.Api
                                                      ItExpr.IsAny<CancellationToken>())
                 .ReturnsAsync(new HttpResponseMessage
                 {
-                    StatusCode = HttpStatusCode.InternalServerError,
+                    StatusCode = statusCode,
                 })
                 .Verifiable();
 
             // Act && Assert
-            var exception = await Assert.ThrowsAsync<Exception>(() =>
-                                        apiInvoker.GetItemAsync<CategoryModel>("Categories/GetByName/Important"));
+            var exception = await Assert.ThrowsAsync<HttpRequestException>(() =>
+                                apiInvoker.GetItemAsync<CategoryModel>("Categories/GetByName/Important"));
 
-            Assert.Equal("Internal Server Error", exception.Message);
+            Assert.Equal(statusCode, exception.StatusCode);
 
             httpMessageHandlerMock.Verify();
-            httpContextAccessorMock.Verify();
+            tokenStorageMock.Verify();
         }
 
         [Fact]
@@ -150,6 +156,10 @@ namespace MvcClient.Tests.Services.Api
         {
             // Arrange
             var uri = new Uri("https://localhost:5001/api/Categories");
+
+            tokenStorageMock.Setup(x => x.GetTokenAsync("accessToken"))
+                            .ReturnsAsync(token)
+                            .Verifiable();
 
             httpMessageHandlerMock.Protected()
                 .Setup<Task<HttpResponseMessage>>("SendAsync",
@@ -169,7 +179,7 @@ namespace MvcClient.Tests.Services.Api
             Assert.Equal(httpClient.DefaultRequestHeaders.Authorization.Parameter, token);
 
             httpMessageHandlerMock.Verify();
-            httpContextAccessorMock.Verify();
+            tokenStorageMock.Verify();
         }
 
         [Fact]
@@ -178,7 +188,11 @@ namespace MvcClient.Tests.Services.Api
             // Arrange
             var uri = new Uri("https://localhost:5001/api/Categories");
 
-            SetupRefreshToken();
+            SetupRefreshingToken();
+
+            tokenStorageMock.Setup(x => x.GetTokenAsync("accessToken"))
+                            .ReturnsAsync(token)
+                            .Verifiable();
 
             httpMessageHandlerMock.Protected()
                 .SetupSequence<Task<HttpResponseMessage>>("SendAsync",
@@ -206,7 +220,7 @@ namespace MvcClient.Tests.Services.Api
                                                                                          && x.RequestUri == uri),
                                                       ItExpr.IsAny<CancellationToken>());
 
-            httpContextAccessorMock.Verify();
+            tokenStorageMock.Verify();
         }
 
         [Fact]
@@ -214,6 +228,11 @@ namespace MvcClient.Tests.Services.Api
         {
             // Arrange
             var uri = new Uri("https://localhost:5001/api/Categories");
+            var statusCode = HttpStatusCode.ServiceUnavailable;
+
+            tokenStorageMock.Setup(x => x.GetTokenAsync("accessToken"))
+                            .ReturnsAsync(token)
+                            .Verifiable();
 
             httpMessageHandlerMock.Protected()
                 .Setup<Task<HttpResponseMessage>>("SendAsync",
@@ -222,17 +241,17 @@ namespace MvcClient.Tests.Services.Api
                                                      ItExpr.IsAny<CancellationToken>())
                 .ReturnsAsync(new HttpResponseMessage
                 {
-                    StatusCode = HttpStatusCode.BadRequest,
+                    StatusCode = statusCode,
                 })
                 .Verifiable();
 
             // Act && Assert
-            var exception = await Assert.ThrowsAsync<Exception>(() => apiInvoker.PostItemAsync("Categories", category));
+            var exception = await Assert.ThrowsAsync<HttpRequestException>(() => apiInvoker.PostItemAsync("Categories", category));
 
-            Assert.Equal("Bad Request", exception.Message);
+            Assert.Equal(statusCode, exception.StatusCode);
 
             httpMessageHandlerMock.Verify();
-            httpContextAccessorMock.Verify();
+            tokenStorageMock.Verify();
         }
 
         [Fact]
@@ -240,6 +259,10 @@ namespace MvcClient.Tests.Services.Api
         {
             // Arrange
             var uri = new Uri("https://localhost:5001/api/Categories");
+
+            tokenStorageMock.Setup(x => x.GetTokenAsync("accessToken"))
+                            .ReturnsAsync(token)
+                            .Verifiable();
 
             httpMessageHandlerMock.Protected()
                 .Setup<Task<HttpResponseMessage>>("SendAsync",
@@ -259,7 +282,7 @@ namespace MvcClient.Tests.Services.Api
             Assert.Equal(httpClient.DefaultRequestHeaders.Authorization.Parameter, token);
 
             httpMessageHandlerMock.Verify();
-            httpContextAccessorMock.Verify();
+            tokenStorageMock.Verify();
         }
 
         [Fact]
@@ -268,7 +291,11 @@ namespace MvcClient.Tests.Services.Api
             // Arrange
             var uri = new Uri("https://localhost:5001/api/Categories");
 
-            SetupRefreshToken();
+            SetupRefreshingToken();
+
+            tokenStorageMock.Setup(x => x.GetTokenAsync("accessToken"))
+                            .ReturnsAsync(token)
+                            .Verifiable();
 
             httpMessageHandlerMock.Protected()
                 .SetupSequence<Task<HttpResponseMessage>>("SendAsync",
@@ -296,7 +323,7 @@ namespace MvcClient.Tests.Services.Api
                                                                                          && x.RequestUri == uri),
                                                       ItExpr.IsAny<CancellationToken>());
 
-            httpContextAccessorMock.Verify();
+            tokenStorageMock.Verify();
         }
 
         [Fact]
@@ -304,6 +331,11 @@ namespace MvcClient.Tests.Services.Api
         {
             // Arrange
             var uri = new Uri("https://localhost:5001/api/Categories");
+            var statusCode = HttpStatusCode.BadRequest;
+
+            tokenStorageMock.Setup(x => x.GetTokenAsync("accessToken"))
+                            .ReturnsAsync(token)
+                            .Verifiable();
 
             httpMessageHandlerMock.Protected()
                 .Setup<Task<HttpResponseMessage>>("SendAsync",
@@ -312,17 +344,17 @@ namespace MvcClient.Tests.Services.Api
                                                      ItExpr.IsAny<CancellationToken>())
                 .ReturnsAsync(new HttpResponseMessage
                 {
-                    StatusCode = HttpStatusCode.BadRequest,
+                    StatusCode = statusCode,
                 })
                 .Verifiable();
 
             // Act && Assert
-            var exception = await Assert.ThrowsAsync<Exception>(() => apiInvoker.PutItemAsync("Categories", category));
+            var exception = await Assert.ThrowsAsync<HttpRequestException>(() => apiInvoker.PutItemAsync("Categories", category));
 
-            Assert.Equal("Bad Request", exception.Message);
+            Assert.Equal(statusCode, exception.StatusCode);
 
             httpMessageHandlerMock.Verify();
-            httpContextAccessorMock.Verify();
+            tokenStorageMock.Verify();
         }
 
         [Fact]
@@ -331,6 +363,10 @@ namespace MvcClient.Tests.Services.Api
             // Arrange
             var uri = new Uri("https://localhost:5001/api/Categories");
             var categories = new List<CategoryModel> { category, new CategoryModel { Id = 123, Name = "Unimportant" } };
+
+            tokenStorageMock.Setup(x => x.GetTokenAsync("accessToken"))
+                            .ReturnsAsync(token)
+                            .Verifiable();
 
             httpMessageHandlerMock.Protected()
                 .Setup<Task<HttpResponseMessage>>("SendAsync",
@@ -348,11 +384,13 @@ namespace MvcClient.Tests.Services.Api
             var result = await apiInvoker.GetItemsAsync<CategoryModel>("Categories");
 
             // Assert
-            Assert.Equal(categories, result);
+            Assert.Equal(categories.Count, result.Count());
+            Assert.Equal(categories.First().Name, result.First().Name);
+
             Assert.Equal(httpClient.DefaultRequestHeaders.Authorization.Parameter, token);
 
             httpMessageHandlerMock.Verify();
-            httpContextAccessorMock.Verify();
+            tokenStorageMock.Verify();
         }
 
         [Fact]
@@ -362,7 +400,11 @@ namespace MvcClient.Tests.Services.Api
             var uri = new Uri("https://localhost:5001/api/Categories");
             var categories = new List<CategoryModel> { category, new CategoryModel { Id = 123, Name = "Unimportant" } };
 
-            SetupRefreshToken();
+            SetupRefreshingToken();
+
+            tokenStorageMock.Setup(x => x.GetTokenAsync("accessToken"))
+                            .ReturnsAsync(token)
+                            .Verifiable();
 
             httpMessageHandlerMock.Protected()
                 .SetupSequence<Task<HttpResponseMessage>>("SendAsync",
@@ -383,7 +425,9 @@ namespace MvcClient.Tests.Services.Api
             var result = await apiInvoker.GetItemsAsync<CategoryModel>("Categories");
 
             // Assert
-            Assert.Equal(categories, result);
+            Assert.Equal(categories.Count, result.Count());
+            Assert.Equal(categories.First().Name, result.First().Name);
+
             Assert.Equal(httpClient.DefaultRequestHeaders.Authorization.Parameter, token);
 
             httpMessageHandlerMock.Verify();
@@ -392,7 +436,7 @@ namespace MvcClient.Tests.Services.Api
                                                                                          && x.RequestUri == uri),
                                                       ItExpr.IsAny<CancellationToken>());
 
-            httpContextAccessorMock.Verify();
+            tokenStorageMock.Verify();
         }
 
         [Fact]
@@ -400,31 +444,30 @@ namespace MvcClient.Tests.Services.Api
         {
             // Arrange
             var uri = new Uri("https://localhost:5001/api/Categories");
+            var statusCode = HttpStatusCode.BadGateway;
+
+            tokenStorageMock.Setup(x => x.GetTokenAsync("accessToken"))
+                            .ReturnsAsync(token)
+                            .Verifiable();
 
             httpMessageHandlerMock.Protected()
-            .Setup<Task<HttpResponseMessage>>("SendAsync",
+                .Setup<Task<HttpResponseMessage>>("SendAsync",
                                                  ItExpr.Is<HttpRequestMessage>(r => r.Method == HttpMethod.Get
                                                                                     && r.RequestUri == uri),
                                                  ItExpr.IsAny<CancellationToken>())
-            .ReturnsAsync(new HttpResponseMessage
-            {
-                StatusCode = HttpStatusCode.BadGateway,
-            })
-            .Verifiable();
-
-            var cookiesMock = new Mock<IRequestCookieCollection>();
-
-            httpContextAccessorMock.SetupGet(x => x.HttpContext.Request.Cookies)
-                                   .Returns(cookiesMock.Object)
-                                   .Verifiable();
+                .ReturnsAsync(new HttpResponseMessage
+                {
+                    StatusCode = statusCode,
+                })
+                .Verifiable();
 
             // Act && Assert
-            var exception = await Assert.ThrowsAsync<Exception>(() => apiInvoker.GetItemsAsync<CategoryModel>("Categories"));
+            var exception = await Assert.ThrowsAsync<HttpRequestException>(() => apiInvoker.GetItemsAsync<CategoryModel>("Categories"));
 
-            Assert.Equal("Bad Gateway", exception.Message);
+            Assert.Equal(statusCode, exception.StatusCode);
 
             httpMessageHandlerMock.Verify();
-            httpContextAccessorMock.Verify();
+            tokenStorageMock.Verify();
         }
 
         [Fact]
@@ -451,13 +494,14 @@ namespace MvcClient.Tests.Services.Api
             SetupSettingTokens();
 
             // Act
-            await apiInvoker.AuthenticateUserAsync("Authentication/Login", user);
+            var actual = await apiInvoker.AuthenticateUserAsync("Authentication/Login", user);
 
             // Assert
+            Assert.Equal(authenticatedModel.AccessToken, actual.AccessToken);
+            Assert.Equal(authenticatedModel.RefreshToken, actual.RefreshToken);
+
             httpMessageHandlerMock.Verify();
-            httpContextAccessorMock.Verify(x => x.HttpContext.Response.Cookies.Append(It.Is<string>(s => s == "RefreshToken" || s == "Token"),
-                                                                                      It.Is<string>(s => s == token || s == refreshToken),
-                                                                                      It.IsAny<CookieOptions>()), Times.Exactly(2));
+            tokenStorageMock.Verify();
         }
 
         [Fact]
@@ -465,7 +509,9 @@ namespace MvcClient.Tests.Services.Api
         {
             // Arrange
             var user = new UserModel { Name = "admin", Password = "qwerty" };
+
             var uri = new Uri("https://localhost:5001/api/User/Login");
+            var statusCode = HttpStatusCode.NotFound;
 
             httpMessageHandlerMock.Protected()
                 .Setup<Task<HttpResponseMessage>>("SendAsync",
@@ -474,18 +520,16 @@ namespace MvcClient.Tests.Services.Api
                                                ItExpr.IsAny<CancellationToken>())
                 .ReturnsAsync(new HttpResponseMessage
                 {
-                    StatusCode = HttpStatusCode.NotFound
+                    StatusCode = statusCode
                 })
                 .Verifiable();
 
             // Act && Assert
-            var exception = await Assert.ThrowsAsync<Exception>(() => apiInvoker.AuthenticateUserAsync("User/Login", user));
+            var exception = await Assert.ThrowsAsync<HttpRequestException>(() => apiInvoker.AuthenticateUserAsync("User/Login", user));
 
-            Assert.Equal("Not Found", exception.Message);
+            Assert.Equal(statusCode, exception.StatusCode);
 
             httpMessageHandlerMock.Verify();
-            httpContextAccessorMock.Verify(x => x.HttpContext.Response.Cookies.Append(It.IsAny<string>(), It.IsAny<string>(),
-                                                                                      It.IsAny<CookieOptions>()), Times.Never);
         }
 
         [Fact]
@@ -494,6 +538,10 @@ namespace MvcClient.Tests.Services.Api
             // Arrange 
             int id = 4;
             var uri = new Uri("https://localhost:5001/api/Categories/" + id);
+
+            tokenStorageMock.Setup(x => x.GetTokenAsync("accessToken"))
+                            .ReturnsAsync(token)
+                            .Verifiable();
 
             httpMessageHandlerMock.Protected()
                 .Setup<Task<HttpResponseMessage>>("SendAsync",
@@ -519,7 +567,13 @@ namespace MvcClient.Tests.Services.Api
         {
             // Arrange 
             int id = 4;
+
             var uri = new Uri("https://localhost:5001/api/Categories/" + id);
+            var statusCode = HttpStatusCode.InternalServerError;
+
+            tokenStorageMock.Setup(x => x.GetTokenAsync("accessToken"))
+                            .ReturnsAsync(token)
+                            .Verifiable();
 
             httpMessageHandlerMock.Protected()
                 .Setup<Task<HttpResponseMessage>>("SendAsync",
@@ -528,28 +582,33 @@ namespace MvcClient.Tests.Services.Api
                                              ItExpr.IsAny<CancellationToken>())
                 .ReturnsAsync(new HttpResponseMessage
                 {
-                    StatusCode = HttpStatusCode.ServiceUnavailable
+                    StatusCode = statusCode,
                 })
                 .Verifiable();
 
-
             // Act && Assert
-            await Assert.ThrowsAsync<Exception>(() => apiInvoker.DeleteItemAsync("Categories/", id));
+            var exception = await Assert.ThrowsAsync<HttpRequestException>(() => apiInvoker.DeleteItemAsync("Categories/", id));
+            Assert.Equal(statusCode, exception.StatusCode);
+
+            httpMessageHandlerMock.Verify();
+            tokenStorageMock.Verify();
         }
 
-        private void SetupRefreshToken()
+        private void SetupRefreshingToken()
         {
+            var uri = new Uri("https://localhost:5001/api/Authentication/Refresh");
             var authenticatedModel = new AuthenticatedModel { AccessToken = token, RefreshToken = refreshToken };
 
-            httpContextAccessorMock.SetupGet(x => x.HttpContext.Request.Cookies["RefreshToken"])
-                                   .Returns(refreshToken)
-                                   .Verifiable();
+            tokenStorageMock.Setup(x => x.GetTokenAsync("refreshToken"))
+                            .ReturnsAsync(refreshToken)
+                            .Verifiable();
 
             SetupSettingTokens();
 
             httpMessageHandlerMock.Protected()
                 .Setup<Task<HttpResponseMessage>>("SendAsync",
-                                                          ItExpr.Is<HttpRequestMessage>(x => x.Method == HttpMethod.Post),
+                                                          ItExpr.Is<HttpRequestMessage>(x => x.RequestUri == uri
+                                                                                             && x.Method == HttpMethod.Post),
                                                           ItExpr.IsAny<CancellationToken>())
                 .ReturnsAsync(new HttpResponseMessage
                 {
@@ -561,12 +620,10 @@ namespace MvcClient.Tests.Services.Api
 
         private void SetupSettingTokens()
         {
-            httpContextAccessorMock.Setup(x => x.HttpContext.Response.Cookies.Append("Token", token,
-                                                                                     It.IsAny<CookieOptions>()))
-                                   .Verifiable();
-            httpContextAccessorMock.Setup(x => x.HttpContext.Response.Cookies.Append("RefreshToken", refreshToken,
-                                                                                     It.IsAny<CookieOptions>()))
-                                   .Verifiable();
+            tokenStorageMock.Setup(x => x.SetTokenAsync("accessToken", token))
+                            .Verifiable();
+            tokenStorageMock.Setup(x => x.SetTokenAsync("refreshToken", refreshToken))
+                            .Verifiable();
         }
     }
 }

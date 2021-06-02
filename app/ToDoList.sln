@@ -48,6 +48,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Misc", "Misc", "{EE6931A2-0
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ToDoList.BlazorClient", "src\ToDoList.BlazorClient\ToDoList.BlazorClient.csproj", "{536EF672-2F27-4810-BC50-84D7FE9076CD}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlazorClient.Tests", "tests\ToDoList.UnitTests\BlazorClient.Tests\BlazorClient.Tests.csproj", "{16080854-D50C-4227-BD4E-2220D82623B1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharedClientLibrary.Tests", "tests\ToDoList.UnitTests\SharedClientLibrary.Tests\SharedClientLibrary.Tests.csproj", "{D7D08C0A-6CB2-4EA2-AD2E-3265F1B23A1D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -110,6 +114,14 @@ Global
 		{536EF672-2F27-4810-BC50-84D7FE9076CD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{536EF672-2F27-4810-BC50-84D7FE9076CD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{536EF672-2F27-4810-BC50-84D7FE9076CD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{16080854-D50C-4227-BD4E-2220D82623B1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{16080854-D50C-4227-BD4E-2220D82623B1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{16080854-D50C-4227-BD4E-2220D82623B1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{16080854-D50C-4227-BD4E-2220D82623B1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D7D08C0A-6CB2-4EA2-AD2E-3265F1B23A1D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D7D08C0A-6CB2-4EA2-AD2E-3265F1B23A1D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D7D08C0A-6CB2-4EA2-AD2E-3265F1B23A1D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D7D08C0A-6CB2-4EA2-AD2E-3265F1B23A1D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -128,6 +140,8 @@ Global
 		{104E01B6-B934-43BF-8812-9AB0CDC2BEEB} = {991BBFCC-FFB6-4221-A53F-FB8FD9A58B93}
 		{96B14C7B-B5D9-4349-AF46-DA0614A3EBEE} = {C9EAD301-6235-4841-8F37-3E8CAB6CC43B}
 		{536EF672-2F27-4810-BC50-84D7FE9076CD} = {C9EAD301-6235-4841-8F37-3E8CAB6CC43B}
+		{16080854-D50C-4227-BD4E-2220D82623B1} = {991BBFCC-FFB6-4221-A53F-FB8FD9A58B93}
+		{D7D08C0A-6CB2-4EA2-AD2E-3265F1B23A1D} = {991BBFCC-FFB6-4221-A53F-FB8FD9A58B93}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {D0ECA035-5E20-4404-B8B5-0D328D3E1459}
