@@ -23,6 +23,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\src\ToDoList.SharedClientLibrary\ToDoList.SharedClientLibrary.csproj" />
+    <ProjectReference Include="..\TestExtensions\TestExtensions.csproj" />
   </ItemGroup>
 
 </Project>

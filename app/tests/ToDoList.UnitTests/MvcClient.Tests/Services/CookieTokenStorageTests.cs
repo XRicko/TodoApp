@@ -1,10 +1,11 @@
 ﻿using System;
-using System.Security.Claims;
 using System.Threading.Tasks;
 
 using Microsoft.AspNetCore.Http;
 
 using Moq;
+
+using TestExtensions;
 
 using ToDoList.MvcClient.Services;
 using ToDoList.SharedClientLibrary.Services;
@@ -60,9 +61,7 @@ namespace MvcClient.Tests.Services
                                                                                      It.Is<CookieOptions>(c => c.Expires == expiryDate)))
                                    .Verifiable();
 
-            tokenParserMock.Setup(x => x.GetExpiryDate(token, It.IsAny<ClaimsPrincipal>()))
-                           .Returns(expiryDate)
-                           .Verifiable();
+            tokenParserMock.SetupGettingExpiryDate(token, expiryDate);
 
             // Act
             await cookieTokenStorage.SetTokenAsync(key, token);

@@ -1,11 +1,20 @@
 ﻿using System;
+using System.Net;
 using System.Net.Http;
+using System.Net.Http.Formatting;
+using System.Net.Http.Headers;
+using System.Threading.Tasks;
 
 using Moq;
 
+using TestExtensions;
+
 using ToDoList.BlazorClient.Authentication;
 using ToDoList.BlazorClient.Services;
+using ToDoList.SharedClientLibrary.Models;
 using ToDoList.SharedClientLibrary.Services;
+
+using Xunit;
 
 namespace BlazorClient.Tests.Services
 {
@@ -13,26 +22,86 @@ namespace BlazorClient.Tests.Services
     {
         private readonly Mock<HttpMessageHandler> httpMessageHandlerMock;
 
-        private readonly Mock<ITokenStorage> tokenStorageMock;
         private readonly Mock<ITokenParser> tokenParserMock;
 
         private readonly HttpClient httpClient;
+        private readonly AuthStateProvider authStateProvider;
 
         private readonly BlazorApiInvoker blazorApiInvoker;
 
         public BlazorApiInvokerTests()
         {
             httpMessageHandlerMock = new Mock<HttpMessageHandler>();
-
-            tokenStorageMock = new Mock<ITokenStorage>();
             tokenParserMock = new Mock<ITokenParser>();
 
             httpClient = new HttpClient(httpMessageHandlerMock.Object) { BaseAddress = new Uri("https://localhost:5001/api/") };
 
-            var stateProvider = new AuthStateProvider(httpClient, tokenParserMock.Object, tokenStorageMock.Object);
-            blazorApiInvoker = new BlazorApiInvoker(httpClient, stateProvider, tokenStorageMock.Object);
+            Mock<ITokenStorage> tokenStorageMock = new();
+
+            authStateProvider = new AuthStateProvider(httpClient, tokenParserMock.Object, tokenStorageMock.Object);
+            blazorApiInvoker = new BlazorApiInvoker(httpClient, tokenStorageMock.Object, authStateProvider);
         }
 
-        // TODO
+        [Fact]
+        public async Task AuthenticateUserAsync_RaisesEventAndReturnsAuthenticatedModel()
+        {
+            // Arrange
+            string token = "eyhJfepcmve_FEpimfpi.ceFGNJOewipqm";
+
+            var authenticatedModel = new AuthenticatedModel
+            {
+                AccessToken = token,
+                RefreshToken = "eyjhFNjpz[pxlwxnc.zegvEcverGX"
+            };
+
+            var expiryDate = DateTimeOffset.Now.AddMinutes(2);
+            var claimsPrincipal = ClaimsPrincipalHelpers.CreateClaimsPrincipal(expiryDate);
+
+            var uri = new Uri("https://localhost:5001/api/Authentication/Login");
+            var content = new ObjectContent<AuthenticatedModel>(authenticatedModel, new JsonMediaTypeFormatter());
+
+            bool eventRaised = false;
+            authStateProvider.AuthenticationStateChanged += (obj) => eventRaised = true;
+
+            tokenParserMock.SetupGettingClaimsPrincipal(token, claimsPrincipal);
+            httpMessageHandlerMock.SetupHttCall(uri, HttpMethod.Post, HttpStatusCode.OK, content);
+
+            // Act
+            var actual = await blazorApiInvoker.AuthenticateUserAsync("Authentication/Login",
+                                                                      new UserModel { Name = "admin", Password = "QWERty" });
+
+            // Assert
+            Assert.Equal(authenticatedModel.AccessToken, actual.AccessToken);
+            Assert.Equal(authenticatedModel.RefreshToken, actual.RefreshToken);
+
+            Assert.Equal(token, httpClient.DefaultRequestHeaders.Authorization.Parameter);
+
+            Assert.True(eventRaised);
+
+            httpMessageHandlerMock.Verify();
+        }
+
+        [Fact]
+        public async Task LogoutAsync_RaisesEvent()
+        {
+            // Arrange
+            var uri = new Uri("https://localhost:5001/api/Authentication/Logout");
+
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", "efnepwigj.IEJFpweivnvj");
+
+            bool eventRaised = false;
+            authStateProvider.AuthenticationStateChanged += (obj) => eventRaised = true;
+
+            httpMessageHandlerMock.SetupHttCall(uri, HttpMethod.Delete, HttpStatusCode.OK);
+
+            // Act
+            await blazorApiInvoker.LogoutAsync();
+
+            // Assert
+            Assert.True(eventRaised);
+            Assert.Null(httpClient.DefaultRequestHeaders.Authorization);
+
+            httpMessageHandlerMock.Verify();
+        }
     }
 }

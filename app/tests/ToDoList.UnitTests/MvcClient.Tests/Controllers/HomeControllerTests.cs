@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 
 using Moq;
 
+using TestExtensions;
+
 using ToDoList.MvcClient.Controllers;
 using ToDoList.SharedClientLibrary.Services;
 
@@ -28,9 +30,7 @@ namespace MvcClient.Tests.Controllers
             // Arrange
             string viewName = "Index";
 
-            tokenStorageMock.Setup(x => x.GetTokenAsync("refreshToken"))
-                            .ReturnsAsync("")
-                            .Verifiable();
+            tokenStorageMock.SetupGettingToken("refreshToken", "");
 
             // Act
             var result = await homeController.IndexAsync() as ViewResult;
@@ -46,9 +46,7 @@ namespace MvcClient.Tests.Controllers
             // Arrange
             string controllerName = "Todo";
 
-            tokenStorageMock.Setup(x => x.GetTokenAsync("refreshToken"))
-                            .ReturnsAsync("efjiJdjWFdojfw.PWQKDpfjejvnj")
-                            .Verifiable();
+            tokenStorageMock.SetupGettingToken("refreshToken", "efjiJdjWFdojfw.PWQKDpfjejvnj");
 
             // Act
             var result = await homeController.IndexAsync() as RedirectToActionResult;

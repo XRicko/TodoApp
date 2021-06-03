@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Net.Http;
-using System.Security.Claims;
 using System.Threading.Tasks;
 
 using Moq;
+
+using TestExtensions;
 
 using ToDoList.BlazorClient.Authentication;
 using ToDoList.SharedClientLibrary.Services;
@@ -35,9 +36,7 @@ namespace BlazorClient.Tests.Authenctication
         public async Task GetAuthenticationStateAsync_ReturnsEmptyAuthencticationStateIfNoToken()
         {
             // Arrange
-            tokenStorageMock.Setup(x => x.GetTokenAsync("accessToken"))
-                            .ReturnsAsync("")
-                            .Verifiable();
+            tokenStorageMock.SetupGettingToken("accessToken", "");
 
             // Act
             var actual = await authStateProvider.GetAuthenticationStateAsync();
@@ -52,24 +51,14 @@ namespace BlazorClient.Tests.Authenctication
         {
             // Arrange
             string token = "ejnefNWPQDMpf.FE{OFekwpqvje";
+
             var expiryDate = DateTimeOffset.Now.AddMinutes(-2);
+            var claimsPrincipal = ClaimsPrincipalHelpers.CreateClaimsPrincipal(expiryDate);
 
-            ClaimsPrincipal claimsPrincipal = new(new ClaimsIdentity(new Claim[]
-            {
-                new Claim("exp", expiryDate.ToUnixTimeSeconds().ToString())
-            }, "jwtAuthentication"));
+            tokenParserMock.SetupGettingClaimsPrincipal(token, claimsPrincipal);
+            tokenParserMock.SetupGettingExpiryDate(token, expiryDate, claimsPrincipal);
 
-            tokenStorageMock.Setup(x => x.GetTokenAsync("accessToken"))
-                            .ReturnsAsync(token)
-                            .Verifiable();
-
-            tokenParserMock.Setup(x => x.GetClaimsPrincipal(token))
-                           .Returns(claimsPrincipal)
-                           .Verifiable();
-
-            tokenParserMock.Setup(x => x.GetExpiryDate(token, claimsPrincipal))
-                           .Returns(expiryDate)
-                           .Verifiable();
+            tokenStorageMock.SetupGettingToken("accessToken", token);
 
             // Act
             var actual = await authStateProvider.GetAuthenticationStateAsync();
@@ -82,28 +71,19 @@ namespace BlazorClient.Tests.Authenctication
         }
 
         [Fact]
-        public async Task GetAuthenticationStateAsync_ReturnsAuthencticationStateWithClaimsIfTokenValid()
+        public async Task GetAuthenticationStateAsync_ReturnsAuthenticationStateWithClaimsIfTokenValid()
         {
             // Arrange
             string token = "ejnefNWPQDMpf.FE{OFekwpqvje";
+
             var expiryDate = DateTimeOffset.Now.AddMinutes(4);
+            var claimsPrincipal = ClaimsPrincipalHelpers.CreateClaimsPrincipal(expiryDate);
 
-            ClaimsPrincipal claimsPrincipal = new(new ClaimsIdentity(new Claim[]
-            {
-                new Claim("exp", expiryDate.ToUnixTimeSeconds().ToString())
-            }, "jwtAuthentication"));
+            tokenStorageMock.SetupGettingToken("accessToken", token);
 
-            tokenStorageMock.Setup(x => x.GetTokenAsync("accessToken"))
-                            .ReturnsAsync(token)
-                            .Verifiable();
+            tokenParserMock.SetupGettingClaimsPrincipal(token, claimsPrincipal);
+            tokenParserMock.SetupGettingExpiryDate(token, expiryDate, claimsPrincipal);
 
-            tokenParserMock.Setup(x => x.GetClaimsPrincipal(token))
-                           .Returns(claimsPrincipal)
-                           .Verifiable();
-
-            tokenParserMock.Setup(x => x.GetExpiryDate(token, claimsPrincipal))
-                           .Returns(expiryDate)
-                           .Verifiable();
             // Act
             var actual = await authStateProvider.GetAuthenticationStateAsync();
 
@@ -121,20 +101,14 @@ namespace BlazorClient.Tests.Authenctication
         {
             // Arrange
             string token = "ejnefNWPQDMpf.FE{OFekwpqvje";
+
             var expiryDate = DateTimeOffset.Now.AddMinutes(4);
+            var claimsPrincipal = ClaimsPrincipalHelpers.CreateClaimsPrincipal(expiryDate);
 
             bool eventRaised = false;
-
-            ClaimsPrincipal claimsPrincipal = new(new ClaimsIdentity(new Claim[]
-            {
-                new Claim("exp", expiryDate.ToUnixTimeSeconds().ToString())
-            }, "jwtAuthentication"));
-
-            tokenParserMock.Setup(x => x.GetClaimsPrincipal(token))
-                           .Returns(claimsPrincipal)
-                           .Verifiable();
-
             authStateProvider.AuthenticationStateChanged += (obj) => eventRaised = true;
+
+            tokenParserMock.SetupGettingClaimsPrincipal(token, claimsPrincipal);
 
             // Act
             authStateProvider.NotifyUserAuthentication(token);

@@ -4,11 +4,14 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Formatting;
+using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
 
 using Moq;
 using Moq.Protected;
+
+using TestExtensions;
 
 using ToDoList.SharedClientLibrary.Models;
 using ToDoList.SharedClientLibrary.Services;
@@ -50,29 +53,17 @@ namespace SharedClientLibrary.Tests.Services
         {
             // Arrange
             var uri = new Uri("https://localhost:5001/api/Categories/GetByName/Important");
+            var content = new ObjectContent<CategoryModel>(category, new JsonMediaTypeFormatter());
 
-            tokenStorageMock.Setup(x => x.GetTokenAsync("accessToken"))
-                            .ReturnsAsync(token)
-                            .Verifiable();
-
-            httpMessageHandlerMock.Protected()
-                .Setup<Task<HttpResponseMessage>>("SendAsync",
-                                                  ItExpr.Is<HttpRequestMessage>(x => x.Method == HttpMethod.Get
-                                                                                     && x.RequestUri == uri),
-                                                  ItExpr.IsAny<CancellationToken>())
-                .ReturnsAsync(new HttpResponseMessage
-                {
-                    StatusCode = HttpStatusCode.OK,
-                    Content = new ObjectContent<CategoryModel>(category, new JsonMediaTypeFormatter()),
-                })
-                .Verifiable();
+            tokenStorageMock.SetupGettingToken("accessToken", token);
+            httpMessageHandlerMock.SetupHttCall(uri, HttpMethod.Get, HttpStatusCode.OK, content);
 
             // Act
             var actual = await apiInvoker.GetItemAsync<CategoryModel>("Categories/GetByName/Important");
 
             // Assert
             Assert.Equal(category.Id, actual.Id);
-            Assert.Equal(httpClient.DefaultRequestHeaders.Authorization.Parameter, token);
+            Assert.Equal(token, httpClient.DefaultRequestHeaders.Authorization.Parameter);
 
             httpMessageHandlerMock.Verify();
             tokenStorageMock.Verify();
@@ -83,34 +74,19 @@ namespace SharedClientLibrary.Tests.Services
         {
             // Arrange
             var uri = new Uri("https://localhost:5001/api/Categories/GetByName/Important");
+            var content = new ObjectContent<CategoryModel>(category, new JsonMediaTypeFormatter());
 
+            tokenStorageMock.SetupGettingToken("accessToken", token);
             SetupRefreshingToken();
 
-            tokenStorageMock.Setup(x => x.GetTokenAsync("accessToken"))
-                            .ReturnsAsync(token)
-                            .Verifiable();
-
-            httpMessageHandlerMock.Protected()
-                .SetupSequence<Task<HttpResponseMessage>>("SendAsync",
-                                                          ItExpr.Is<HttpRequestMessage>(x => x.Method == HttpMethod.Get
-                                                                                             && x.RequestUri == uri),
-                                                          ItExpr.IsAny<CancellationToken>())
-                .ReturnsAsync(new HttpResponseMessage
-                {
-                    StatusCode = HttpStatusCode.Unauthorized,
-                })
-                .ReturnsAsync(new HttpResponseMessage
-                {
-                    StatusCode = HttpStatusCode.OK,
-                    Content = new ObjectContent<CategoryModel>(category, new JsonMediaTypeFormatter()),
-                });
+            httpMessageHandlerMock.SetupHttpCallSequenceForRefreshingToken(uri, HttpMethod.Get, content);
 
             // Act
             var actual = await apiInvoker.GetItemAsync<CategoryModel>("Categories/GetByName/Important");
 
             // Assert
             Assert.Equal(category.Id, actual.Id);
-            Assert.Equal(httpClient.DefaultRequestHeaders.Authorization.Parameter, token);
+            Assert.Equal(token, httpClient.DefaultRequestHeaders.Authorization.Parameter);
 
             httpMessageHandlerMock.Protected().Verify("SendAsync", Times.Exactly(2),
                                                       ItExpr.Is<HttpRequestMessage>(x => x.Method == HttpMethod.Get
@@ -126,20 +102,8 @@ namespace SharedClientLibrary.Tests.Services
             var uri = new Uri("https://localhost:5001/api/Categories/GetByName/Important");
             var statusCode = HttpStatusCode.InternalServerError;
 
-            tokenStorageMock.Setup(x => x.GetTokenAsync("accessToken"))
-                            .ReturnsAsync(token)
-                            .Verifiable();
-
-            httpMessageHandlerMock.Protected()
-                .Setup<Task<HttpResponseMessage>>("SendAsync",
-                                                     ItExpr.Is<HttpRequestMessage>(r => r.Method == HttpMethod.Get
-                                                                                        && r.RequestUri == uri),
-                                                     ItExpr.IsAny<CancellationToken>())
-                .ReturnsAsync(new HttpResponseMessage
-                {
-                    StatusCode = statusCode,
-                })
-                .Verifiable();
+            tokenStorageMock.SetupGettingToken("accessToken", token);
+            httpMessageHandlerMock.SetupHttCall(uri, HttpMethod.Get, statusCode);
 
             // Act && Assert
             var exception = await Assert.ThrowsAsync<HttpRequestException>(() =>
@@ -157,26 +121,14 @@ namespace SharedClientLibrary.Tests.Services
             // Arrange
             var uri = new Uri("https://localhost:5001/api/Categories");
 
-            tokenStorageMock.Setup(x => x.GetTokenAsync("accessToken"))
-                            .ReturnsAsync(token)
-                            .Verifiable();
-
-            httpMessageHandlerMock.Protected()
-                .Setup<Task<HttpResponseMessage>>("SendAsync",
-                                                     ItExpr.Is<HttpRequestMessage>(r => r.Method == HttpMethod.Post
-                                                                                        && r.RequestUri == uri),
-                                                     ItExpr.IsAny<CancellationToken>())
-                .ReturnsAsync(new HttpResponseMessage
-                {
-                    StatusCode = HttpStatusCode.OK
-                })
-                .Verifiable();
+            tokenStorageMock.SetupGettingToken("accessToken", token);
+            httpMessageHandlerMock.SetupHttCall(uri, HttpMethod.Post, HttpStatusCode.OK);
 
             // Act
             await apiInvoker.PostItemAsync("Categories", category);
 
             // Assert
-            Assert.Equal(httpClient.DefaultRequestHeaders.Authorization.Parameter, token);
+            Assert.Equal(token, httpClient.DefaultRequestHeaders.Authorization.Parameter);
 
             httpMessageHandlerMock.Verify();
             tokenStorageMock.Verify();
@@ -188,33 +140,17 @@ namespace SharedClientLibrary.Tests.Services
             // Arrange
             var uri = new Uri("https://localhost:5001/api/Categories");
 
+            tokenStorageMock.SetupGettingToken("accessToken", token);
             SetupRefreshingToken();
 
-            tokenStorageMock.Setup(x => x.GetTokenAsync("accessToken"))
-                            .ReturnsAsync(token)
-                            .Verifiable();
-
-            httpMessageHandlerMock.Protected()
-                .SetupSequence<Task<HttpResponseMessage>>("SendAsync",
-                                                     ItExpr.Is<HttpRequestMessage>(r => r.Method == HttpMethod.Post
-                                                                                        && r.RequestUri == uri),
-                                                     ItExpr.IsAny<CancellationToken>())
-                .ReturnsAsync(new HttpResponseMessage
-                {
-                    StatusCode = HttpStatusCode.Unauthorized
-                })
-                .ReturnsAsync(new HttpResponseMessage
-                {
-                    StatusCode = HttpStatusCode.OK
-                });
+            httpMessageHandlerMock.SetupHttpCallSequenceForRefreshingToken(uri, HttpMethod.Post);
 
             // Act
             await apiInvoker.PostItemAsync("Categories", category);
 
             // Assert
-            Assert.Equal(httpClient.DefaultRequestHeaders.Authorization.Parameter, token);
+            Assert.Equal(token, httpClient.DefaultRequestHeaders.Authorization.Parameter);
 
-            httpMessageHandlerMock.Verify();
             httpMessageHandlerMock.Protected().Verify("SendAsync", Times.Exactly(2),
                                                       ItExpr.Is<HttpRequestMessage>(x => x.Method == HttpMethod.Post
                                                                                          && x.RequestUri == uri),
@@ -230,20 +166,8 @@ namespace SharedClientLibrary.Tests.Services
             var uri = new Uri("https://localhost:5001/api/Categories");
             var statusCode = HttpStatusCode.ServiceUnavailable;
 
-            tokenStorageMock.Setup(x => x.GetTokenAsync("accessToken"))
-                            .ReturnsAsync(token)
-                            .Verifiable();
-
-            httpMessageHandlerMock.Protected()
-                .Setup<Task<HttpResponseMessage>>("SendAsync",
-                                                     ItExpr.Is<HttpRequestMessage>(r => r.Method == HttpMethod.Post
-                                                                                        && r.RequestUri == uri),
-                                                     ItExpr.IsAny<CancellationToken>())
-                .ReturnsAsync(new HttpResponseMessage
-                {
-                    StatusCode = statusCode,
-                })
-                .Verifiable();
+            tokenStorageMock.SetupGettingToken("accessToken", token);
+            httpMessageHandlerMock.SetupHttCall(uri, HttpMethod.Post, statusCode);
 
             // Act && Assert
             var exception = await Assert.ThrowsAsync<HttpRequestException>(() => apiInvoker.PostItemAsync("Categories", category));
@@ -260,26 +184,14 @@ namespace SharedClientLibrary.Tests.Services
             // Arrange
             var uri = new Uri("https://localhost:5001/api/Categories");
 
-            tokenStorageMock.Setup(x => x.GetTokenAsync("accessToken"))
-                            .ReturnsAsync(token)
-                            .Verifiable();
-
-            httpMessageHandlerMock.Protected()
-                .Setup<Task<HttpResponseMessage>>("SendAsync",
-                                                     ItExpr.Is<HttpRequestMessage>(r => r.Method == HttpMethod.Put
-                                                                                        && r.RequestUri == uri),
-                                                     ItExpr.IsAny<CancellationToken>())
-                .ReturnsAsync(new HttpResponseMessage
-                {
-                    StatusCode = HttpStatusCode.OK,
-                })
-                .Verifiable();
+            tokenStorageMock.SetupGettingToken("accessToken", token);
+            httpMessageHandlerMock.SetupHttCall(uri, HttpMethod.Put, HttpStatusCode.OK);
 
             // Act
             await apiInvoker.PutItemAsync("Categories", category);
 
             // Assert
-            Assert.Equal(httpClient.DefaultRequestHeaders.Authorization.Parameter, token);
+            Assert.Equal(token, httpClient.DefaultRequestHeaders.Authorization.Parameter);
 
             httpMessageHandlerMock.Verify();
             tokenStorageMock.Verify();
@@ -291,33 +203,17 @@ namespace SharedClientLibrary.Tests.Services
             // Arrange
             var uri = new Uri("https://localhost:5001/api/Categories");
 
+            tokenStorageMock.SetupGettingToken("accessToken", token);
             SetupRefreshingToken();
 
-            tokenStorageMock.Setup(x => x.GetTokenAsync("accessToken"))
-                            .ReturnsAsync(token)
-                            .Verifiable();
-
-            httpMessageHandlerMock.Protected()
-                .SetupSequence<Task<HttpResponseMessage>>("SendAsync",
-                                                     ItExpr.Is<HttpRequestMessage>(r => r.Method == HttpMethod.Put
-                                                                                        && r.RequestUri == uri),
-                                                     ItExpr.IsAny<CancellationToken>())
-                .ReturnsAsync(new HttpResponseMessage
-                {
-                    StatusCode = HttpStatusCode.Unauthorized
-                })
-                .ReturnsAsync(new HttpResponseMessage
-                {
-                    StatusCode = HttpStatusCode.OK
-                });
+            httpMessageHandlerMock.SetupHttpCallSequenceForRefreshingToken(uri, HttpMethod.Put);
 
             // Act
             await apiInvoker.PutItemAsync("Categories", category);
 
             // Assert
-            Assert.Equal(httpClient.DefaultRequestHeaders.Authorization.Parameter, token);
+            Assert.Equal(token, httpClient.DefaultRequestHeaders.Authorization.Parameter);
 
-            httpMessageHandlerMock.Verify();
             httpMessageHandlerMock.Protected().Verify("SendAsync", Times.Exactly(2),
                                                       ItExpr.Is<HttpRequestMessage>(x => x.Method == HttpMethod.Put
                                                                                          && x.RequestUri == uri),
@@ -333,20 +229,8 @@ namespace SharedClientLibrary.Tests.Services
             var uri = new Uri("https://localhost:5001/api/Categories");
             var statusCode = HttpStatusCode.BadRequest;
 
-            tokenStorageMock.Setup(x => x.GetTokenAsync("accessToken"))
-                            .ReturnsAsync(token)
-                            .Verifiable();
-
-            httpMessageHandlerMock.Protected()
-                .Setup<Task<HttpResponseMessage>>("SendAsync",
-                                                     ItExpr.Is<HttpRequestMessage>(r => r.Method == HttpMethod.Put
-                                                                                        && r.RequestUri == uri),
-                                                     ItExpr.IsAny<CancellationToken>())
-                .ReturnsAsync(new HttpResponseMessage
-                {
-                    StatusCode = statusCode,
-                })
-                .Verifiable();
+            tokenStorageMock.SetupGettingToken("accessToken", token);
+            httpMessageHandlerMock.SetupHttCall(uri, HttpMethod.Put, statusCode);
 
             // Act && Assert
             var exception = await Assert.ThrowsAsync<HttpRequestException>(() => apiInvoker.PutItemAsync("Categories", category));
@@ -361,24 +245,13 @@ namespace SharedClientLibrary.Tests.Services
         public async Task GetItemsAsync_ReturnsItemsIfSuccess()
         {
             // Arrange
-            var uri = new Uri("https://localhost:5001/api/Categories");
             var categories = new List<CategoryModel> { category, new CategoryModel { Id = 123, Name = "Unimportant" } };
 
-            tokenStorageMock.Setup(x => x.GetTokenAsync("accessToken"))
-                            .ReturnsAsync(token)
-                            .Verifiable();
+            var uri = new Uri("https://localhost:5001/api/Categories");
+            var content = new ObjectContent<IEnumerable<CategoryModel>>(categories, new JsonMediaTypeFormatter());
 
-            httpMessageHandlerMock.Protected()
-                .Setup<Task<HttpResponseMessage>>("SendAsync",
-                                                  ItExpr.Is<HttpRequestMessage>(r => r.Method == HttpMethod.Get
-                                                                                     && r.RequestUri == uri),
-                                                  ItExpr.IsAny<CancellationToken>())
-                .ReturnsAsync(new HttpResponseMessage
-                {
-                    StatusCode = HttpStatusCode.OK,
-                    Content = new ObjectContent<IEnumerable<CategoryModel>>(categories, new JsonMediaTypeFormatter())
-                })
-                .Verifiable();
+            tokenStorageMock.SetupGettingToken("accessToken", token);
+            httpMessageHandlerMock.SetupHttCall(uri, HttpMethod.Get, HttpStatusCode.OK, content);
 
             // Act
             var result = await apiInvoker.GetItemsAsync<CategoryModel>("Categories");
@@ -387,7 +260,7 @@ namespace SharedClientLibrary.Tests.Services
             Assert.Equal(categories.Count, result.Count());
             Assert.Equal(categories.First().Name, result.First().Name);
 
-            Assert.Equal(httpClient.DefaultRequestHeaders.Authorization.Parameter, token);
+            Assert.Equal(token, httpClient.DefaultRequestHeaders.Authorization.Parameter);
 
             httpMessageHandlerMock.Verify();
             tokenStorageMock.Verify();
@@ -400,26 +273,12 @@ namespace SharedClientLibrary.Tests.Services
             var uri = new Uri("https://localhost:5001/api/Categories");
             var categories = new List<CategoryModel> { category, new CategoryModel { Id = 123, Name = "Unimportant" } };
 
+            var content = new ObjectContent<IEnumerable<CategoryModel>>(categories, new JsonMediaTypeFormatter());
+
+            tokenStorageMock.SetupGettingToken("accessToken", token);
             SetupRefreshingToken();
 
-            tokenStorageMock.Setup(x => x.GetTokenAsync("accessToken"))
-                            .ReturnsAsync(token)
-                            .Verifiable();
-
-            httpMessageHandlerMock.Protected()
-                .SetupSequence<Task<HttpResponseMessage>>("SendAsync",
-                                                  ItExpr.Is<HttpRequestMessage>(r => r.Method == HttpMethod.Get
-                                                                                     && r.RequestUri == uri),
-                                                  ItExpr.IsAny<CancellationToken>())
-                .ReturnsAsync(new HttpResponseMessage
-                {
-                    StatusCode = HttpStatusCode.Unauthorized
-                })
-                .ReturnsAsync(new HttpResponseMessage
-                {
-                    StatusCode = HttpStatusCode.OK,
-                    Content = new ObjectContent<IEnumerable<CategoryModel>>(categories, new JsonMediaTypeFormatter())
-                });
+            httpMessageHandlerMock.SetupHttpCallSequenceForRefreshingToken(uri, HttpMethod.Get, content);
 
             // Act
             var result = await apiInvoker.GetItemsAsync<CategoryModel>("Categories");
@@ -428,9 +287,8 @@ namespace SharedClientLibrary.Tests.Services
             Assert.Equal(categories.Count, result.Count());
             Assert.Equal(categories.First().Name, result.First().Name);
 
-            Assert.Equal(httpClient.DefaultRequestHeaders.Authorization.Parameter, token);
+            Assert.Equal(token, httpClient.DefaultRequestHeaders.Authorization.Parameter);
 
-            httpMessageHandlerMock.Verify();
             httpMessageHandlerMock.Protected().Verify("SendAsync", Times.Exactly(2),
                                                       ItExpr.Is<HttpRequestMessage>(x => x.Method == HttpMethod.Get
                                                                                          && x.RequestUri == uri),
@@ -446,20 +304,8 @@ namespace SharedClientLibrary.Tests.Services
             var uri = new Uri("https://localhost:5001/api/Categories");
             var statusCode = HttpStatusCode.BadGateway;
 
-            tokenStorageMock.Setup(x => x.GetTokenAsync("accessToken"))
-                            .ReturnsAsync(token)
-                            .Verifiable();
-
-            httpMessageHandlerMock.Protected()
-                .Setup<Task<HttpResponseMessage>>("SendAsync",
-                                                 ItExpr.Is<HttpRequestMessage>(r => r.Method == HttpMethod.Get
-                                                                                    && r.RequestUri == uri),
-                                                 ItExpr.IsAny<CancellationToken>())
-                .ReturnsAsync(new HttpResponseMessage
-                {
-                    StatusCode = statusCode,
-                })
-                .Verifiable();
+            tokenStorageMock.SetupGettingToken("accessToken", token);
+            httpMessageHandlerMock.SetupHttCall(uri, HttpMethod.Get, statusCode);
 
             // Act && Assert
             var exception = await Assert.ThrowsAsync<HttpRequestException>(() => apiInvoker.GetItemsAsync<CategoryModel>("Categories"));
@@ -478,20 +324,10 @@ namespace SharedClientLibrary.Tests.Services
             var user = new UserModel { Id = 3, Name = "admin", Password = "qwerty" };
 
             var uri = new Uri("https://localhost:5001/api/Authentication/Login");
-
-            httpMessageHandlerMock.Protected()
-                .Setup<Task<HttpResponseMessage>>("SendAsync",
-                                                  ItExpr.Is<HttpRequestMessage>(r => r.Method == HttpMethod.Post
-                                                                                     && r.RequestUri == uri),
-                                                  ItExpr.IsAny<CancellationToken>())
-                .ReturnsAsync(new HttpResponseMessage
-                {
-                    StatusCode = HttpStatusCode.OK,
-                    Content = new ObjectContent<AuthenticatedModel>(authenticatedModel, new JsonMediaTypeFormatter())
-                })
-                .Verifiable();
+            var content = new ObjectContent<AuthenticatedModel>(authenticatedModel, new JsonMediaTypeFormatter());
 
             SetupSettingTokens();
+            httpMessageHandlerMock.SetupHttCall(uri, HttpMethod.Post, HttpStatusCode.OK, content);
 
             // Act
             var actual = await apiInvoker.AuthenticateUserAsync("Authentication/Login", user);
@@ -500,8 +336,9 @@ namespace SharedClientLibrary.Tests.Services
             Assert.Equal(authenticatedModel.AccessToken, actual.AccessToken);
             Assert.Equal(authenticatedModel.RefreshToken, actual.RefreshToken);
 
+            Assert.Equal(token, httpClient.DefaultRequestHeaders.Authorization.Parameter);
+
             httpMessageHandlerMock.Verify();
-            tokenStorageMock.Verify();
         }
 
         [Fact]
@@ -513,16 +350,7 @@ namespace SharedClientLibrary.Tests.Services
             var uri = new Uri("https://localhost:5001/api/User/Login");
             var statusCode = HttpStatusCode.NotFound;
 
-            httpMessageHandlerMock.Protected()
-                .Setup<Task<HttpResponseMessage>>("SendAsync",
-                                               ItExpr.Is<HttpRequestMessage>(r => r.Method == HttpMethod.Post
-                                                                                  && r.RequestUri == uri),
-                                               ItExpr.IsAny<CancellationToken>())
-                .ReturnsAsync(new HttpResponseMessage
-                {
-                    StatusCode = statusCode
-                })
-                .Verifiable();
+            httpMessageHandlerMock.SetupHttCall(uri, HttpMethod.Post, statusCode);
 
             // Act && Assert
             var exception = await Assert.ThrowsAsync<HttpRequestException>(() => apiInvoker.AuthenticateUserAsync("User/Login", user));
@@ -539,27 +367,41 @@ namespace SharedClientLibrary.Tests.Services
             int id = 4;
             var uri = new Uri("https://localhost:5001/api/Categories/" + id);
 
-            tokenStorageMock.Setup(x => x.GetTokenAsync("accessToken"))
-                            .ReturnsAsync(token)
-                            .Verifiable();
-
-            httpMessageHandlerMock.Protected()
-                .Setup<Task<HttpResponseMessage>>("SendAsync",
-                                             ItExpr.Is<HttpRequestMessage>(r => r.Method == HttpMethod.Delete
-                                                                                && r.RequestUri == uri),
-                                             ItExpr.IsAny<CancellationToken>())
-                .ReturnsAsync(new HttpResponseMessage
-                {
-                    StatusCode = HttpStatusCode.OK
-                })
-                .Verifiable();
+            tokenStorageMock.SetupGettingToken("accessToken", token);
+            httpMessageHandlerMock.SetupHttCall(uri, HttpMethod.Delete, HttpStatusCode.OK);
 
             // Act
             await apiInvoker.DeleteItemAsync("Categories/", id);
 
             // Assert
-            Assert.Equal(httpClient.DefaultRequestHeaders.Authorization.Parameter, token);
+            Assert.Equal(token, httpClient.DefaultRequestHeaders.Authorization.Parameter);
             httpMessageHandlerMock.Verify();
+        }
+
+        [Fact]
+        public async Task DeleteItemAsync_RefreshesTokenIfUnathorizedAndExecutes()
+        {
+            // Arrange 
+            int id = 4;
+            var uri = new Uri("https://localhost:5001/api/Categories/" + id);
+
+            tokenStorageMock.SetupGettingToken("accessToken", token);
+            SetupRefreshingToken();
+
+            httpMessageHandlerMock.SetupHttpCallSequenceForRefreshingToken(uri, HttpMethod.Delete);
+
+            // Act
+            await apiInvoker.DeleteItemAsync("Categories/", id);
+
+            // Assert
+            Assert.Equal(token, httpClient.DefaultRequestHeaders.Authorization.Parameter);
+
+            httpMessageHandlerMock.Protected().Verify("SendAsync", Times.Exactly(2),
+                                                      ItExpr.Is<HttpRequestMessage>(x => x.Method == HttpMethod.Delete
+                                                                                         && x.RequestUri == uri),
+                                                      ItExpr.IsAny<CancellationToken>());
+
+            tokenStorageMock.Verify();
         }
 
         [Fact]
@@ -571,20 +413,8 @@ namespace SharedClientLibrary.Tests.Services
             var uri = new Uri("https://localhost:5001/api/Categories/" + id);
             var statusCode = HttpStatusCode.InternalServerError;
 
-            tokenStorageMock.Setup(x => x.GetTokenAsync("accessToken"))
-                            .ReturnsAsync(token)
-                            .Verifiable();
-
-            httpMessageHandlerMock.Protected()
-                .Setup<Task<HttpResponseMessage>>("SendAsync",
-                                             ItExpr.Is<HttpRequestMessage>(r => r.Method == HttpMethod.Delete
-                                                                                && r.RequestUri == uri),
-                                             ItExpr.IsAny<CancellationToken>())
-                .ReturnsAsync(new HttpResponseMessage
-                {
-                    StatusCode = statusCode,
-                })
-                .Verifiable();
+            tokenStorageMock.SetupGettingToken("accessToken", token);
+            httpMessageHandlerMock.SetupHttCall(uri, HttpMethod.Delete, statusCode);
 
             // Act && Assert
             var exception = await Assert.ThrowsAsync<HttpRequestException>(() => apiInvoker.DeleteItemAsync("Categories/", id));
@@ -594,28 +424,81 @@ namespace SharedClientLibrary.Tests.Services
             tokenStorageMock.Verify();
         }
 
+        [Fact]
+        public async Task LogoutAsync_Executes()
+        {
+            // Arrange 
+            var uri = new Uri("https://localhost:5001/api/Authentication/Logout");
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", token);
+
+            tokenStorageMock.SetupGettingToken("accessToken", token);
+            SetupRemovingTokens();
+
+            httpMessageHandlerMock.SetupHttCall(uri, HttpMethod.Delete, HttpStatusCode.OK);
+
+            // Act
+            await apiInvoker.LogoutAsync();
+
+            // Assert
+            Assert.Null(httpClient.DefaultRequestHeaders.Authorization);
+
+            httpMessageHandlerMock.Verify();
+            tokenStorageMock.Verify();
+        }
+
+        [Fact]
+        public async Task LogoutAsync_RefreshesTokenIfUnathorizedAndExecutes()
+        {
+            // Arrange 
+            var uri = new Uri("https://localhost:5001/api/Authentication/Logout");
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", token);
+
+            tokenStorageMock.SetupGettingToken("accessToken", token);
+            SetupRemovingTokens();
+            SetupRefreshingToken();
+
+            httpMessageHandlerMock.SetupHttpCallSequenceForRefreshingToken(uri, HttpMethod.Delete);
+
+            // Act
+            await apiInvoker.LogoutAsync();
+
+            // Assert
+            Assert.Null(httpClient.DefaultRequestHeaders.Authorization);
+
+            httpMessageHandlerMock.Verify();
+            tokenStorageMock.Verify();
+        }
+
+        [Fact]
+        public async Task LogoutAsync_ThrowsException()
+        {
+            // Arrange 
+            var uri = new Uri("https://localhost:5001/api/Authentication/Logout");
+            //httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", token);
+            var statusCode = HttpStatusCode.InternalServerError;
+
+            tokenStorageMock.SetupGettingToken("accessToken", token);
+            httpMessageHandlerMock.SetupHttCall(uri, HttpMethod.Delete, statusCode);
+
+            // Act && Assert
+            var exception = await Assert.ThrowsAsync<HttpRequestException>(() => apiInvoker.LogoutAsync());
+            Assert.Equal(statusCode, exception.StatusCode);
+
+            httpMessageHandlerMock.Verify();
+            tokenStorageMock.Verify();
+        }
+
         private void SetupRefreshingToken()
         {
-            var uri = new Uri("https://localhost:5001/api/Authentication/Refresh");
             var authenticatedModel = new AuthenticatedModel { AccessToken = token, RefreshToken = refreshToken };
 
-            tokenStorageMock.Setup(x => x.GetTokenAsync("refreshToken"))
-                            .ReturnsAsync(refreshToken)
-                            .Verifiable();
+            var uri = new Uri("https://localhost:5001/api/Authentication/Refresh");
+            var content = new ObjectContent<AuthenticatedModel>(authenticatedModel, new JsonMediaTypeFormatter());
 
+            tokenStorageMock.SetupGettingToken("refreshToken", refreshToken);
             SetupSettingTokens();
 
-            httpMessageHandlerMock.Protected()
-                .Setup<Task<HttpResponseMessage>>("SendAsync",
-                                                          ItExpr.Is<HttpRequestMessage>(x => x.RequestUri == uri
-                                                                                             && x.Method == HttpMethod.Post),
-                                                          ItExpr.IsAny<CancellationToken>())
-                .ReturnsAsync(new HttpResponseMessage
-                {
-                    StatusCode = HttpStatusCode.OK,
-                    Content = new ObjectContent<AuthenticatedModel>(authenticatedModel, new JsonMediaTypeFormatter())
-                })
-                .Verifiable();
+            httpMessageHandlerMock.SetupHttCall(uri, HttpMethod.Post, HttpStatusCode.OK, content);
         }
 
         private void SetupSettingTokens()
@@ -623,6 +506,14 @@ namespace SharedClientLibrary.Tests.Services
             tokenStorageMock.Setup(x => x.SetTokenAsync("accessToken", token))
                             .Verifiable();
             tokenStorageMock.Setup(x => x.SetTokenAsync("refreshToken", refreshToken))
+                            .Verifiable();
+        }
+
+        private void SetupRemovingTokens()
+        {
+            tokenStorageMock.Setup(x => x.RemoveTokenAsync("accessToken"))
+                            .Verifiable();
+            tokenStorageMock.Setup(x => x.RemoveTokenAsync("refreshToken"))
                             .Verifiable();
         }
     }
