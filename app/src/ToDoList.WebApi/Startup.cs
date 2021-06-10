@@ -1,6 +1,10 @@
 using System;
 
+using FluentValidation.AspNetCore;
+
 using MediatR;
+
+using MicroElements.Swashbuckle.FluentValidation.AspNetCore;
 
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -16,6 +20,7 @@ using ToDoList.Core;
 using ToDoList.Core.Mediator.Queries.Generics;
 using ToDoList.Core.Mediator.Response;
 using ToDoList.Core.Services;
+using ToDoList.Core.Validators;
 using ToDoList.Diagnostic;
 using ToDoList.Extensions;
 using ToDoList.Infrastructure.Data;
@@ -96,7 +101,8 @@ namespace ToDoList.WebApi
             // Uncomment when not using Redis
             services.AddDistributedMemoryCache();
 
-            services.AddControllers(options => options.Filters.Add<ProccesTimeActionFilterAttribute>());
+            services.AddControllers(options => options.Filters.Add<ProccesTimeActionFilterAttribute>())
+                    .AddFluentValidation(config => config.RegisterValidatorsFromAssemblyContaining<GeoCoordinateValidator>());
 
             services.AddSwaggerGen(c =>
             {
@@ -124,6 +130,8 @@ namespace ToDoList.WebApi
                     }
                 });
             });
+
+            services.AddFluentValidationRulesToSwagger();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

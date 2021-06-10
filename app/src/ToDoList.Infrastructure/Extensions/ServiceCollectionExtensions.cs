@@ -13,8 +13,7 @@ namespace ToDoList.Infrastructure.Extensions
     {
         public static IServiceCollection AddInfrastructure(this IServiceCollection services, string connectionString)
         {
-            services.AddDbContext<TodoListContext>(options => options.UseSqlServer(connectionString, x => x.UseNetTopologySuite())
-                                                                     .EnableSensitiveDataLogging());
+            services.AddDbContext<TodoListContext>(options => options.UseSqlServer(connectionString, x => x.UseNetTopologySuite()));
 
             services.AddScoped<IRepository, EfRepository>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();

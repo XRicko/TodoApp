@@ -48,29 +48,27 @@ namespace ToDoList.WebApi.Controllers
 
         [HttpPost]
         [Route("[action]")]
-        public async Task<IActionResult> RegisterAsync(UserRequest userCreateRequest)
+        public async Task<IActionResult> RegisterAsync(UserRequest userRequest)
         {
-            _ = userCreateRequest ?? throw new ArgumentNullException(nameof(userCreateRequest));
+            _ = userRequest ?? throw new ArgumentNullException(nameof(userRequest));
 
-            var user = await Mediator.Send(new GetUserByNameAndPasswordQuery(userCreateRequest.Name, userCreateRequest.Password));
+            var user = await Mediator.Send(new GetUserByNameAndPasswordQuery(userRequest.Name, userRequest.Password));
 
             if (user is not null)
                 return Unauthorized("User exists");
 
-            await Mediator.Send(new AddCommand<UserRequest>(userCreateRequest));
-            var createdUser = await Mediator.Send(new GetUserByNameAndPasswordQuery(userCreateRequest.Name, userCreateRequest.Password));
+            await Mediator.Send(new AddCommand<UserRequest>(userRequest));
+            var createdUser = await Mediator.Send(new GetUserByNameAndPasswordQuery(userRequest.Name, userRequest.Password));
 
             return Ok(await authenticator.AuthenticateAsync(createdUser));
         }
 
         [HttpPost]
         [Route("[action]")]
-        public async Task<IActionResult> RefreshAsync([FromBody] string jsonRefreshToken)
+        public async Task<IActionResult> RefreshAsync([FromBody] string refreshToken)
         {
-            if (string.IsNullOrWhiteSpace(jsonRefreshToken))
-                throw new ArgumentException($"'{nameof(jsonRefreshToken)}' cannot be null or whitespace", nameof(jsonRefreshToken));
-
-            string refreshToken = (jsonRefreshToken);
+            if (string.IsNullOrWhiteSpace(refreshToken))
+                throw new ArgumentException($"'{nameof(refreshToken)}' cannot be null or whitespace", nameof(refreshToken));
 
             bool isValidRefreshToken = tokenValidator.ValidateRefreshKey(refreshToken);
             if (!isValidRefreshToken)

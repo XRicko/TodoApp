@@ -19,6 +19,9 @@ namespace ToDoList.Infrastructure.Data.Config
 
             builder.Property(e => e.Name)
                    .HasMaxLength(125);
+
+            builder.Property(e => e.Password)
+                   .HasMaxLength(256);
         }
     }
 }
