@@ -1,6 +1,8 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 
+using FluentAssertions;
+
 using Moq;
 
 using ToDoList.Core.Entities;
@@ -39,7 +41,7 @@ namespace WebApi.Tests.Controllers
             var actual = await imagesController.GetByName(name);
 
             // Assert
-            Assert.Equal(expected, actual);
+            actual.Should().Be(expected);
             MediatorMock.Verify();
         }
 
@@ -58,7 +60,7 @@ namespace WebApi.Tests.Controllers
             var actual = await imagesController.GetByName(name);
 
             // Assert
-            Assert.Null(actual);
+            actual.Should().BeNull();
             MediatorMock.Verify();
         }
 

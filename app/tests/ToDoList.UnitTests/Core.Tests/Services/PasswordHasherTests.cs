@@ -1,5 +1,7 @@
 ﻿using System;
 
+using FluentAssertions;
+
 using ToDoList.Core.Services;
 
 using Xunit;
@@ -28,8 +30,8 @@ namespace Core.Tests.Services
                                                            .Split('$')[0]);
 
             // Assert
-            Assert.Contains("$MYHASH$V1$", hashedPassword);
-            Assert.Equal(expectedIterations, actualIterations);
+            hashedPassword.Should().Contain("$MYHASH$V1$");
+            actualIterations.Should().Be(expectedIterations);
         }
 
         [Fact]
@@ -43,7 +45,7 @@ namespace Core.Tests.Services
             bool isValid = passwordHasher.VerifyPassword(password, hashedPassword);
 
             // Assert
-            Assert.True(isValid);
+            isValid.Should().BeTrue();
         }
 
         [Fact]
@@ -57,7 +59,7 @@ namespace Core.Tests.Services
             bool isValid = passwordHasher.VerifyPassword(password, hashedPassword);
 
             // Assert
-            Assert.False(isValid);
+            isValid.Should().BeFalse();
         }
 
 
@@ -68,8 +70,11 @@ namespace Core.Tests.Services
             string password = "password";
             string hashedPassword = "$MyHash$invalid/hash";
 
-            // Act && Assert
-            Assert.Throws<NotSupportedException>(() => passwordHasher.VerifyPassword(password, hashedPassword));
+            // Act
+            Func<bool> func = () => passwordHasher.VerifyPassword(password, hashedPassword);
+
+            // Assert
+            func.Should().Throw<NotSupportedException>();
         }
     }
 }

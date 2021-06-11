@@ -1,4 +1,6 @@
 ﻿
+using FluentAssertions;
+
 using ToDoList.Core.Mediator.Requests.Update;
 using ToDoList.Core.Validators.UpdateRequests;
 
@@ -25,7 +27,7 @@ namespace Core.Tests.Validators.UpdateRequests
             var result = validator.Validate(new ChecklistUpdateRequest(id, name, userId));
 
             // Assert
-            Assert.False(result.IsValid);
+            result.IsValid.Should().BeFalse();
         }
 
         [Fact]
@@ -40,7 +42,7 @@ namespace Core.Tests.Validators.UpdateRequests
             var result = validator.Validate(new ChecklistUpdateRequest(id, name, userId));
 
             // Assert
-            Assert.True(result.IsValid);
+            result.IsValid.Should().BeTrue();
         }
     }
 }

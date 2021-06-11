@@ -50,8 +50,8 @@ namespace Core.Tests.Handlers.Users
             var usersMock = users.AsQueryable().BuildMock();
 
             RepoMock.Setup(x => x.GetAll<User>())
-                  .Returns(usersMock.Object)
-                  .Verifiable();
+                    .Returns(usersMock.Object)
+                    .Verifiable();
 
             // Act
             await addUserHandler.Handle(new AddCommand<UserRequest>(newUser), new CancellationToken());

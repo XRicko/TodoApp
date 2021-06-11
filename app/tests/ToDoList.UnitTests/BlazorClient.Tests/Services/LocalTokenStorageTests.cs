@@ -2,6 +2,8 @@
 
 using Blazored.LocalStorage;
 
+using FluentAssertions;
+
 using Moq;
 
 using ToDoList.BlazorClient.Services;
@@ -39,7 +41,7 @@ namespace BlazorClient.Tests.Services
             string actual = await localTokenStorage.GetTokenAsync(key);
 
             // Assert
-            Assert.Equal(token, actual);
+            actual.Should().Be(token);
             localStorageServiceMock.Verify();
         }
 

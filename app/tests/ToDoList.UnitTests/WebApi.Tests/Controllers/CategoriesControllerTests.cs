@@ -3,6 +3,8 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
+using FluentAssertions;
+
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
@@ -53,7 +55,7 @@ namespace WebApi.Tests.Controllers
             var actual = await categoriesController.Get();
 
             // Assert
-            Assert.Equal(expected, actual);
+            actual.Should().Equal(expected);
             MediatorMock.Verify();
         }
 
@@ -75,7 +77,7 @@ namespace WebApi.Tests.Controllers
             var actual = await categoriesController.Get();
 
             // Assert
-            Assert.Equal(expected, actual);
+            actual.Should().Equal(expected);
             MediatorMock.Verify(x => x.Send(It.IsAny<GetAllQuery<Category, CategoryResponse>>(),
                                             It.IsAny<CancellationToken>()), Times.Never);
         }
@@ -96,7 +98,7 @@ namespace WebApi.Tests.Controllers
             var actual = await categoriesController.GetByName(name);
 
             // Assert
-            Assert.Equal(expected, actual);
+            actual.Should().Be(expected);
             MediatorMock.Verify();
         }
 
@@ -115,7 +117,7 @@ namespace WebApi.Tests.Controllers
             var actual = await categoriesController.GetByName(invalidName);
 
             // Assert
-            Assert.Null(actual);
+            actual.Should().BeNull();
             MediatorMock.Verify();
         }
 

@@ -3,6 +3,8 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
+using FluentAssertions;
+
 using MockQueryable.Moq;
 
 using ToDoList.Core.Entities;
@@ -45,7 +47,7 @@ namespace Core.Tests.Handlers.Checklists
                                                                    new CancellationToken());
 
             // Assert
-            Assert.Equal(expected, actual);
+            actual.Should().Equal(expected);
             RepoMock.Verify();
         }
 

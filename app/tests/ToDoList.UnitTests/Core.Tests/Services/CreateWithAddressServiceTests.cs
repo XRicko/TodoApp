@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Text.Json;
 using System.Threading.Tasks;
 
+using FluentAssertions;
+
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
@@ -64,7 +66,7 @@ namespace Core.Tests.Services
             var actual = await addressService.GetItemsWithAddressAsync(todoRespones);
 
             // Assert
-            Assert.Equal(expected, actual);
+            actual.Should().Equal(expected);
             geocodingMock.Verify();
         }
 
@@ -83,7 +85,7 @@ namespace Core.Tests.Services
             var actual = await addressService.GetItemWithAddressAsync(todoItemResponse);
 
             // Assert
-            Assert.Equal(expected, actual);
+            actual.Should().Be(expected);
             geocodingMock.Verify(x => x.GetAddressAsync(latitude, longitude), Times.Never);
         }
 
@@ -103,7 +105,7 @@ namespace Core.Tests.Services
             var actual = await addressService.GetItemWithAddressAsync(todoItemResponse);
 
             // Assert
-            Assert.Equal(expected, actual);
+            actual.Should().Be(expected);
             geocodingMock.Verify();
         }
 

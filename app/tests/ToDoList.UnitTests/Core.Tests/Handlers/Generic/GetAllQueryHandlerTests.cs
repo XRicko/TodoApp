@@ -3,6 +3,8 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
+using FluentAssertions;
+
 using MockQueryable.Moq;
 
 using Moq;
@@ -41,7 +43,7 @@ namespace Core.Tests.Handlers.Generic
             var actual = await getAllHandler.Handle(new GetAllQuery<Category, CategoryResponse>(), new CancellationToken());
 
             // Assert
-            Assert.Equal(expected, actual);
+            actual.Should().Equal(expected);
             RepoMock.Verify(x => x.GetAll<Category>(), Times.Once);
         }
 

@@ -1,4 +1,6 @@
 ﻿
+using FluentAssertions;
+
 using ToDoList.Core.Mediator.Requests.Create;
 using ToDoList.Core.Validators.CreateRequests;
 
@@ -28,7 +30,7 @@ namespace Core.Tests.Validators.CreateRequests
             var result = validator.Validate(categoryCreateRequest);
 
             // Assert
-            Assert.False(result.IsValid);
+            result.IsValid.Should().BeFalse();
         }
 
 
@@ -45,7 +47,7 @@ namespace Core.Tests.Validators.CreateRequests
             var result = validator.Validate(categoryCreateRequest);
 
             // Assert
-            Assert.True(result.IsValid);
+            result.IsValid.Should().BeTrue();
         }
     }
 }

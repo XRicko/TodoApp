@@ -2,6 +2,8 @@
 using System.Linq;
 using System.Threading.Tasks;
 
+using FluentAssertions;
+
 using Microsoft.AspNetCore.Mvc;
 
 using Moq;
@@ -48,8 +50,8 @@ namespace MvcClient.Tests.Controllers
             var checklist = (ChecklistModel)result.ViewData.Model;
 
             // Assert
-            Assert.Equal(createOrUpdateViewName, result.ViewName);
-            Assert.Equal(userId, checklist.UserId);
+            result.ViewName.Should().Be(createOrUpdateViewName);
+            checklist.UserId.Should().Be(userId);
         }
 
         [Fact]
@@ -62,16 +64,16 @@ namespace MvcClient.Tests.Controllers
             string routeWithId = $"{route}/{checklist.Id}";
 
             ApiInvokerMock.Setup(x => x.GetItemAsync<ChecklistModel>(routeWithId))
-                               .ReturnsAsync(checklist)
-                               .Verifiable();
+                          .ReturnsAsync(checklist)
+                          .Verifiable();
 
             // Act
             var result = await checklistController.CreateOrUpdateAsync(existingChecklistId, userId) as ViewResult;
-            var viewModel = (ChecklistModel)result.ViewData.Model;
+            var modelFromView = (ChecklistModel)result.ViewData.Model;
 
             // Assert
-            Assert.Same(checklist, viewModel);
-            Assert.Equal(createOrUpdateViewName, result.ViewName);
+            modelFromView.Should().BeEquivalentTo(checklist);
+            result.ViewName.Should().Be(createOrUpdateViewName);
 
             ApiInvokerMock.Verify();
         }
@@ -84,14 +86,14 @@ namespace MvcClient.Tests.Controllers
             string routeWithId = $"{route}/{invalidId}";
 
             ApiInvokerMock.Setup(x => x.GetItemAsync<ChecklistModel>(routeWithId))
-                              .ReturnsAsync(() => null)
-                              .Verifiable();
+                          .ReturnsAsync(() => null)
+                          .Verifiable();
 
             // Act
             var result = await checklistController.CreateOrUpdateAsync(invalidId, userId) as NotFoundResult;
 
             // Assert
-            Assert.Equal(404, result.StatusCode);
+            result.StatusCode.Should().Be(404);
             ApiInvokerMock.Verify();
         }
 
@@ -104,11 +106,11 @@ namespace MvcClient.Tests.Controllers
 
             // Act
             var result = await checklistController.CreateOrUpdateAsync(invalidModel) as PartialViewResult;
-            var viewModel = (ChecklistModel)result.ViewData.Model;
+            var modelFromView = (ChecklistModel)result.ViewData.Model;
 
             // Assert
-            Assert.Equal(createOrUpdateViewName, result.ViewName);
-            Assert.Same(invalidModel, viewModel);
+            result.ViewName.Should().Be(createOrUpdateViewName);
+            modelFromView.Should().BeSameAs(invalidModel);
         }
 
         [Fact]
@@ -136,8 +138,8 @@ namespace MvcClient.Tests.Controllers
             var viewModel = (IndexViewModel)result.ViewData.Model;
 
             // Assert
-            Assert.Contains(newChecklist, viewModel.ChecklistModels);
-            Assert.Equal(viewAllViewName, result.ViewName);
+            viewModel.ChecklistModels.Should().Contain(newChecklist);
+            result.ViewName.Should().Be(viewAllViewName);
 
             ApiInvokerMock.VerifyAll();
             viewModelServiceMock.Verify();
@@ -167,8 +169,8 @@ namespace MvcClient.Tests.Controllers
             var viewModel = (IndexViewModel)result.ViewData.Model;
 
             // Assert
-            Assert.Equal(checklistToUpdate.Name, viewModel.ChecklistModels.SingleOrDefault(c => c.Id == checklistToUpdate.Id).Name);
-            Assert.Equal(viewAllViewName, result.ViewName);
+            viewModel.ChecklistModels.Should().ContainEquivalentOf(checklistToUpdate);
+            result.ViewName.Should().Be(viewAllViewName);
 
             ApiInvokerMock.VerifyAll();
             viewModelServiceMock.Verify();
@@ -199,8 +201,8 @@ namespace MvcClient.Tests.Controllers
             var result = await checklistController.DeleteAsync(idToDelete) as PartialViewResult;
             var viewModel = (IndexViewModel)result.ViewData.Model;
 
-            Assert.Equal(viewAllViewName, result.ViewName);
-            Assert.DoesNotContain(It.Is<ChecklistModel>(m => m.Id == idToDelete), viewModel.ChecklistModels);
+            result.ViewName.Should().Be(viewAllViewName);
+            viewModel.ChecklistModels.Should().NotContain(x => x.Id == idToDelete);
 
             ApiInvokerMock.VerifyAll();
             viewModelServiceMock.Verify();

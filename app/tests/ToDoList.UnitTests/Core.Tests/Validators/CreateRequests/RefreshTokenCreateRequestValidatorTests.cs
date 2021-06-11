@@ -1,4 +1,6 @@
 ﻿
+using FluentAssertions;
+
 using ToDoList.Core.Mediator.Requests.Create;
 using ToDoList.Core.Validators.CreateRequests;
 
@@ -24,7 +26,7 @@ namespace Core.Tests.Validators.CreateRequests
             var result = validator.Validate(new RefreshTokenCreateRequest(name, userId));
 
             // Assert
-            Assert.False(result.IsValid);
+            result.IsValid.Should().BeFalse();
         }
 
         [Fact]
@@ -38,7 +40,7 @@ namespace Core.Tests.Validators.CreateRequests
             var result = validator.Validate(new RefreshTokenCreateRequest(token, userId));
 
             // Assert
-            Assert.True(result.IsValid);
+            result.IsValid.Should().BeTrue();
         }
 
     }

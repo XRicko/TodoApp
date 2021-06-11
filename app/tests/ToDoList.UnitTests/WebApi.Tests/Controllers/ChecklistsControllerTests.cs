@@ -4,6 +4,8 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
+using FluentAssertions;
+
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.Memory;
@@ -66,8 +68,8 @@ namespace WebApi.Tests.Controllers
             var cached = JsonSerializer.Deserialize<List<ChecklistResponse>>(cache.GetString(recordKey));
 
             // Assert
-            Assert.Equal(expected, actual);
-            Assert.Equal(cached, expected);
+            actual.Should().Equal(expected);
+            cached.Should().Equal(expected);
 
             MediatorMock.Verify();
         }
@@ -84,7 +86,7 @@ namespace WebApi.Tests.Controllers
             var actual = await checklistsController.Get();
 
             // Assert
-            Assert.Equal(expected, actual);
+            actual.Should().Equal(expected);
             MediatorMock.Verify(x => x.Send(It.Is<GetChecklistsByUserIdQuery>(q => q.UserId == userId),
                                             It.IsAny<CancellationToken>()), Times.Never);
         }
@@ -102,7 +104,7 @@ namespace WebApi.Tests.Controllers
             await checklistsController.Add(createRequest);
 
             // Assert
-            Assert.Null(cache.Get(recordKey));
+            cache.Get(recordKey).Should().BeNull();
             MediatorMock.Verify(x => x.Send(It.Is<AddCommand<ChecklistCreateRequest>>(q => q.Request == createRequest),
                                             It.IsAny<CancellationToken>()), Times.Once);
         }
@@ -120,7 +122,7 @@ namespace WebApi.Tests.Controllers
             await checklistsController.Delete(id);
 
             // Assert
-            Assert.Null(cache.Get(recordKey));
+            cache.Get(recordKey).Should().BeNull();
             MediatorMock.Verify(x => x.Send(It.Is<RemoveCommand<Checklist>>(q => q.Id == id),
                                             It.IsAny<CancellationToken>()), Times.Once);
         }
@@ -138,7 +140,7 @@ namespace WebApi.Tests.Controllers
             await checklistsController.Update(updateRequest);
 
             // Assert
-            Assert.Null(cache.Get(recordKey));
+            cache.Get(recordKey).Should().BeNull();
             MediatorMock.Verify(x => x.Send(It.Is<UpdateCommand<ChecklistUpdateRequest>>(q => q.Request == updateRequest),
                                             It.IsAny<CancellationToken>()), Times.Once);
         }

@@ -5,6 +5,8 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
+using FluentAssertions;
+
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.Memory;
@@ -66,8 +68,8 @@ namespace WebApi.Tests.Controllers
             var cached = JsonSerializer.Deserialize<List<TodoItemResponse>>(cache.GetString(recordKey));
 
             // Assert
-            Assert.Equal(expected, actual);
-            Assert.Equal(cached, expected);
+            actual.Should().Equal(expected);
+            cached.Should().Equal(expected);
 
             MediatorMock.Verify();
         }
@@ -83,7 +85,7 @@ namespace WebApi.Tests.Controllers
             var actual = await todoItemsController.Get();
 
             // Assert
-            Assert.Equal(expected, actual);
+            actual.Should().Equal(expected);
             MediatorMock.Verify(x => x.Send(It.Is<GetTodoItemsByUserIdQuery>(q => q.UserId == userId),
                                             It.IsAny<CancellationToken>()), Times.Never);
         }
@@ -101,7 +103,7 @@ namespace WebApi.Tests.Controllers
             await todoItemsController.Add(createRequest);
 
             // Assert
-            Assert.Null(cache.Get(recordKey));
+            cache.Get(recordKey).Should().BeNull();
             MediatorMock.Verify(x => x.Send(It.Is<AddCommand<TodoItemCreateRequest>>(q => q.Request == createRequest),
                                             It.IsAny<CancellationToken>()), Times.Once);
         }
@@ -119,7 +121,7 @@ namespace WebApi.Tests.Controllers
             await todoItemsController.Delete(id);
 
             // Assert
-            Assert.Null(cache.Get(recordKey));
+            cache.Get(recordKey).Should().BeNull();
             MediatorMock.Verify(x => x.Send(It.Is<RemoveCommand<TodoItem>>(q => q.Id == id),
                                             It.IsAny<CancellationToken>()), Times.Once);
         }
@@ -137,12 +139,12 @@ namespace WebApi.Tests.Controllers
             await todoItemsController.Update(updateRequest);
 
             // Assert
-            Assert.Null(cache.Get(recordKey));
+            cache.Get(recordKey).Should().BeNull();
             MediatorMock.Verify(x => x.Send(It.Is<UpdateCommand<TodoItemUpdateRequest>>(q => q.Request == updateRequest),
                                             It.IsAny<CancellationToken>()), Times.Once);
         }
 
-        private List<TodoItemResponse> GetSampleTodoItemResponsesByUser()
+        private static List<TodoItemResponse> GetSampleTodoItemResponsesByUser()
         {
             int checklistId = 5;
 

@@ -1,5 +1,7 @@
 ﻿using System;
 
+using FluentAssertions;
+
 using ToDoList.Core.Mediator.Requests.Create;
 using ToDoList.Core.Validators.CreateRequests;
 using ToDoList.SharedKernel;
@@ -32,7 +34,7 @@ namespace Core.Tests.Validators.CreateRequests
                                                                               null, categoryId, imageId));
 
             // Assert
-            Assert.False(result.IsValid);
+            result.IsValid.Should().BeFalse();
         }
 
         [Fact]
@@ -47,7 +49,7 @@ namespace Core.Tests.Validators.CreateRequests
             var result = validator.Validate(todoItem);
 
             // Assert
-            Assert.False(result.IsValid);
+            result.IsValid.Should().BeFalse();
         }
 
         [Fact]
@@ -62,7 +64,7 @@ namespace Core.Tests.Validators.CreateRequests
             var result = validator.Validate(todoItem);
 
             // Assert
-            Assert.True(result.IsValid);
+            result.IsValid.Should().BeTrue();
         }
     }
 }

@@ -2,6 +2,8 @@
 using System.Threading;
 using System.Threading.Tasks;
 
+using FluentAssertions;
+
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -66,8 +68,8 @@ namespace WebApi.Tests.Controllers
             var actual = okResult.Value as AuthenticatedResponse;
 
             // Assert
-            Assert.Equal(200, okResult.StatusCode);
-            Assert.Equal(expected, actual);
+            okResult.StatusCode.Should().Be(200);
+            actual.Should().Be(expected);
 
             MediatorMock.Verify();
             authenticatorMock.Verify();
@@ -88,11 +90,11 @@ namespace WebApi.Tests.Controllers
             var actionResult = await authenticationController.LoginAsync(userRequest);
             var unauthorizedResult = actionResult as UnauthorizedObjectResult;
 
-            string actual = unauthorizedResult.Value as string;
+            string actualMessage = unauthorizedResult.Value as string;
 
             // Assert
-            Assert.Equal(401, unauthorizedResult.StatusCode);
-            Assert.Equal(expectedMessage, actual);
+            unauthorizedResult.StatusCode.Should().Be(401);
+            actualMessage.Should().BeEquivalentTo(expectedMessage);
 
             MediatorMock.Verify();
             authenticatorMock.Verify(x => x.AuthenticateAsync(It.IsAny<UserResponse>()), Times.Never);
@@ -125,8 +127,8 @@ namespace WebApi.Tests.Controllers
             var actual = okResult.Value as AuthenticatedResponse;
 
             // Assert
-            Assert.Equal(200, okResult.StatusCode);
-            Assert.Equal(expected, actual);
+            okResult.StatusCode.Should().Be(200);
+            actual.Should().Be(expected);
 
             MediatorMock.Verify(x => x.Send(new GetUserByNameAndPasswordQuery(userRequest.Name, userRequest.Password),
                                             It.IsAny<CancellationToken>()), Times.Exactly(2));
@@ -152,11 +154,11 @@ namespace WebApi.Tests.Controllers
             var actionResult = await authenticationController.RegisterAsync(userRequest);
             var unauthorizedResult = actionResult as UnauthorizedObjectResult;
 
-            string actual = unauthorizedResult.Value as string;
+            string actualMessage = unauthorizedResult.Value as string;
 
             // Assert
-            Assert.Equal(401, unauthorizedResult.StatusCode);
-            Assert.Equal(expectedMessage, actual);
+            unauthorizedResult.StatusCode.Should().Be(401);
+            actualMessage.Should().BeEquivalentTo(expectedMessage);
 
             MediatorMock.Verify();
             MediatorMock.Verify(x => x.Send(new AddCommand<UserRequest>(userRequest),
@@ -184,7 +186,7 @@ namespace WebApi.Tests.Controllers
             var okResult = actionResult as OkResult;
 
             // Assert
-            Assert.Equal(200, okResult.StatusCode);
+            okResult.StatusCode.Should().Be(200);
             MediatorMock.Verify(x => x.Send(new RemoveAllRefreshTokensFromUserCommand(userId),
                                             It.IsAny<CancellationToken>()), Times.Once);
         }
@@ -197,7 +199,7 @@ namespace WebApi.Tests.Controllers
             var unauthorizedResult = actionResult as UnauthorizedResult;
 
             // Assert
-            Assert.Equal(401, unauthorizedResult.StatusCode);
+            unauthorizedResult.StatusCode.Should().Be(401);
             MediatorMock.Verify(x => x.Send(new RemoveAllRefreshTokensFromUserCommand(It.IsAny<int>()),
                                             It.IsAny<CancellationToken>()), Times.Never);
         }

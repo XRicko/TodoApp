@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
 
+using FluentAssertions;
+
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 
@@ -43,7 +45,7 @@ namespace MvcClient.Tests.Controllers
             var result = userController.Login() as ViewResult;
 
             // Assert
-            Assert.Equal(loginViewName, result.ViewName);
+            result.ViewName.Should().Be(loginViewName);
         }
 
         [Fact]
@@ -53,7 +55,7 @@ namespace MvcClient.Tests.Controllers
             var result = userController.Register() as ViewResult;
 
             // Assert
-            Assert.Equal(registerViewName, result.ViewName);
+            result.ViewName.Should().Be(registerViewName);
         }
 
         [Fact]
@@ -78,8 +80,8 @@ namespace MvcClient.Tests.Controllers
             var result = await userController.RegisterAsync(existingUser) as ViewResult;
 
             // Assert
-            Assert.Equal(registerViewName, result.ViewName);
-            Assert.Contains(userController.ModelState[string.Empty].Errors, e => e.ErrorMessage == error);
+            result.ViewName.Should().Be(registerViewName);
+            userController.ModelState[string.Empty].Errors.Should().Contain(x => x.ErrorMessage == error);
 
             ApiInvokerMock.Verify();
             localizerMock.Verify();
@@ -95,8 +97,8 @@ namespace MvcClient.Tests.Controllers
             var result = await userController.RegisterAsync(newUser) as RedirectToActionResult;
 
             // Assert
-            Assert.Equal(indexViewName, result.ActionName);
-            Assert.Equal(todoControllerName, result.ControllerName);
+            result.ActionName.Should().Be(indexViewName);
+            result.ControllerName.Should().Be(todoControllerName);
 
             ApiInvokerMock.Verify(x => x.AuthenticateUserAsync("Authentication/Register", newUser), Times.Once);
         }
@@ -124,9 +126,10 @@ namespace MvcClient.Tests.Controllers
             var result = await userController.LoginAsync(invalidUser) as ViewResult;
 
             // Assert
-            Assert.Equal(loginViewName, result.ViewName);
-            Assert.Contains(userController.ModelState[string.Empty].Errors, e => e.ErrorMessage == error);
-            Assert.Empty(userController.ModelState["ConfirmPassword"].Errors);
+            result.ViewName.Should().Be(loginViewName);
+
+            userController.ModelState[string.Empty].Errors.Should().Contain(x => x.ErrorMessage == error);
+            userController.ModelState["ConfirmPassword"].Errors.Should().BeEmpty();
 
             ApiInvokerMock.Verify();
             localizerMock.Verify();
@@ -142,8 +145,8 @@ namespace MvcClient.Tests.Controllers
             var result = await userController.LoginAsync(existingUser) as RedirectToActionResult;
 
             // Assert
-            Assert.Equal(indexViewName, result.ActionName);
-            Assert.Equal(todoControllerName, result.ControllerName);
+            result.ActionName.Should().Be(indexViewName);
+            result.ControllerName.Should().Be(todoControllerName);
 
             ApiInvokerMock.Verify(x => x.AuthenticateUserAsync("Authentication/Login", existingUser), Times.Once);
         }
@@ -158,8 +161,8 @@ namespace MvcClient.Tests.Controllers
             var result = await userController.LogoutAsync() as RedirectToActionResult;
 
             // Assert
-            Assert.Equal(indexViewName, result.ActionName);
-            Assert.Equal(homeControllerName, result.ControllerName);
+            result.ActionName.Should().Be(indexViewName);
+            result.ControllerName.Should().Be(homeControllerName);
 
             ApiInvokerMock.Verify(x => x.LogoutAsync(), Times.Once);
         }

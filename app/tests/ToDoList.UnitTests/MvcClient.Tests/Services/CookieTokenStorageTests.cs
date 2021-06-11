@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
 
+using FluentAssertions;
+
 using Microsoft.AspNetCore.Http;
 
 using Moq;
@@ -47,7 +49,7 @@ namespace MvcClient.Tests.Services
             string actual = await cookieTokenStorage.GetTokenAsync(key);
 
             // Assert
-            Assert.Equal(token, actual);
+            actual.Should().Be(token);
             httpContextAccessorMock.Verify();
         }
 

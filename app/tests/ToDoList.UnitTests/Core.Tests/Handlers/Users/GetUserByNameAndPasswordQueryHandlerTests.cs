@@ -1,6 +1,8 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 
+using FluentAssertions;
+
 using Moq;
 
 using ToDoList.Core.Entities;
@@ -44,8 +46,8 @@ namespace Core.Tests.Handlers.Users
                                                                       new CancellationToken());
 
             // Assert
-            Assert.Equal(username, actual.Name);
-            Assert.True(passwordHasher.VerifyPassword(password, actual.Password));
+            actual.Name.Should().Be(username);
+            passwordHasher.VerifyPassword(password, actual.Password).Should().BeTrue();
 
             RepoMock.Verify();
         }
@@ -63,7 +65,7 @@ namespace Core.Tests.Handlers.Users
                                                                       new CancellationToken());
 
             // Assert
-            Assert.Null(actual);
+            actual.Should().BeNull();
             RepoMock.Verify();
         }
     }

@@ -1,5 +1,7 @@
 ﻿using System.Threading.Tasks;
 
+using FluentAssertions;
+
 using Microsoft.AspNetCore.Mvc;
 
 using Moq;
@@ -36,7 +38,7 @@ namespace MvcClient.Tests.Controllers
             var result = await homeController.IndexAsync() as ViewResult;
 
             // Assert
-            Assert.Equal(viewName, result.ViewName);
+            result.ViewName.Should().Be(viewName);
             tokenStorageMock.Verify();
         }
 
@@ -52,7 +54,7 @@ namespace MvcClient.Tests.Controllers
             var result = await homeController.IndexAsync() as RedirectToActionResult;
 
             // Assert
-            Assert.Equal(controllerName, result.ControllerName);
+            result.ControllerName.Should().Be(controllerName);
             tokenStorageMock.Verify();
         }
     }

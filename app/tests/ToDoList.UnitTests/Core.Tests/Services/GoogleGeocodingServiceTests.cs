@@ -1,5 +1,7 @@
 ﻿using System;
 
+using FluentAssertions;
+
 using ToDoList.Core;
 using ToDoList.Core.Services;
 
@@ -15,8 +17,14 @@ namespace Core.Tests.Services
             // Arrange
             ApiOptions apiOptions = null;
 
-            // Act && Assert
-            Assert.Throws<ArgumentNullException>(() => new GoogleGeocodingService(apiOptions));
+            // Act
+            Action action = () =>
+            {
+                var googleGeocodingService = new GoogleGeocodingService(apiOptions);
+            };
+
+            // Assert
+            action.Should().Throw<ArgumentNullException>();
         }
     }
 }

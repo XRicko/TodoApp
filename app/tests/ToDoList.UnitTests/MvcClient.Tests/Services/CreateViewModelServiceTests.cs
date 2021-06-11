@@ -2,6 +2,8 @@
 using System.Linq;
 using System.Threading.Tasks;
 
+using FluentAssertions;
+
 using Moq;
 
 using ToDoList.MvcClient.Models;
@@ -46,8 +48,8 @@ namespace MvcClient.Tests.Services
             var indexViewModel = await createViewModelService.CreateIndexViewModelAsync();
 
             // Assert
-            Assert.Equal(todoItems, indexViewModel.TodoItems);
-            Assert.Equal(checklists, indexViewModel.ChecklistModels);
+            indexViewModel.TodoItems.Should().Equal(todoItems);
+            indexViewModel.ChecklistModels.Should().Equal(checklists);
 
             apiInvokerMock.Verify();
         }
@@ -68,10 +70,10 @@ namespace MvcClient.Tests.Services
             var indexViewModel = await createViewModelService.CreateIndexViewModelAsync(categoryName);
 
             // Assert
-            Assert.All(indexViewModel.TodoItems, x => Assert.Equal(x.CategoryName, categoryName));
+            indexViewModel.TodoItems.Should().OnlyContain(x => x.CategoryName == categoryName);
 
-            Assert.Equal(checklists, indexViewModel.ChecklistModels);
-            Assert.Equal(categoryName, indexViewModel.SelectedCategory);
+            indexViewModel.ChecklistModels.Should().Equal(checklists);
+            indexViewModel.SelectedCategory.Should().Be(categoryName);
 
             apiInvokerMock.Verify();
         }
@@ -92,10 +94,10 @@ namespace MvcClient.Tests.Services
             var indexViewModel = await createViewModelService.CreateIndexViewModelAsync(statusName: statusName);
 
             // Assert
-            Assert.All(indexViewModel.TodoItems, x => Assert.Equal(x.StatusName, statusName));
+            indexViewModel.TodoItems.Should().OnlyContain(x => x.StatusName == statusName);
 
-            Assert.Equal(checklists, indexViewModel.ChecklistModels);
-            Assert.Equal(statusName, indexViewModel.SelectedStatus);
+            indexViewModel.ChecklistModels.Should().Equal(checklists);
+            indexViewModel.SelectedStatus.Should().Be(statusName);
 
             apiInvokerMock.Verify();
         }
@@ -117,12 +119,12 @@ namespace MvcClient.Tests.Services
             var indexViewModel = await createViewModelService.CreateIndexViewModelAsync(categoryName, statusName);
 
             // Assert
-            Assert.All(indexViewModel.TodoItems, x => Assert.Equal(x.CategoryName, categoryName));
-            Assert.All(indexViewModel.TodoItems, x => Assert.Equal(x.StatusName, statusName));
+            indexViewModel.TodoItems.Should().Contain(x => x.CategoryName == categoryName);
+            indexViewModel.TodoItems.Should().Contain(x => x.StatusName == statusName);
 
-            Assert.Equal(checklists, indexViewModel.ChecklistModels);
-            Assert.Equal(categoryName, indexViewModel.SelectedCategory);
-            Assert.Equal(statusName, indexViewModel.SelectedStatus);
+            indexViewModel.ChecklistModels.Should().Equal(checklists);
+            indexViewModel.SelectedCategory.Should().Be(categoryName);
+            indexViewModel.SelectedStatus.Should().Be(statusName);
 
             apiInvokerMock.Verify();
         }
@@ -152,13 +154,13 @@ namespace MvcClient.Tests.Services
             var viewModel = await createViewModelService.CreateViewModelCreateOrUpdateTodoItemAsync(todoItem);
 
             // Assert
-            Assert.Equal(checklists, viewModel.ChecklistModels);
-            Assert.Equal(statuses, viewModel.StatusModels);
-            Assert.Equal(categorires, viewModel.CategoryModels);
+            viewModel.ChecklistModels.Should().Equal(checklists);
+            viewModel.StatusModels.Should().Equal(statuses);
+            viewModel.StatusModels.Should().Equal(statuses);
 
-            Assert.Equal(selectedCategory, viewModel.SelectedCategoryId);
-            Assert.Equal(selectedChecklist, viewModel.SelectedChecklistId);
-            Assert.Equal(statusPlanned.Id, viewModel.SelectedStatusId);
+            viewModel.SelectedCategoryId.Should().Be(selectedCategory);
+            viewModel.SelectedChecklistId.Should().Be(selectedChecklist);
+            viewModel.SelectedStatusId.Should().Be(statusPlanned.Id);
 
             apiInvokerMock.Verify();
         }

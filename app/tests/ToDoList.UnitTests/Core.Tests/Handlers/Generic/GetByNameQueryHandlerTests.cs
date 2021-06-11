@@ -1,6 +1,8 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 
+using FluentAssertions;
+
 using Moq;
 
 using ToDoList.Core.Entities;
@@ -40,7 +42,7 @@ namespace Core.Tests.Handlers.Generic
                                                        new CancellationToken());
 
             // Assert
-            Assert.Equal(expected, actual);
+            actual.Should().Be(expected);
             RepoMock.Verify(x => x.GetByNameAsync<Category>(name), Times.Once);
         }
 
@@ -56,7 +58,7 @@ namespace Core.Tests.Handlers.Generic
                                                        new CancellationToken());
 
             // Assert
-            Assert.Null(actual);
+            actual.Should().BeNull();
             RepoMock.Verify(x => x.GetByNameAsync<Category>(name), Times.Once);
         }
     }

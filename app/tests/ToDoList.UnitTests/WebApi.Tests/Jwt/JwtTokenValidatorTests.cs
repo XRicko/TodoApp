@@ -1,4 +1,6 @@
 ﻿
+using FluentAssertions;
+
 using ToDoList.WebApi.Jwt;
 using ToDoList.WebApi.Jwt.Models;
 
@@ -37,7 +39,7 @@ namespace WebApi.Tests.Jwt
             bool isValid = jwtTokenValidator.ValidateRefreshKey(refreshToken);
 
             // Assert
-            Assert.True(isValid);
+            isValid.Should().BeTrue();
         }
 
         [Fact]
@@ -50,7 +52,7 @@ namespace WebApi.Tests.Jwt
             bool isValid = jwtTokenValidator.ValidateRefreshKey(refreshToken);
 
             // Assert
-            Assert.False(isValid);
+            isValid.Should().BeFalse();
         }
     }
 }

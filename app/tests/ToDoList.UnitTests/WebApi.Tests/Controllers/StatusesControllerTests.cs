@@ -3,6 +3,8 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
+using FluentAssertions;
+
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
@@ -51,8 +53,8 @@ namespace WebApi.Tests.Controllers
             var cached = JsonSerializer.Deserialize<List<StatusResponse>>(cache.GetString(recordKey));
 
             // Assert
-            Assert.Equal(expected, actual);
-            Assert.Equal(cached, expected);
+            actual.Should().Equal(expected);
+            cached.Should().Equal(expected);
 
             MediatorMock.Verify();
         }
@@ -68,7 +70,7 @@ namespace WebApi.Tests.Controllers
             var actual = await statusesController.Get();
 
             // Assert
-            Assert.Equal(expected, actual);
+            actual.Should().Equal(expected);
             MediatorMock.Verify(x => x.Send(It.IsAny<GetAllQuery<Status, StatusResponse>>(),
                                             It.IsAny<CancellationToken>()), Times.Never);
         }
@@ -89,7 +91,7 @@ namespace WebApi.Tests.Controllers
             var actual = await statusesController.GetByName(name);
 
             // Assert
-            Assert.Equal(expected, actual);
+            actual.Should().Be(expected);
             MediatorMock.Verify();
         }
 
@@ -108,7 +110,7 @@ namespace WebApi.Tests.Controllers
             var actual = await statusesController.GetByName(invalidName);
 
             // Assert
-            Assert.Null(actual);
+            actual.Should().BeNull();
             MediatorMock.Verify();
         }
 

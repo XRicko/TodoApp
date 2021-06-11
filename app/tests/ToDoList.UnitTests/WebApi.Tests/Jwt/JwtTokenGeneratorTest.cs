@@ -2,6 +2,8 @@
 using System.Linq;
 using System.Security.Claims;
 
+using FluentAssertions;
+
 using ToDoList.Core.Mediator.Response;
 using ToDoList.WebApi.Jwt;
 using ToDoList.WebApi.Jwt.Models;
@@ -39,9 +41,10 @@ namespace WebApi.Tests.Jwt
             var jwtToken = new JwtSecurityTokenHandler().ReadJwtToken(token);
 
             // Assert
-            Assert.Equal(user.Id.ToString(), jwtToken.Claims.SingleOrDefault(x => x.Type == ClaimTypes.NameIdentifier).Value);
-            Assert.Equal(user.Name, jwtToken.Claims.SingleOrDefault(x => x.Type == ClaimTypes.Name).Value);
-            Assert.Equal(authenticationConfig.Issuer, jwtToken.Issuer);
+            jwtToken.Claims.Should().Contain(x => x.Value == user.Id.ToString());
+            jwtToken.Claims.Should().Contain(x => x.Value == user.Name);
+
+            jwtToken.Issuer.Should().Be(authenticationConfig.Issuer);
         }
 
         [Fact]
@@ -52,7 +55,7 @@ namespace WebApi.Tests.Jwt
             var jwtToken = new JwtSecurityTokenHandler().ReadJwtToken(token);
 
             // Assert
-            Assert.Equal(authenticationConfig.Issuer, jwtToken.Issuer);
+            jwtToken.Issuer.Should().Be(authenticationConfig.Issuer);
         }
     }
 }

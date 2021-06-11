@@ -1,6 +1,8 @@
 using System.Text.Json;
 using System.Threading.Tasks;
 
+using FluentAssertions;
+
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
@@ -33,7 +35,7 @@ namespace Extensions.Tests
             int[] cached = JsonSerializer.Deserialize<int[]>(cache.GetString(key));
 
             // Arrange
-            Assert.Equal(expected, cached);
+            cached.Should().Equal(expected);
         }
 
         [Fact]
@@ -49,7 +51,7 @@ namespace Extensions.Tests
             double[] cached = await cache.GetRecordAsync<double[]>(key);
 
             // Arrange
-            Assert.Equal(expected, cached);
+            cached.Should().Equal(expected);
         }
 
         [Fact]
@@ -62,7 +64,7 @@ namespace Extensions.Tests
             double cached = await cache.GetRecordAsync<double>(key);
 
             // Assert
-            Assert.Equal(default, cached);
+            cached.Should().Be(default);
         }
     }
 }

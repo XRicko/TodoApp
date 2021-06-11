@@ -1,6 +1,8 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 
+using FluentAssertions;
+
 using MediatR;
 
 using Moq;
@@ -53,7 +55,7 @@ namespace WebApi.Tests.Services
             var actual = await authenticator.AuthenticateAsync(user);
 
             // Assert
-            Assert.Equal(expected, actual);
+            actual.Should().Be(expected);
 
             tokenGeneratorMock.Verify();
             mediatorMock.Verify(x => x.Send(It.Is<AddCommand<RefreshTokenCreateRequest>>(q => q.Request.Name == refreshToken

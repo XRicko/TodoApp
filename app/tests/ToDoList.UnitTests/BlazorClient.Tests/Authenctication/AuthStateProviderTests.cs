@@ -2,6 +2,8 @@
 using System.Net.Http;
 using System.Threading.Tasks;
 
+using FluentAssertions;
+
 using Moq;
 
 using TestExtensions;
@@ -42,7 +44,7 @@ namespace BlazorClient.Tests.Authenctication
             var actual = await authStateProvider.GetAuthenticationStateAsync();
 
             // Assert
-            Assert.Empty(actual.User.Claims);
+            actual.User.Claims.Should().BeEmpty();
             tokenStorageMock.Verify();
         }
 
@@ -64,7 +66,7 @@ namespace BlazorClient.Tests.Authenctication
             var actual = await authStateProvider.GetAuthenticationStateAsync();
 
             // Assert
-            Assert.Empty(actual.User.Claims);
+            actual.User.Claims.Should().BeEmpty();
 
             tokenParserMock.Verify();
             tokenStorageMock.Verify();
@@ -88,10 +90,10 @@ namespace BlazorClient.Tests.Authenctication
             var actual = await authStateProvider.GetAuthenticationStateAsync();
 
             // Assert
-            Assert.NotEmpty(actual.User.Claims);
+            actual.User.Claims.Should().NotBeEmpty();
+            actual.User.Claims.Should().Contain(x => x.Value == expiryDate.ToUnixTimeSeconds().ToString());
 
-            Assert.Equal(expiryDate.ToUnixTimeSeconds().ToString(), actual.User.FindFirst("exp").Value);
-            Assert.Equal(token, httpClient.DefaultRequestHeaders.Authorization.Parameter);
+            httpClient.DefaultRequestHeaders.Authorization.Parameter.Should().Be(token);
 
             tokenStorageMock.Verify();
         }
@@ -114,7 +116,7 @@ namespace BlazorClient.Tests.Authenctication
             authStateProvider.NotifyUserAuthentication(token);
 
             // Assert
-            Assert.True(eventRaised);
+            eventRaised.Should().BeTrue();
         }
 
         [Fact]
@@ -128,7 +130,7 @@ namespace BlazorClient.Tests.Authenctication
             authStateProvider.NotifyUserLogout();
 
             // Assert
-            Assert.True(eventRaised);
+            eventRaised.Should().BeTrue();
         }
     }
 }

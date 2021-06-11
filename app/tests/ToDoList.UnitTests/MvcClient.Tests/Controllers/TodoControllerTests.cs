@@ -2,6 +2,8 @@
 using System.Linq;
 using System.Threading.Tasks;
 
+using FluentAssertions;
+
 using Microsoft.AspNetCore.Mvc;
 
 using Moq;
@@ -60,8 +62,8 @@ namespace MvcClient.Tests.Controllers
             var viewModel = (IndexViewModel)result.Model;
 
             // Assert
-            Assert.Equal("Index", result.ViewName);
-            Assert.Equal(indexViewModel, viewModel);
+            result.ViewName.Should().Be("Index");
+            viewModel.Should().BeEquivalentTo(viewModel);
 
             createViewModelServiceMock.Verify();
         }
@@ -82,10 +84,11 @@ namespace MvcClient.Tests.Controllers
             var viewModel = (IndexViewModel)result.Model;
 
             // Assert
-            Assert.Equal("Index", result.ViewName);
-            Assert.Equal(indexViewModel, viewModel);
-            Assert.Equal(category, viewModel.SelectedCategory);
-            Assert.Null(viewModel.SelectedStatus);
+            result.ViewName.Should().Be("Index");
+            viewModel.Should().BeEquivalentTo(viewModel);
+
+            viewModel.SelectedCategory.Should().Be(category);
+            viewModel.SelectedStatus.Should().BeNull();
 
             createViewModelServiceMock.Verify();
         }
@@ -106,10 +109,11 @@ namespace MvcClient.Tests.Controllers
             var viewModel = (IndexViewModel)result.Model;
 
             // Assert
-            Assert.Equal("Index", result.ViewName);
-            Assert.Equal(indexViewModel, viewModel);
-            Assert.Equal(status, viewModel.SelectedStatus);
-            Assert.Null(viewModel.SelectedCategory);
+            result.ViewName.Should().Be("Index");
+            viewModel.Should().BeEquivalentTo(viewModel);
+
+            viewModel.SelectedStatus.Should().Be(status);
+            viewModel.SelectedCategory.Should().BeNull();
 
             createViewModelServiceMock.Verify();
         }
@@ -132,10 +136,11 @@ namespace MvcClient.Tests.Controllers
             var viewModel = (IndexViewModel)result.Model;
 
             // Assert
-            Assert.Equal("Index", result.ViewName);
-            Assert.Equal(indexViewModel, viewModel);
-            Assert.Equal(status, viewModel.SelectedStatus);
-            Assert.Equal(category, viewModel.SelectedCategory);
+            result.ViewName.Should().Be("Index");
+            viewModel.Should().BeEquivalentTo(viewModel);
+
+            viewModel.SelectedStatus.Should().Be(status);
+            viewModel.SelectedCategory.Should().Be(category);
 
             createViewModelServiceMock.Verify();
         }
@@ -159,8 +164,8 @@ namespace MvcClient.Tests.Controllers
             var viewModel = (CreateTodoItemViewModel)result.ViewData.Model;
 
             // Assert
-            Assert.Equal(createOrUpdateViewName, result.ViewName);
-            Assert.Equal(checklistId, viewModel.TodoItemModel.ChecklistId);
+            result.ViewName.Should().Be(createOrUpdateViewName);
+            viewModel.TodoItemModel.ChecklistId.Should().Be(checklistId);
 
             createViewModelServiceMock.Verify();
         }
@@ -193,9 +198,10 @@ namespace MvcClient.Tests.Controllers
             var viewModel = (CreateTodoItemViewModel)result.ViewData.Model;
 
             // Assert
-            Assert.Equal(createOrUpdateViewName, result.ViewName);
-            Assert.Equal(checklistId, viewModel.TodoItemModel.ChecklistId);
-            Assert.Equal(existingId, viewModel.TodoItemModel.Id);
+            result.ViewName.Should().Be(createOrUpdateViewName);
+
+            viewModel.TodoItemModel.ChecklistId.Should().Be(checklistId);
+            viewModel.TodoItemModel.Id.Should().Be(existingId);
 
             ApiInvokerMock.Verify();
             createViewModelServiceMock.Verify();
@@ -239,11 +245,11 @@ namespace MvcClient.Tests.Controllers
             var viewModel = (CreateTodoItemViewModel)result.ViewData.Model;
 
             // Assert
-            Assert.Equal(createOrUpdateViewName, result.ViewName);
-            Assert.Equal(checklistId, viewModel.TodoItemModel.ChecklistId);
+            result.ViewName.Should().Be(createOrUpdateViewName);
+            viewModel.TodoItemModel.ChecklistId.Should().Be(checklistId);
 
-            Assert.Equal(lat.ToString(), viewModel.TodoItemModel.Latitude);
-            Assert.Equal(lng.ToString(), viewModel.TodoItemModel.Longitude);
+            viewModel.TodoItemModel.Latitude.Should().Be(lat.ToString());
+            viewModel.TodoItemModel.Longitude.Should().Be(lng.ToString());
 
             ApiInvokerMock.Verify();
             createViewModelServiceMock.Verify();
@@ -264,7 +270,7 @@ namespace MvcClient.Tests.Controllers
             var result = await todoController.CreateOrUpdateAsync(checklistId, invalidId) as NotFoundResult;
 
             // Assert
-            Assert.Equal(404, result.StatusCode);
+            result.StatusCode.Should().Be(404);
             ApiInvokerMock.Verify();
         }
 
@@ -323,11 +329,11 @@ namespace MvcClient.Tests.Controllers
             var todoItemWithGeoPoint = viewModel.TodoItems.SingleOrDefault(i => i.GeoPoint is not null);
 
             // Assert
-            Assert.Contains(newTodoItem, viewModel.TodoItems);
+            viewModel.TodoItems.Should().Contain(newTodoItem);
 
-            Assert.Equal(viewAllViewName, result.ViewName);
-            Assert.Equal(category.Id, newTodoItem.CategoryId);
-            Assert.Equal(geoCoordinate, todoItemWithGeoPoint.GeoPoint);
+            result.ViewName.Should().Be(viewAllViewName);
+            newTodoItem.CategoryId.Should().Be(category.Id);
+            todoItemWithGeoPoint.GeoPoint.Should().Be(geoCoordinate);
 
             ApiInvokerMock.VerifyAll();
             ApiInvokerMock.Verify(x => x.PostItemAsync("Categories", It.Is<CategoryModel>(m => m.Name == category.Name)), Times.Once);
@@ -363,8 +369,8 @@ namespace MvcClient.Tests.Controllers
             var viewModel = (IndexViewModel)result.ViewData.Model;
 
             // Assert
-            Assert.Equal(todoItemToUpdate.Name, viewModel.TodoItems.SingleOrDefault(c => c.Id == todoItemToUpdate.Id).Name);
-            Assert.Equal(viewAllViewName, result.ViewName);
+            viewModel.TodoItems.Should().ContainEquivalentOf(todoItemToUpdate);
+            result.ViewName.Should().Be(viewAllViewName);
 
             ApiInvokerMock.VerifyAll();
             createViewModelServiceMock.Verify();
@@ -398,9 +404,10 @@ namespace MvcClient.Tests.Controllers
             var result = await todoController.DeleteAsync(idToDelete) as PartialViewResult;
             var viewModel = (IndexViewModel)result.ViewData.Model;
 
-            Assert.Same(indexViewModel, viewModel);
-            Assert.Equal(viewAllViewName, result.ViewName);
-            Assert.DoesNotContain(It.Is<TodoItemModelWithFile>(m => m.Id == idToDelete), todoItems);
+            // Assert
+            viewModel.Should().BeSameAs(viewModel);
+            result.ViewName.Should().Be(viewAllViewName);
+            todoItems.Should().NotContain(x => x.Id == idToDelete);
 
             ApiInvokerMock.VerifyAll();
             createViewModelServiceMock.Verify();
@@ -452,11 +459,10 @@ namespace MvcClient.Tests.Controllers
             var result = await todoController.MarkTodoItemAsync(todoItem.Id, isDone) as PartialViewResult;
             var viewModel = (IndexViewModel)result.ViewData.Model;
 
-            Assert.Same(indexViewModel, viewModel);
-            Assert.Equal(viewAllViewName, result.ViewName);
+            viewModel.Should().BeSameAs(indexViewModel);
+            indexViewModel.TodoItems.Should().NotBeNullOrEmpty();
 
-            Assert.NotNull(indexViewModel.TodoItems);
-            Assert.NotEmpty(indexViewModel.TodoItems);
+            result.ViewName.Should().Be(viewAllViewName);
 
             ApiInvokerMock.VerifyAll();
             createViewModelServiceMock.Verify();

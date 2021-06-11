@@ -1,4 +1,6 @@
 ﻿
+using FluentAssertions;
+
 using ToDoList.Core.Validators;
 using ToDoList.SharedKernel;
 
@@ -25,7 +27,7 @@ namespace Core.Tests.Validators
             var result = validator.Validate(new GeoCoordinate(longitude, latitude));
 
             // Assert
-            Assert.False(result.IsValid);
+            result.IsValid.Should().BeFalse();
         }
 
 
@@ -38,7 +40,7 @@ namespace Core.Tests.Validators
             var result = validator.Validate(new GeoCoordinate(longitude, latitude));
 
             // Assert
-            Assert.True(result.IsValid);
+            result.IsValid.Should().BeTrue();
         }
     }
 }

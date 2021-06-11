@@ -5,6 +5,8 @@ using System.Net.Http.Formatting;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 
+using FluentAssertions;
+
 using Moq;
 
 using TestExtensions;
@@ -71,12 +73,12 @@ namespace BlazorClient.Tests.Services
                                                                       new UserModel { Name = "admin", Password = "QWERty" });
 
             // Assert
-            Assert.Equal(authenticatedModel.AccessToken, actual.AccessToken);
-            Assert.Equal(authenticatedModel.RefreshToken, actual.RefreshToken);
+            actual.AccessToken.Should().Be(authenticatedModel.AccessToken);
+            actual.RefreshToken.Should().Be(authenticatedModel.RefreshToken);
 
-            Assert.Equal(token, httpClient.DefaultRequestHeaders.Authorization.Parameter);
+            httpClient.DefaultRequestHeaders.Authorization.Parameter.Should().Be(token);
 
-            Assert.True(eventRaised);
+            eventRaised.Should().BeTrue();
 
             httpMessageHandlerMock.Verify();
         }
@@ -98,8 +100,8 @@ namespace BlazorClient.Tests.Services
             await blazorApiInvoker.LogoutAsync();
 
             // Assert
-            Assert.True(eventRaised);
-            Assert.Null(httpClient.DefaultRequestHeaders.Authorization);
+            eventRaised.Should().BeTrue();
+            httpClient.DefaultRequestHeaders.Authorization.Should().BeNull();
 
             httpMessageHandlerMock.Verify();
         }

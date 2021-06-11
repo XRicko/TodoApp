@@ -1,4 +1,6 @@
 ﻿
+using FluentAssertions;
+
 using ToDoList.Core.Mediator.Requests;
 using ToDoList.Core.Validators;
 
@@ -24,7 +26,7 @@ namespace Core.Tests.Validators
             var result = validator.Validate(new UserRequest(name, password));
 
             // Assert
-            Assert.False(result.IsValid);
+            result.IsValid.Should().BeFalse();
         }
 
         [Fact]
@@ -38,7 +40,7 @@ namespace Core.Tests.Validators
             var result = validator.Validate(new UserRequest(name, password));
 
             // Assert
-            Assert.True(result.IsValid);
+            result.IsValid.Should().BeTrue();
         }
     }
 }

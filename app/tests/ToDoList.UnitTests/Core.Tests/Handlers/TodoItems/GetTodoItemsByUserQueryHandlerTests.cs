@@ -3,6 +3,8 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
+using FluentAssertions;
+
 using MockQueryable.Moq;
 
 using Moq;
@@ -56,7 +58,7 @@ namespace Core.Tests.Handlers.TodoItems
                                                           new CancellationToken());
 
             // Assert
-            Assert.Equal(expected, actual);
+            actual.Should().Equal(expected);
 
             RepoMock.Verify();
             addressServiceMock.Verify();
