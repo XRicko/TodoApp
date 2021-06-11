@@ -23,6 +23,9 @@ namespace ToDoList.Core.Validators.UpdateRequests
             RuleFor(x => x.StatusId)
                 .GreaterThanOrEqualTo(1);
 
+            RuleFor(x => x.StartDate)
+                .LessThan(DateTime.Now);
+
             RuleFor(x => x.DueDate)
                 .GreaterThan(DateTime.Now)
                 .When(x => x.DueDate.HasValue);
