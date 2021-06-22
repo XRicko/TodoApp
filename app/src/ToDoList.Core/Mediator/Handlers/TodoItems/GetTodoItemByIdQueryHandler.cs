@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -35,7 +36,10 @@ namespace ToDoList.Core.Mediator.Handlers.TodoItems
                                                                                   x.StatusId, x.Status.Name, x.DueDate,
                                                                                   Mapper.Map<GeoCoordinate>(x.GeoPoint),
                                                                                   x.CategoryId, x.Category.Name,
-                                                                                  x.ImageId, x.Image.Name, x.Image.Path))
+                                                                                  x.ImageId, x.Image.Name,
+                                                                                  string.IsNullOrWhiteSpace(x.Image.Path)
+                                                                                     ? null
+                                                                                     : File.ReadAllBytes(x.Image.Path)))
                                                 .SingleOrDefault();
 
             return await createAddressService.GetItemWithAddressAsync(response);

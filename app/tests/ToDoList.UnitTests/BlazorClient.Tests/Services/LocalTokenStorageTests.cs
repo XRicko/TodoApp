@@ -33,7 +33,7 @@ namespace BlazorClient.Tests.Services
         public async Task GetTokenAsync_ReturnsTokenGivenKey()
         {
             // Arrange
-            localStorageServiceMock.Setup(x => x.GetItemAsStringAsync(key))
+            localStorageServiceMock.Setup(x => x.GetItemAsStringAsync(key, null))
                                    .ReturnsAsync(token)
                                    .Verifiable();
 
@@ -52,7 +52,7 @@ namespace BlazorClient.Tests.Services
             await localTokenStorage.SetTokenAsync(key, token);
 
             // Assert
-            localStorageServiceMock.Verify(x => x.SetItemAsStringAsync(key, token), Times.Once);
+            localStorageServiceMock.Verify(x => x.SetItemAsStringAsync(key, token, null), Times.Once);
         }
 
         [Fact]
@@ -62,7 +62,7 @@ namespace BlazorClient.Tests.Services
             await localTokenStorage.RemoveTokenAsync(key);
 
             // Assert
-            localStorageServiceMock.Verify(x => x.RemoveItemAsync(key), Times.Once);
+            localStorageServiceMock.Verify(x => x.RemoveItemAsync(key, null), Times.Once);
         }
     }
 }

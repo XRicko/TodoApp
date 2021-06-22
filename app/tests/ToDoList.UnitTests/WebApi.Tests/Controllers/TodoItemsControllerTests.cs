@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
@@ -16,6 +17,7 @@ using Moq;
 
 using ToDoList.Core.Entities;
 using ToDoList.Core.Mediator.Commands.Generics;
+using ToDoList.Core.Mediator.Queries.Generics;
 using ToDoList.Core.Mediator.Queries.TodoItems;
 using ToDoList.Core.Mediator.Requests.Create;
 using ToDoList.Core.Mediator.Requests.Update;
@@ -91,6 +93,45 @@ namespace WebApi.Tests.Controllers
         }
 
         [Fact]
+        public async Task Get_ReturnsChecklistResponseGivenExistingId()
+        {
+            // Arrange
+            int id = 11;
+            TodoItemResponse expected = new(id, "smth", DateTime.Now, 12, "Chores", 2, "Ongoing");
+
+            MediatorMock.Setup(x => x.Send(It.Is<GetByIdQuery<TodoItem, TodoItemResponse>>(q => q.Id == id),
+                                           It.IsAny<CancellationToken>()))
+                        .ReturnsAsync(expected)
+                        .Verifiable();
+
+            // Act
+            var actual = await todoItemsController.Get(id);
+
+            // Assert
+            actual.Value.Should().Be(expected);
+            MediatorMock.Verify();
+        }
+
+        [Fact]
+        public async Task Get_ReturnsChecklistResponseGivenInvalidId()
+        {
+            // Arrange
+            int id = 11;
+
+            MediatorMock.Setup(x => x.Send(It.Is<GetByIdQuery<TodoItem, TodoItemResponse>>(q => q.Id == id),
+                                           It.IsAny<CancellationToken>()))
+                        .ReturnsAsync(() => null)
+                        .Verifiable();
+
+            // Act
+            var actual = await todoItemsController.Get(id);
+
+            // Assert
+            actual.Value.Should().BeNull();
+            MediatorMock.Verify();
+        }
+
+        [Fact]
         public async Task Add_SendsRequest()
         {
             // Arrange
@@ -100,10 +141,12 @@ namespace WebApi.Tests.Controllers
             cache.SetString(recordKey, JsonSerializer.Serialize(responses));
 
             // Act
-            await todoItemsController.Add(createRequest);
+            var result = await todoItemsController.Add(createRequest);
 
             // Assert
             cache.Get(recordKey).Should().BeNull();
+            (result as NoContentResult).Should().NotBeNull();
+
             MediatorMock.Verify(x => x.Send(It.Is<AddCommand<TodoItemCreateRequest>>(q => q.Request == createRequest),
                                             It.IsAny<CancellationToken>()), Times.Once);
         }
@@ -118,10 +161,12 @@ namespace WebApi.Tests.Controllers
             cache.SetString(recordKey, JsonSerializer.Serialize(responses));
 
             // Act
-            await todoItemsController.Delete(id);
+            var result = await todoItemsController.Delete(id);
 
             // Assert
             cache.Get(recordKey).Should().BeNull();
+            (result as NoContentResult).Should().NotBeNull();
+
             MediatorMock.Verify(x => x.Send(It.Is<RemoveCommand<TodoItem>>(q => q.Id == id),
                                             It.IsAny<CancellationToken>()), Times.Once);
         }
@@ -136,10 +181,12 @@ namespace WebApi.Tests.Controllers
             cache.SetString(recordKey, JsonSerializer.Serialize(responses));
 
             // Act
-            await todoItemsController.Update(updateRequest);
+            var result = await todoItemsController.Update(updateRequest);
 
             // Assert
             cache.Get(recordKey).Should().BeNull();
+            (result as NoContentResult).Should().NotBeNull();
+
             MediatorMock.Verify(x => x.Send(It.Is<UpdateCommand<TodoItemUpdateRequest>>(q => q.Request == updateRequest),
                                             It.IsAny<CancellationToken>()), Times.Once);
         }

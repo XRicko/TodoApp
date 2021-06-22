@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Security.Claims;
 
+using FluentAssertions;
+
 using ToDoList.SharedClientLibrary.Services;
 
 using Xunit;
@@ -29,7 +31,7 @@ namespace SharedClientLibrary.Tests.Services
             var actual = jwtTokenParser.GetExpiryDate(token);
 
             // Assert
-            Assert.Equal(expiryDate, actual);
+            actual.Should().Be(expiryDate);
         }
 
         [Fact]
@@ -45,7 +47,7 @@ namespace SharedClientLibrary.Tests.Services
             var actual = jwtTokenParser.GetExpiryDate(token, claimsPrincipal);
 
             // Assert
-            Assert.Equal(expiryDate, actual);
+            actual.Should().Be(expiryDate);
         }
 
         [Fact]
@@ -55,7 +57,7 @@ namespace SharedClientLibrary.Tests.Services
             var actual = jwtTokenParser.GetClaimsPrincipal(token);
 
             // Assert
-            Assert.Equal(expiryDate.ToUnixTimeSeconds().ToString(), actual.FindFirst("exp").Value);
+            actual.FindFirst("exp").Value.Should().Be(expiryDate.ToUnixTimeSeconds().ToString());
         }
     }
 }

@@ -2,6 +2,6 @@
 {
     public class ImageModel : BaseModel
     {
-        public string Path { get; set; }
+        public byte[] Content { get; set; }
     }
 }

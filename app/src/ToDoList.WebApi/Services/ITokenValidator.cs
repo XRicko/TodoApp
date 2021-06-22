@@ -2,6 +2,6 @@
 {
     public interface ITokenValidator
     {
-        bool ValidateRefreshKey(string refreshToken);
+        bool ValidateRefreshToken(string refreshToken);
     }
 }

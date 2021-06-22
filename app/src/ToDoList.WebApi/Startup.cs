@@ -1,4 +1,5 @@
 using System;
+using System.Reflection;
 
 using FluentValidation.AspNetCore;
 
@@ -28,6 +29,7 @@ using ToDoList.Infrastructure.Extensions;
 using ToDoList.WebApi.Jwt;
 using ToDoList.WebApi.Jwt.Models;
 using ToDoList.WebApi.Services;
+using ToDoList.WebApi.Validators;
 
 namespace ToDoList.WebApi
 {
@@ -60,7 +62,9 @@ namespace ToDoList.WebApi
 
             services.AddScoped<ITokenGenerator, JwtTokenGenerator>();
             services.AddScoped<ITokenValidator, JwtTokenValidator>();
+
             services.AddScoped<IAuthenticator, Authenticator>();
+            services.AddScoped<IFileStorage, PhysicalFileStorage>();
 
             services.AddCors();
 
@@ -102,7 +106,16 @@ namespace ToDoList.WebApi
             services.AddDistributedMemoryCache();
 
             services.AddControllers(options => options.Filters.Add<ProccesTimeActionFilterAttribute>())
-                    .AddFluentValidation(config => config.RegisterValidatorsFromAssemblyContaining<GeoCoordinateValidator>());
+                    .AddFluentValidation(config =>
+                    {
+                        var assemblies = new Assembly[]
+                        {
+                            typeof(GeoCoordinateValidator).Assembly,
+                            typeof(FormFileValidator).Assembly
+                        };
+
+                        config.RegisterValidatorsFromAssemblies(assemblies);
+                    });
 
             services.AddSwaggerGen(c =>
             {

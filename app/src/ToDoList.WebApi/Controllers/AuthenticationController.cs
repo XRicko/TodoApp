@@ -15,6 +15,7 @@ using ToDoList.Core.Mediator.Queries.RefreshTokens;
 using ToDoList.Core.Mediator.Queries.Users;
 using ToDoList.Core.Mediator.Requests;
 using ToDoList.Core.Mediator.Response;
+using ToDoList.WebApi.Jwt.Models;
 using ToDoList.WebApi.Services;
 
 namespace ToDoList.WebApi.Controllers
@@ -34,7 +35,7 @@ namespace ToDoList.WebApi.Controllers
 
         [HttpPost]
         [Route("[action]")]
-        public async Task<IActionResult> LoginAsync(UserRequest userRequest)
+        public async Task<ActionResult<AuthenticatedResponse>> LoginAsync(UserRequest userRequest)
         {
             _ = userRequest ?? throw new ArgumentNullException(nameof(userRequest));
 
@@ -43,12 +44,12 @@ namespace ToDoList.WebApi.Controllers
             if (user is null)
                 return Unauthorized("Username or password is incorrect");
 
-            return Ok(await authenticator.AuthenticateAsync(user));
+            return await authenticator.AuthenticateAsync(user);
         }
 
         [HttpPost]
         [Route("[action]")]
-        public async Task<IActionResult> RegisterAsync(UserRequest userRequest)
+        public async Task<ActionResult<AuthenticatedResponse>> RegisterAsync(UserRequest userRequest)
         {
             _ = userRequest ?? throw new ArgumentNullException(nameof(userRequest));
 
@@ -60,31 +61,31 @@ namespace ToDoList.WebApi.Controllers
             await Mediator.Send(new AddCommand<UserRequest>(userRequest));
             var createdUser = await Mediator.Send(new GetUserByNameAndPasswordQuery(userRequest.Name, userRequest.Password));
 
-            return Ok(await authenticator.AuthenticateAsync(createdUser));
+            return await authenticator.AuthenticateAsync(createdUser);
         }
 
         [HttpPost]
         [Route("[action]")]
-        public async Task<IActionResult> RefreshAsync([FromBody] string refreshToken)
+        public async Task<ActionResult<AuthenticatedResponse>> RefreshAsync([FromBody] string refreshToken)
         {
             if (string.IsNullOrWhiteSpace(refreshToken))
                 throw new ArgumentException($"'{nameof(refreshToken)}' cannot be null or whitespace", nameof(refreshToken));
 
-            bool isValidRefreshToken = tokenValidator.ValidateRefreshKey(refreshToken);
+            bool isValidRefreshToken = tokenValidator.ValidateRefreshToken(refreshToken);
             if (!isValidRefreshToken)
-                return BadRequest("Invalid refresh token");
+                return Unauthorized("Invalid refresh token");
 
             var tokenResponse = await Mediator.Send(new GetRefreshTokenByTokenQuery(refreshToken));
             if (tokenResponse is null)
-                return NotFound("Invalid refresh token");
+                return Unauthorized("No refresh token");
 
             await Mediator.Send(new RemoveCommand<RefreshToken>(tokenResponse.Id));
 
             var user = await Mediator.Send(new GetByIdQuery<User, UserResponse>(tokenResponse.UserId));
             if (user is null)
-                return NotFound("User not found");
+                return Unauthorized("User not found");
 
-            return Ok(await authenticator.AuthenticateAsync(user));
+            return await authenticator.AuthenticateAsync(user);
         }
 
         [Authorize]

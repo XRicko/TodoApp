@@ -54,7 +54,7 @@ namespace ToDoList.MvcClient
             });
 
             services.AddScoped<IViewModelService, ViewModelService>();
-            services.AddScoped<IImageAddingService, ImageAddingService>();
+            services.AddTransient<IFileConverter, FileConverter>();
 
             services.AddScoped<ITokenStorage, CookieTokenStorage>();
             services.AddTransient<ITokenParser, JwtTokenParser>();

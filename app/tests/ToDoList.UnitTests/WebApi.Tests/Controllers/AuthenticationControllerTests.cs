@@ -9,8 +9,11 @@ using Microsoft.AspNetCore.Mvc;
 
 using Moq;
 
+using ToDoList.Core.Entities;
 using ToDoList.Core.Mediator.Commands.Generics;
 using ToDoList.Core.Mediator.Commands.RefreshTokens;
+using ToDoList.Core.Mediator.Queries.Generics;
+using ToDoList.Core.Mediator.Queries.RefreshTokens;
 using ToDoList.Core.Mediator.Queries.Users;
 using ToDoList.Core.Mediator.Requests;
 using ToDoList.Core.Mediator.Response;
@@ -42,7 +45,7 @@ namespace WebApi.Tests.Controllers
         }
 
         [Fact]
-        public async Task Login_ReturnsOkResultWithAuthenticatedResponseGivenExistingUser()
+        public async Task Login_ReturnsAuthenticatedResponseGivenExistingUser()
         {
             // Arrange
             var userResponse = new UserResponse(3, "admin", "password");
@@ -62,14 +65,10 @@ namespace WebApi.Tests.Controllers
                              .Verifiable();
 
             // Act
-            var actionResult = await authenticationController.LoginAsync(userRequest);
-            var okResult = actionResult as OkObjectResult;
-
-            var actual = okResult.Value as AuthenticatedResponse;
+            var actual = await authenticationController.LoginAsync(userRequest); ;
 
             // Assert
-            okResult.StatusCode.Should().Be(200);
-            actual.Should().Be(expected);
+            actual.Value.Should().Be(expected);
 
             MediatorMock.Verify();
             authenticatorMock.Verify();
@@ -87,21 +86,19 @@ namespace WebApi.Tests.Controllers
                         .Verifiable();
 
             // Act
-            var actionResult = await authenticationController.LoginAsync(userRequest);
-            var unauthorizedResult = actionResult as UnauthorizedObjectResult;
-
-            string actualMessage = unauthorizedResult.Value as string;
+            var result = await authenticationController.LoginAsync(userRequest);
+            var unauthorizedObjectResult = result.Result as UnauthorizedObjectResult;
 
             // Assert
-            unauthorizedResult.StatusCode.Should().Be(401);
-            actualMessage.Should().BeEquivalentTo(expectedMessage);
+            unauthorizedObjectResult.Should().NotBeNull();
+            unauthorizedObjectResult.Value.Should().BeEquivalentTo(expectedMessage);
 
             MediatorMock.Verify();
             authenticatorMock.Verify(x => x.AuthenticateAsync(It.IsAny<UserResponse>()), Times.Never);
         }
 
         [Fact]
-        public async Task Register_ReturnsOkResultWithAuthenticatedResponseGivenNewUser()
+        public async Task Register_ReturnsAuthenticatedResponseGivenNewUser()
         {
             // Arrange
             var userResponse = new UserResponse(3, "admin", "password");
@@ -121,14 +118,10 @@ namespace WebApi.Tests.Controllers
                              .Verifiable();
 
             // Act
-            var actionResult = await authenticationController.RegisterAsync(userRequest);
-            var okResult = actionResult as OkObjectResult;
-
-            var actual = okResult.Value as AuthenticatedResponse;
+            var actual = await authenticationController.RegisterAsync(userRequest);
 
             // Assert
-            okResult.StatusCode.Should().Be(200);
-            actual.Should().Be(expected);
+            actual.Value.Should().Be(expected);
 
             MediatorMock.Verify(x => x.Send(new GetUserByNameAndPasswordQuery(userRequest.Name, userRequest.Password),
                                             It.IsAny<CancellationToken>()), Times.Exactly(2));
@@ -152,13 +145,11 @@ namespace WebApi.Tests.Controllers
 
             // Act
             var actionResult = await authenticationController.RegisterAsync(userRequest);
-            var unauthorizedResult = actionResult as UnauthorizedObjectResult;
-
-            string actualMessage = unauthorizedResult.Value as string;
+            var unauthorizedResult = actionResult.Result as UnauthorizedObjectResult;
 
             // Assert
-            unauthorizedResult.StatusCode.Should().Be(401);
-            actualMessage.Should().BeEquivalentTo(expectedMessage);
+            unauthorizedResult.Should().NotBeNull();
+            unauthorizedResult.Value.Should().BeEquivalentTo(expectedMessage);
 
             MediatorMock.Verify();
             MediatorMock.Verify(x => x.Send(new AddCommand<UserRequest>(userRequest),
@@ -186,22 +177,151 @@ namespace WebApi.Tests.Controllers
             var okResult = actionResult as OkResult;
 
             // Assert
-            okResult.StatusCode.Should().Be(200);
+            okResult.Should().NotBeNull();
             MediatorMock.Verify(x => x.Send(new RemoveAllRefreshTokensFromUserCommand(userId),
                                             It.IsAny<CancellationToken>()), Times.Once);
         }
 
         [Fact]
-        public async Task Logut_ReturnsUnauthorizedWhenUserIdNull()
+        public async Task Logout_ReturnsUnauthorizedWhenUserIdNull()
         {
             // Act
             var actionResult = await authenticationController.Logout();
             var unauthorizedResult = actionResult as UnauthorizedResult;
 
             // Assert
-            unauthorizedResult.StatusCode.Should().Be(401);
+            unauthorizedResult.Should().NotBeNull();
             MediatorMock.Verify(x => x.Send(new RemoveAllRefreshTokensFromUserCommand(It.IsAny<int>()),
                                             It.IsAny<CancellationToken>()), Times.Never);
+        }
+
+        [Fact]
+        public async Task Refresh_ReturnsUnauthorizedWhenInvalidRefreshToken()
+        {
+            // Arrange
+            string refreshToken = "efjieofnsXqweHEq.Qjsnzeqfi";
+            string message = "Invalid refresh token";
+
+            tokenValidatorMock.Setup(x => x.ValidateRefreshToken(refreshToken))
+                              .Returns(false)
+                              .Verifiable();
+
+            // Act
+            var result = await authenticationController.RefreshAsync(refreshToken);
+            var unauthorizedObjectResult = result.Result as UnauthorizedObjectResult;
+
+            // Assert
+            unauthorizedObjectResult.Should().NotBeNull();
+            unauthorizedObjectResult.Value.Should().BeEquivalentTo(message);
+
+            tokenValidatorMock.Verify();
+        }
+
+        [Fact]
+        public async Task Refresh_ReturnsUnauthorizedWhenNoRefreshToken()
+        {
+            // Arrange
+            string refreshToken = "efjieofnsXqweHEq.Qjsnzeqfi";
+            string message = "No refresh token";
+
+            tokenValidatorMock.Setup(x => x.ValidateRefreshToken(refreshToken))
+                              .Returns(true)
+                              .Verifiable();
+
+            MediatorMock.Setup(x => x.Send(new GetRefreshTokenByTokenQuery(refreshToken), It.IsAny<CancellationToken>()))
+                        .ReturnsAsync(() => null)
+                        .Verifiable();
+
+            // Act
+            var result = await authenticationController.RefreshAsync(refreshToken);
+            var unauthorizedObjectResult = result.Result as UnauthorizedObjectResult;
+
+            // Assert
+            unauthorizedObjectResult.Should().NotBeNull();
+            unauthorizedObjectResult.Value.Should().BeEquivalentTo(message);
+
+            tokenValidatorMock.Verify();
+            MediatorMock.Verify();
+        }
+
+        [Fact]
+        public async Task Refresh_ReturnsUnauthorizedWhenNoUser()
+        {
+            // Arrange
+            string refreshToken = "efjieofnsXqweHEq.Qjsnzeqfi";
+            string message = "User not found";
+
+            RefreshTokenResponse refreshTokenResponse = new(31, refreshToken, 5);
+
+            tokenValidatorMock.Setup(x => x.ValidateRefreshToken(refreshToken))
+                              .Returns(true)
+                              .Verifiable();
+
+            MediatorMock.Setup(x => x.Send(new GetRefreshTokenByTokenQuery(refreshToken), It.IsAny<CancellationToken>()))
+                        .ReturnsAsync(refreshTokenResponse)
+                        .Verifiable();
+
+            MediatorMock.Setup(x => x.Send(new RemoveCommand<RefreshToken>(refreshTokenResponse.Id), It.IsAny<CancellationToken>()))
+                        .Verifiable();
+
+            MediatorMock.Setup(x => x.Send(new GetByIdQuery<User, UserResponse>(refreshTokenResponse.UserId),
+                                           It.IsAny<CancellationToken>()))
+                        .ReturnsAsync(() => null)
+                        .Verifiable();
+
+            // Act
+            var result = await authenticationController.RefreshAsync(refreshToken);
+            var unauthorizedObjectResult = result.Result as UnauthorizedObjectResult;
+
+            // Assert
+            unauthorizedObjectResult.Should().NotBeNull();
+            unauthorizedObjectResult.Value.Should().BeEquivalentTo(message);
+
+            tokenValidatorMock.Verify();
+            MediatorMock.Verify();
+        }
+
+        [Fact]
+        public async Task Refresh_ReturnsAuthenticatedResponse()
+        {
+            // Arrange
+            string accessToken = "eUnfjsnaqqopd_sOPmNaj";
+            string refreshToken = "efjieofnsXqweHEq.Qjsnzeqfi";
+
+            UserResponse userResponse = new(5, "admin", "qwerty");
+            RefreshTokenResponse refreshTokenResponse = new(31, refreshToken, userResponse.Id);
+
+            AuthenticatedResponse expected = new(accessToken, refreshToken);
+
+            tokenValidatorMock.Setup(x => x.ValidateRefreshToken(refreshToken))
+                              .Returns(true)
+                              .Verifiable();
+
+            MediatorMock.Setup(x => x.Send(new GetRefreshTokenByTokenQuery(refreshToken), It.IsAny<CancellationToken>()))
+                        .ReturnsAsync(refreshTokenResponse)
+                        .Verifiable();
+
+            MediatorMock.Setup(x => x.Send(new RemoveCommand<RefreshToken>(refreshTokenResponse.Id), It.IsAny<CancellationToken>()))
+                        .Verifiable();
+
+            MediatorMock.Setup(x => x.Send(new GetByIdQuery<User, UserResponse>(refreshTokenResponse.UserId),
+                                           It.IsAny<CancellationToken>()))
+                        .ReturnsAsync(userResponse)
+                        .Verifiable();
+
+            authenticatorMock.Setup(x => x.AuthenticateAsync(userResponse))
+                             .ReturnsAsync(expected)
+                             .Verifiable();
+
+            // Act
+            var result = await authenticationController.RefreshAsync(refreshToken);
+
+            // Assert
+            result.Value.Should().Be(expected);
+
+            tokenValidatorMock.Verify();
+            MediatorMock.Verify();
+            authenticatorMock.Verify();
         }
     }
 }

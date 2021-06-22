@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 
 using FluentAssertions;
 
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
@@ -98,7 +99,7 @@ namespace WebApi.Tests.Controllers
             var actual = await categoriesController.GetByName(name);
 
             // Assert
-            actual.Should().Be(expected);
+            actual.Value.Should().Be(expected);
             MediatorMock.Verify();
         }
 
@@ -117,7 +118,7 @@ namespace WebApi.Tests.Controllers
             var actual = await categoriesController.GetByName(invalidName);
 
             // Assert
-            actual.Should().BeNull();
+            actual.Value.Should().BeNull();
             MediatorMock.Verify();
         }
 
@@ -128,9 +129,10 @@ namespace WebApi.Tests.Controllers
             var createRequest = new CategoryCreateRequest("Essential");
 
             // Act
-            await categoriesController.Add(createRequest);
+            var result = await categoriesController.Add(createRequest);
 
             // Assert
+            (result as NoContentResult).Should().NotBeNull();
             MediatorMock.Verify(x => x.Send(It.Is<AddCommand<CategoryCreateRequest>>(q => q.Request == createRequest),
                                             It.IsAny<CancellationToken>()), Times.Once);
         }

@@ -1,9 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 using FluentAssertions;
 
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 using Moq;
@@ -13,6 +17,7 @@ using ToDoList.MvcClient.Models;
 using ToDoList.MvcClient.Services;
 using ToDoList.MvcClient.ViewModels;
 using ToDoList.SharedClientLibrary.Models;
+using ToDoList.SharedClientLibrary.Services;
 using ToDoList.SharedKernel;
 
 using Xunit;
@@ -23,7 +28,7 @@ namespace MvcClient.Tests.Controllers
     {
         private readonly TodoController todoController;
 
-        private readonly Mock<IImageAddingService> imageAddingServiceMock;
+        private readonly Mock<IFileConverter> fileConverterMock;
         private readonly Mock<IViewModelService> createViewModelServiceMock;
 
         private readonly string createOrUpdateViewName;
@@ -35,10 +40,10 @@ namespace MvcClient.Tests.Controllers
 
         public TodoControllerTests()
         {
-            imageAddingServiceMock = new Mock<IImageAddingService>();
             createViewModelServiceMock = new Mock<IViewModelService>();
+            fileConverterMock = new Mock<IFileConverter>();
 
-            todoController = new TodoController(ApiInvokerMock.Object, imageAddingServiceMock.Object, createViewModelServiceMock.Object);
+            todoController = new TodoController(createViewModelServiceMock.Object, fileConverterMock.Object, ApiInvokerMock.Object);
 
             createOrUpdateViewName = "CreateOrUpdate";
             viewAllViewName = "_ViewAll";
@@ -345,8 +350,23 @@ namespace MvcClient.Tests.Controllers
         public async Task Post_CreateOrUpdate_ReturnsViewAllWithUpdatedTodoItemGivenExisting()
         {
             // Arrange
-            var todoItemToUpdate = new TodoItemModelWithFile { Id = 2, Name = "Clean my room", ChecklistId = checklistId };
-            var todoItems = new List<TodoItemModelWithFile> { new TodoItemModelWithFile { Id = 2, Name = "Do nothing", ChecklistId = checklistId } };
+            int imageId = 234;
+            string imageName = "rand.jpg";
+
+            IFormFile file = new FormFile(new MemoryStream(Encoding.UTF8.GetBytes("This is a dummy file")),
+                                          0, 0, "Data", imageName);
+
+            var todoItemToUpdate = new TodoItemModelWithFile
+            {
+                Id = 2,
+                Name = "Clean my room",
+                ChecklistId = checklistId,
+                Image = file
+            };
+            var todoItems = new List<TodoItemModelWithFile>
+            {
+                new TodoItemModelWithFile { Id = 2, Name = "Do nothing", ChecklistId = checklistId }
+            };
 
             var createTodoItemViewModel = GetCreateTodoItemViewModel();
             createTodoItemViewModel.TodoItemModel = todoItemToUpdate;
@@ -356,13 +376,29 @@ namespace MvcClient.Tests.Controllers
             ApiInvokerMock.Setup(x => x.PutItemAsync(route, todoItemToUpdate))
                           .Callback(() =>
                           {
-                              todoItems.SingleOrDefault(c => c.Id == todoItemToUpdate.Id).Name = todoItemToUpdate.Name;
+                              int index = todoItems.FindIndex(c => c.Id == todoItemToUpdate.Id);
+                              todoItems[index] = todoItemToUpdate;
+
                               indexViewModel.TodoItems = todoItems;
                           });
+
+            ApiInvokerMock.Setup(x => x.PostFileAsync("Images", todoItemToUpdate.Image.FileName, It.IsAny<byte[]>()))
+                          .ReturnsAsync(imageName)
+                          .Verifiable();
+            ApiInvokerMock.Setup(x => x.GetItemAsync<ImageModel>("Images/GetByName/" + imageName))
+                          .ReturnsAsync(new ImageModel { Id = imageId })
+                          .Verifiable();
 
             createViewModelServiceMock.Setup(x => x.CreateIndexViewModelAsync(null, null))
                                       .ReturnsAsync(indexViewModel)
                                       .Verifiable();
+
+            byte[] fileBytes = new byte[1313];
+            new Random().NextBytes(fileBytes);
+
+            fileConverterMock.Setup(x => x.ConvertToByteArrayAsync(It.Is<Stream>(x => x.Length == file.OpenReadStream().Length)))
+                             .ReturnsAsync(fileBytes)
+                             .Verifiable();
 
             // Act
             var result = await todoController.CreateOrUpdateAsync(createTodoItemViewModel) as PartialViewResult;
@@ -372,8 +408,11 @@ namespace MvcClient.Tests.Controllers
             viewModel.TodoItems.Should().ContainEquivalentOf(todoItemToUpdate);
             result.ViewName.Should().Be(viewAllViewName);
 
+            viewModel.TodoItems.Should().Contain(x => x.ImageId == imageId);
+
             ApiInvokerMock.VerifyAll();
             createViewModelServiceMock.Verify();
+            fileConverterMock.Verify();
         }
 
         [Fact]

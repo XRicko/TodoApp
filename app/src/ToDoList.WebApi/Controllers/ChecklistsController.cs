@@ -50,32 +50,38 @@ namespace ToDoList.WebApi.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<ChecklistResponse> Get(int id) =>
+        public async Task<ActionResult<ChecklistResponse>> Get(int id) =>
             await Mediator.Send(new GetByIdQuery<Checklist, ChecklistResponse>(id));
 
         [HttpPost]
-        public async Task Add(ChecklistCreateRequest createRequest)
+        public async Task<IActionResult> Add(ChecklistCreateRequest createRequest)
         {
             _ = createRequest ?? throw new ArgumentNullException(nameof(createRequest));
 
             await Mediator.Send(new AddCommand<ChecklistCreateRequest>(createRequest));
             await cache.RemoveAsync(RecordKey);
+
+            return NoContent();
         }
 
         [HttpDelete("{id}")]
-        public async Task Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
             await Mediator.Send(new RemoveCommand<Checklist>(id));
             await cache.RemoveAsync(RecordKey);
+
+            return NoContent();
         }
 
         [HttpPut]
-        public async Task Update(ChecklistUpdateRequest updateRequest)
+        public async Task<IActionResult> Update(ChecklistUpdateRequest updateRequest)
         {
             _ = updateRequest ?? throw new ArgumentNullException(nameof(updateRequest));
 
             await Mediator.Send(new UpdateCommand<ChecklistUpdateRequest>(updateRequest));
             await cache.RemoveAsync(RecordKey);
+
+            return NoContent();
         }
     }
 }

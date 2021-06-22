@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -40,7 +41,9 @@ namespace ToDoList.Core.Mediator.Handlers.TodoItems
                                                                                          Mapper.Map<GeoCoordinate>(x.GeoPoint),
                                                                                          x.CategoryId, x.Category.Name,
                                                                                          x.ImageId, x.Image.Name,
-                                                                                         x.Image.Path))
+                                                                                         string.IsNullOrWhiteSpace(x.Image.Path)
+                                                                                            ? null
+                                                                                            : File.ReadAllBytes(x.Image.Path)))
                                                        //.ProjectTo<TodoItemResponse>(Mapper.ConfigurationProvider)
                                                        .ToList();
             //.ToListAsync();

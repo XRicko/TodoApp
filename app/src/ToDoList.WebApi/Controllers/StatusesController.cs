@@ -43,7 +43,12 @@ namespace ToDoList.WebApi.Controllers
 
         [HttpGet]
         [Route("[action]/{name}")]
-        public async Task<StatusResponse> GetByName(string name) =>
-            await Mediator.Send(new GetByNameQuery<Status, StatusResponse>(name));
+        public async Task<ActionResult<StatusResponse>> GetByName(string name)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+                throw new ArgumentException($"'{nameof(name)}' cannot be null or whitespace.", nameof(name));
+
+            return await Mediator.Send(new GetByNameQuery<Status, StatusResponse>(name));
+        }
     }
 }

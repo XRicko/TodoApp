@@ -30,7 +30,7 @@ namespace ToDoList.SharedClientLibrary.Models
         public string CategoryName { get; set; }
         public string ChecklistName { get; set; }
         public string ImageName { get; set; }
-        public string ImagePath { get; set; }
+        public byte[] ImageContent { get; set; }
 
         public string Address { get; set; }
     }

@@ -24,8 +24,10 @@ namespace ToDoList.BlazorClient
             builder.RootComponents.Add<App>("#app");
 
             builder.Services.AddScoped<ITokenStorage, LocalTokenStorage>();
-            builder.Services.AddScoped<IApiInvoker, BlazorApiInvoker>();
             builder.Services.AddScoped<ITokenParser, JwtTokenParser>();
+
+            builder.Services.AddScoped<IApiInvoker, BlazorApiInvoker>();
+            builder.Services.AddScoped<IFileConverter, FileConverter>();
 
             builder.Services.AddScoped<AuthenticationStateProvider, AuthStateProvider>();
 

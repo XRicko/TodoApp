@@ -12,8 +12,8 @@
         {
             <div class="badge badge-secondary position-relative">
                 @Localizer["PlannedStatus"]
-                <a class="close stretched-link" 
-                   href="javascript:void(0)" 
+                <a class="close stretched-link"
+                   href="javascript:void(0)"
                    onclick="ajaxGet('@Url.Action("Index", "Todo", new { categoryName = Model.SelectedCategory }, Context.Request.Scheme)')">
                     <i class="bi bi-x"></i>
                 </a>
@@ -23,8 +23,8 @@
         {
             <div class="badge badge-warning position-relative">
                 @Localizer["OngoingStatus"]
-                <a class="close stretched-link" 
-                   href="javascript:void(0)" 
+                <a class="close stretched-link"
+                   href="javascript:void(0)"
                    onclick="ajaxGet('@Url.Action("Index", "Todo", new { categoryName = Model.SelectedCategory }, Context.Request.Scheme)')">
                     <i class="bi bi-x"></i>
                 </a>
@@ -55,7 +55,7 @@
     }
 
     <div class="ml-auto text-center">
-        <button onclick="showPopup('@Url.Action("CreateOrUpdate", "Checklist", new { userId }, Context.Request.Scheme)', '@Localizer["NewChecklist"]')" 
+        <button onclick="showPopup('@Url.Action("CreateOrUpdate", "Checklist", new { userId }, Context.Request.Scheme)', '@Localizer["NewChecklist"]')"
                 class="btn btn-primary">
             @Localizer["NewChecklist"]
         </button>
@@ -81,23 +81,23 @@
                 }
 
                 <div>
-                    <button onclick="showPopup('@Url.Action("CreateOrUpdate", "Checklist", new { checklist.Id }, Context.Request.Scheme)', '@Localizer["UpdateChecklist"]')" 
+                    <button onclick="showPopup('@Url.Action("CreateOrUpdate", "Checklist", new { checklist.Id }, Context.Request.Scheme)', '@Localizer["UpdateChecklist"]')"
                             class="border-0 btn-transition btn btn-outline-info">
                         <i class="bi bi-pencil"></i>
                     </button>
 
                     @if (checklist.Name != "Untitled")
                     {
-                        <form method="post" 
+                        <form method="post"
                               asp-action="Delete"
-                              asp-controller="Checklist" 
+                              asp-controller="Checklist"
                               asp-route-id="@checklist.Id"
-                              onsubmit="return ajaxDelete(this);" 
+                              onsubmit="return ajaxDelete(this);"
                               class="d-inline">
 
-                            <button type="submit" 
-                                    class="border-0 btn-transition btn btn-outline-danger"> 
-                                <i class="bi bi-trash"></i> 
+                            <button type="submit"
+                                    class="border-0 btn-transition btn btn-outline-danger">
+                                <i class="bi bi-trash"></i>
                             </button>
                         </form>
                     }
@@ -108,9 +108,9 @@
             <div class="card-body">
                 <ul class="nav nav-tabs border-0 mb-2" style="grid-gap: 12px;">
                     <li class="nav-item">
-                        <a class="btn btn-outline-primary active" 
+                        <a class="btn btn-outline-primary active"
                            id="notDone-@checklist.Id-tab"
-                           data-toggle="tab" 
+                           data-toggle="tab"
                            href="#notDone-@checklist.Id">
                             @Localizer["ActiveTab"]
                             <span class="badge badge-light">
@@ -119,9 +119,9 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="btn btn-outline-secondary" 
+                        <a class="btn btn-outline-secondary"
                            id="done-@checklist.Id-tab"
-                           data-toggle="tab"da
+                           data-toggle="tab" da
                            href="#done-@checklist.Id">
                             @Localizer["DoneTab"]
                             <span class="badge badge-light">
@@ -139,10 +139,10 @@
                                 <div class="d-flex flex-column">
                                     <div class="d-flex">
                                         <div class="form-check">
-                                            <input class="form-check-input" 
-                                                   id="@todoItem.Id" 
-                                                   data-url="@Url.Action("MarkTodoItem")" 
-                                                   onchange="return ajaxChangeStatus(this)" 
+                                            <input class="form-check-input"
+                                                   id="@todoItem.Id"
+                                                   data-url="@Url.Action("MarkTodoItem")"
+                                                   onchange="return ajaxChangeStatus(this)"
                                                    type="checkbox">
                                             <label class="form-check-label" for="@todoItem.Id">&nbsp;</label>
                                         </div>
@@ -151,7 +151,7 @@
                                             @todoItem.Name
                                             @if (todoItem.StatusName is "Planned")
                                             {
-                                                <a href="javascript:void(0)" 
+                                                <a href="javascript:void(0)"
                                                    onclick="ajaxGet('@Url.Action("Index", "Todo", new { todoItem.StatusName, categoryName = Model.SelectedCategory }, Context.Request.Scheme)')"
                                                    class="badge badge-secondary ml-2">
                                                     @Localizer["PlannedStatus"]
@@ -159,7 +159,7 @@
                                             }
                                             else if (todoItem.StatusName is "Ongoing")
                                             {
-                                                <a href="javascript:void(0)" 
+                                                <a href="javascript:void(0)"
                                                    onclick="ajaxGet('@Url.Action("Index", "Todo", new { todoItem.StatusName, categoryName = Model.SelectedCategory }, Context.Request.Scheme)')"
                                                    class="badge badge-warning ml-2">
                                                     @Localizer["OngoingStatus"]
@@ -168,7 +168,7 @@
 
                                             @if (todoItem.CategoryName is not null)
                                             {
-                                                <a href="javascript:void(0)" 
+                                                <a href="javascript:void(0)"
                                                    onclick="ajaxGet('@Url.Action("Index", "Todo", new { todoItem.CategoryName, statusName = Model.SelectedStatus }, Context.Request.Scheme)')"
                                                    class="badge badge-pill badge-info">
                                                     #@todoItem.CategoryName
@@ -187,9 +187,12 @@
 
                                     <a href="http://maps.google.com/?q=@todoItem.Address" target="_blank">@todoItem.Address</a>
 
-                                    <img src="@Url.Content(todoItem.ImagePath)" 
-                                         class="img-fluid align-self-center" 
-                                         style="max-width: 400px; width: 100%" />
+                                    @if (todoItem.ImageContent is not null)
+                                    {
+                                        <img src="data:image;base64,@Convert.ToBase64String(todoItem.ImageContent)"
+                                             class="img-fluid align-self-center"
+                                             style="max-width: 400px; width: 100%" />
+                                    }
 
                                     <div class="d-flex justify-content-between align-items-center">
                                         <div class="text-muted">
@@ -197,20 +200,20 @@
                                         </div>
 
                                         <div>
-                                            <button onclick="showPopup('@Url.Action("CreateOrUpdate", "Todo", new { TodoItemId = todoItem.Id, ChecklistId = checklist.Id }, Context.Request.Scheme)', '@Localizer["UpdateTask"]', this)" 
+                                            <button onclick="showPopup('@Url.Action("CreateOrUpdate", "Todo", new { TodoItemId = todoItem.Id, ChecklistId = checklist.Id }, Context.Request.Scheme)', '@Localizer["UpdateTask"]', this)"
                                                     class="border-0 btn-transition btn btn-outline-info todoItem">
                                                 <i class="bi bi-pencil"></i>
                                             </button>
 
-                                            <form method="post" 
+                                            <form method="post"
                                                   asp-action="Delete"
-                                                  asp-route-id="@todoItem.Id" 
-                                                  onsubmit="return ajaxDelete(this);" 
+                                                  asp-route-id="@todoItem.Id"
+                                                  onsubmit="return ajaxDelete(this);"
                                                   class="d-inline">
 
-                                                <button type="submit" 
-                                                        class="border-0 btn-transition btn btn-outline-danger"> 
-                                                    <i class="bi bi-trash"></i> 
+                                                <button type="submit"
+                                                        class="border-0 btn-transition btn btn-outline-danger">
+                                                    <i class="bi bi-trash"></i>
                                                 </button>
                                             </form>
                                         </div>
@@ -227,18 +230,18 @@
                                 <div class="d-flex flex-column">
                                     <div class="d-flex">
                                         <div class="form-check">
-                                            <input class="form-check-input" 
-                                                   checked 
-                                                   id="@todoItem.Id" 
-                                                   data-url="@Url.Action("MarkTodoItem")" 
-                                                   onchange="return ajaxChangeStatus(this)" 
+                                            <input class="form-check-input"
+                                                   checked
+                                                   id="@todoItem.Id"
+                                                   data-url="@Url.Action("MarkTodoItem")"
+                                                   onchange="return ajaxChangeStatus(this)"
                                                    type="checkbox">
                                             <label class="form-check-label" for="@todoItem.Id">&nbsp;</label>
                                         </div>
 
                                         <div>
                                             @todoItem.Name
-                                            <a href="javascript:void(0)" 
+                                            <a href="javascript:void(0)"
                                                onclick="ajaxGet('@Url.Action("Index", "Todo", new { todoItem.StatusName, categoryName = Model.SelectedCategory }, Context.Request.Scheme)')"
                                                class="badge badge-success ml-2">
                                                 @Localizer["DoneStatus"]
@@ -246,7 +249,7 @@
 
                                             @if (todoItem.CategoryName is not null)
                                             {
-                                                <a href="javascript:void(0)" 
+                                                <a href="javascript:void(0)"
                                                    onclick="ajaxGet('@Url.Action("Index", "Todo", new { todoItem.CategoryName, statusName = Model.SelectedStatus }, Context.Request.Scheme)')"
                                                    class="badge badge-pill badge-info">
                                                     #@todoItem.CategoryName
@@ -256,9 +259,12 @@
                                         </div>
                                     </div>
 
-                                    <img src="@Url.Content(todoItem.ImagePath)" 
-                                         class="img-fluid align-self-center" 
-                                         style="max-width: 400px; width: 100%" />
+                                    @if (todoItem.ImageContent is not null)
+                                    {
+                                        <img src="data:image;base64,@Convert.ToBase64String(todoItem.ImageContent)"
+                                             class="img-fluid align-self-center"
+                                             style="max-width: 400px; width: 100%" />
+                                    }
 
                                     <div class="d-flex justify-content-between align-items-center">
                                         <div class="text-muted">
@@ -267,14 +273,14 @@
 
                                         <div>
                                             <form method="post"
-                                                  asp-action="Delete" 
-                                                  asp-route-id="@todoItem.Id" 
-                                                  onsubmit="return ajaxDelete(this);" 
+                                                  asp-action="Delete"
+                                                  asp-route-id="@todoItem.Id"
+                                                  onsubmit="return ajaxDelete(this);"
                                                   class="d-inline">
 
-                                                <button type="submit" 
+                                                <button type="submit"
                                                         class="border-0 btn-transition btn btn-outline-danger">
-                                                    <i class="bi bi-trash"></i> 
+                                                    <i class="bi bi-trash"></i>
                                                 </button>
                                             </form>
                                         </div>
@@ -287,7 +293,7 @@
             </div>
 
             <div class="d-block text-right card-footer">
-                <button onclick="showPopup('@Url.Action("CreateOrUpdate", "Todo", new { ChecklistId = checklist.Id }, Context.Request.Scheme)', '@Localizer["NewTask"]', this)" 
+                <button onclick="showPopup('@Url.Action("CreateOrUpdate", "Todo", new { ChecklistId = checklist.Id }, Context.Request.Scheme)', '@Localizer["NewTask"]', this)"
                         class="btn btn-primary todoItem">
                     @Localizer["NewTask"]
                 </button>

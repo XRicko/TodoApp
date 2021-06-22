@@ -17,7 +17,7 @@ namespace ToDoList.WebApi.Jwt
             authenticationConfig = config ?? throw new ArgumentNullException(nameof(config));
         }
 
-        public bool ValidateRefreshKey(string refreshToken)
+        public bool ValidateRefreshToken(string refreshToken)
         {
             var tokenValidationParameters = new TokenValidationParameters
             {

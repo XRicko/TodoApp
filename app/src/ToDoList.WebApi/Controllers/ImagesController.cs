@@ -3,13 +3,14 @@ using System.Threading.Tasks;
 
 using MediatR;
 
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 using ToDoList.Core.Entities;
-using ToDoList.Core.Mediator.Commands.Generics;
 using ToDoList.Core.Mediator.Queries.Generics;
-using ToDoList.Core.Mediator.Requests.Create;
 using ToDoList.Core.Mediator.Response;
+using ToDoList.WebApi.Services;
+using ToDoList.WebApi.Validators;
 
 namespace ToDoList.WebApi.Controllers
 {
@@ -17,21 +18,30 @@ namespace ToDoList.WebApi.Controllers
     [ApiController]
     public class ImagesController : Base
     {
-        public ImagesController(IMediator mediator) : base(mediator)
-        {
+        private readonly IFileStorage fileStorage;
 
+        public ImagesController(IMediator mediator, IFileStorage storage) : base(mediator)
+        {
+            fileStorage = storage;
         }
 
         [HttpGet]
         [Route("[action]/{name}")]
-        public async Task<ImageResponse> GetByName(string name) =>
-          await Mediator.Send(new GetByNameQuery<Image, ImageResponse>(name));
+        public async Task<ActionResult<ImageResponse>> GetByName(string name) =>
+            await Mediator.Send(new GetByNameQuery<Image, ImageResponse>(name));
 
         [HttpPost]
-        public async Task Add(ImageCreateRequest createRequest)
+        public async Task<ActionResult<string>> Add(IFormFile formFile)
         {
-            _ = createRequest ?? throw new ArgumentNullException(nameof(createRequest));
-            await Mediator.Send(new AddCommand<ImageCreateRequest>(createRequest));
+            _ = formFile ?? throw new ArgumentNullException(nameof(formFile));
+
+            var result = new FormFileValidator().Validate(formFile);
+
+            if (!result.IsValid)
+                return BadRequest(result.Errors);
+
+            string savedFile = await fileStorage.SaveFileAsync(formFile);
+            return savedFile;
         }
     }
 }

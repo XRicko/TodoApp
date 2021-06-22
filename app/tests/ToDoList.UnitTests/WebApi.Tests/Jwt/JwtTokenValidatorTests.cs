@@ -36,7 +36,7 @@ namespace WebApi.Tests.Jwt
             string refreshToken = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJSYW5kSXNzIiwiaWF0IjoxNjIxMzQ4MTc2LCJleHAiOjE2NTI4ODQxNzYsImF1ZCI6IlNvbWVBdWQiLCJzdWIiOiJqcm9ja2V0QGV4YW1wbGUuY29tIn0.DnSrB6eJGalklDvLZSQzpx-_jQnP3-SiTWNweRZwPq0";
 
             // Act
-            bool isValid = jwtTokenValidator.ValidateRefreshKey(refreshToken);
+            bool isValid = jwtTokenValidator.ValidateRefreshToken(refreshToken);
 
             // Assert
             isValid.Should().BeTrue();
@@ -49,7 +49,7 @@ namespace WebApi.Tests.Jwt
             string refreshToken = "eyJhbGciOiJIUzI1NyZInR5cCI6IkpXVCJ9.eyJleHAiOjE2MjEwODEwMTYsImlczyI6IlJhbmRJc3MiLCJhdWQiPiJTb21lQXVkIn0.U3VnaXZYMJoR6MTbA-Hb_RZdYwNM3lxwIk_Gk5q_XXw";
 
             // Act
-            bool isValid = jwtTokenValidator.ValidateRefreshKey(refreshToken);
+            bool isValid = jwtTokenValidator.ValidateRefreshToken(refreshToken);
 
             // Assert
             isValid.Should().BeFalse();

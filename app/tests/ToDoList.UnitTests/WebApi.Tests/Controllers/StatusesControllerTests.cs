@@ -91,7 +91,7 @@ namespace WebApi.Tests.Controllers
             var actual = await statusesController.GetByName(name);
 
             // Assert
-            actual.Should().Be(expected);
+            actual.Value.Should().Be(expected);
             MediatorMock.Verify();
         }
 
@@ -110,7 +110,7 @@ namespace WebApi.Tests.Controllers
             var actual = await statusesController.GetByName(invalidName);
 
             // Assert
-            actual.Should().BeNull();
+            actual.Value.Should().BeNull();
             MediatorMock.Verify();
         }
 

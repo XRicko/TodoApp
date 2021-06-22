@@ -8,6 +8,8 @@ using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
 
+using FluentAssertions;
+
 using Moq;
 using Moq.Protected;
 
@@ -62,8 +64,8 @@ namespace SharedClientLibrary.Tests.Services
             var actual = await apiInvoker.GetItemAsync<CategoryModel>("Categories/GetByName/Important");
 
             // Assert
-            Assert.Equal(category.Id, actual.Id);
-            Assert.Equal(token, httpClient.DefaultRequestHeaders.Authorization.Parameter);
+            actual.Id.Should().Be(category.Id);
+            httpClient.DefaultRequestHeaders.Authorization.Parameter.Should().Be(token);
 
             httpMessageHandlerMock.Verify();
             tokenStorageMock.Verify();
@@ -85,8 +87,8 @@ namespace SharedClientLibrary.Tests.Services
             var actual = await apiInvoker.GetItemAsync<CategoryModel>("Categories/GetByName/Important");
 
             // Assert
-            Assert.Equal(category.Id, actual.Id);
-            Assert.Equal(token, httpClient.DefaultRequestHeaders.Authorization.Parameter);
+            actual.Id.Should().Be(category.Id);
+            httpClient.DefaultRequestHeaders.Authorization.Parameter.Should().Be(token);
 
             httpMessageHandlerMock.Protected().Verify("SendAsync", Times.Exactly(2),
                                                       ItExpr.Is<HttpRequestMessage>(x => x.Method == HttpMethod.Get
@@ -109,7 +111,7 @@ namespace SharedClientLibrary.Tests.Services
             var exception = await Assert.ThrowsAsync<HttpRequestException>(() =>
                                 apiInvoker.GetItemAsync<CategoryModel>("Categories/GetByName/Important"));
 
-            Assert.Equal(statusCode, exception.StatusCode);
+            exception.StatusCode.Should().Be(statusCode);
 
             httpMessageHandlerMock.Verify();
             tokenStorageMock.Verify();
@@ -128,7 +130,7 @@ namespace SharedClientLibrary.Tests.Services
             await apiInvoker.PostItemAsync("Categories", category);
 
             // Assert
-            Assert.Equal(token, httpClient.DefaultRequestHeaders.Authorization.Parameter);
+            httpClient.DefaultRequestHeaders.Authorization.Parameter.Should().Be(token);
 
             httpMessageHandlerMock.Verify();
             tokenStorageMock.Verify();
@@ -149,7 +151,7 @@ namespace SharedClientLibrary.Tests.Services
             await apiInvoker.PostItemAsync("Categories", category);
 
             // Assert
-            Assert.Equal(token, httpClient.DefaultRequestHeaders.Authorization.Parameter);
+            httpClient.DefaultRequestHeaders.Authorization.Parameter.Should().Be(token);
 
             httpMessageHandlerMock.Protected().Verify("SendAsync", Times.Exactly(2),
                                                       ItExpr.Is<HttpRequestMessage>(x => x.Method == HttpMethod.Post
@@ -172,7 +174,7 @@ namespace SharedClientLibrary.Tests.Services
             // Act && Assert
             var exception = await Assert.ThrowsAsync<HttpRequestException>(() => apiInvoker.PostItemAsync("Categories", category));
 
-            Assert.Equal(statusCode, exception.StatusCode);
+            exception.StatusCode.Should().Be(statusCode);
 
             httpMessageHandlerMock.Verify();
             tokenStorageMock.Verify();
@@ -191,7 +193,7 @@ namespace SharedClientLibrary.Tests.Services
             await apiInvoker.PutItemAsync("Categories", category);
 
             // Assert
-            Assert.Equal(token, httpClient.DefaultRequestHeaders.Authorization.Parameter);
+            httpClient.DefaultRequestHeaders.Authorization.Parameter.Should().Be(token);
 
             httpMessageHandlerMock.Verify();
             tokenStorageMock.Verify();
@@ -212,7 +214,7 @@ namespace SharedClientLibrary.Tests.Services
             await apiInvoker.PutItemAsync("Categories", category);
 
             // Assert
-            Assert.Equal(token, httpClient.DefaultRequestHeaders.Authorization.Parameter);
+            httpClient.DefaultRequestHeaders.Authorization.Parameter.Should().Be(token);
 
             httpMessageHandlerMock.Protected().Verify("SendAsync", Times.Exactly(2),
                                                       ItExpr.Is<HttpRequestMessage>(x => x.Method == HttpMethod.Put
@@ -235,7 +237,7 @@ namespace SharedClientLibrary.Tests.Services
             // Act && Assert
             var exception = await Assert.ThrowsAsync<HttpRequestException>(() => apiInvoker.PutItemAsync("Categories", category));
 
-            Assert.Equal(statusCode, exception.StatusCode);
+            exception.StatusCode.Should().Be(statusCode);
 
             httpMessageHandlerMock.Verify();
             tokenStorageMock.Verify();
@@ -258,9 +260,9 @@ namespace SharedClientLibrary.Tests.Services
 
             // Assert
             Assert.Equal(categories.Count, result.Count());
-            Assert.Equal(categories.First().Name, result.First().Name);
+            result.First().Name.Should().Be(categories.First().Name);
 
-            Assert.Equal(token, httpClient.DefaultRequestHeaders.Authorization.Parameter);
+            httpClient.DefaultRequestHeaders.Authorization.Parameter.Should().Be(token);
 
             httpMessageHandlerMock.Verify();
             tokenStorageMock.Verify();
@@ -285,9 +287,9 @@ namespace SharedClientLibrary.Tests.Services
 
             // Assert
             Assert.Equal(categories.Count, result.Count());
-            Assert.Equal(categories.First().Name, result.First().Name);
+            result.First().Name.Should().Be(categories.First().Name);
 
-            Assert.Equal(token, httpClient.DefaultRequestHeaders.Authorization.Parameter);
+            httpClient.DefaultRequestHeaders.Authorization.Parameter.Should().Be(token);
 
             httpMessageHandlerMock.Protected().Verify("SendAsync", Times.Exactly(2),
                                                       ItExpr.Is<HttpRequestMessage>(x => x.Method == HttpMethod.Get
@@ -310,7 +312,7 @@ namespace SharedClientLibrary.Tests.Services
             // Act && Assert
             var exception = await Assert.ThrowsAsync<HttpRequestException>(() => apiInvoker.GetItemsAsync<CategoryModel>("Categories"));
 
-            Assert.Equal(statusCode, exception.StatusCode);
+            exception.StatusCode.Should().Be(statusCode);
 
             httpMessageHandlerMock.Verify();
             tokenStorageMock.Verify();
@@ -333,10 +335,10 @@ namespace SharedClientLibrary.Tests.Services
             var actual = await apiInvoker.AuthenticateUserAsync("Authentication/Login", user);
 
             // Assert
-            Assert.Equal(authenticatedModel.AccessToken, actual.AccessToken);
-            Assert.Equal(authenticatedModel.RefreshToken, actual.RefreshToken);
+            actual.AccessToken.Should().Be(authenticatedModel.AccessToken);
+            actual.RefreshToken.Should().Be(authenticatedModel.RefreshToken);
 
-            Assert.Equal(token, httpClient.DefaultRequestHeaders.Authorization.Parameter);
+            httpClient.DefaultRequestHeaders.Authorization.Parameter.Should().Be(token);
 
             httpMessageHandlerMock.Verify();
         }
@@ -355,7 +357,7 @@ namespace SharedClientLibrary.Tests.Services
             // Act && Assert
             var exception = await Assert.ThrowsAsync<HttpRequestException>(() => apiInvoker.AuthenticateUserAsync("User/Login", user));
 
-            Assert.Equal(statusCode, exception.StatusCode);
+            exception.StatusCode.Should().Be(statusCode);
 
             httpMessageHandlerMock.Verify();
         }
@@ -374,7 +376,7 @@ namespace SharedClientLibrary.Tests.Services
             await apiInvoker.DeleteItemAsync("Categories/", id);
 
             // Assert
-            Assert.Equal(token, httpClient.DefaultRequestHeaders.Authorization.Parameter);
+            httpClient.DefaultRequestHeaders.Authorization.Parameter.Should().Be(token);
             httpMessageHandlerMock.Verify();
         }
 
@@ -394,7 +396,7 @@ namespace SharedClientLibrary.Tests.Services
             await apiInvoker.DeleteItemAsync("Categories/", id);
 
             // Assert
-            Assert.Equal(token, httpClient.DefaultRequestHeaders.Authorization.Parameter);
+            httpClient.DefaultRequestHeaders.Authorization.Parameter.Should().Be(token);
 
             httpMessageHandlerMock.Protected().Verify("SendAsync", Times.Exactly(2),
                                                       ItExpr.Is<HttpRequestMessage>(x => x.Method == HttpMethod.Delete
@@ -418,7 +420,7 @@ namespace SharedClientLibrary.Tests.Services
 
             // Act && Assert
             var exception = await Assert.ThrowsAsync<HttpRequestException>(() => apiInvoker.DeleteItemAsync("Categories/", id));
-            Assert.Equal(statusCode, exception.StatusCode);
+            exception.StatusCode.Should().Be(statusCode);
 
             httpMessageHandlerMock.Verify();
             tokenStorageMock.Verify();
@@ -482,7 +484,7 @@ namespace SharedClientLibrary.Tests.Services
 
             // Act && Assert
             var exception = await Assert.ThrowsAsync<HttpRequestException>(() => apiInvoker.LogoutAsync());
-            Assert.Equal(statusCode, exception.StatusCode);
+            exception.StatusCode.Should().Be(statusCode);
 
             httpMessageHandlerMock.Verify();
             tokenStorageMock.Verify();

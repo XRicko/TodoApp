@@ -20,19 +20,19 @@ namespace ToDoList.MvcClient.Controllers
             localizer = stringLocalizer ?? throw new ArgumentNullException(nameof(stringLocalizer));
         }
 
-        public IActionResult Login()
+        public ActionResult Login()
         {
             return View("Login");
         }
 
-        public IActionResult Register()
+        public ActionResult Register()
         {
             return View("Register");
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> RegisterAsync(UserModel userModel)
+        public async Task<ActionResult> RegisterAsync(UserModel userModel)
         {
             _ = userModel ?? throw new ArgumentNullException(nameof(userModel));
 
@@ -54,7 +54,7 @@ namespace ToDoList.MvcClient.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> LoginAsync(UserModel userModel)
+        public async Task<ActionResult> LoginAsync(UserModel userModel)
         {
             _ = userModel ?? throw new ArgumentNullException(nameof(userModel));
 
@@ -77,7 +77,7 @@ namespace ToDoList.MvcClient.Controllers
             return RedirectToAction("Index", "Todo");
         }
 
-        public async Task<IActionResult> LogoutAsync()
+        public async Task<ActionResult> LogoutAsync()
         {
             await apiInvoker.LogoutAsync();
             return RedirectToAction("Index", "Home");

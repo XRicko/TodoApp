@@ -1,4 +1,6 @@
-﻿using AutoMapper;
+﻿using System.IO;
+
+using AutoMapper;
 
 using NetTopologySuite.Geometries;
 
@@ -35,7 +37,10 @@ namespace ToDoList.Core.MappingProfiles
             CreateMap<RefreshToken, RefreshTokenResponse>();
             CreateMap<RefreshTokenCreateRequest, RefreshToken>(MemberList.Source);
 
-            CreateMap<Image, ImageResponse>();
+            CreateMap<Image, ImageResponse>()
+                .ForCtorParam(nameof(ImageResponse.Content),
+                              opt => opt.MapFrom(src => File.ReadAllBytes(src.Path)))
+                .ForAllOtherMembers(opt => opt.Ignore());
             CreateMap<ImageCreateRequest, Image>(MemberList.Source);
 
             CreateMap<Category, CategoryResponse>();
@@ -54,8 +59,12 @@ namespace ToDoList.Core.MappingProfiles
                            opt => opt.MapFrom(src => src.Category.Name))
                 .ForMember(dest => dest.ChecklistName,
                            opt => opt.MapFrom(src => src.Checklist.Name))
-                .ForMember(dest => dest.ImagePath,
-                           opt => opt.MapFrom(src => src.Image.Path))
+                .ForMember(dest => dest.ImageContent,
+                           opt =>
+                           {
+                               opt.Condition(x => x.Image?.Path is not null);
+                               opt.MapFrom(src => File.ReadAllBytes(src.Image.Path));
+                           })
                 .ForMember(dest => dest.ImageName,
                            opt => opt.MapFrom(src => src.Image.Name))
                 .ForAllOtherMembers(opt => opt.Ignore());

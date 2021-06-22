@@ -1,5 +1,6 @@
 ﻿@page "/counter"
 @inject IApiInvoker ApiInvoker
+@inject IFileConverter FileConverter
 
 <h1>Counter</h1>
 
@@ -25,9 +26,16 @@
 
 <p>Single item: @todoItemModel.Name</p>
 
+<InputFile OnChange="@LoadFile" />
+
+<p>File name: @fileName</p>
+
 @code {
     private IEnumerable<TodoItemModel> todoItemModels = Enumerable.Empty<TodoItemModel>();
     private TodoItemModel todoItemModel = new();
+
+    private string fileName;
+    private const int FileSizeInBytes = 1048576;
 
     private int currentCount = 0;
 
@@ -40,5 +48,16 @@
     {
         todoItemModels = await ApiInvoker.GetItemsAsync<TodoItemModel>("TodoItems");
         todoItemModel = await ApiInvoker.GetItemAsync<TodoItemModel>("TodoItems/60");
+    }
+
+    private async Task LoadFile(InputFileChangeEventArgs e)
+    {
+        using var fileStream = e.File.OpenReadStream(FileSizeInBytes);
+        byte[] fileBytes = await FileConverter.ConvertToByteArrayAsync(fileStream);
+
+        string file = await ApiInvoker.PostFileAsync("Images", e.File.Name, fileBytes);
+        var image = await ApiInvoker.GetItemAsync<ImageModel>("Images/GetByName/" + file);
+
+        fileName = image.Name;
     }
 }

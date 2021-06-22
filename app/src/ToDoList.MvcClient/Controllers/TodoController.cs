@@ -17,14 +17,16 @@ namespace ToDoList.MvcClient.Controllers
     public class TodoController : Controller
     {
         private readonly IViewModelService viewModelService;
-        private readonly IApiInvoker apiInvoker;
-        private readonly IImageAddingService imageAddingService;
+        private readonly IFileConverter fileConverter;
 
-        public TodoController(IApiInvoker invoker, IImageAddingService addingService, IViewModelService modelService) : base()
+        private readonly IApiInvoker apiInvoker;
+
+        public TodoController(IViewModelService modelService, IFileConverter converter, IApiInvoker invoker) : base()
         {
-            apiInvoker = invoker ?? throw new ArgumentNullException(nameof(invoker));
-            imageAddingService = addingService ?? throw new ArgumentNullException(nameof(addingService));
             viewModelService = modelService ?? throw new ArgumentNullException(nameof(modelService));
+            fileConverter = converter ?? throw new ArgumentNullException(nameof(converter));
+
+            apiInvoker = invoker ?? throw new ArgumentNullException(nameof(invoker));
         }
 
         public async Task<ActionResult> IndexAsync(string categoryName = null, string statusName = null)
@@ -66,23 +68,25 @@ namespace ToDoList.MvcClient.Controllers
             if (!ModelState.IsValid)
                 return PartialView("CreateOrUpdate", createViewModel.TodoItemModel);
 
-            if (LatLongExists(createViewModel.TodoItemModel))
+            if (LatLongExists())
                 AddGeoPoint(createViewModel.TodoItemModel);
 
-            if (createViewModel.TodoItemModel.CategoryName is not null)
+            if (CategoryExists())
                 await AddCategory(createViewModel.TodoItemModel);
 
-            if (IsNewItem(createViewModel.TodoItemModel))
+            if (IsNewItem())
                 await AddTodoItem(createViewModel.TodoItemModel);
 
-            if (!IsNewItem(createViewModel.TodoItemModel))
+            if (!IsNewItem())
                 await UpdateTodoItem(createViewModel.TodoItemModel);
 
-            return base.PartialView("_ViewAll", await viewModelService.CreateIndexViewModelAsync());
+            return PartialView("_ViewAll", await viewModelService.CreateIndexViewModelAsync());
 
-            static bool LatLongExists(TodoItemModelWithFile todoItemModel) => !string.IsNullOrWhiteSpace(todoItemModel.Latitude)
-                                                                      && !string.IsNullOrWhiteSpace(todoItemModel.Latitude);
-            static bool IsNewItem(TodoItemModelWithFile todoItemModel) => todoItemModel.Id is 0;
+            bool LatLongExists() => !string.IsNullOrWhiteSpace(createViewModel.TodoItemModel.Latitude)
+                                    && !string.IsNullOrWhiteSpace(createViewModel.TodoItemModel.Latitude);
+            bool CategoryExists() => !string.IsNullOrWhiteSpace(createViewModel.TodoItemModel.CategoryName);
+
+            bool IsNewItem() => createViewModel.TodoItemModel.Id is 0;
         }
 
         [HttpPost]
@@ -95,7 +99,7 @@ namespace ToDoList.MvcClient.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> MarkTodoItemAsync(int id, bool isDone)
+        public async Task<ActionResult> MarkTodoItemAsync(int id, bool isDone)
         {
             var todoItemModel = await apiInvoker.GetItemAsync<TodoItemModelWithFile>("TodoItems/" + id);
 
@@ -109,7 +113,7 @@ namespace ToDoList.MvcClient.Controllers
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error() =>
+        public ActionResult Error() =>
             View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
 
         private async Task ChangeStatusToAsync(TodoItemModelWithFile todoItemModel, string statusName)
@@ -138,18 +142,28 @@ namespace ToDoList.MvcClient.Controllers
 
         private async Task AddTodoItem(TodoItemModelWithFile todoItemModel)
         {
-            if (todoItemModel.Image is not null)
-                await imageAddingService.AddImageInTodoItemAsync(todoItemModel);
-
+            await AttachImage(todoItemModel);
             await apiInvoker.PostItemAsync("TodoItems", todoItemModel);
         }
 
         private async Task UpdateTodoItem(TodoItemModelWithFile todoItemModel)
         {
-            if (todoItemModel.Image is not null)
-                await imageAddingService.AddImageInTodoItemAsync(todoItemModel);
-
+            await AttachImage(todoItemModel);
             await apiInvoker.PutItemAsync("TodoItems", todoItemModel);
+        }
+
+        private async Task AttachImage(TodoItemModelWithFile todoItemModel)
+        {
+            if (todoItemModel.Image is not null)
+            {
+                using var fileStream = todoItemModel.Image.OpenReadStream();
+                byte[] fileBytes = await fileConverter.ConvertToByteArrayAsync(fileStream);
+
+                string file = await apiInvoker.PostFileAsync("Images", todoItemModel.Image.FileName, fileBytes);
+                var image = await apiInvoker.GetItemAsync<ImageModel>("Images/GetByName/" + file);
+
+                todoItemModel.ImageId = image.Id;
+            }
         }
     }
 }

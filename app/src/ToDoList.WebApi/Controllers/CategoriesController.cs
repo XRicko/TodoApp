@@ -45,16 +45,23 @@ namespace ToDoList.WebApi.Controllers
 
         [HttpGet]
         [Route("[action]/{name}")]
-        public async Task<CategoryResponse> GetByName(string name) =>
-            await Mediator.Send(new GetByNameQuery<Category, CategoryResponse>(name));
+        public async Task<ActionResult<CategoryResponse>> GetByName(string name)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+                throw new ArgumentException($"'{nameof(name)}' cannot be null or whitespace.", nameof(name));
+
+            return await Mediator.Send(new GetByNameQuery<Category, CategoryResponse>(name));
+        }
 
         [HttpPost]
-        public async Task Add(CategoryCreateRequest createRequest)
+        public async Task<IActionResult> Add(CategoryCreateRequest createRequest)
         {
             _ = createRequest ?? throw new ArgumentNullException(nameof(createRequest));
 
             await Mediator.Send(new AddCommand<CategoryCreateRequest>(createRequest));
             await cache.RemoveAsync(recordKey);
+
+            return NoContent();
         }
     }
 }
