@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
+using System.IO.Abstractions;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -22,10 +22,13 @@ namespace ToDoList.Core.Mediator.Handlers.TodoItems
     public class GetTodoItemsByUserIdQueryHandler : HandlerBase, IRequestHandler<GetTodoItemsByUserIdQuery, IEnumerable<TodoItemResponse>>
     {
         private readonly ICreateWithAddressService createWithAddressService;
+        private readonly IFileSystem fileSystem;
 
-        public GetTodoItemsByUserIdQueryHandler(IUnitOfWork unitOfWork, IMapper mapper, ICreateWithAddressService addressService) : base(unitOfWork, mapper)
+        public GetTodoItemsByUserIdQueryHandler(IUnitOfWork unitOfWork, IMapper mapper,
+                                                ICreateWithAddressService addressService, IFileSystem system) : base(unitOfWork, mapper)
         {
-            createWithAddressService = addressService;
+            createWithAddressService = addressService ?? throw new ArgumentNullException(nameof(addressService));
+            fileSystem = system ?? throw new ArgumentNullException(nameof(system));
         }
 
         public async Task<IEnumerable<TodoItemResponse>> Handle(GetTodoItemsByUserIdQuery request, CancellationToken cancellationToken)
@@ -43,7 +46,7 @@ namespace ToDoList.Core.Mediator.Handlers.TodoItems
                                                                                          x.ImageId, x.Image.Name,
                                                                                          string.IsNullOrWhiteSpace(x.Image.Path)
                                                                                             ? null
-                                                                                            : File.ReadAllBytes(x.Image.Path)))
+                                                                                            : fileSystem.File.ReadAllBytes(x.Image.Path)))
                                                        //.ProjectTo<TodoItemResponse>(Mapper.ConfigurationProvider)
                                                        .ToList();
             //.ToListAsync();

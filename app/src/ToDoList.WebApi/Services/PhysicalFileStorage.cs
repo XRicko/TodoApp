@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.IO.Abstractions;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -17,11 +18,13 @@ namespace ToDoList.WebApi.Services
     {
         private readonly IWebHostEnvironment webHostEnvironment;
         private readonly IMediator mediator;
+        private readonly IFileSystem fileSystem;
 
-        public PhysicalFileStorage(IWebHostEnvironment hostEnvironment, IMediator mediatr)
+        public PhysicalFileStorage(IWebHostEnvironment hostEnvironment, IMediator mediatr, IFileSystem system)
         {
-            webHostEnvironment = hostEnvironment;
-            mediator = mediatr;
+            webHostEnvironment = hostEnvironment ?? throw new ArgumentNullException(nameof(hostEnvironment));
+            mediator = mediatr ?? throw new ArgumentNullException(nameof(mediatr));
+            fileSystem = system ?? throw new ArgumentNullException(nameof(system));
         }
 
         public async Task<string> SaveFileAsync(IFormFile formFile)
@@ -34,15 +37,15 @@ namespace ToDoList.WebApi.Services
             var imageCreateRequest = MakeImageCreateRequest(formFile.FileName);
 
             string directoryName = Path.GetDirectoryName(imageCreateRequest.Path);
-            if (!Directory.Exists(directoryName))
-                Directory.CreateDirectory(directoryName);
+            if (!fileSystem.Directory.Exists(directoryName))
+                fileSystem.Directory.CreateDirectory(directoryName);
 
             string existingFile = GetExistingFileInDirectory(formFile, directoryName);
 
             if (!string.IsNullOrWhiteSpace(existingFile))
                 return existingFile;
 
-            using var fileStream = new FileStream(imageCreateRequest.Path, FileMode.Create);
+            using var fileStream = fileSystem.FileStream.Create(imageCreateRequest.Path, FileMode.Create);
             await formFile.CopyToAsync(fileStream);
 
             await mediator.Send(new AddCommand<ImageCreateRequest>(imageCreateRequest));
@@ -50,12 +53,12 @@ namespace ToDoList.WebApi.Services
             return imageCreateRequest.Name;
         }
 
-        private static string GetExistingFileInDirectory(IFormFile formFile, string directoryName)
+        private string GetExistingFileInDirectory(IFormFile formFile, string directoryName)
         {
-            string[] files = Directory.GetFiles(directoryName);
+            string[] files = fileSystem.Directory.GetFiles(directoryName);
             string existingFile = files.FirstOrDefault(x =>
             {
-                using var file = File.OpenRead(x);
+                using var file = fileSystem.File.OpenRead(x);
                 return file.Length == formFile.Length;
             });
 

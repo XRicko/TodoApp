@@ -81,7 +81,7 @@ namespace SharedClientLibrary.Tests.Services
             tokenStorageMock.SetupGettingToken("accessToken", token);
             SetupRefreshingToken();
 
-            httpMessageHandlerMock.SetupHttpCallSequenceForRefreshingToken(uri, HttpMethod.Get, content);
+            SetupHttpCallSequenceForRefreshingToken(uri, HttpMethod.Get, content);
 
             // Act
             var actual = await apiInvoker.GetItemAsync<CategoryModel>("Categories/GetByName/Important");
@@ -108,10 +108,10 @@ namespace SharedClientLibrary.Tests.Services
             httpMessageHandlerMock.SetupHttCall(uri, HttpMethod.Get, statusCode);
 
             // Act && Assert
-            var exception = await Assert.ThrowsAsync<HttpRequestException>(() =>
-                                apiInvoker.GetItemAsync<CategoryModel>("Categories/GetByName/Important"));
+            Func<Task> action = () => apiInvoker.GetItemAsync<CategoryModel>("Categories/GetByName/Important");
 
-            exception.StatusCode.Should().Be(statusCode);
+            (await action.Should().ThrowAsync<HttpRequestException>())
+                         .And.StatusCode.Should().Be(statusCode);
 
             httpMessageHandlerMock.Verify();
             tokenStorageMock.Verify();
@@ -145,7 +145,7 @@ namespace SharedClientLibrary.Tests.Services
             tokenStorageMock.SetupGettingToken("accessToken", token);
             SetupRefreshingToken();
 
-            httpMessageHandlerMock.SetupHttpCallSequenceForRefreshingToken(uri, HttpMethod.Post);
+            SetupHttpCallSequenceForRefreshingToken(uri, HttpMethod.Post);
 
             // Act
             await apiInvoker.PostItemAsync("Categories", category);
@@ -172,9 +172,93 @@ namespace SharedClientLibrary.Tests.Services
             httpMessageHandlerMock.SetupHttCall(uri, HttpMethod.Post, statusCode);
 
             // Act && Assert
-            var exception = await Assert.ThrowsAsync<HttpRequestException>(() => apiInvoker.PostItemAsync("Categories", category));
+            Func<Task> action = () => apiInvoker.PostItemAsync("Categories", category);
 
-            exception.StatusCode.Should().Be(statusCode);
+            (await action.Should().ThrowAsync<HttpRequestException>())
+                         .And.StatusCode.Should().Be(statusCode);
+
+            httpMessageHandlerMock.Verify();
+            tokenStorageMock.Verify();
+        }
+
+        [Fact]
+        public async Task PostFileAsync_Executes()
+        {
+            // Arrange
+            string fileName = "rnieo.jpg";
+
+            var uri = new Uri("https://localhost:5001/api/Images");
+            var content = new ObjectContent<string>(fileName, new JsonMediaTypeFormatter());
+
+            byte[] bytes = new byte[123];
+            new Random().NextBytes(bytes);
+
+            tokenStorageMock.SetupGettingToken("accessToken", token);
+            httpMessageHandlerMock.SetupHttCall(uri, HttpMethod.Post, HttpStatusCode.OK, content);
+
+            // Act
+            string actual = await apiInvoker.PostFileAsync("Images", "randsqw.jpeg", bytes);
+
+            // Assert
+            actual.Should().Be(fileName);
+
+            httpClient.DefaultRequestHeaders.Authorization.Parameter.Should().Be(token);
+
+            httpMessageHandlerMock.Verify();
+            tokenStorageMock.Verify();
+        }
+
+        [Fact]
+        public async Task PostFileAsync_RefreshesTokenIfUnathorizedAndExecutes()
+        {
+            // Arrange
+            string fileName = "rnieo.jpg";
+
+            var uri = new Uri("https://localhost:5001/api/Images");
+            var content = new ObjectContent<string>(fileName, new JsonMediaTypeFormatter());
+
+            byte[] bytes = new byte[123];
+            new Random().NextBytes(bytes);
+
+            tokenStorageMock.SetupGettingToken("accessToken", token);
+            SetupRefreshingToken();
+
+            SetupHttpCallSequenceForRefreshingToken(uri, HttpMethod.Post, content);
+
+            // Act
+            string actual = await apiInvoker.PostFileAsync("Images", "randsqw.jpeg", bytes);
+
+            // Assert
+            actual.Should().Be(fileName);
+
+            httpClient.DefaultRequestHeaders.Authorization.Parameter.Should().Be(token);
+
+            httpMessageHandlerMock.Protected().Verify("SendAsync", Times.Exactly(2),
+                                                      ItExpr.Is<HttpRequestMessage>(x => x.Method == HttpMethod.Post
+                                                                                         && x.RequestUri == uri),
+                                                      ItExpr.IsAny<CancellationToken>());
+
+            tokenStorageMock.Verify();
+        }
+
+        [Fact]
+        public async Task PostFileAsync_ThrowsException()
+        {
+            // Arrange
+            var uri = new Uri("https://localhost:5001/api/Images");
+            var statusCode = HttpStatusCode.ServiceUnavailable;
+
+            byte[] bytes = new byte[123];
+            new Random().NextBytes(bytes);
+
+            tokenStorageMock.SetupGettingToken("accessToken", token);
+            httpMessageHandlerMock.SetupHttCall(uri, HttpMethod.Post, statusCode);
+
+            // Act && Assert
+            Func<Task> action = async () => await apiInvoker.PostFileAsync("Images", "randsqw.jpeg", bytes);
+
+            (await action.Should().ThrowAsync<HttpRequestException>())
+                         .And.StatusCode.Should().Be(statusCode);
 
             httpMessageHandlerMock.Verify();
             tokenStorageMock.Verify();
@@ -208,7 +292,7 @@ namespace SharedClientLibrary.Tests.Services
             tokenStorageMock.SetupGettingToken("accessToken", token);
             SetupRefreshingToken();
 
-            httpMessageHandlerMock.SetupHttpCallSequenceForRefreshingToken(uri, HttpMethod.Put);
+            SetupHttpCallSequenceForRefreshingToken(uri, HttpMethod.Put);
 
             // Act
             await apiInvoker.PutItemAsync("Categories", category);
@@ -235,9 +319,10 @@ namespace SharedClientLibrary.Tests.Services
             httpMessageHandlerMock.SetupHttCall(uri, HttpMethod.Put, statusCode);
 
             // Act && Assert
-            var exception = await Assert.ThrowsAsync<HttpRequestException>(() => apiInvoker.PutItemAsync("Categories", category));
+            Func<Task> action = () => apiInvoker.PutItemAsync("Categories", category);
 
-            exception.StatusCode.Should().Be(statusCode);
+            (await action.Should().ThrowAsync<HttpRequestException>())
+                         .And.StatusCode.Should().Be(statusCode);
 
             httpMessageHandlerMock.Verify();
             tokenStorageMock.Verify();
@@ -259,7 +344,7 @@ namespace SharedClientLibrary.Tests.Services
             var result = await apiInvoker.GetItemsAsync<CategoryModel>("Categories");
 
             // Assert
-            Assert.Equal(categories.Count, result.Count());
+            result.Count().Should().Be(categories.Count);
             result.First().Name.Should().Be(categories.First().Name);
 
             httpClient.DefaultRequestHeaders.Authorization.Parameter.Should().Be(token);
@@ -280,13 +365,13 @@ namespace SharedClientLibrary.Tests.Services
             tokenStorageMock.SetupGettingToken("accessToken", token);
             SetupRefreshingToken();
 
-            httpMessageHandlerMock.SetupHttpCallSequenceForRefreshingToken(uri, HttpMethod.Get, content);
+            SetupHttpCallSequenceForRefreshingToken(uri, HttpMethod.Get, content);
 
             // Act
             var result = await apiInvoker.GetItemsAsync<CategoryModel>("Categories");
 
             // Assert
-            Assert.Equal(categories.Count, result.Count());
+            result.Count().Should().Be(categories.Count);
             result.First().Name.Should().Be(categories.First().Name);
 
             httpClient.DefaultRequestHeaders.Authorization.Parameter.Should().Be(token);
@@ -310,9 +395,10 @@ namespace SharedClientLibrary.Tests.Services
             httpMessageHandlerMock.SetupHttCall(uri, HttpMethod.Get, statusCode);
 
             // Act && Assert
-            var exception = await Assert.ThrowsAsync<HttpRequestException>(() => apiInvoker.GetItemsAsync<CategoryModel>("Categories"));
+            Func<Task> action = () => apiInvoker.GetItemsAsync<CategoryModel>("Categories");
 
-            exception.StatusCode.Should().Be(statusCode);
+            (await action.Should().ThrowAsync<HttpRequestException>())
+                         .And.StatusCode.Should().Be(statusCode);
 
             httpMessageHandlerMock.Verify();
             tokenStorageMock.Verify();
@@ -355,9 +441,10 @@ namespace SharedClientLibrary.Tests.Services
             httpMessageHandlerMock.SetupHttCall(uri, HttpMethod.Post, statusCode);
 
             // Act && Assert
-            var exception = await Assert.ThrowsAsync<HttpRequestException>(() => apiInvoker.AuthenticateUserAsync("User/Login", user));
+            Func<Task> action = () => apiInvoker.AuthenticateUserAsync("User/Login", user);
 
-            exception.StatusCode.Should().Be(statusCode);
+            (await action.Should().ThrowAsync<HttpRequestException>())
+                         .And.StatusCode.Should().Be(statusCode);
 
             httpMessageHandlerMock.Verify();
         }
@@ -390,7 +477,7 @@ namespace SharedClientLibrary.Tests.Services
             tokenStorageMock.SetupGettingToken("accessToken", token);
             SetupRefreshingToken();
 
-            httpMessageHandlerMock.SetupHttpCallSequenceForRefreshingToken(uri, HttpMethod.Delete);
+            SetupHttpCallSequenceForRefreshingToken(uri, HttpMethod.Delete);
 
             // Act
             await apiInvoker.DeleteItemAsync("Categories/", id);
@@ -419,8 +506,10 @@ namespace SharedClientLibrary.Tests.Services
             httpMessageHandlerMock.SetupHttCall(uri, HttpMethod.Delete, statusCode);
 
             // Act && Assert
-            var exception = await Assert.ThrowsAsync<HttpRequestException>(() => apiInvoker.DeleteItemAsync("Categories/", id));
-            exception.StatusCode.Should().Be(statusCode);
+            Func<Task> action = () => apiInvoker.DeleteItemAsync("Categories/", id);
+
+            (await action.Should().ThrowAsync<HttpRequestException>())
+                         .And.StatusCode.Should().Be(statusCode);
 
             httpMessageHandlerMock.Verify();
             tokenStorageMock.Verify();
@@ -442,7 +531,7 @@ namespace SharedClientLibrary.Tests.Services
             await apiInvoker.LogoutAsync();
 
             // Assert
-            Assert.Null(httpClient.DefaultRequestHeaders.Authorization);
+            httpClient.DefaultRequestHeaders.Authorization.Should().BeNull();
 
             httpMessageHandlerMock.Verify();
             tokenStorageMock.Verify();
@@ -459,13 +548,13 @@ namespace SharedClientLibrary.Tests.Services
             SetupRemovingTokens();
             SetupRefreshingToken();
 
-            httpMessageHandlerMock.SetupHttpCallSequenceForRefreshingToken(uri, HttpMethod.Delete);
+            SetupHttpCallSequenceForRefreshingToken(uri, HttpMethod.Delete);
 
             // Act
             await apiInvoker.LogoutAsync();
 
             // Assert
-            Assert.Null(httpClient.DefaultRequestHeaders.Authorization);
+            httpClient.DefaultRequestHeaders.Authorization.Should().BeNull();
 
             httpMessageHandlerMock.Verify();
             tokenStorageMock.Verify();
@@ -476,18 +565,38 @@ namespace SharedClientLibrary.Tests.Services
         {
             // Arrange 
             var uri = new Uri("https://localhost:5001/api/Authentication/Logout");
-            //httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", token);
             var statusCode = HttpStatusCode.InternalServerError;
 
             tokenStorageMock.SetupGettingToken("accessToken", token);
             httpMessageHandlerMock.SetupHttCall(uri, HttpMethod.Delete, statusCode);
 
             // Act && Assert
-            var exception = await Assert.ThrowsAsync<HttpRequestException>(() => apiInvoker.LogoutAsync());
-            exception.StatusCode.Should().Be(statusCode);
+            Func<Task> action = () => apiInvoker.LogoutAsync();
+
+            (await action.Should().ThrowAsync<HttpRequestException>())
+                         .And.StatusCode.Should().Be(statusCode);
 
             httpMessageHandlerMock.Verify();
             tokenStorageMock.Verify();
+        }
+
+        private void SetupHttpCallSequenceForRefreshingToken(Uri uri, HttpMethod httpMethod,
+                                                             ObjectContent objectContent = null)
+        {
+            httpMessageHandlerMock.Protected()
+                .SetupSequence<Task<HttpResponseMessage>>("SendAsync",
+                                                          ItExpr.Is<HttpRequestMessage>(r => r.Method == httpMethod
+                                                                                             && r.RequestUri == uri),
+                                                          ItExpr.IsAny<CancellationToken>())
+                .ReturnsAsync(new HttpResponseMessage
+                {
+                    StatusCode = HttpStatusCode.Unauthorized
+                })
+                .ReturnsAsync(new HttpResponseMessage
+                {
+                    StatusCode = HttpStatusCode.OK,
+                    Content = objectContent
+                });
         }
 
         private void SetupRefreshingToken()

@@ -27,25 +27,5 @@ namespace TestExtensions
                 })
                 .Verifiable();
         }
-
-        public static void SetupHttpCallSequenceForRefreshingToken(this Mock<HttpMessageHandler> httpMessageHandlerMock,
-                                                                   Uri uri, HttpMethod httpMethod,
-                                                                   ObjectContent objectContent = null)
-        {
-            httpMessageHandlerMock.Protected()
-                .SetupSequence<Task<HttpResponseMessage>>("SendAsync",
-                                                          ItExpr.Is<HttpRequestMessage>(r => r.Method == httpMethod
-                                                                                             && r.RequestUri == uri),
-                                                          ItExpr.IsAny<CancellationToken>())
-                .ReturnsAsync(new HttpResponseMessage
-                {
-                    StatusCode = HttpStatusCode.Unauthorized
-                })
-                .ReturnsAsync(new HttpResponseMessage
-                {
-                    StatusCode = HttpStatusCode.OK,
-                    Content = objectContent
-                });
-        }
     }
 }

@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.IO.Abstractions;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -14,6 +16,7 @@ using ToDoList.Core.Mediator.Handlers.TodoItems;
 using ToDoList.Core.Mediator.Queries.TodoItems;
 using ToDoList.Core.Mediator.Response;
 using ToDoList.Core.Services;
+using ToDoList.SharedKernel;
 
 using Xunit;
 
@@ -21,14 +24,22 @@ namespace Core.Tests.Handlers.TodoItems
 {
     public class GetTodoItemsByUserQueryHandlerTests : HandlerBaseForTests
     {
-        private readonly Mock<ICreateWithAddressService> addressServiceMock;
         private readonly GetTodoItemsByUserIdQueryHandler getTodoItemsHandler;
+
+        private readonly Mock<ICreateWithAddressService> addressServiceMock;
+        private readonly Mock<IFileSystem> fileSystemMock;
+
+        private readonly string imagePath;
 
         public GetTodoItemsByUserQueryHandlerTests()
         {
             addressServiceMock = new Mock<ICreateWithAddressService>();
+            fileSystemMock = new Mock<IFileSystem>();
 
-            getTodoItemsHandler = new GetTodoItemsByUserIdQueryHandler(UnitOfWorkMock.Object, Mapper, addressServiceMock.Object);
+            getTodoItemsHandler = new GetTodoItemsByUserIdQueryHandler(UnitOfWorkMock.Object, Mapper,
+                                                                       addressServiceMock.Object, fileSystemMock.Object);
+
+            imagePath = "C:\\";
         }
 
         [Fact]
@@ -40,14 +51,26 @@ namespace Core.Tests.Handlers.TodoItems
             var todoItems = GetSampleTodoItems();
             var todoItemsMock = todoItems.AsQueryable().BuildMock();
 
-            var todoItemsByUser = todoItems.Where(x => x.Checklist.UserId == userId);
-            var responses = Mapper.Map<IEnumerable<TodoItemResponse>>(todoItemsByUser);
+            byte[] bytes = new byte[321];
+            new Random().NextBytes(bytes);
+
+            var responses = new List<TodoItemResponse>
+            {
+                new(21, "Complete some course", DateTime.Now, 22, "Chores",
+                    2, "Planned", GeoPoint: new GeoCoordinate(33.42041, 49.06802),
+                    ImageId: 12, ImageName: "rand.jpg", ImageContent: bytes)
+            };
 
             var expected = GetWithAddress(responses);
 
             RepoMock.Setup(x => x.GetAll<TodoItem>())
                     .Returns(todoItemsMock.Object)
                     .Verifiable();
+
+
+            fileSystemMock.Setup(x => x.File.ReadAllBytes(imagePath))
+                          .Returns(bytes)
+                          .Verifiable();
 
             addressServiceMock.Setup(x => x.GetItemsWithAddressAsync(It.IsAny<IEnumerable<TodoItemResponse>>()))
                               .ReturnsAsync(expected)
@@ -59,8 +82,10 @@ namespace Core.Tests.Handlers.TodoItems
 
             // Assert
             actual.Should().Equal(expected);
+            actual.Should().Contain(x => x.ImageContent == bytes);
 
             RepoMock.Verify();
+            fileSystemMock.Verify();
             addressServiceMock.Verify();
         }
 
@@ -83,7 +108,7 @@ namespace Core.Tests.Handlers.TodoItems
             return expected;
         }
 
-        private static IEnumerable<TodoItem> GetSampleTodoItems()
+        private IEnumerable<TodoItem> GetSampleTodoItems()
         {
             var checklist1 = new Checklist { Id = 12, Name = "Chores", UserId = 4 };
             var checklist2 = new Checklist { Id = 22, Name = "Chores", UserId = 12 };
@@ -92,17 +117,19 @@ namespace Core.Tests.Handlers.TodoItems
             {
                 new TodoItem
                 {
+                    Id = 21,
                     Name = "Complete some course",
-                    Checklist = checklist1,
-                    Status = new Status(),
+                    Checklist = checklist2,
+                    Status = new Status { Id = 2, Name = "Planned" },
                     Category = new Category(),
-                    Image = new Image(),
+                    Image = new Image { Id = 12, Name = "rand.jpg", Path = imagePath },
                     GeoPoint = new NetTopologySuite.Geometries.Point(33.42041, 49.06802)
                 },
                 new TodoItem
                 {
+                    Id = 12,
                     Name = "Finish the book",
-                    Checklist = checklist2,
+                    Checklist = checklist1,
                     Status = new Status(),
                     Category = new Category(),
                     Image = new Image()

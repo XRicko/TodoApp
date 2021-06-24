@@ -132,7 +132,7 @@ namespace WebApi.Tests.Controllers
             var result = await categoriesController.Add(createRequest);
 
             // Assert
-            (result as NoContentResult).Should().NotBeNull();
+            result.Should().BeAssignableTo<NoContentResult>();
             MediatorMock.Verify(x => x.Send(It.Is<AddCommand<CategoryCreateRequest>>(q => q.Request == createRequest),
                                             It.IsAny<CancellationToken>()), Times.Once);
         }

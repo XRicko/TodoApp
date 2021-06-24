@@ -1,5 +1,5 @@
 ﻿using System;
-using System.IO;
+using System.IO.Abstractions;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -16,13 +16,16 @@ using ToDoList.SharedKernel.Interfaces;
 
 namespace ToDoList.Core.Mediator.Handlers.TodoItems
 {
-    internal class GetTodoItemByIdQueryHandler : GetByIdQueryHandler<TodoItem, TodoItemResponse>
+    public class GetTodoItemByIdQueryHandler : GetByIdQueryHandler<TodoItem, TodoItemResponse>
     {
         private readonly ICreateWithAddressService createAddressService;
+        private readonly IFileSystem fileSystem;
 
-        public GetTodoItemByIdQueryHandler(IUnitOfWork unitOfWork, IMapper mapper, ICreateWithAddressService addressService) : base(unitOfWork, mapper)
+        public GetTodoItemByIdQueryHandler(IUnitOfWork unitOfWork, IMapper mapper,
+                                           ICreateWithAddressService addressService, IFileSystem system) : base(unitOfWork, mapper)
         {
             createAddressService = addressService ?? throw new ArgumentNullException(nameof(addressService));
+            fileSystem = system ?? throw new ArgumentNullException(nameof(system));
         }
 
         public override async Task<TodoItemResponse> Handle(GetByIdQuery<TodoItem, TodoItemResponse> request, CancellationToken cancellationToken)
@@ -39,7 +42,7 @@ namespace ToDoList.Core.Mediator.Handlers.TodoItems
                                                                                   x.ImageId, x.Image.Name,
                                                                                   string.IsNullOrWhiteSpace(x.Image.Path)
                                                                                      ? null
-                                                                                     : File.ReadAllBytes(x.Image.Path)))
+                                                                                     : fileSystem.File.ReadAllBytes(x.Image.Path)))
                                                 .SingleOrDefault();
 
             return await createAddressService.GetItemWithAddressAsync(response);

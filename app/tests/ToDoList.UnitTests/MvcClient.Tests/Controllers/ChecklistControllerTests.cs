@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 
 using FluentAssertions;
@@ -93,7 +94,7 @@ namespace MvcClient.Tests.Controllers
             var result = await checklistController.CreateOrUpdateAsync(invalidId, userId) as NotFoundResult;
 
             // Assert
-            result.StatusCode.Should().Be(404);
+            result.StatusCode.Should().Be((int)HttpStatusCode.NotFound);
             ApiInvokerMock.Verify();
         }
 

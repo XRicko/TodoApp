@@ -170,16 +170,18 @@ namespace WebApi.Tests.Controllers
             var claim = new Claim(ClaimTypes.NameIdentifier, userId.ToString());
 
             contextMock.Setup(x => x.User.FindFirst(ClaimTypes.NameIdentifier))
-                       .Returns(claim);
+                       .Returns(claim)
+                       .Verifiable();
 
             // Act
             var actionResult = await authenticationController.Logout();
-            var okResult = actionResult as OkResult;
 
             // Assert
-            okResult.Should().NotBeNull();
+            actionResult.Should().BeAssignableTo<OkResult>();
+
             MediatorMock.Verify(x => x.Send(new RemoveAllRefreshTokensFromUserCommand(userId),
                                             It.IsAny<CancellationToken>()), Times.Once);
+            contextMock.Verify();
         }
 
         [Fact]
@@ -187,10 +189,9 @@ namespace WebApi.Tests.Controllers
         {
             // Act
             var actionResult = await authenticationController.Logout();
-            var unauthorizedResult = actionResult as UnauthorizedResult;
 
             // Assert
-            unauthorizedResult.Should().NotBeNull();
+            actionResult.Should().BeAssignableTo<UnauthorizedResult>();
             MediatorMock.Verify(x => x.Send(new RemoveAllRefreshTokensFromUserCommand(It.IsAny<int>()),
                                             It.IsAny<CancellationToken>()), Times.Never);
         }

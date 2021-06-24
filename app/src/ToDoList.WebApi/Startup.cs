@@ -1,4 +1,5 @@
 using System;
+using System.IO.Abstractions;
 using System.Reflection;
 
 using FluentValidation.AspNetCore;
@@ -49,8 +50,11 @@ namespace ToDoList.WebApi
 
             services.AddSingleton(Configuration.GetSection(ApiOptions.Apis).GetValid<ApiOptions>());
 
+            services.AddScoped<IFileSystem, FileSystem>();
+
             services.AddTransient<IGeocodingService, GoogleGeocodingService>();
             services.AddTransient<ICreateWithAddressService, CreateWithAddressService>();
+
             services.AddScoped<IPasswordHasher, PasswordHasher>();
 
             services.AddAutoMapper(typeof(CategoryResponse));

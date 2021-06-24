@@ -28,15 +28,7 @@ namespace ToDoList.SharedClientLibrary.Services
 
             await AddAuthorizationHeaderAsync();
 
-            try
-            {
-                return await GetItems();
-            }
-            catch (HttpRequestException ex) when (ex.StatusCode == HttpStatusCode.Unauthorized)
-            {
-                await RefreshTokenAsync();
-                return await GetItems();
-            }
+            return await GetContent(GetItems);
 
             Task<IEnumerable<T>> GetItems() => HttpClient.GetFromJsonAsync<IEnumerable<T>>(route);
         }
@@ -48,15 +40,7 @@ namespace ToDoList.SharedClientLibrary.Services
 
             await AddAuthorizationHeaderAsync();
 
-            try
-            {
-                return await GetItem();
-            }
-            catch (HttpRequestException ex) when (ex.StatusCode == HttpStatusCode.Unauthorized)
-            {
-                await RefreshTokenAsync();
-                return await GetItem();
-            }
+            return await GetContent(GetItem);
 
             Task<T> GetItem() => HttpClient.GetFromJsonAsync<T>(routeWithParameters);
         }
@@ -68,21 +52,33 @@ namespace ToDoList.SharedClientLibrary.Services
             _ = item ?? throw new ArgumentNullException(nameof(item));
 
             await AddAuthorizationHeaderAsync();
-
-            try
-            {
-                using var respone = await Post();
-                respone.EnsureSuccessStatusCode();
-            }
-            catch (HttpRequestException ex) when (ex.StatusCode == HttpStatusCode.Unauthorized)
-            {
-                await RefreshTokenAsync();
-
-                using var response = await Post();
-                response.EnsureSuccessStatusCode();
-            }
+            using var __ = await MakeRequest(Post);
 
             async Task<HttpResponseMessage> Post() => await HttpClient.PostAsJsonAsync(route, item);
+        }
+
+        public async Task<string> PostFileAsync(string route, string fileName, byte[] fileBytes)
+        {
+            if (string.IsNullOrWhiteSpace(route))
+                throw new ArgumentException($"'{nameof(route)}' cannot be null or whitespace.", nameof(route));
+            if (string.IsNullOrWhiteSpace(fileName))
+                throw new ArgumentException($"'{nameof(fileName)}' cannot be null or whitespace.", nameof(fileName));
+
+            _ = fileBytes ?? throw new ArgumentNullException(nameof(fileBytes));
+
+            ByteArrayContent fileContent = new(fileBytes);
+
+            using var formContent = new MultipartFormDataContent
+            {
+                { fileContent, "formFile", fileName }
+            };
+
+            await AddAuthorizationHeaderAsync();
+            using var response = await MakeRequest(PostFile);
+
+            return await response.Content.ReadFromJsonAsync<string>();
+
+            async Task<HttpResponseMessage> PostFile() => await HttpClient.PostAsync(route, formContent);
         }
 
         public async Task PutItemAsync<T>(string route, T item) where T : BaseModel
@@ -92,19 +88,7 @@ namespace ToDoList.SharedClientLibrary.Services
             _ = item ?? throw new ArgumentNullException(nameof(item));
 
             await AddAuthorizationHeaderAsync();
-
-            try
-            {
-                using var respone = await Put();
-                respone.EnsureSuccessStatusCode();
-            }
-            catch (HttpRequestException ex) when (ex.StatusCode == HttpStatusCode.Unauthorized)
-            {
-                await RefreshTokenAsync();
-
-                using var response = await Put();
-                response.EnsureSuccessStatusCode();
-            }
+            using var __ = await MakeRequest(Put);
 
             async Task<HttpResponseMessage> Put() => await HttpClient.PutAsJsonAsync(route, item);
         }
@@ -116,19 +100,7 @@ namespace ToDoList.SharedClientLibrary.Services
                 throw new ArgumentException($"'{nameof(route)}' cannot be null or whitespace", nameof(route));
 
             await AddAuthorizationHeaderAsync();
-
-            try
-            {
-                using var respone = await Delete();
-                respone.EnsureSuccessStatusCode();
-            }
-            catch (HttpRequestException ex) when (ex.StatusCode == HttpStatusCode.Unauthorized)
-            {
-                await RefreshTokenAsync();
-
-                using var response = await Delete();
-                response.EnsureSuccessStatusCode();
-            }
+            using var __ = await MakeRequest(Delete);
 
             async Task<HttpResponseMessage> Delete() => await HttpClient.DeleteAsync(route + id);
         }
@@ -136,19 +108,7 @@ namespace ToDoList.SharedClientLibrary.Services
         public virtual async Task LogoutAsync()
         {
             await AddAuthorizationHeaderAsync();
-
-            try
-            {
-                using var respone = await Logout();
-                respone.EnsureSuccessStatusCode();
-            }
-            catch (HttpRequestException ex) when (ex.StatusCode == HttpStatusCode.Unauthorized)
-            {
-                await RefreshTokenAsync();
-
-                using var response = await Logout();
-                response.EnsureSuccessStatusCode();
-            }
+            using var __ = await MakeRequest(Logout);
 
             await RemoveTokensFromStorageAsync();
             HttpClient.DefaultRequestHeaders.Authorization = null;
@@ -171,6 +131,39 @@ namespace ToDoList.SharedClientLibrary.Services
             await AddAuthorizationHeaderAsync(authenticatedModel.AccessToken);
 
             return authenticatedModel;
+        }
+
+        private async Task<T> GetContent<T>(Func<Task<T>> request)
+        {
+            try
+            {
+                return await request();
+            }
+            catch (HttpRequestException ex) when (ex.StatusCode == HttpStatusCode.Unauthorized)
+            {
+                await RefreshTokenAsync();
+                return await request();
+            }
+        }
+
+        private async Task<HttpResponseMessage> MakeRequest(Func<Task<HttpResponseMessage>> request)
+        {
+            try
+            {
+                var response = await request();
+                response.EnsureSuccessStatusCode();
+
+                return response;
+            }
+            catch (HttpRequestException ex) when (ex.StatusCode == HttpStatusCode.Unauthorized)
+            {
+                await RefreshTokenAsync();
+
+                var response = await request();
+                response.EnsureSuccessStatusCode();
+
+                return response;
+            }
         }
 
         private async Task RefreshTokenAsync()
@@ -208,42 +201,6 @@ namespace ToDoList.SharedClientLibrary.Services
                 HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", accessToken);
 
             bool AuthorizationHeaderMissing() => HttpClient.DefaultRequestHeaders.Authorization?.Parameter is null;
-        }
-
-        public async Task<string> PostFileAsync(string route, string fileName, byte[] fileBytes)
-        {
-            if (string.IsNullOrWhiteSpace(route))
-                throw new ArgumentException($"'{nameof(route)}' cannot be null or whitespace.", nameof(route));
-            if (string.IsNullOrWhiteSpace(fileName))
-                throw new ArgumentException($"'{nameof(fileName)}' cannot be null or whitespace.", nameof(fileName));
-
-            _ = fileBytes ?? throw new ArgumentNullException(nameof(fileBytes));
-
-            ByteArrayContent fileContent = new(fileBytes);
-
-            using var formContent = new MultipartFormDataContent
-            {
-                { fileContent, "formFile", fileName }
-            };
-
-            try
-            {
-                using var response = await PostFile();
-                response.EnsureSuccessStatusCode();
-
-                return await response.Content.ReadFromJsonAsync<string>();
-            }
-            catch (HttpRequestException ex) when (ex.StatusCode == HttpStatusCode.Unauthorized)
-            {
-                await RefreshTokenAsync();
-
-                using var response = await PostFile();
-                response.EnsureSuccessStatusCode();
-
-                return await response.Content.ReadAsStringAsync();
-            }
-
-            async Task<HttpResponseMessage> PostFile() => await HttpClient.PostAsync(route, formContent);
         }
     }
 }

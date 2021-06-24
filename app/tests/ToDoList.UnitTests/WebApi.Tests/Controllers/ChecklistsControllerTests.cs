@@ -146,7 +146,7 @@ namespace WebApi.Tests.Controllers
 
             // Assert
             cache.Get(recordKey).Should().BeNull();
-            (result as NoContentResult).Should().NotBeNull();
+            result.Should().BeAssignableTo<NoContentResult>();
 
             MediatorMock.Verify(x => x.Send(It.Is<AddCommand<ChecklistCreateRequest>>(q => q.Request == createRequest),
                                             It.IsAny<CancellationToken>()), Times.Once);
@@ -166,7 +166,7 @@ namespace WebApi.Tests.Controllers
 
             // Assert
             cache.Get(recordKey).Should().BeNull();
-            (result as NoContentResult).Should().NotBeNull();
+            result.Should().BeAssignableTo<NoContentResult>();
 
             MediatorMock.Verify(x => x.Send(It.Is<RemoveCommand<Checklist>>(q => q.Id == id),
                                             It.IsAny<CancellationToken>()), Times.Once);
@@ -186,7 +186,7 @@ namespace WebApi.Tests.Controllers
 
             // Assert
             cache.Get(recordKey).Should().BeNull();
-            (result as NoContentResult).Should().NotBeNull();
+            result.Should().BeAssignableTo<NoContentResult>();
 
             MediatorMock.Verify(x => x.Send(It.Is<UpdateCommand<ChecklistUpdateRequest>>(q => q.Request == updateRequest),
                                             It.IsAny<CancellationToken>()), Times.Once);
