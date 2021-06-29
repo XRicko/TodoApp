@@ -1,0 +1,107 @@
+﻿@using ToDoList.BlazorClient.Models;
+@inject IApiInvoker ApiInvoker
+
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <div class="text-capitalize font-weight-normal">
+            <i class="bi bi-list-task"></i>&nbsp;@ChecklistModel.Name
+        </div>
+
+        <div>
+            @if (ChecklistModel.Name != "Untitled")
+            {
+                <form method="post"
+                      @onsubmit="async () => await OnDeleteCallback.InvokeAsync(ChecklistModel)"
+                      class="d-inline">
+
+                    <button type="submit"
+                            class="border-0 btn-transition btn btn-outline-danger">
+                        <i class="oi oi-trash"></i>
+                    </button>
+                </form>
+            }
+        </div>
+    </div>
+
+    <div class="card-body">
+        <ul class="nav nav-tabs border-0 mb-2" role="tablist" style="grid-gap: 12px;">
+            <li class="nav-item">
+                <a class="btn btn-outline-primary active"
+                   id="notDone-@ChecklistModel.Id-tab"
+                   data-toggle="tab"
+                   href="#notDone-@ChecklistModel.Id"
+                   role="tab">
+                    Active
+                    <span class="badge badge-light">
+                        @activeTodoItems.Count
+                    </span>
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a class="btn btn-outline-secondary"
+                   id="done-@ChecklistModel.Id-tab"
+                   data-toggle="tab"
+                   href="#done-@ChecklistModel.Id"
+                   role="tab">
+                    Done
+                    <span class="badge badge-light">
+                        @doneTodoItems.Count
+                    </span>
+                </a>
+            </li>
+        </ul>
+
+        <div class="tab-content">
+            <ul class="tab-pane show active list-group list-group-flush" id="notDone-@ChecklistModel.Id">
+                <TodoItemsList TodoItemModels="activeTodoItems" OnStatusChange="ChangeStatus" />
+            </ul>
+
+            <ul class="tab-pane list-group list-group-flush" id="done-@ChecklistModel.Id">
+                <TodoItemsList TodoItemModels="doneTodoItems" OnStatusChange="ChangeStatus" />
+            </ul>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public ChecklistModel ChecklistModel { get; set; }
+
+    [Parameter]
+    public List<TodoItemModel> TodoItemModels { get; set; } = new();
+
+    [Parameter]
+    public EventCallback<ChecklistModel> OnDeleteCallback { get; set; }
+
+    private List<TodoItemModel> activeTodoItems =>
+        TodoItemModels.Where(i => i.ChecklistId == ChecklistModel.Id && i.StatusName != "Done").ToList();
+
+    private List<TodoItemModel> doneTodoItems =>
+        TodoItemModels.Where(i => i.ChecklistId == ChecklistModel.Id && i.StatusName == "Done").ToList();
+
+    private async Task ChangeStatus(ChangeTodoItemStatusArgs changeModel) // TODO: Find a better place to handle it
+    {
+        bool isDone = (bool)changeModel.Args.Value;
+
+        if (isDone)
+        {
+            var status = await ApiInvoker.GetItemAsync<StatusModel>("Statuses/GetByName/Done");
+
+            changeModel.TodoItemModel.StatusId = status.Id;
+            changeModel.TodoItemModel.StatusName = status.Name;
+        }
+        else
+        {
+            var status = await ApiInvoker.GetItemAsync<StatusModel>("Statuses/GetByName/Ongoing");
+
+            changeModel.TodoItemModel.StatusId = status.Id;
+            changeModel.TodoItemModel.StatusName = status.Name;
+        }
+
+        await ApiInvoker.PutItemAsync("TodoItems", changeModel.TodoItemModel);
+
+        TodoItemModels.SingleOrDefault(x => x.Id == changeModel.TodoItemModel.Id).StatusId = changeModel.TodoItemModel.StatusId;
+        TodoItemModels.SingleOrDefault(x => x.Id == changeModel.TodoItemModel.Id).StatusName = changeModel.TodoItemModel.StatusName;
+    }
+}

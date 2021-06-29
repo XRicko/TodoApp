@@ -4,6 +4,7 @@ using System.Net.Http.Headers;
 using System.Threading.Tasks;
 
 using Blazored.LocalStorage;
+using Blazored.Modal;
 
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
@@ -32,6 +33,8 @@ namespace ToDoList.BlazorClient
             builder.Services.AddScoped<AuthenticationStateProvider, AuthStateProvider>();
 
             builder.Services.AddBlazoredLocalStorage();
+            builder.Services.AddBlazoredModal();
+
             builder.Services.AddAuthorizationCore();
 
             builder.Services.AddLocalization(opt => opt.ResourcesPath = "Resources");

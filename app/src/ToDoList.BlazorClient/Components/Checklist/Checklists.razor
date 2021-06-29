@@ -1,0 +1,34 @@
+﻿@inject IApiInvoker ApiInvoker
+
+<div class="card-columns">
+    @foreach (var checklist in ChecklistModels)
+    {
+       <ChecklistItem ChecklistModel="checklist" 
+                      TodoItemModels="TodoItemModels" 
+                      OnDeleteCallback="DeleteChecklist" />
+    }
+</div>
+
+@code {
+    [CascadingParameter]
+    private Task<AuthenticationState> authenticationStateTask { get; set; }
+
+    [CascadingParameter]
+    private IModalService Modal { get; set; }
+
+    [Parameter]
+    public List<ChecklistModel> ChecklistModels { get; set; } = new();
+    [Parameter]
+    public List<TodoItemModel> TodoItemModels { get; set; } = new();
+
+    private async Task DeleteChecklist(ChecklistModel checklistModel)
+    {
+        var result = await Modal.Show<Confirm>("Confirmation").Result;
+
+        if (result.Cancelled)
+            return;
+
+        await ApiInvoker.DeleteItemAsync("Checklists/", checklistModel.Id);
+        ChecklistModels.Remove(checklistModel);
+    }
+}

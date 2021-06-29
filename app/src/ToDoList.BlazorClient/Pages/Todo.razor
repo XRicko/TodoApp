@@ -1,0 +1,44 @@
+﻿@page "/todo"
+
+@inject IApiInvoker ApiInvoker
+@inject IFileConverter FileConverter
+
+@implements IDisposable
+
+@attribute [Microsoft.AspNetCore.Authorization.Authorize]
+
+<h1>Todo</h1>
+
+<Checklists ChecklistModels="checklistModels" TodoItemModels="todoItemModels" />
+
+@code {
+    private System.Timers.Timer timer = new(60000);
+
+    private List<ChecklistModel> checklistModels = new();
+    private List<TodoItemModel> todoItemModels = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadData();
+
+        timer.Elapsed += async (sender, args) => await OnTimerCallback();
+        timer.Start();
+    }
+
+    private async Task OnTimerCallback()
+    {
+        await InvokeAsync(async () =>
+        {
+            await LoadData();
+            StateHasChanged();
+        });
+    }
+
+    private async Task LoadData()
+    {
+        checklistModels = (await ApiInvoker.GetItemsAsync<ChecklistModel>("Checklists")).ToList();
+        todoItemModels = (await ApiInvoker.GetItemsAsync<TodoItemModel>("TodoItems")).ToList();
+    }
+
+    public void Dispose() => timer.Dispose();
+}

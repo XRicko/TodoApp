@@ -42,9 +42,21 @@ a, .btn-link {
     z-index: 1000;
 }
 
-    #blazor-error-ui .dismiss {
-        cursor: pointer;
-        position: absolute;
-        right: 0.75rem;
-        top: 0.5rem;
+#blazor-error-ui .dismiss {
+    cursor: pointer;
+    position: absolute;
+    right: 0.75rem;
+    top: 0.5rem;
+}
+
+@media (max-width:990px) {
+    .card-columns {
+        column-count: 1;
     }
+}
+
+@media (min-width:991px) {
+    .card-columns {
+        column-count: 2;
+    }
+}

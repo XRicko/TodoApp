@@ -52,7 +52,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlazorClient.Tests", "tests
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SharedClientLibrary.Tests", "tests\ToDoList.UnitTests\SharedClientLibrary.Tests\SharedClientLibrary.Tests.csproj", "{D7D08C0A-6CB2-4EA2-AD2E-3265F1B23A1D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestExtensions", "tests\ToDoList.UnitTests\TestExtensions\TestExtensions.csproj", "{004F9753-D18D-4A18-9E46-119D57520783}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestExtensions", "tests\ToDoList.UnitTests\TestExtensions\TestExtensions.csproj", "{004F9753-D18D-4A18-9E46-119D57520783}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

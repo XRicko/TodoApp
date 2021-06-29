@@ -3,6 +3,12 @@
 
 @{
     int userId = Model.ChecklistModels.First().UserId;
+
+    IEnumerable<TodoItemModel> GetActiveTodoItems(int checklistId) =>
+        Model.TodoItems.Where(x => x.ChecklistId == checklistId && x.StatusName != "Done");
+
+    IEnumerable<TodoItemModel> GetDoneTodoItems(int checklistId) =>
+        Model.TodoItems.Where(x => x.ChecklistId == checklistId && x.StatusName == "Done");
 }
 
 <div class="d-flex align-items-center mb-3">
@@ -114,7 +120,7 @@
                            href="#notDone-@checklist.Id">
                             @Localizer["ActiveTab"]
                             <span class="badge badge-light">
-                                @Model.TodoItems.Where(x => x.ChecklistId == checklist.Id && x.StatusName != "Done").Count()
+                                @GetActiveTodoItems(checklist.Id).Count()
                             </span>
                         </a>
                     </li>
@@ -125,7 +131,7 @@
                            href="#done-@checklist.Id">
                             @Localizer["DoneTab"]
                             <span class="badge badge-light">
-                                @Model.TodoItems.Where(x => x.ChecklistId == checklist.Id && x.StatusName == "Done").Count()
+                                @GetDoneTodoItems(checklist.Id).Count()
                             </span>
                         </a>
                     </li>
@@ -133,7 +139,7 @@
 
                 <div class="tab-content">
                     <ul class=" tab-pane show active list-group list-group-flush" id="notDone-@checklist.Id">
-                        @foreach (var todoItem in Model.TodoItems.Where(i => i.ChecklistId == checklist.Id && i.StatusName != "Done"))
+                        @foreach (var todoItem in GetActiveTodoItems(checklist.Id))
                         {
                             <li class="list-group-item">
                                 <div class="d-flex flex-column">
@@ -149,6 +155,7 @@
 
                                         <div>
                                             @todoItem.Name
+
                                             @if (todoItem.StatusName is "Planned")
                                             {
                                                 <a href="javascript:void(0)"
@@ -224,7 +231,7 @@
                     </ul>
 
                     <ul class="tab-pane list-group list-group-flush" id="done-@checklist.Id">
-                        @foreach (var todoItem in Model.TodoItems.Where(i => i.ChecklistId == checklist.Id && i.StatusName == "Done"))
+                        @foreach (var todoItem in GetDoneTodoItems(checklist.Id))
                         {
                             <li class="list-group-item">
                                 <div class="d-flex flex-column">

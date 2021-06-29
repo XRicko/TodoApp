@@ -1,0 +1,86 @@
+﻿@using ToDoList.BlazorClient.Models;
+
+<li class="list-group-item">
+    <div class="d-flex flex-column">
+        <div class="d-flex">
+            <div class="form-check">
+                <input class="form-check-input"
+                       id="@TodoItemModel.Id"
+                       @onchange="async (args) => await OnStatusChangeCallback.InvokeAsync(new ChangeTodoItemStatusArgs(TodoItemModel, args))"
+                       type="checkbox"
+                       checked="@IsChecked" />
+                <label class="form-check-label" for="@TodoItemModel.Id">&nbsp;</label>
+            </div>
+
+            <div>
+                @TodoItemModel.Name
+
+                @if (TodoItemModel.StatusName is "Planned")
+                {
+                    <a href="javascript:void(0)" class="badge badge-secondary ml-2 mr-1">
+                        Planned
+                    </a>
+                }
+                else if (TodoItemModel.StatusName is "Ongoing")
+                {
+                    <a href="javascript:void(0)" class="badge badge-warning ml-2 mr-1">
+                        Ongoing
+                    </a>
+                }
+                else if (TodoItemModel.StatusName is "Done")
+                {
+                    <a href="javascript:void(0)" class="badge badge-success ml-2 mr-1">
+                        Done
+                    </a>
+                }
+
+                @if (TodoItemModel.CategoryName is not null)
+                {
+                    <a href="javascript:void(0)" class="badge badge-pill badge-info">
+                        #@TodoItemModel.CategoryName
+                    </a>
+                }
+            </div>
+        </div>
+
+        <a href="http://maps.google.com/?q=@TodoItemModel.Address" target="_blank">@TodoItemModel.Address</a>
+
+        @if (TodoItemModel.ImageContent is not null)
+        {
+            <img src="data:image;base64,@Convert.ToBase64String(TodoItemModel.ImageContent)"
+                 class="img-fluid align-self-center"
+                 style="max-width: 400px; width: 100%" />
+        }
+
+        <div class="d-flex justify-content-between align-items-center">
+            <div class="text-muted">
+                @TodoItemModel.DaysAgo Days ago
+            </div>
+
+            <div>
+                <form method="post"
+                      @onsubmit="async () => await OnDeleteCallback.InvokeAsync(TodoItemModel)"
+                      class="d-inline">
+
+                    <button type="submit"
+                            class="border-0 btn-transition btn btn-outline-danger">
+                        <i class="oi oi-trash"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</li>
+
+@code {
+    [Parameter]
+    public TodoItemModel TodoItemModel { get; set; }
+
+    [Parameter]
+    public EventCallback<TodoItemModel> OnDeleteCallback { get; set; }
+
+    [Parameter]
+    public EventCallback<ChangeTodoItemStatusArgs> OnStatusChangeCallback { get; set; }
+
+    private bool IsChecked => TodoItemModel.StatusName.Equals("Done");
+}
