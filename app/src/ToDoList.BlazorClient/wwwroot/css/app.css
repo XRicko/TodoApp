@@ -60,3 +60,9 @@ a, .btn-link {
         column-count: 2;
     }
 }
+
+.badge .close {
+    margin-left: .25rem;
+    color: inherit;
+    font-size: 75%;
+}

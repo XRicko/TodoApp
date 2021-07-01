@@ -1,6 +1,4 @@
-﻿@using ToDoList.BlazorClient.Models;
-
-<li class="list-group-item">
+﻿<li class="list-group-item">
     <div class="d-flex flex-column">
         <div class="d-flex">
             <div class="form-check">
@@ -15,31 +13,12 @@
             <div>
                 @TodoItemModel.Name
 
-                @if (TodoItemModel.StatusName is "Planned")
-                {
-                    <a href="javascript:void(0)" class="badge badge-secondary ml-2 mr-1">
-                        Planned
-                    </a>
-                }
-                else if (TodoItemModel.StatusName is "Ongoing")
-                {
-                    <a href="javascript:void(0)" class="badge badge-warning ml-2 mr-1">
-                        Ongoing
-                    </a>
-                }
-                else if (TodoItemModel.StatusName is "Done")
-                {
-                    <a href="javascript:void(0)" class="badge badge-success ml-2 mr-1">
-                        Done
-                    </a>
-                }
-
-                @if (TodoItemModel.CategoryName is not null)
-                {
-                    <a href="javascript:void(0)" class="badge badge-pill badge-info">
-                        #@TodoItemModel.CategoryName
-                    </a>
-                }
+                <Badges StatusName="@TodoItemModel.StatusName"
+                        CategoryName="@TodoItemModel.CategoryName"
+                        OnCategoryCallback="async () => await OnFilterByCategoryCallback.InvokeAsync(
+                                                new FilterTodoItemsArgs(FilterTodoItemsArgs.StatusName, TodoItemModel.CategoryName))"
+                        OnStatusCallback="async () => await OnFilterByStatusCallback.InvokeAsync(
+                                              new FilterTodoItemsArgs(TodoItemModel.StatusName, FilterTodoItemsArgs.CategoryName))" />
             </div>
         </div>
 
@@ -81,6 +60,15 @@
 
     [Parameter]
     public EventCallback<ChangeTodoItemStatusArgs> OnStatusChangeCallback { get; set; }
+
+    [CascadingParameter(Name = "FilterByCategory")]
+    public EventCallback<FilterTodoItemsArgs> OnFilterByCategoryCallback { get; set; }
+
+    [CascadingParameter(Name = "FilterByStatus")]
+    public EventCallback<FilterTodoItemsArgs> OnFilterByStatusCallback { get; set; }
+
+    [CascadingParameter]
+    public FilterTodoItemsArgs FilterTodoItemsArgs { get; set; }
 
     private bool IsChecked => TodoItemModel.StatusName.Equals("Done");
 }

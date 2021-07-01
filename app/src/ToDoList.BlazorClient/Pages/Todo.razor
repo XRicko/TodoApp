@@ -9,7 +9,19 @@
 
 <h1>Todo</h1>
 
-<Checklists ChecklistModels="checklistModels" TodoItemModels="todoItemModels" />
+<div class="d-flex align-items-center mb-3">
+    <Badges StatusName="@filterTodoItemsArgs.StatusName"
+            CategoryName="@filterTodoItemsArgs.CategoryName"
+            OnStatusCallback="ResetStatus"
+            OnCategoryCallback="ResetCategory" />
+</div>
+
+<CascadingValue Value="filterTodoItemsArgs">
+    <Checklists ChecklistModels="checklistModels"
+                TodoItemModels="filteredTodoItems"
+                OnFilterByCategoryCallback="FilterByCategory"
+                OnFilterByStatusCallback="FilterByStatus" />
+</CascadingValue>
 
 @code {
     private System.Timers.Timer timer = new(60000);
@@ -17,9 +29,15 @@
     private List<ChecklistModel> checklistModels = new();
     private List<TodoItemModel> todoItemModels = new();
 
+    private List<TodoItemModel> filteredTodoItems = new();
+
+    private FilterTodoItemsArgs filterTodoItemsArgs = new();
+
     protected override async Task OnInitializedAsync()
     {
         await LoadData();
+
+        filteredTodoItems = todoItemModels;
 
         timer.Elapsed += async (sender, args) => await OnTimerCallback();
         timer.Start();
@@ -38,6 +56,50 @@
     {
         checklistModels = (await ApiInvoker.GetItemsAsync<ChecklistModel>("Checklists")).ToList();
         todoItemModels = (await ApiInvoker.GetItemsAsync<TodoItemModel>("TodoItems")).ToList();
+    }
+
+    private void ResetStatus()
+    {
+        filterTodoItemsArgs.StatusName = string.Empty;
+
+        if (string.IsNullOrWhiteSpace(filterTodoItemsArgs.CategoryName))
+        {
+            filteredTodoItems = todoItemModels;
+            return;
+        }
+
+        filteredTodoItems = todoItemModels.FindAll(x => x.CategoryName == filterTodoItemsArgs.CategoryName);
+
+    }
+    private void ResetCategory()
+    {
+        filterTodoItemsArgs.CategoryName = string.Empty;
+
+        if (string.IsNullOrWhiteSpace(filterTodoItemsArgs.StatusName))
+        {
+            filteredTodoItems = todoItemModels;
+            return;
+        }
+
+        filteredTodoItems = todoItemModels.FindAll(x => x.StatusName == filterTodoItemsArgs.StatusName);
+    }
+
+    private void FilterByCategory(FilterTodoItemsArgs args)
+    {
+        if (!string.IsNullOrWhiteSpace(args.CategoryName))
+        {
+            filteredTodoItems = filteredTodoItems.FindAll(x => args.CategoryName.Equals(x.CategoryName));
+            filterTodoItemsArgs.CategoryName = args.CategoryName;
+        }
+    }
+
+    private void FilterByStatus(FilterTodoItemsArgs args)
+    {
+        if (!string.IsNullOrWhiteSpace(args.StatusName))
+        {
+            filteredTodoItems = filteredTodoItems.FindAll(x => args.StatusName.Equals(x.StatusName));
+            filterTodoItemsArgs.StatusName = args.StatusName;
+        }
     }
 
     public void Dispose() => timer.Dispose();

@@ -12,42 +12,40 @@
 }
 
 <div class="d-flex align-items-center mb-3">
-    @if (Model.SelectedStatus is not null)
+    @if (Model.SelectedStatus is "Planned")
     {
-        @if (Model.SelectedStatus is "Planned")
-        {
-            <div class="badge badge-secondary position-relative">
-                @Localizer["PlannedStatus"]
-                <a class="close stretched-link"
-                   href="javascript:void(0)"
-                   onclick="ajaxGet('@Url.Action("Index", "Todo", new { categoryName = Model.SelectedCategory }, Context.Request.Scheme)')">
-                    <i class="bi bi-x"></i>
-                </a>
-            </div>
-        }
-        else if (Model.SelectedStatus is "Ongoing")
-        {
-            <div class="badge badge-warning position-relative">
-                @Localizer["OngoingStatus"]
-                <a class="close stretched-link"
-                   href="javascript:void(0)"
-                   onclick="ajaxGet('@Url.Action("Index", "Todo", new { categoryName = Model.SelectedCategory }, Context.Request.Scheme)')">
-                    <i class="bi bi-x"></i>
-                </a>
-            </div>
-        }
-        else if (Model.SelectedStatus is "Done")
-        {
-            <div class="badge badge-success position-relative">
-                @Localizer["DoneStatus"]
-                <a class="close stretched-link"
-                   href="javascript:void(0)"
-                   onclick="ajaxGet('@Url.Action("Index", "Todo", new { categoryName = Model.SelectedCategory }, Context.Request.Scheme)')">
-                    <i class="bi bi-x"></i>
-                </a>
-            </div>
-        }
+        <div class="badge badge-secondary position-relative">
+            @Localizer["PlannedStatus"]
+            <a class="close stretched-link"
+               href="javascript:void(0)"
+               onclick="ajaxGet('@Url.Action("Index", "Todo", new { categoryName = Model.SelectedCategory }, Context.Request.Scheme)')">
+                <i class="bi bi-x"></i>
+            </a>
+        </div>
     }
+    else if (Model.SelectedStatus is "Ongoing")
+    {
+        <div class="badge badge-warning position-relative">
+            @Localizer["OngoingStatus"]
+            <a class="close stretched-link"
+               href="javascript:void(0)"
+               onclick="ajaxGet('@Url.Action("Index", "Todo", new { categoryName = Model.SelectedCategory }, Context.Request.Scheme)')">
+                <i class="bi bi-x"></i>
+            </a>
+        </div>
+    }
+    else if (Model.SelectedStatus is "Done")
+    {
+        <div class="badge badge-success position-relative">
+            @Localizer["DoneStatus"]
+            <a class="close stretched-link"
+               href="javascript:void(0)"
+               onclick="ajaxGet('@Url.Action("Index", "Todo", new { categoryName = Model.SelectedCategory }, Context.Request.Scheme)')">
+                <i class="bi bi-x"></i>
+            </a>
+        </div>
+    }
+
     @if (Model.SelectedCategory is not null)
     {
         <div class="badge badge-pill badge-info position-relative ml-1">

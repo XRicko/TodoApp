@@ -3,9 +3,13 @@
 <div class="card-columns">
     @foreach (var checklist in ChecklistModels)
     {
-       <ChecklistItem ChecklistModel="checklist" 
-                      TodoItemModels="TodoItemModels" 
-                      OnDeleteCallback="DeleteChecklist" />
+        <CascadingValue Value="OnFilterByCategoryCallback" Name="FilterByCategory">
+            <CascadingValue Value="OnFilterByStatusCallback" Name="FilterByStatus">
+                <ChecklistItem ChecklistModel="checklist"
+                               TodoItemModels="TodoItemModels"
+                               OnDeleteCallback="DeleteChecklist" />
+            </CascadingValue>
+        </CascadingValue>
     }
 </div>
 
@@ -31,4 +35,10 @@
         await ApiInvoker.DeleteItemAsync("Checklists/", checklistModel.Id);
         ChecklistModels.Remove(checklistModel);
     }
+
+    [Parameter]
+    public EventCallback<FilterTodoItemsArgs> OnFilterByCategoryCallback { get; set; }
+
+    [Parameter]
+    public EventCallback<FilterTodoItemsArgs> OnFilterByStatusCallback { get; set; }
 }

@@ -1,10 +1,9 @@
-﻿@using ToDoList.BlazorClient.Models;
-@inject IApiInvoker ApiInvoker
+﻿@inject IApiInvoker ApiInvoker
 
 <div class="card">
     <div class="card-header d-flex justify-content-between align-items-center">
         <div class="text-capitalize font-weight-normal">
-            <i class="bi bi-list-task"></i>&nbsp;@ChecklistModel.Name
+            <i class="oi oi-list"></i>&nbsp;@ChecklistModel.Name
         </div>
 
         <div>
@@ -82,26 +81,21 @@
 
     private async Task ChangeStatus(ChangeTodoItemStatusArgs changeModel) // TODO: Find a better place to handle it
     {
+        StatusModel statusModel = new();
+
         bool isDone = (bool)changeModel.Args.Value;
 
         if (isDone)
-        {
-            var status = await ApiInvoker.GetItemAsync<StatusModel>("Statuses/GetByName/Done");
-
-            changeModel.TodoItemModel.StatusId = status.Id;
-            changeModel.TodoItemModel.StatusName = status.Name;
-        }
+            statusModel = await ApiInvoker.GetItemAsync<StatusModel>("Statuses/GetByName/Done");
         else
-        {
-            var status = await ApiInvoker.GetItemAsync<StatusModel>("Statuses/GetByName/Ongoing");
+            statusModel = await ApiInvoker.GetItemAsync<StatusModel>("Statuses/GetByName/Ongoing");
 
-            changeModel.TodoItemModel.StatusId = status.Id;
-            changeModel.TodoItemModel.StatusName = status.Name;
-        }
+        changeModel.TodoItemModel.StatusId = statusModel.Id;
+        changeModel.TodoItemModel.StatusName = statusModel.Name;
 
         await ApiInvoker.PutItemAsync("TodoItems", changeModel.TodoItemModel);
 
-        TodoItemModels.SingleOrDefault(x => x.Id == changeModel.TodoItemModel.Id).StatusId = changeModel.TodoItemModel.StatusId;
-        TodoItemModels.SingleOrDefault(x => x.Id == changeModel.TodoItemModel.Id).StatusName = changeModel.TodoItemModel.StatusName;
+        TodoItemModels.SingleOrDefault(x => x.Id == changeModel.TodoItemModel.Id).StatusId = statusModel.Id;
+        TodoItemModels.SingleOrDefault(x => x.Id == changeModel.TodoItemModel.Id).StatusName = statusModel.Name;
     }
 }

@@ -1,11 +1,10 @@
-﻿@using ToDoList.BlazorClient.Models;
-@inject IApiInvoker ApiInvoker
+﻿@inject IApiInvoker ApiInvoker
 
 
 @foreach (var todoItem in TodoItemModels)
 {
     <TodoItem TodoItemModel="todoItem"
-              OnDeleteCallback="DeleteTodoItem" 
+              OnDeleteCallback="DeleteTodoItem"
               OnStatusChangeCallback="OnStatusChange" />
 }
 

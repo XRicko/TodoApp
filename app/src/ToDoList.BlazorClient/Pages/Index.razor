@@ -1,6 +1,54 @@
 ﻿@page "/"
+
+@using GoogleMapsComponents;
+@using GoogleMapsComponents.Maps;
+
 @inject IStringLocalizer<Index> Localizer
 
 <h1>@Localizer["Greetings"]</h1>
 
 @Localizer["Welcoming"]
+
+<div style="height: 400px; width: 100%;">
+    <GoogleMap @ref="googleMap" Id="map" Height="100%" Options="options" OnAfterInit="async () => await OnAfterInitAsync()" />
+</div>
+
+@code {
+    private GoogleMap googleMap;
+    private Marker marker;
+
+    private MapOptions options;
+
+    protected override void OnInitialized()
+    {
+        options = new MapOptions
+        {
+            Zoom = 6,
+            Center = new LatLngLiteral
+            {
+                Lat = 50.450001,
+                Lng = 30.523333
+            },
+            MapTypeId = MapTypeId.Roadmap
+        };
+    }
+
+    private async Task OnAfterInitAsync()
+    {
+        await googleMap.InteropObject.AddListener<MouseEvent>("click", async (e) =>
+        {
+            if (marker is null)
+            {
+                marker = await Marker.CreateAsync(googleMap.JsRuntime, new MarkerOptions
+                {
+                    Map = googleMap.InteropObject,
+                    Position = e.LatLng
+                });
+            }
+            else
+                await marker.SetPosition(e.LatLng);
+
+            await googleMap.InteropObject.PanTo(e.LatLng);
+        });
+    }
+}
