@@ -2,6 +2,7 @@
 
 @inject IApiInvoker ApiInvoker
 @inject IFileConverter FileConverter
+@inject Notifier Notifier
 
 @implements IDisposable
 
@@ -11,96 +12,36 @@
 
 <div class="d-flex align-items-center mb-3">
     <Badges StatusName="@filterTodoItemsArgs.StatusName"
-            CategoryName="@filterTodoItemsArgs.CategoryName"
-            OnStatusCallback="ResetStatus"
-            OnCategoryCallback="ResetCategory" />
+            CategoryName="@filterTodoItemsArgs.CategoryName" />
 </div>
 
 <CascadingValue Value="filterTodoItemsArgs">
-    <Checklists ChecklistModels="checklistModels"
-                TodoItemModels="filteredTodoItems"
-                OnFilterByCategoryCallback="FilterByCategory"
-                OnFilterByStatusCallback="FilterByStatus" />
+    <Checklists />
 </CascadingValue>
 
 @code {
     private System.Timers.Timer timer = new(60000);
 
-    private List<ChecklistModel> checklistModels = new();
-    private List<TodoItemModel> todoItemModels = new();
-
-    private List<TodoItemModel> filteredTodoItems = new();
+    private IEnumerable<TodoItemModel> todoItemModels = Enumerable.Empty<TodoItemModel>();
+    private IEnumerable<TodoItemModel> filteredTodoItems = Enumerable.Empty<TodoItemModel>();
 
     private FilterTodoItemsArgs filterTodoItemsArgs = new();
 
-    protected override async Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
-        await LoadData();
-
         filteredTodoItems = todoItemModels;
 
-        timer.Elapsed += async (sender, args) => await OnTimerCallback();
+        timer.Elapsed += (sender, args) => OnTimerCallback();
         timer.Start();
     }
 
-    private async Task OnTimerCallback()
+    private void OnTimerCallback()
     {
-        await InvokeAsync(async () =>
-        {
-            await LoadData();
-            StateHasChanged();
-        });
+        StateHasChanged();
     }
 
-    private async Task LoadData()
+    public void Dispose()
     {
-        checklistModels = (await ApiInvoker.GetItemsAsync<ChecklistModel>("Checklists")).ToList();
-        todoItemModels = (await ApiInvoker.GetItemsAsync<TodoItemModel>("TodoItems")).ToList();
+        timer.Dispose();
     }
-
-    private void ResetStatus()
-    {
-        filterTodoItemsArgs.StatusName = string.Empty;
-
-        if (string.IsNullOrWhiteSpace(filterTodoItemsArgs.CategoryName))
-        {
-            filteredTodoItems = todoItemModels;
-            return;
-        }
-
-        filteredTodoItems = todoItemModels.FindAll(x => x.CategoryName == filterTodoItemsArgs.CategoryName);
-
-    }
-    private void ResetCategory()
-    {
-        filterTodoItemsArgs.CategoryName = string.Empty;
-
-        if (string.IsNullOrWhiteSpace(filterTodoItemsArgs.StatusName))
-        {
-            filteredTodoItems = todoItemModels;
-            return;
-        }
-
-        filteredTodoItems = todoItemModels.FindAll(x => x.StatusName == filterTodoItemsArgs.StatusName);
-    }
-
-    private void FilterByCategory(FilterTodoItemsArgs args)
-    {
-        if (!string.IsNullOrWhiteSpace(args.CategoryName))
-        {
-            filteredTodoItems = filteredTodoItems.FindAll(x => args.CategoryName.Equals(x.CategoryName));
-            filterTodoItemsArgs.CategoryName = args.CategoryName;
-        }
-    }
-
-    private void FilterByStatus(FilterTodoItemsArgs args)
-    {
-        if (!string.IsNullOrWhiteSpace(args.StatusName))
-        {
-            filteredTodoItems = filteredTodoItems.FindAll(x => args.StatusName.Equals(x.StatusName));
-            filterTodoItemsArgs.StatusName = args.StatusName;
-        }
-    }
-
-    public void Dispose() => timer.Dispose();
 }

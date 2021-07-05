@@ -1,15 +1,10 @@
 ﻿@inject IApiInvoker ApiInvoker
 
 <div class="card-columns">
-    @foreach (var checklist in ChecklistModels)
+    @foreach (var checklist in checklistModels)
     {
-        <CascadingValue Value="OnFilterByCategoryCallback" Name="FilterByCategory">
-            <CascadingValue Value="OnFilterByStatusCallback" Name="FilterByStatus">
-                <ChecklistItem ChecklistModel="checklist"
-                               TodoItemModels="TodoItemModels"
-                               OnDeleteCallback="DeleteChecklist" />
-            </CascadingValue>
-        </CascadingValue>
+        <ChecklistItem @key="checklist.Id" checklistModel="checklist"
+                       OnDeleteCallback="DeleteChecklist" />
     }
 </div>
 
@@ -20,25 +15,19 @@
     [CascadingParameter]
     private IModalService Modal { get; set; }
 
-    [Parameter]
-    public List<ChecklistModel> ChecklistModels { get; set; } = new();
-    [Parameter]
-    public List<TodoItemModel> TodoItemModels { get; set; } = new();
+    private IEnumerable<ChecklistModel> checklistModels = Enumerable.Empty<ChecklistModel>();
 
-    private async Task DeleteChecklist(ChecklistModel checklistModel)
+    protected override async Task OnInitializedAsync() =>
+        checklistModels = await ApiInvoker.GetItemsAsync<ChecklistModel>("Checklists");
+
+    private async Task DeleteChecklist(int checklistId)
     {
         var result = await Modal.Show<Confirm>("Confirmation").Result;
 
         if (result.Cancelled)
             return;
 
-        await ApiInvoker.DeleteItemAsync("Checklists/", checklistModel.Id);
-        ChecklistModels.Remove(checklistModel);
+        await ApiInvoker.DeleteItemAsync("Checklists/", checklistId);
+        checklistModels = await ApiInvoker.GetItemsAsync<ChecklistModel>("Checklists");
     }
-
-    [Parameter]
-    public EventCallback<FilterTodoItemsArgs> OnFilterByCategoryCallback { get; set; }
-
-    [Parameter]
-    public EventCallback<FilterTodoItemsArgs> OnFilterByStatusCallback { get; set; }
 }

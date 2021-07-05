@@ -1,16 +1,19 @@
-﻿@inject IApiInvoker ApiInvoker
+﻿@implements IDisposable
+
+@inject IApiInvoker ApiInvoker
+@inject Notifier Notifier
 
 <div class="card">
     <div class="card-header d-flex justify-content-between align-items-center">
         <div class="text-capitalize font-weight-normal">
-            <i class="oi oi-list"></i>&nbsp;@ChecklistModel.Name
+            <i class="oi oi-list"></i>&nbsp;@checklistModel.Name
         </div>
 
         <div>
-            @if (ChecklistModel.Name != "Untitled")
+            @if (checklistModel.Name != "Untitled")
             {
                 <form method="post"
-                      @onsubmit="async () => await OnDeleteCallback.InvokeAsync(ChecklistModel)"
+                      @onsubmit="async () => await OnDeleteCallback.InvokeAsync(checklistModel.Id)"
                       class="d-inline">
 
                     <button type="submit"
@@ -26,76 +29,81 @@
         <ul class="nav nav-tabs border-0 mb-2" role="tablist" style="grid-gap: 12px;">
             <li class="nav-item">
                 <a class="btn btn-outline-primary active"
-                   id="notDone-@ChecklistModel.Id-tab"
+                   id="notDone-@checklistModel.Id-tab"
                    data-toggle="tab"
-                   href="#notDone-@ChecklistModel.Id"
+                   href="#notDone-@checklistModel.Id"
                    role="tab">
                     Active
                     <span class="badge badge-light">
-                        @activeTodoItems.Count
+                        @ActiveTodoItems.Count()
                     </span>
                 </a>
             </li>
 
             <li class="nav-item">
                 <a class="btn btn-outline-secondary"
-                   id="done-@ChecklistModel.Id-tab"
+                   id="done-@checklistModel.Id-tab"
                    data-toggle="tab"
-                   href="#done-@ChecklistModel.Id"
+                   href="#done-@checklistModel.Id"
                    role="tab">
                     Done
                     <span class="badge badge-light">
-                        @doneTodoItems.Count
+                        @DoneTodoItems.Count()
                     </span>
                 </a>
             </li>
         </ul>
 
         <div class="tab-content">
-            <ul class="tab-pane show active list-group list-group-flush" id="notDone-@ChecklistModel.Id">
-                <TodoItemsList TodoItemModels="activeTodoItems" OnStatusChange="ChangeStatus" />
+            <ul class="tab-pane show active list-group list-group-flush" id="notDone-@checklistModel.Id">
+                <TodoItemsList TodoItemModels="ActiveTodoItems" />
             </ul>
 
-            <ul class="tab-pane list-group list-group-flush" id="done-@ChecklistModel.Id">
-                <TodoItemsList TodoItemModels="doneTodoItems" OnStatusChange="ChangeStatus" />
+            <ul class="tab-pane list-group list-group-flush" id="done-@checklistModel.Id">
+                <TodoItemsList TodoItemModels="DoneTodoItems" />
             </ul>
         </div>
     </div>
 </div>
 
 @code {
-    [Parameter]
-    public ChecklistModel ChecklistModel { get; set; }
+    //[Parameter]
+    //public int ChecklistId { get; set; }
 
     [Parameter]
-    public List<TodoItemModel> TodoItemModels { get; set; } = new();
+    public EventCallback<int> OnDeleteCallback { get; set; }
 
     [Parameter]
-    public EventCallback<ChecklistModel> OnDeleteCallback { get; set; }
+    public ChecklistModel checklistModel { get; set; } = new();
 
-    private List<TodoItemModel> activeTodoItems =>
-        TodoItemModels.Where(i => i.ChecklistId == ChecklistModel.Id && i.StatusName != "Done").ToList();
+    private IEnumerable<TodoItemModel> todoItemModels = Enumerable.Empty<TodoItemModel>();
 
-    private List<TodoItemModel> doneTodoItems =>
-        TodoItemModels.Where(i => i.ChecklistId == ChecklistModel.Id && i.StatusName == "Done").ToList();
+    private IEnumerable<TodoItemModel> ActiveTodoItems => todoItemModels.Where(x => x.StatusName != "Done").ToList();
 
-    private async Task ChangeStatus(ChangeTodoItemStatusArgs changeModel) // TODO: Find a better place to handle it
+    private IEnumerable<TodoItemModel> DoneTodoItems => todoItemModels.Where(x => x.StatusName == "Done").ToList();
+
+    protected override async Task OnInitializedAsync()
     {
-        StatusModel statusModel = new();
+        //checklistModel = await ApiInvoker.GetItemAsync<ChecklistModel>("Checklists/" + ChecklistId);
+        todoItemModels = await ApiInvoker.GetItemsAsync<TodoItemModel>("TodoItems/GetByChecklistId/" + checklistModel.Id);
 
-        bool isDone = (bool)changeModel.Args.Value;
+        Notifier.ChecklistChanged += OnChecklistChanged;
+    }
 
-        if (isDone)
-            statusModel = await ApiInvoker.GetItemAsync<StatusModel>("Statuses/GetByName/Done");
-        else
-            statusModel = await ApiInvoker.GetItemAsync<StatusModel>("Statuses/GetByName/Ongoing");
+    private async Task OnChecklistChanged(int checklistId)
+    {
+        await InvokeAsync(async () =>
+        {
+            if (checklistModel.Id == checklistId)
+            {
+                todoItemModels = await ApiInvoker.GetItemsAsync<TodoItemModel>("TodoItems/GetByChecklistId/" + checklistId);
+                StateHasChanged();
+            }
+        });
+    }
 
-        changeModel.TodoItemModel.StatusId = statusModel.Id;
-        changeModel.TodoItemModel.StatusName = statusModel.Name;
-
-        await ApiInvoker.PutItemAsync("TodoItems", changeModel.TodoItemModel);
-
-        TodoItemModels.SingleOrDefault(x => x.Id == changeModel.TodoItemModel.Id).StatusId = statusModel.Id;
-        TodoItemModels.SingleOrDefault(x => x.Id == changeModel.TodoItemModel.Id).StatusName = statusModel.Name;
+    public void Dispose()
+    {
+        Notifier.ChecklistChanged -= OnChecklistChanged;
     }
 }

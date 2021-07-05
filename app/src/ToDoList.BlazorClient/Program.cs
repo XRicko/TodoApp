@@ -29,6 +29,7 @@ namespace ToDoList.BlazorClient
 
             builder.Services.AddScoped<IApiInvoker, BlazorApiInvoker>();
             builder.Services.AddScoped<IFileConverter, FileConverter>();
+            builder.Services.AddSingleton<Notifier>();
 
             builder.Services.AddScoped<AuthenticationStateProvider, AuthStateProvider>();
 

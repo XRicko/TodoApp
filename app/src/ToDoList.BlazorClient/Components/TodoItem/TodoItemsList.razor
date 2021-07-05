@@ -1,31 +1,12 @@
 ﻿@inject IApiInvoker ApiInvoker
-
+@inject Notifier Notifier
 
 @foreach (var todoItem in TodoItemModels)
 {
-    <TodoItem TodoItemModel="todoItem"
-              OnDeleteCallback="DeleteTodoItem"
-              OnStatusChangeCallback="OnStatusChange" />
+    <TodoItem @key="todoItem.Id" TodoItemModel="todoItem" />
 }
 
 @code {
-    [CascadingParameter]
-    private IModalService Modal { get; set; }
-
     [Parameter]
-    public List<TodoItemModel> TodoItemModels { get; set; } = new();
-
-    private async Task DeleteTodoItem(TodoItemModel todoItemModel)
-    {
-        var result = await Modal.Show<Confirm>("Confirmation").Result;
-
-        if (result.Cancelled)
-            return;
-
-        await ApiInvoker.DeleteItemAsync("TodoItems/", todoItemModel.Id);
-        TodoItemModels.Remove(todoItemModel);
-    }
-
-    [Parameter]
-    public EventCallback<ChangeTodoItemStatusArgs> OnStatusChange { get; set; }
+    public IEnumerable<TodoItemModel> TodoItemModels { get; set; } = Enumerable.Empty<TodoItemModel>();
 }

@@ -28,7 +28,7 @@ namespace ToDoList.WebApi.Controllers
         private readonly IDistributedCache cache;
 
         private int UserId => Convert.ToInt32(User.FindFirstValue(ClaimTypes.NameIdentifier));
-        private string RecordKey => $"TodoItems_User_{UserId}";
+        private string RecordKeyByUser => $"TodoItems_User_{UserId}";
 
         public TodoItemsController(IMediator mediator, IDistributedCache distributedCache) : base(mediator)
         {
@@ -38,16 +38,21 @@ namespace ToDoList.WebApi.Controllers
         [HttpGet]
         public async Task<IEnumerable<TodoItemResponse>> Get()
         {
-            var todoItems = await cache.GetRecordAsync<IEnumerable<TodoItemResponse>>(RecordKey);
+            var todoItems = await cache.GetRecordAsync<IEnumerable<TodoItemResponse>>(RecordKeyByUser);
 
             if (todoItems is null)
             {
                 todoItems = await Mediator.Send(new GetTodoItemsByUserIdQuery(UserId));
-                await cache.SetRecordAsync(RecordKey, todoItems);
+                await cache.SetRecordAsync(RecordKeyByUser, todoItems);
             }
 
             return todoItems;
         }
+
+        [HttpGet]
+        [Route("[action]/{checklistId}")]
+        public async Task<IEnumerable<TodoItemResponse>> GetByChecklistId(int checklistId) =>
+            await Mediator.Send(new GetTodoItemsByChecklistIdQuery(checklistId));
 
         [HttpGet("{id}")]
         public async Task<ActionResult<TodoItemResponse>> Get(int id) =>
@@ -59,7 +64,7 @@ namespace ToDoList.WebApi.Controllers
             _ = createRequest ?? throw new ArgumentNullException(nameof(createRequest));
 
             await Mediator.Send(new AddCommand<TodoItemCreateRequest>(createRequest));
-            await cache.RemoveAsync(RecordKey);
+            await cache.RemoveAsync(RecordKeyByUser);
 
             return NoContent();
         }
@@ -68,7 +73,7 @@ namespace ToDoList.WebApi.Controllers
         public async Task<IActionResult> Delete(int id)
         {
             await Mediator.Send(new RemoveCommand<TodoItem>(id));
-            await cache.RemoveAsync(RecordKey);
+            await cache.RemoveAsync(RecordKeyByUser);
 
             return NoContent();
         }
@@ -79,7 +84,7 @@ namespace ToDoList.WebApi.Controllers
             _ = updateRequest ?? throw new ArgumentNullException(nameof(updateRequest));
 
             await Mediator.Send(new UpdateCommand<TodoItemUpdateRequest>(updateRequest));
-            await cache.RemoveAsync(RecordKey);
+            await cache.RemoveAsync(RecordKeyByUser);
 
             return NoContent();
         }

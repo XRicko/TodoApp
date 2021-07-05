@@ -66,3 +66,29 @@ a, .btn-link {
     color: inherit;
     font-size: 75%;
 }
+
+.card-body {
+    padding-right: 13px;
+}
+
+.card-body .tab-content .tab-pane {
+    max-height: 600px;
+    overflow-y: scroll;
+}
+
+.card-body .tab-content .tab-pane {
+    margin-right: 7px;
+}
+
+.tab-pane::-webkit-scrollbar {
+    width: 4px;
+}
+
+.tab-pane::-webkit-scrollbar-thumb {
+    background: #A9A9A9;
+    border-radius: .25rem;
+}
+
+.tab-pane::-webkit-scrollbar-thumb:hover {
+    background: #808080;
+}

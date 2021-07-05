@@ -1,24 +1,23 @@
-﻿<li class="list-group-item">
+﻿@inject IApiInvoker ApiInvoker
+@inject Notifier Notifier
+
+<li class="list-group-item">
     <div class="d-flex flex-column">
         <div class="d-flex">
             <div class="form-check">
                 <input class="form-check-input"
-                       id="@TodoItemModel.Id"
-                       @onchange="async (args) => await OnStatusChangeCallback.InvokeAsync(new ChangeTodoItemStatusArgs(TodoItemModel, args))"
+                       id="todo-item-@TodoItemModel.Id"
+                       @onchange="ChangeStatus"
                        type="checkbox"
                        checked="@IsChecked" />
-                <label class="form-check-label" for="@TodoItemModel.Id">&nbsp;</label>
+                <label class="form-check-label" for="todo-item-@TodoItemModel.Id">&nbsp;</label>
             </div>
 
             <div>
                 @TodoItemModel.Name
 
                 <Badges StatusName="@TodoItemModel.StatusName"
-                        CategoryName="@TodoItemModel.CategoryName"
-                        OnCategoryCallback="async () => await OnFilterByCategoryCallback.InvokeAsync(
-                                                new FilterTodoItemsArgs(FilterTodoItemsArgs.StatusName, TodoItemModel.CategoryName))"
-                        OnStatusCallback="async () => await OnFilterByStatusCallback.InvokeAsync(
-                                              new FilterTodoItemsArgs(TodoItemModel.StatusName, FilterTodoItemsArgs.CategoryName))" />
+                        CategoryName="@TodoItemModel.CategoryName" />
             </div>
         </div>
 
@@ -38,7 +37,7 @@
 
             <div>
                 <form method="post"
-                      @onsubmit="async () => await OnDeleteCallback.InvokeAsync(TodoItemModel)"
+                      @onsubmit="DeleteTodoItem"
                       class="d-inline">
 
                     <button type="submit"
@@ -52,23 +51,43 @@
 </li>
 
 @code {
-    [Parameter]
-    public TodoItemModel TodoItemModel { get; set; }
-
-    [Parameter]
-    public EventCallback<TodoItemModel> OnDeleteCallback { get; set; }
-
-    [Parameter]
-    public EventCallback<ChangeTodoItemStatusArgs> OnStatusChangeCallback { get; set; }
-
-    [CascadingParameter(Name = "FilterByCategory")]
-    public EventCallback<FilterTodoItemsArgs> OnFilterByCategoryCallback { get; set; }
-
-    [CascadingParameter(Name = "FilterByStatus")]
-    public EventCallback<FilterTodoItemsArgs> OnFilterByStatusCallback { get; set; }
+    [CascadingParameter]
+    private IModalService Modal { get; set; }
 
     [CascadingParameter]
     public FilterTodoItemsArgs FilterTodoItemsArgs { get; set; }
 
-    private bool IsChecked => TodoItemModel.StatusName.Equals("Done");
+    [Parameter]
+    public TodoItemModel TodoItemModel { get; set; } = new();
+
+    private async Task DeleteTodoItem()
+    {
+        var result = await Modal.Show<Confirm>("Confirmation").Result;
+
+        if (result.Cancelled)
+            return;
+
+        await ApiInvoker.DeleteItemAsync("TodoItems/", TodoItemModel.Id);
+        await Notifier.UpdateChecklist(TodoItemModel.ChecklistId);
+    }
+
+    private async Task ChangeStatus(ChangeEventArgs args)
+    {
+        StatusModel statusModel = new();
+
+        bool isDone = (bool)args.Value;
+
+        if (isDone)
+            statusModel = await ApiInvoker.GetItemAsync<StatusModel>("Statuses/GetByName/Done");
+        else
+            statusModel = await ApiInvoker.GetItemAsync<StatusModel>("Statuses/GetByName/Ongoing");
+
+        TodoItemModel.StatusId = statusModel.Id;
+        TodoItemModel.StatusName = statusModel.Name;
+
+        await ApiInvoker.PutItemAsync("TodoItems", TodoItemModel);
+        await Notifier.UpdateChecklist(TodoItemModel.ChecklistId);
+    }
+
+    private bool? IsChecked => TodoItemModel.StatusName?.Equals("Done");
 }
