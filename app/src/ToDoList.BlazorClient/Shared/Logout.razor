@@ -1,0 +1,13 @@
+﻿@inject NavigationManager NavManager
+@inject IApiInvoker ApiInvoker
+@inject IStringLocalizer<Logout> Localizer
+
+<button class="btn btn-link" @onclick="LogOut"><span class="oi oi-account-logout"></span> @Localizer["LogOut"]</button>
+
+@code {
+    private async Task LogOut()
+    {
+        await ApiInvoker.LogoutAsync();
+        NavManager.NavigateTo("/");
+    }
+}

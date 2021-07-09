@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using ToDoList.Core.Entities;
 using ToDoList.Core.Mediator.Queries.Generics;
 using ToDoList.Core.Mediator.Response;
+using ToDoList.Extensions;
 using ToDoList.WebApi.Services;
 using ToDoList.WebApi.Validators;
 
@@ -19,10 +20,12 @@ namespace ToDoList.WebApi.Controllers
     public class ImagesController : Base
     {
         private readonly IFileStorage fileStorage;
+        private readonly IImageMinifier imageResizer;
 
-        public ImagesController(IMediator mediator, IFileStorage storage) : base(mediator)
+        public ImagesController(IMediator mediator, IFileStorage storage, IImageMinifier resizer) : base(mediator)
         {
-            fileStorage = storage;
+            fileStorage = storage ?? throw new ArgumentNullException(nameof(storage));
+            imageResizer = resizer ?? throw new ArgumentNullException(nameof(resizer));
         }
 
         [HttpGet]
@@ -40,7 +43,12 @@ namespace ToDoList.WebApi.Controllers
             if (!result.IsValid)
                 return BadRequest(result.Errors);
 
-            string savedFile = await fileStorage.SaveFileAsync(formFile);
+            using var stream = formFile.OpenReadStream();
+            byte[] original = await stream.ToByteArrayAsync();
+
+            byte[] minified = await imageResizer.ResizeAsync(original);
+
+            string savedFile = await fileStorage.SaveFileAsync(formFile.FileName, minified);
             return savedFile;
         }
     }

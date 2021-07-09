@@ -68,7 +68,9 @@ namespace ToDoList.WebApi
             services.AddScoped<ITokenValidator, JwtTokenValidator>();
 
             services.AddScoped<IAuthenticator, Authenticator>();
+
             services.AddScoped<IFileStorage, PhysicalFileStorage>();
+            services.AddScoped<IImageMinifier, MagickImageMinifier>();
 
             services.AddCors();
 

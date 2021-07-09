@@ -1,54 +1,51 @@
 ﻿@inject IApiInvoker ApiInvoker
 @inject Notifier Notifier
 
-<li class="list-group-item">
-    <div class="d-flex flex-column">
-        <div class="d-flex">
-            <div class="form-check">
-                <input class="form-check-input"
-                       id="todo-item-@TodoItemModel.Id"
-                       @onchange="ChangeStatus"
-                       type="checkbox"
-                       checked="@IsChecked" />
-                <label class="form-check-label" for="todo-item-@TodoItemModel.Id">&nbsp;</label>
-            </div>
-
-            <div>
-                @TodoItemModel.Name
-
-                <Badges StatusName="@TodoItemModel.StatusName"
-                        CategoryName="@TodoItemModel.CategoryName" />
-            </div>
+<div class="d-flex flex-column">
+    <div class="d-flex">
+        <div class="form-check">
+            <input class="form-check-input"
+                   id="todo-item-@TodoItemModel.Id"
+                   @onchange="ChangeStatus"
+                   type="checkbox"
+                   checked="@IsChecked" />
+            <label class="form-check-label" for="todo-item-@TodoItemModel.Id">&nbsp;</label>
         </div>
 
-        <a href="http://maps.google.com/?q=@TodoItemModel.Address" target="_blank">@TodoItemModel.Address</a>
+        <div>
+            @TodoItemModel.Name
 
-        @if (TodoItemModel.ImageContent is not null)
-        {
-            <img src="data:image;base64,@Convert.ToBase64String(TodoItemModel.ImageContent)"
-                 class="img-fluid align-self-center"
-                 style="max-width: 400px; width: 100%" />
-        }
-
-        <div class="d-flex justify-content-between align-items-center">
-            <div class="text-muted">
-                @TodoItemModel.DaysAgo Days ago
-            </div>
-
-            <div>
-                <form method="post"
-                      @onsubmit="DeleteTodoItem"
-                      class="d-inline">
-
-                    <button type="submit"
-                            class="border-0 btn-transition btn btn-outline-danger">
-                        <i class="oi oi-trash"></i>
-                    </button>
-                </form>
-            </div>
+            <Badges StatusName="@TodoItemModel.StatusName"
+                    CategoryName="@TodoItemModel.CategoryName" />
         </div>
     </div>
-</li>
+
+    <a href="http://maps.google.com/?q=@TodoItemModel.Address" target="_blank">@TodoItemModel.Address</a>
+
+    @if (TodoItemModel.ImageContent is not null)
+    {
+        <img src="data:image;base64,@Convert.ToBase64String(TodoItemModel.ImageContent)"
+             class="img-fluid task-image align-self-center" />
+    }
+
+    <div class="d-flex justify-content-between align-items-center">
+        <div class="text-muted">
+            @TodoItemModel.DaysAgo Days ago
+        </div>
+
+        <div>
+            <form method="post"
+                  @onsubmit="DeleteTodoItem"
+                  class="d-inline">
+
+                <button type="submit"
+                        class="border-0 btn-transition btn btn-outline-danger">
+                    <i class="oi oi-trash"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
 
 @code {
     [CascadingParameter]
@@ -59,6 +56,8 @@
 
     [Parameter]
     public TodoItemModel TodoItemModel { get; set; } = new();
+
+    private bool? IsChecked => TodoItemModel.StatusName?.Equals("Done");
 
     private async Task DeleteTodoItem()
     {
@@ -88,6 +87,4 @@
         await ApiInvoker.PutItemAsync("TodoItems", TodoItemModel);
         await Notifier.UpdateChecklist(TodoItemModel.ChecklistId);
     }
-
-    private bool? IsChecked => TodoItemModel.StatusName?.Equals("Done");
 }

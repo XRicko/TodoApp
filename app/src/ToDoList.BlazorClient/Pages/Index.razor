@@ -10,7 +10,7 @@
 @Localizer["Welcoming"]
 
 <div style="height: 400px; width: 100%;">
-    <GoogleMap @ref="googleMap" Id="map" Height="100%" Options="options" OnAfterInit="async () => await OnAfterInitAsync()" />
+    <GoogleMap @ref="googleMap" Id="map" Height="100%" Options="@options" OnAfterInit="async () => await OnAfterInitAsync()" />
 </div>
 
 @code {

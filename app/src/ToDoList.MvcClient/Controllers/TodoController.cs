@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
+using ToDoList.Extensions;
 using ToDoList.MvcClient.Models;
 using ToDoList.MvcClient.Services;
 using ToDoList.MvcClient.ViewModels;
@@ -17,15 +18,11 @@ namespace ToDoList.MvcClient.Controllers
     public class TodoController : Controller
     {
         private readonly IViewModelService viewModelService;
-        private readonly IFileConverter fileConverter;
-
         private readonly IApiInvoker apiInvoker;
 
-        public TodoController(IViewModelService modelService, IFileConverter converter, IApiInvoker invoker) : base()
+        public TodoController(IViewModelService modelService, IApiInvoker invoker) : base()
         {
             viewModelService = modelService ?? throw new ArgumentNullException(nameof(modelService));
-            fileConverter = converter ?? throw new ArgumentNullException(nameof(converter));
-
             apiInvoker = invoker ?? throw new ArgumentNullException(nameof(invoker));
         }
 
@@ -156,8 +153,8 @@ namespace ToDoList.MvcClient.Controllers
         {
             if (todoItemModel.Image is not null)
             {
-                using var fileStream = todoItemModel.Image.OpenReadStream();
-                byte[] fileBytes = await fileConverter.ConvertToByteArrayAsync(fileStream);
+                using var stream = todoItemModel.Image.OpenReadStream();
+                byte[] fileBytes = await stream.ToByteArrayAsync();
 
                 string file = await apiInvoker.PostFileAsync("Images", todoItemModel.Image.FileName, fileBytes);
                 var image = await apiInvoker.GetItemAsync<ImageModel>("Images/GetByName/" + file);

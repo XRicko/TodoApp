@@ -2,7 +2,7 @@
 @inject IApiInvoker ApiInvoker
 @inject IStringLocalizer<Login> Localizer
 
-<EditForm Model="user" OnValidSubmit="LogIn">
+<EditForm Model="@user" OnValidSubmit="LogIn">
     <div class="form-row">
         <div class="col-auto">
             <label for="username" class="sr-only">@Localizer["Username"]</label>

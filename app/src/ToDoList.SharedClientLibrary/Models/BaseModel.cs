@@ -11,6 +11,7 @@ namespace ToDoList.SharedClientLibrary.Models
         [Required(
             ErrorMessageResourceName = "NameError",
             ErrorMessageResourceType = typeof(AnnotationResources))]
+        [MinLength(2)]
         [Display(
             Name = "Name",
             ResourceType = typeof(AnnotationResources))]

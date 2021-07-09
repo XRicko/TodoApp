@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -17,7 +16,6 @@ using ToDoList.MvcClient.Models;
 using ToDoList.MvcClient.Services;
 using ToDoList.MvcClient.ViewModels;
 using ToDoList.SharedClientLibrary.Models;
-using ToDoList.SharedClientLibrary.Services;
 using ToDoList.SharedKernel;
 
 using Xunit;
@@ -28,7 +26,6 @@ namespace MvcClient.Tests.Controllers
     {
         private readonly TodoController todoController;
 
-        private readonly Mock<IFileConverter> fileConverterMock;
         private readonly Mock<IViewModelService> createViewModelServiceMock;
 
         private readonly string createOrUpdateViewName;
@@ -41,9 +38,8 @@ namespace MvcClient.Tests.Controllers
         public TodoControllerTests()
         {
             createViewModelServiceMock = new Mock<IViewModelService>();
-            fileConverterMock = new Mock<IFileConverter>();
 
-            todoController = new TodoController(createViewModelServiceMock.Object, fileConverterMock.Object, ApiInvokerMock.Object);
+            todoController = new TodoController(createViewModelServiceMock.Object, ApiInvokerMock.Object);
 
             createOrUpdateViewName = "CreateOrUpdate";
             viewAllViewName = "_ViewAll";
@@ -90,8 +86,8 @@ namespace MvcClient.Tests.Controllers
 
             // Assert
             result.ViewName.Should().Be("Index");
-            viewModel.Should().BeEquivalentTo(viewModel);
 
+            viewModel.Should().BeEquivalentTo(viewModel);
             viewModel.SelectedCategory.Should().Be(category);
             viewModel.SelectedStatus.Should().BeNull();
 
@@ -115,8 +111,8 @@ namespace MvcClient.Tests.Controllers
 
             // Assert
             result.ViewName.Should().Be("Index");
-            viewModel.Should().BeEquivalentTo(viewModel);
 
+            viewModel.Should().BeEquivalentTo(viewModel);
             viewModel.SelectedStatus.Should().Be(status);
             viewModel.SelectedCategory.Should().BeNull();
 
@@ -142,8 +138,8 @@ namespace MvcClient.Tests.Controllers
 
             // Assert
             result.ViewName.Should().Be("Index");
-            viewModel.Should().BeEquivalentTo(viewModel);
 
+            viewModel.Should().BeEquivalentTo(viewModel);
             viewModel.SelectedStatus.Should().Be(status);
             viewModel.SelectedCategory.Should().Be(category);
 
@@ -251,8 +247,8 @@ namespace MvcClient.Tests.Controllers
 
             // Assert
             result.ViewName.Should().Be(createOrUpdateViewName);
-            viewModel.TodoItemModel.ChecklistId.Should().Be(checklistId);
 
+            viewModel.TodoItemModel.ChecklistId.Should().Be(checklistId);
             viewModel.TodoItemModel.Latitude.Should().Be(lat.ToString());
             viewModel.TodoItemModel.Longitude.Should().Be(lng.ToString());
 
@@ -334,9 +330,10 @@ namespace MvcClient.Tests.Controllers
             var todoItemWithGeoPoint = viewModel.TodoItems.SingleOrDefault(i => i.GeoPoint is not null);
 
             // Assert
+            result.ViewName.Should().Be(viewAllViewName);
+
             viewModel.TodoItems.Should().Contain(newTodoItem);
 
-            result.ViewName.Should().Be(viewAllViewName);
             newTodoItem.CategoryId.Should().Be(category.Id);
             todoItemWithGeoPoint.GeoPoint.Should().Be(geoCoordinate);
 
@@ -393,26 +390,18 @@ namespace MvcClient.Tests.Controllers
                                       .ReturnsAsync(indexViewModel)
                                       .Verifiable();
 
-            byte[] fileBytes = new byte[1313];
-            new Random().NextBytes(fileBytes);
-
-            fileConverterMock.Setup(x => x.ConvertToByteArrayAsync(It.Is<Stream>(x => x.Length == file.OpenReadStream().Length)))
-                             .ReturnsAsync(fileBytes)
-                             .Verifiable();
-
             // Act
             var result = await todoController.CreateOrUpdateAsync(createTodoItemViewModel) as PartialViewResult;
             var viewModel = (IndexViewModel)result.ViewData.Model;
 
             // Assert
             viewModel.TodoItems.Should().ContainEquivalentOf(todoItemToUpdate);
-            result.ViewName.Should().Be(viewAllViewName);
-
             viewModel.TodoItems.Should().Contain(x => x.ImageId == imageId);
+
+            result.ViewName.Should().Be(viewAllViewName);
 
             ApiInvokerMock.VerifyAll();
             createViewModelServiceMock.Verify();
-            fileConverterMock.Verify();
         }
 
         [Fact]
@@ -444,8 +433,9 @@ namespace MvcClient.Tests.Controllers
             var viewModel = (IndexViewModel)result.ViewData.Model;
 
             // Assert
-            viewModel.Should().BeSameAs(viewModel);
             result.ViewName.Should().Be(viewAllViewName);
+
+            viewModel.Should().BeSameAs(viewModel);
             todoItems.Should().NotContain(x => x.Id == idToDelete);
 
             ApiInvokerMock.VerifyAll();
@@ -498,10 +488,11 @@ namespace MvcClient.Tests.Controllers
             var result = await todoController.MarkTodoItemAsync(todoItem.Id, isDone) as PartialViewResult;
             var viewModel = (IndexViewModel)result.ViewData.Model;
 
-            viewModel.Should().BeSameAs(indexViewModel);
-            indexViewModel.TodoItems.Should().NotBeNullOrEmpty();
-
+            // Assert
             result.ViewName.Should().Be(viewAllViewName);
+
+            indexViewModel.TodoItems.Should().NotBeNullOrEmpty();
+            viewModel.Should().BeSameAs(indexViewModel);
 
             ApiInvokerMock.VerifyAll();
             createViewModelServiceMock.Verify();

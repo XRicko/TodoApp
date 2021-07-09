@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 using System.IO.Abstractions.TestingHelpers;
 using System.Threading;
 using System.Threading.Tasks;
@@ -9,7 +8,6 @@ using FluentAssertions;
 using MediatR;
 
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 
 using Moq;
 
@@ -43,13 +41,13 @@ namespace WebApi.Tests.Services
         }
 
         [Fact]
-        public async Task SaveFileAsync_ReturnsEmptyStringGivenFileWithInvalidLenght()
+        public async Task SaveFileAsync_ReturnsEmptyStringGivenContentWithInvalidLenght()
         {
             // Arrange
-            IFormFile formFile = new FormFile(new MemoryStream(), 0, 0, "name", fileName);
+            byte[] bytes = Array.Empty<byte>();
 
             // Act
-            string actual = await physicalFileStorage.SaveFileAsync(formFile);
+            string actual = await physicalFileStorage.SaveFileAsync(fileName, bytes);
 
             // Assert
             actual.Should().BeEmpty();
@@ -62,27 +60,18 @@ namespace WebApi.Tests.Services
             string path = $"Images\\{fileName}";
             fileSystemMock.AddFile(path, new MockFileData("some data"));
 
-            Mock<IFormFile> formFileMock = new();
-
-            formFileMock.SetupGet(x => x.Length)
-                        .Returns(fileSystemMock.File.OpenRead(path).Length)
-                        .Verifiable();
-
-            formFileMock.SetupGet(x => x.FileName)
-                        .Returns(fileName)
-                        .Verifiable();
+            using var stream = fileSystemMock.File.OpenRead(path);
+            byte[] bytes = new byte[stream.Length];
 
             webHostEnvironmentMock.SetupGet(x => x.ContentRootPath)
                                   .Returns("c:\\")
                                   .Verifiable();
 
             // Act
-            string actual = await physicalFileStorage.SaveFileAsync(formFileMock.Object);
+            string actual = await physicalFileStorage.SaveFileAsync(fileName, bytes);
 
             // Assert
             actual.Should().Be(fileName);
-
-            formFileMock.Verify();
             webHostEnvironmentMock.Verify();
         }
 
@@ -95,14 +84,12 @@ namespace WebApi.Tests.Services
             byte[] bytes = new byte[length];
             new Random().NextBytes(bytes);
 
-            FormFile formFile = new(new MemoryStream(bytes), 0, length, "name", fileName);
-
             webHostEnvironmentMock.SetupGet(x => x.ContentRootPath)
                                   .Returns("c:\\")
                                   .Verifiable();
 
             // Act
-            string actual = await physicalFileStorage.SaveFileAsync(formFile);
+            string actual = await physicalFileStorage.SaveFileAsync(fileName, bytes);
 
             // Assert
             actual.Should().NotBe(fileName);

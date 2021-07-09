@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -8,6 +9,7 @@ using Microsoft.AspNetCore.Http;
 
 using Moq;
 
+using ToDoList.Core;
 using ToDoList.Core.Entities;
 using ToDoList.Core.Mediator.Queries.Generics;
 using ToDoList.Core.Mediator.Response;
@@ -21,12 +23,16 @@ namespace WebApi.Tests.Controllers
     public class ImagesControllerTests : ApiControllerBaseForTests
     {
         private readonly Mock<IFileStorage> fileStorageMock;
+        private readonly Mock<IImageMinifier> imageMinifierMock;
+
         private readonly ImagesController imagesController;
 
         public ImagesControllerTests() : base()
         {
             fileStorageMock = new Mock<IFileStorage>();
-            imagesController = new ImagesController(MediatorMock.Object, fileStorageMock.Object);
+            imageMinifierMock = new Mock<IImageMinifier>();
+
+            imagesController = new ImagesController(MediatorMock.Object, fileStorageMock.Object, imageMinifierMock.Object);
         }
 
         [Fact]
@@ -77,23 +83,30 @@ namespace WebApi.Tests.Controllers
         {
             // Arrange
             string imageName = "rand.jpg";
-            var formFileMock = new Mock<IFormFile>();
 
-            formFileMock.SetupGet(x => x.FileName)
-                        .Returns(imageName)
-                        .Verifiable();
+            byte[] original = new byte[1234567];
+            byte[] minified = new byte[12345];
 
-            fileStorageMock.Setup(x => x.SaveFileAsync(formFileMock.Object))
+            new Random().NextBytes(original);
+            new Random().NextBytes(minified);
+
+            IFormFile formFile = new FormFile(new MemoryStream(original), 0, original.LongLength, "name", imageName);
+
+            imageMinifierMock.Setup(x => x.ResizeAsync(original, 600, 340))
+                             .ReturnsAsync(minified)
+                             .Verifiable();
+
+            fileStorageMock.Setup(x => x.SaveFileAsync(imageName, minified))
                            .ReturnsAsync("rand.jpg")
                            .Verifiable();
 
             // Act
-            var actual = await imagesController.Add(formFileMock.Object);
+            var actual = await imagesController.Add(formFile);
 
             // Assert
             actual.Value.Should().Be(imageName);
 
-            formFileMock.Verify();
+            imageMinifierMock.Verify();
             fileStorageMock.Verify();
         }
     }

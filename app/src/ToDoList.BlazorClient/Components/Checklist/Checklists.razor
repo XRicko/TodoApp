@@ -3,8 +3,8 @@
 <div class="card-columns">
     @foreach (var checklist in checklistModels)
     {
-        <ChecklistItem @key="checklist.Id" checklistModel="checklist"
-                       OnDeleteCallback="DeleteChecklist" />
+        <ChecklistItem @key="checklist.Id" ChecklistModel="@checklist"
+                       OnDeleteCallback="@DeleteChecklist" />
     }
 </div>
 
@@ -15,7 +15,7 @@
     [CascadingParameter]
     private IModalService Modal { get; set; }
 
-    private IEnumerable<ChecklistModel> checklistModels = Enumerable.Empty<ChecklistModel>();
+    private IEnumerable<ChecklistModel> checklistModels = Array.Empty<ChecklistModel>();
 
     protected override async Task OnInitializedAsync() =>
         checklistModels = await ApiInvoker.GetItemsAsync<ChecklistModel>("Checklists");

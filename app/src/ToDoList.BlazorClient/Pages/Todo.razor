@@ -1,47 +1,11 @@
 ﻿@page "/todo"
 
-@inject IApiInvoker ApiInvoker
-@inject IFileConverter FileConverter
-@inject Notifier Notifier
-
-@implements IDisposable
-
 @attribute [Microsoft.AspNetCore.Authorization.Authorize]
 
 <h1>Todo</h1>
 
-<div class="d-flex align-items-center mb-3">
-    <Badges StatusName="@filterTodoItemsArgs.StatusName"
-            CategoryName="@filterTodoItemsArgs.CategoryName" />
-</div>
-
-<CascadingValue Value="filterTodoItemsArgs">
-    <Checklists />
-</CascadingValue>
+<Checklists />
 
 @code {
-    private System.Timers.Timer timer = new(60000);
 
-    private IEnumerable<TodoItemModel> todoItemModels = Enumerable.Empty<TodoItemModel>();
-    private IEnumerable<TodoItemModel> filteredTodoItems = Enumerable.Empty<TodoItemModel>();
-
-    private FilterTodoItemsArgs filterTodoItemsArgs = new();
-
-    protected override void OnInitialized()
-    {
-        filteredTodoItems = todoItemModels;
-
-        timer.Elapsed += (sender, args) => OnTimerCallback();
-        timer.Start();
-    }
-
-    private void OnTimerCallback()
-    {
-        StateHasChanged();
-    }
-
-    public void Dispose()
-    {
-        timer.Dispose();
-    }
 }

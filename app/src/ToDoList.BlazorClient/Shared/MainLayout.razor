@@ -1,7 +1,6 @@
 ﻿@inherits LayoutComponentBase
 
 @using System.Security.Claims
-@using ToDoList.BlazorClient.Pages.Authentication
 
 @inject IStringLocalizer<MainLayout> Localizer
 
@@ -15,9 +14,7 @@
             <AuthorizeView>
                 <Authorized>
                     @Localizer["Welcome"], @context.User.FindFirst(ClaimTypes.Name).Value!
-                    <NavLink class="nav-link" href="logout">
-                        <span class="oi oi-account-logout"></span> @Localizer["LogOut"]
-                    </NavLink>
+                    <Logout />
                 </Authorized>
                 <NotAuthorized>
                     <Login />

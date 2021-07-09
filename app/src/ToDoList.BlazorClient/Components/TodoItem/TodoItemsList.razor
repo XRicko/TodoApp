@@ -1,12 +1,12 @@
 ﻿@inject IApiInvoker ApiInvoker
-@inject Notifier Notifier
 
-@foreach (var todoItem in TodoItemModels)
-{
-    <TodoItem @key="todoItem.Id" TodoItemModel="todoItem" />
-}
+<Virtualize Items="@TodoItemModels" Context="todoItem">
+    <li class="list-group-item">
+        <TodoItem @key="todoItem.Id" TodoItemModel="todoItem" />
+    </li>
+</Virtualize>
 
 @code {
     [Parameter]
-    public IEnumerable<TodoItemModel> TodoItemModels { get; set; } = Enumerable.Empty<TodoItemModel>();
+    public ICollection<TodoItemModel> TodoItemModels { get; set; } = Array.Empty<TodoItemModel>();
 }

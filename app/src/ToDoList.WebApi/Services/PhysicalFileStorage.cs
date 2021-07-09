@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using MediatR;
 
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 
 using ToDoList.Core.Mediator.Commands.Generics;
 using ToDoList.Core.Mediator.Requests.Create;
@@ -27,39 +26,41 @@ namespace ToDoList.WebApi.Services
             fileSystem = system ?? throw new ArgumentNullException(nameof(system));
         }
 
-        public async Task<string> SaveFileAsync(IFormFile formFile)
+        public async Task<string> SaveFileAsync(string fileName, byte[] fileContent)
         {
-            _ = formFile ?? throw new ArgumentNullException(nameof(formFile));
+            if (string.IsNullOrWhiteSpace(fileName))
+                throw new ArgumentException($"'{nameof(fileName)}' cannot be null or whitespace.", nameof(fileName));
+            _ = fileContent ?? throw new ArgumentNullException(nameof(fileContent));
 
-            if (formFile.Length <= 0)
+            if (fileContent.Length <= 0)
                 return string.Empty;
 
-            var imageCreateRequest = MakeImageCreateRequest(formFile.FileName);
+            var imageCreateRequest = MakeImageCreateRequest(fileName);
 
             string directoryName = Path.GetDirectoryName(imageCreateRequest.Path);
             if (!fileSystem.Directory.Exists(directoryName))
                 fileSystem.Directory.CreateDirectory(directoryName);
 
-            string existingFile = GetExistingFileInDirectory(formFile, directoryName);
+            string existingFile = GetExistingFileInDirectory(fileContent.LongLength, directoryName);
 
             if (!string.IsNullOrWhiteSpace(existingFile))
                 return existingFile;
 
             using var fileStream = fileSystem.FileStream.Create(imageCreateRequest.Path, FileMode.Create);
-            await formFile.CopyToAsync(fileStream);
+            await fileStream.WriteAsync(fileContent);
 
             await mediator.Send(new AddCommand<ImageCreateRequest>(imageCreateRequest));
 
             return imageCreateRequest.Name;
         }
 
-        private string GetExistingFileInDirectory(IFormFile formFile, string directoryName)
+        private string GetExistingFileInDirectory(long fileLength, string directoryName)
         {
             string[] files = fileSystem.Directory.GetFiles(directoryName);
             string existingFile = files.FirstOrDefault(x =>
             {
                 using var file = fileSystem.File.OpenRead(x);
-                return file.Length == formFile.Length;
+                return file.Length == fileLength;
             });
 
             return Path.GetFileName(existingFile);
