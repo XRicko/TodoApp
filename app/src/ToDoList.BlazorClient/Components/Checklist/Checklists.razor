@@ -4,7 +4,7 @@
     @foreach (var checklist in checklistModels)
     {
         <ChecklistItem @key="checklist.Id" ChecklistModel="@checklist"
-                       OnDeleteCallback="@DeleteChecklist" />
+                       OnDeleteCallback="@Delete" />
     }
 </div>
 
@@ -20,7 +20,7 @@
     protected override async Task OnInitializedAsync() =>
         checklistModels = await ApiInvoker.GetItemsAsync<ChecklistModel>("Checklists");
 
-    private async Task DeleteChecklist(int checklistId)
+    private async Task Delete(int checklistId)
     {
         var result = await Modal.Show<Confirm>("Confirmation").Result;
 

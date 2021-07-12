@@ -107,34 +107,46 @@ a, .btn-link {
     background: #808080;
 }
 
-.edit-checklist-form {
+.edit-item-form {
     display: flex;
     flex-direction: row;
 
-    border: 1px solid #ced4da;
+    border: 1px solid transparent;
     border-radius: .25rem;
 }
 
-.edit-checklist-form:focus-within {
+.edit-item-form:hover, .edit-item-form.active {
+    border-color: #ced4da;
+}
+
+.edit-item-form:focus-within {
     border-color: #80bdff;
     box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
     transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
 }
 
-.checklist-name-input {
+.item-name {
+    color: #495057;
+}
+
+.item-name-input {
     flex-grow: 2;
     border: none;
 }
 
-.checklist-name-input:not(:focus) {
+.item-name-input:not(:focus) {
     background-color: transparent;
 }
 
-.checklist-name-input:focus {
+.item-name-input:focus {
     border: none;
     box-shadow: none;
 }
 
-.checklist-name-input.valid.modified {
+.item-name-input:not(:last-child) {
+    background: #fff;
+}
+
+.item-name-input.valid.modified {
     outline: none;
 }

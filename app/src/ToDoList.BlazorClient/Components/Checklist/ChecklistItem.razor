@@ -10,32 +10,13 @@
 
             @if (ChecklistModel.Name == "Untitled")
             {
-                @ChecklistModel.Name
+                <span class="item-name">@ChecklistModel.Name</span>
             }
             else
             {
-                <EditForm Model="@ChecklistModel"
-                          OnValidSubmit="@UpdateChecklist"
-                          class="edit-checklist-form">
-                    <DataAnnotationsValidator />
-
-                    <InputText @bind-Value="ChecklistModel.Name"
-                               @onfocus="SetFocus"
-                               class="form-control checklist-name-input" />
-
-                    @if (isInFocus)
-                    {
-                        <button type="submit"
-                                class="border-0 btn-transition btn btn-outline-success">
-                            <i class="oi oi-check"></i>
-                        </button>
-                        <button type="button"
-                                class="border-0 btn-transition btn btn-outline-secondary"
-                                @onclick="Reset">
-                            <i class="oi oi-x"></i>
-                        </button>
-                    }
-                </EditForm>
+                <EditNameForm TItem="@ChecklistModel"
+                              Item="@ChecklistModel"
+                              OnValidSubmit="Update" />
             }
         </div>
 
@@ -97,55 +78,27 @@
 </div>
 
 @code {
+    private IEnumerable<TodoItemModel> todoItemModels = Array.Empty<TodoItemModel>();
+
+    private ICollection<TodoItemModel> ActiveTodoItems => todoItemModels.Where(x => x.StatusName != "Done").ToList();
+    private ICollection<TodoItemModel> DoneTodoItems => todoItemModels.Where(x => x.StatusName == "Done").ToList();
+
     [Parameter]
     public EventCallback<int> OnDeleteCallback { get; set; }
 
     [Parameter]
     public ChecklistModel ChecklistModel { get; set; } = new();
 
-    private string originalName;
-    private bool isInFocus;
-
-    private IEnumerable<TodoItemModel> todoItemModels = Array.Empty<TodoItemModel>();
-
-    private ICollection<TodoItemModel> ActiveTodoItems => todoItemModels.Where(x => x.StatusName != "Done").ToList();
-    private ICollection<TodoItemModel> DoneTodoItems => todoItemModels.Where(x => x.StatusName == "Done").ToList();
-
     protected override async Task OnInitializedAsync()
     {
         todoItemModels = await ApiInvoker.GetItemsAsync<TodoItemModel>("TodoItems/GetByChecklistId/" + ChecklistModel.Id);
 
-        originalName = ChecklistModel.Name;
-        isInFocus = false;
-
-        Notifier.ChecklistChanged += OnTodoItemsInChecklistChanged;
+        Notifier.ChecklistChanged += OnTodoItemsChanged;
     }
 
-    private void SetFocus()
-    {
-        isInFocus = true;
-    }
+    private async Task Update() => await ApiInvoker.PutItemAsync("Checklists", ChecklistModel);
 
-    private void RemoveFocus()
-    {
-        isInFocus = false;
-    }
-
-    private async Task UpdateChecklist()
-    {
-        await ApiInvoker.PutItemAsync("Checklists", ChecklistModel);
-        originalName = ChecklistModel.Name;
-
-        RemoveFocus();
-    }
-
-    private void Reset()
-    {
-        ChecklistModel.Name = originalName;
-        RemoveFocus();
-    }
-
-    private async Task OnTodoItemsInChecklistChanged(int checklistId)
+    private async Task OnTodoItemsChanged(int checklistId)
     {
         await InvokeAsync(async () =>
         {
@@ -157,8 +110,5 @@
         });
     }
 
-    public void Dispose()
-    {
-        Notifier.ChecklistChanged -= OnTodoItemsInChecklistChanged;
-    }
+    public void Dispose() => Notifier.ChecklistChanged -= OnTodoItemsChanged;
 }

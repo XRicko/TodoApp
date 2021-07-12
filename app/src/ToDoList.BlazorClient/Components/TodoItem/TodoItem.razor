@@ -2,7 +2,7 @@
 @inject Notifier Notifier
 
 <div class="d-flex flex-column">
-    <div class="d-flex">
+    <div class="d-flex align-items-center">
         <div class="form-check">
             <input class="form-check-input"
                    id="todo-item-@TodoItemModel.Id"
@@ -12,12 +12,14 @@
             <label class="form-check-label" for="todo-item-@TodoItemModel.Id">&nbsp;</label>
         </div>
 
-        <div>
-            @TodoItemModel.Name
+        <EditNameForm TItem="@TodoItemModel"
+                      Item="@TodoItemModel"
+                      OnValidSubmit="Update" />
+    </div>
 
-            <Badges StatusName="@TodoItemModel.StatusName"
-                    CategoryName="@TodoItemModel.CategoryName" />
-        </div>
+    <div class="mb-1">
+        <Badges StatusName="@TodoItemModel.StatusName"
+                CategoryName="@TodoItemModel.CategoryName" />
     </div>
 
     <a href="http://maps.google.com/?q=@TodoItemModel.Address" target="_blank">@TodoItemModel.Address</a>
@@ -35,7 +37,7 @@
 
         <div>
             <form method="post"
-                  @onsubmit="DeleteTodoItem"
+                  @onsubmit="Delete"
                   class="d-inline">
 
                 <button type="submit"
@@ -51,15 +53,12 @@
     [CascadingParameter]
     private IModalService Modal { get; set; }
 
-    [CascadingParameter]
-    public FilterTodoItemsArgs FilterTodoItemsArgs { get; set; }
+    private bool? IsChecked => TodoItemModel.StatusName?.Equals("Done");
 
     [Parameter]
     public TodoItemModel TodoItemModel { get; set; } = new();
 
-    private bool? IsChecked => TodoItemModel.StatusName?.Equals("Done");
-
-    private async Task DeleteTodoItem()
+    private async Task Delete()
     {
         var result = await Modal.Show<Confirm>("Confirmation").Result;
 
@@ -69,6 +68,9 @@
         await ApiInvoker.DeleteItemAsync("TodoItems/", TodoItemModel.Id);
         await Notifier.UpdateChecklist(TodoItemModel.ChecklistId);
     }
+
+    private async Task Update() => await ApiInvoker.PutItemAsync("TodoItems", TodoItemModel);
+
 
     private async Task ChangeStatus(ChangeEventArgs args)
     {
