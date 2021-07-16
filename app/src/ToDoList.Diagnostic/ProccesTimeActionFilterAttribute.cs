@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc.Filters;
@@ -18,6 +19,8 @@ namespace ToDoList.Diagnostic
         public override void OnActionExecuting(ActionExecutingContext context) => stopwatch.Start();
         public override void OnActionExecuted(ActionExecutedContext context)
         {
+            _ = context ?? throw new ArgumentNullException(nameof(context));
+
             stopwatch.Stop();
             proccessTimeCounterSource.Request(context.HttpContext.Request.GetDisplayUrl(), stopwatch.ElapsedMilliseconds);
         }

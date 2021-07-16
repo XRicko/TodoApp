@@ -1,29 +1,24 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-using ToDoList.SharedClientLibrary.Resources.Validaton;
+using ToDoList.SharedClientLibrary.Resources;
 
 namespace ToDoList.SharedClientLibrary.Models
 {
     public class UserModel : BaseModel
     {
-        [Required(
-            ErrorMessageResourceName = "Required",
-            ErrorMessageResourceType = typeof(AnnotationResources))]
-        [StringLength(
-            100,
+        [Required(ErrorMessageResourceName = "Required", ErrorMessageResourceType = typeof(Annotations))]
+        [StringLength(maximumLength: 100, MinimumLength = 6, 
             ErrorMessageResourceName = "PasswordLengthError",
-            ErrorMessageResourceType = typeof(AnnotationResources),
-            MinimumLength = 6)]
+            ErrorMessageResourceType = typeof(Annotations))]
         [DataType(DataType.Password)]
-        [Display(Name = "Password")]
+        [Display(Name = "Password", ResourceType = typeof(Annotations))]
         public string Password { get; set; }
 
         [DataType(DataType.Password)]
-        [Display(Name = "ConfirmPassword")]
-        [Compare(
-            "Password",
+        [Display(Name = "ConfirmPassword", ResourceType = typeof(Annotations))]
+        [Compare("Password", 
             ErrorMessageResourceName = "PasswordMatchingError",
-            ErrorMessageResourceType = typeof(AnnotationResources))]
+            ErrorMessageResourceType = typeof(Annotations))]
         public string ConfirmPassword { get; set; }
     }
 }

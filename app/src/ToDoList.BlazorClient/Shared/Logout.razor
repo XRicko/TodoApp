@@ -1,8 +1,8 @@
 ﻿@inject NavigationManager NavManager
 @inject IApiInvoker ApiInvoker
-@inject IStringLocalizer<Logout> Localizer
+@inject IStringLocalizer<General> Localizer
 
-<button class="btn btn-link" @onclick="LogOut"><span class="oi oi-account-logout"></span> @Localizer["LogOut"]</button>
+<button class="btn btn-link" @onclick="LogOut"><span class="oi oi-account-logout"></span> @Localizer["Log Out"]</button>
 
 @code {
     private async Task LogOut()

@@ -207,3 +207,9 @@ dotnet_naming_style.begins_with_i.capitalization = pascal_case
 
 dotnet_diagnostic.CA1062.severity = warning
 dotnet_code_quality.CA1062.excluded_type_names_with_derived_types = Migration | DbContext
+dotnet_diagnostic.CA1001.severity=suggestion
+
+[*.{cs,vb}]
+dotnet_diagnostic.CA1707.severity=suggestion
+dotnet_diagnostic.CA1805.severity=warning
+dotnet_diagnostic.CA1802.severity=suggestion

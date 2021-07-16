@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Net.Http;
 using System.Threading.Tasks;
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 
 using ToDoList.SharedClientLibrary.Models;
+using ToDoList.SharedClientLibrary.Resources;
 using ToDoList.SharedClientLibrary.Services;
 
 namespace ToDoList.MvcClient.Controllers
@@ -12,9 +14,9 @@ namespace ToDoList.MvcClient.Controllers
     public class UserController : Controller
     {
         private readonly IApiInvoker apiInvoker;
-        private readonly IStringLocalizer<UserController> localizer;
+        private readonly IStringLocalizer<General> localizer;
 
-        public UserController(IApiInvoker invoker, IStringLocalizer<UserController> stringLocalizer)
+        public UserController(IApiInvoker invoker, IStringLocalizer<General> stringLocalizer)
         {
             apiInvoker = invoker ?? throw new ArgumentNullException(nameof(invoker));
             localizer = stringLocalizer ?? throw new ArgumentNullException(nameof(stringLocalizer));
@@ -40,13 +42,10 @@ namespace ToDoList.MvcClient.Controllers
             {
                 _ = await apiInvoker.AuthenticateUserAsync("Authentication/Register", userModel);
             }
-            catch (Exception e)
+            catch (HttpRequestException e) when (e.StatusCode == System.Net.HttpStatusCode.Unauthorized)
             {
-                if (e.Message == "Unauthorized")
-                {
-                    ModelState.AddModelError(string.Empty, localizer["UserExists"]);
-                    return View("Register");
-                }
+                ModelState.AddModelError(string.Empty, localizer["Registration Failed"]);
+                return View("Register");
             }
 
             return RedirectToAction("Index", "Todo");
@@ -62,16 +61,13 @@ namespace ToDoList.MvcClient.Controllers
             {
                 _ = await apiInvoker.AuthenticateUserAsync("Authentication/Login", userModel);
             }
-            catch (Exception e)
+            catch (HttpRequestException e) when (e.StatusCode == System.Net.HttpStatusCode.Unauthorized)
             {
-                if (e.Message == "Unauthorized")
-                {
-                    if (ModelState.ContainsKey("ConfirmPassword"))
-                        ModelState["ConfirmPassword"].Errors.Clear();
+                if (ModelState.ContainsKey("ConfirmPassword"))
+                    ModelState["ConfirmPassword"].Errors.Clear();
 
-                    ModelState.AddModelError(string.Empty, localizer["InvalidCredentials"]);
-                    return View("Login");
-                }
+                ModelState.AddModelError(string.Empty, localizer["Login Failed"]);
+                return View("Login");
             }
 
             return RedirectToAction("Index", "Todo");

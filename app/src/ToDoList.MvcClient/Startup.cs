@@ -1,5 +1,6 @@
 using System;
 using System.Globalization;
+using System.Linq;
 using System.Net.Http.Headers;
 
 using Microsoft.AspNetCore.Builder;
@@ -10,7 +11,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 
-using ToDoList.Diagnostic;
 using ToDoList.Extensions;
 using ToDoList.MvcClient.API;
 using ToDoList.MvcClient.Services;
@@ -42,15 +42,15 @@ namespace ToDoList.MvcClient
 
             services.Configure<RequestLocalizationOptions>(options =>
             {
-                var cultures = new CultureInfo[]
-                {
-                    new CultureInfo("en"),
-                    new CultureInfo("uk")
-                };
+                string[] cultures = Configuration.GetSection("Cultures")
+                                                 .GetChildren()
+                                                 .Select(x => x.Key)
+                                                 .ToArray();
 
-                options.DefaultRequestCulture = new RequestCulture("en");
-                options.SupportedCultures = cultures;
-                options.SupportedUICultures = cultures;
+                options.SetDefaultCulture("en");
+
+                options.AddSupportedCultures(cultures);
+                options.AddSupportedUICultures(cultures);
             });
 
             services.AddScoped<IViewModelService, ViewModelService>();
@@ -58,10 +58,8 @@ namespace ToDoList.MvcClient
             services.AddScoped<ITokenStorage, CookieTokenStorage>();
             services.AddTransient<ITokenParser, JwtTokenParser>();
 
-            services.AddSingleton<ProccessTimeCounterSource>();
-
-            services.AddLocalization(options => options.ResourcesPath = "Resources");
-            services.AddControllersWithViews(options => options.Filters.Add<ProccesTimeActionFilterAttribute>())
+            services.AddLocalization();
+            services.AddControllersWithViews()
                     .AddMvcLocalization();
 
             services.AddSession();
@@ -85,7 +83,7 @@ namespace ToDoList.MvcClient
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
-            app.UseRequestLocalization(app.ApplicationServices.GetRequiredService<IOptions<RequestLocalizationOptions>>().Value);
+            app.UseRequestLocalization();
 
             app.UseRouting();
 

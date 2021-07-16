@@ -23,7 +23,6 @@ using ToDoList.Core.Mediator.Queries.Generics;
 using ToDoList.Core.Mediator.Response;
 using ToDoList.Core.Services;
 using ToDoList.Core.Validators;
-using ToDoList.Diagnostic;
 using ToDoList.Extensions;
 using ToDoList.Infrastructure.Data;
 using ToDoList.Infrastructure.Extensions;
@@ -99,7 +98,6 @@ namespace ToDoList.WebApi
                     };
                 });
 
-            services.AddSingleton<ProccessTimeCounterSource>();
 
             // Uncomment when using Redis
             //services.AddStackExchangeRedisCache(options =>
@@ -111,7 +109,7 @@ namespace ToDoList.WebApi
             // Uncomment when not using Redis
             services.AddDistributedMemoryCache();
 
-            services.AddControllers(options => options.Filters.Add<ProccesTimeActionFilterAttribute>())
+            services.AddControllers()
                     .AddFluentValidation(config =>
                     {
                         var assemblies = new Assembly[]

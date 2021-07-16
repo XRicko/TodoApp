@@ -53,7 +53,7 @@ namespace ToDoList.WebApi.Controllers
         {
             _ = userRequest ?? throw new ArgumentNullException(nameof(userRequest));
 
-            var user = await Mediator.Send(new GetUserByNameAndPasswordQuery(userRequest.Name, userRequest.Password));
+            var user = await Mediator.Send(new GetByNameQuery<User, UserResponse>(userRequest.Name));
 
             if (user is not null)
                 return Unauthorized("User exists");

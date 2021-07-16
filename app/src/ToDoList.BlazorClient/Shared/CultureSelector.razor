@@ -1,21 +1,26 @@
-﻿@using System.Globalization;
+﻿@using System.Globalization
+@using Microsoft.Extensions.Configuration
 
 @inject NavigationManager NavManager
 @inject Blazored.LocalStorage.ILocalStorageService LocalStorage
+@inject IConfiguration Configuration
 
-<select class="form-control m-auto w-75"@bind="Culture">
+<select class="form-control" @bind="Culture">
     @foreach (var culture in cultures)
     {
-        <option value="@culture">@culture.DisplayName</option>
+        <option value="@culture.Key">@culture.Value</option>
     }
 </select>
 
 @code {
-    private CultureInfo[] cultures = new[]
+    private Dictionary<string, string> cultures;
+
+    protected override void OnInitialized()
     {
-        new CultureInfo("en"),
-        new CultureInfo("uk")
-    };
+        cultures = Configuration.GetSection("Cultures")
+                                .GetChildren()
+                                .ToDictionary(x => x.Key, x => x.Value);
+    }
 
     private CultureInfo Culture
     {

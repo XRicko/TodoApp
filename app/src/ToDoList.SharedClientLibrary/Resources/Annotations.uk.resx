@@ -117,7 +117,40 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="LogOut" xml:space="preserve">
-    <value>Вийти</value>
+  <data name="Category" xml:space="preserve">
+    <value>Категорія</value>
+  </data>
+  <data name="Checklist" xml:space="preserve">
+    <value>Список завдань</value>
+  </data>
+  <data name="ConfirmPassword" xml:space="preserve">
+    <value>Підтвердіть пароль</value>
+  </data>
+  <data name="DueDate" xml:space="preserve">
+    <value>Виконати до</value>
+  </data>
+  <data name="Image" xml:space="preserve">
+    <value>Зображення</value>
+  </data>
+  <data name="Name" xml:space="preserve">
+    <value>Ім'я</value>
+  </data>
+  <data name="NameError" xml:space="preserve">
+    <value>Вкажіть ім’я</value>
+  </data>
+  <data name="Password" xml:space="preserve">
+    <value>Пароль</value>
+  </data>
+  <data name="PasswordLengthError" xml:space="preserve">
+    <value>{0} має бути щонаймешне {2} і щонайбільше {1} довжиною</value>
+  </data>
+  <data name="PasswordMatchingError" xml:space="preserve">
+    <value>Паролі не збігаються</value>
+  </data>
+  <data name="Required" xml:space="preserve">
+    <value>Поле {0} обов'язкове</value>
+  </data>
+  <data name="Status" xml:space="preserve">
+    <value>Стан</value>
   </data>
 </root>

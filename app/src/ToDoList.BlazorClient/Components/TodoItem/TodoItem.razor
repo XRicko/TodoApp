@@ -1,7 +1,4 @@
-﻿@inject IApiInvoker ApiInvoker
-@inject Notifier Notifier
-
-<div class="d-flex flex-column">
+﻿<div class="d-flex flex-column">
     <div class="d-flex align-items-center">
         <div class="form-check">
             <input class="form-check-input"
@@ -48,45 +45,3 @@
         </div>
     </div>
 </div>
-
-@code {
-    [CascadingParameter]
-    private IModalService Modal { get; set; }
-
-    private bool? IsChecked => TodoItemModel.StatusName?.Equals("Done");
-
-    [Parameter]
-    public TodoItemModel TodoItemModel { get; set; } = new();
-
-    private async Task Delete()
-    {
-        var result = await Modal.Show<Confirm>("Confirmation").Result;
-
-        if (result.Cancelled)
-            return;
-
-        await ApiInvoker.DeleteItemAsync("TodoItems/", TodoItemModel.Id);
-        await Notifier.UpdateChecklist(TodoItemModel.ChecklistId);
-    }
-
-    private async Task Update() => await ApiInvoker.PutItemAsync("TodoItems", TodoItemModel);
-
-
-    private async Task ChangeStatus(ChangeEventArgs args)
-    {
-        StatusModel statusModel = new();
-
-        bool isDone = (bool)args.Value;
-
-        if (isDone)
-            statusModel = await ApiInvoker.GetItemAsync<StatusModel>("Statuses/GetByName/Done");
-        else
-            statusModel = await ApiInvoker.GetItemAsync<StatusModel>("Statuses/GetByName/Ongoing");
-
-        TodoItemModel.StatusId = statusModel.Id;
-        TodoItemModel.StatusName = statusModel.Name;
-
-        await ApiInvoker.PutItemAsync("TodoItems", TodoItemModel);
-        await Notifier.UpdateChecklist(TodoItemModel.ChecklistId);
-    }
-}

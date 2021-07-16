@@ -15,7 +15,7 @@ namespace ToDoList.SharedKernel
                 if (string.IsNullOrWhiteSpace(value))
                     throw new ArgumentNullException(nameof(name), "Name cannot be null");
 
-                name = value;
+                name = value.Trim();
             }
         }
 

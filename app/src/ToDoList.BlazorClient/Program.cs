@@ -37,7 +37,7 @@ namespace ToDoList.BlazorClient
 
             builder.Services.AddAuthorizationCore();
 
-            builder.Services.AddLocalization(opt => opt.ResourcesPath = "Resources");
+            builder.Services.AddLocalization();
 
             builder.Services.AddScoped(sp =>
             {

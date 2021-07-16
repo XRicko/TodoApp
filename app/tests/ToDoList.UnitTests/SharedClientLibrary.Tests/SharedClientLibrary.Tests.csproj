@@ -23,7 +23,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\src\ToDoList.SharedClientLibrary\ToDoList.SharedClientLibrary.csproj" />
+    <ProjectReference Include="..\..\..\src\ToDoList.SharedClientLibrary\ToDoList.SharedClientLibrary.csproj">
+      <TreatAsUsed>true</TreatAsUsed>
+    </ProjectReference>
     <ProjectReference Include="..\TestExtensions\TestExtensions.csproj" />
   </ItemGroup>
 

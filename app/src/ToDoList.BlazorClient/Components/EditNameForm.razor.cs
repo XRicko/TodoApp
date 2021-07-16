@@ -6,7 +6,7 @@ using ToDoList.SharedClientLibrary.Models;
 
 namespace ToDoList.BlazorClient.Components
 {
-    public partial class EditNameForm<TItem> : ComponentBase where TItem : BaseModel
+    public partial class EditNameForm<TItem> where TItem : BaseModel
     {
         private string originalName;
         private bool isInFocus;

@@ -118,39 +118,27 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="Browse" xml:space="preserve">
-    <value>Browse</value>
-  </data>
-  <data name="Category" xml:space="preserve">
-    <value>Category</value>
-  </data>
-  <data name="Checklist" xml:space="preserve">
-    <value>Checklist</value>
+    <value>Огляд</value>
   </data>
   <data name="ChooseImage" xml:space="preserve">
-    <value>Choose image</value>
-  </data>
-  <data name="Image" xml:space="preserve">
-    <value>Image</value>
+    <value>Обрати зображення</value>
   </data>
   <data name="Latitude" xml:space="preserve">
-    <value>Latitude</value>
+    <value>Широта</value>
   </data>
   <data name="Longitude" xml:space="preserve">
-    <value>Longitude</value>
+    <value>Довгота</value>
   </data>
   <data name="Reset" xml:space="preserve">
-    <value>Reset</value>
+    <value>Скинути</value>
   </data>
   <data name="SelectCategory" xml:space="preserve">
-    <value>Select category</value>
+    <value>Вибрати категорію</value>
   </data>
   <data name="SelectChecklist" xml:space="preserve">
-    <value>Select checklist</value>
+    <value>Вибрати список</value>
   </data>
   <data name="SelectStatus" xml:space="preserve">
-    <value>Select status</value>
-  </data>
-  <data name="Status" xml:space="preserve">
-    <value>Status</value>
+    <value>Вибрати стан</value>
   </data>
 </root>

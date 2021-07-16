@@ -1,6 +1,4 @@
-﻿@inject IApiInvoker ApiInvoker
-
-<Virtualize Items="@TodoItemModels" Context="todoItem">
+﻿<Virtualize Items="@TodoItemModels" Context="todoItem">
     <li class="list-group-item">
         <TodoItem @key="todoItem.Id" TodoItemModel="todoItem" />
     </li>

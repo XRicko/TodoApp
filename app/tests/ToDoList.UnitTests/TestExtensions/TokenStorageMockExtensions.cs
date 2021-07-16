@@ -1,4 +1,5 @@
-﻿
+﻿using System;
+
 using Moq;
 
 using ToDoList.SharedClientLibrary.Services;
@@ -10,11 +11,11 @@ namespace TestExtensions
         public static void SetupGettingToken(this Mock<ITokenStorage> tokenStorageMock,
                                              string key, string token)
         {
+            _ = tokenStorageMock ?? throw new ArgumentNullException(nameof(tokenStorageMock));
+
             tokenStorageMock.Setup(x => x.GetTokenAsync(key))
                             .ReturnsAsync(token)
                             .Verifiable();
         }
-
-
     }
 }

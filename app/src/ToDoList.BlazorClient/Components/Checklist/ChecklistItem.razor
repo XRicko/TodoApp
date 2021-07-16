@@ -1,7 +1,4 @@
-﻿@implements IDisposable
-
-@inject IApiInvoker ApiInvoker
-@inject Notifier Notifier
+﻿@inject IStringLocalizer<General> Localizer
 
 <div class="card">
     <div class="card-header d-flex justify-content-between align-items-center">
@@ -10,7 +7,7 @@
 
             @if (ChecklistModel.Name == "Untitled")
             {
-                <span class="item-name">@ChecklistModel.Name</span>
+                <span class="item-name">@Localizer["UntitledChecklist"]</span>
             }
             else
             {
@@ -76,39 +73,3 @@
         </div>
     </div>
 </div>
-
-@code {
-    private IEnumerable<TodoItemModel> todoItemModels = Array.Empty<TodoItemModel>();
-
-    private ICollection<TodoItemModel> ActiveTodoItems => todoItemModels.Where(x => x.StatusName != "Done").ToList();
-    private ICollection<TodoItemModel> DoneTodoItems => todoItemModels.Where(x => x.StatusName == "Done").ToList();
-
-    [Parameter]
-    public EventCallback<int> OnDeleteCallback { get; set; }
-
-    [Parameter]
-    public ChecklistModel ChecklistModel { get; set; } = new();
-
-    protected override async Task OnInitializedAsync()
-    {
-        todoItemModels = await ApiInvoker.GetItemsAsync<TodoItemModel>("TodoItems/GetByChecklistId/" + ChecklistModel.Id);
-
-        Notifier.ChecklistChanged += OnTodoItemsChanged;
-    }
-
-    private async Task Update() => await ApiInvoker.PutItemAsync("Checklists", ChecklistModel);
-
-    private async Task OnTodoItemsChanged(int checklistId)
-    {
-        await InvokeAsync(async () =>
-        {
-            if (ChecklistModel.Id == checklistId)
-            {
-                todoItemModels = await ApiInvoker.GetItemsAsync<TodoItemModel>("TodoItems/GetByChecklistId/" + checklistId);
-                StateHasChanged();
-            }
-        });
-    }
-
-    public void Dispose() => Notifier.ChecklistChanged -= OnTodoItemsChanged;
-}

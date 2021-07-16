@@ -9,22 +9,42 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Resources\Views\Checklist\" />
     <Folder Include="wwwroot\images\" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="5.2.7" />
-    <PackageReference Include="Microsoft.AspNetCore.Session" Version="2.2.0" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.10.9" />
-    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="5.0.2" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ToDoList.Diagnostic\ToDoList.Diagnostic.csproj" />
     <ProjectReference Include="..\ToDoList.Extensions\ToDoList.Extensions.csproj" />
-    <ProjectReference Include="..\ToDoList.SharedClientLibrary\ToDoList.SharedClientLibrary.csproj" />
-    <ProjectReference Include="..\ToDoList.SharedKernel\ToDoList.SharedKernel.csproj" />
+    <ProjectReference Include="..\ToDoList.SharedClientLibrary\ToDoList.SharedClientLibrary.csproj">
+      <TreatAsUsed>true</TreatAsUsed>
+    </ProjectReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Resources\CreateOrUpdate.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>CreateOrUpdate.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\ViewAll.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>ViewAll.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Resources\CreateOrUpdate.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>CreateOrUpdate.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\ViewAll.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>ViewAll.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
 
 </Project>

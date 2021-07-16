@@ -117,10 +117,70 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="ActiveTab" xml:space="preserve">
+    <value>Active</value>
+  </data>
+  <data name="Confirm Password" xml:space="preserve">
+    <value>Confirm password</value>
+  </data>
+  <data name="DaysAgo" xml:space="preserve">
+    <value>Days ago</value>
+  </data>
+  <data name="DeleteConfirmation" xml:space="preserve">
+    <value>Are you sure you want to delete this record?</value>
+  </data>
+  <data name="DoneStatus" xml:space="preserve">
+    <value>Done</value>
+  </data>
+  <data name="DoneTab" xml:space="preserve">
+    <value>Done</value>
+  </data>
+  <data name="Due" xml:space="preserve">
+    <value>Due</value>
+  </data>
+  <data name="Greetings" xml:space="preserve">
+    <value>Welcome!</value>
+  </data>
+  <data name="Home" xml:space="preserve">
+    <value>Home</value>
+  </data>
+  <data name="Log In" xml:space="preserve">
+    <value>Log In</value>
+  </data>
+  <data name="Log Out" xml:space="preserve">
+    <value>Log Out</value>
+  </data>
+  <data name="Login Failed" xml:space="preserve">
+    <value>Username or password is incorrect</value>
+  </data>
+  <data name="LoginTitle" xml:space="preserve">
+    <value>Use a local account to log in</value>
+  </data>
+  <data name="OngoingStatus" xml:space="preserve">
+    <value>Ongoing</value>
+  </data>
+  <data name="Password" xml:space="preserve">
+    <value>Password</value>
+  </data>
+  <data name="PlannedStatus" xml:space="preserve">
+    <value>Planned</value>
+  </data>
   <data name="Register" xml:space="preserve">
     <value>Register</value>
   </data>
-  <data name="Welcome" xml:space="preserve">
-    <value>Welcome</value>
+  <data name="RegisterTitle" xml:space="preserve">
+    <value>Create a new account</value>
+  </data>
+  <data name="Registration Failed" xml:space="preserve">
+    <value>User exists</value>
+  </data>
+  <data name="UntitledChecklist" xml:space="preserve">
+    <value>Untitled</value>
+  </data>
+  <data name="Username" xml:space="preserve">
+    <value>Username</value>
+  </data>
+  <data name="WelcomingInfo" xml:space="preserve">
+    <value>Login or register to get access</value>
   </data>
 </root>

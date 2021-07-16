@@ -1,10 +1,10 @@
-﻿@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer Localizer
+﻿@inject IStringLocalizer<General> Localizer
 
 @{
-    ViewData["Title"] = Localizer["Title"];
+    ViewData["Title"] = Localizer["Home"];
 }
 
 <div class="text-center">
-    <h1 class="display-4">@Localizer["Welcome"]</h1>
-    <p>@Localizer["WelcomeInformation"]</p>
+    <h1 class="display-4">@Localizer["Greetings"]</h1>
+    <p>@Localizer["WelcomingInfo"]</p>
 </div>

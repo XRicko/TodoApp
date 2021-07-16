@@ -117,10 +117,16 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="LogIn" xml:space="preserve">
-    <value>Log in</value>
+  <data name="NewChecklist" xml:space="preserve">
+    <value>Новий список</value>
   </data>
-  <data name="UseLocalAccount" xml:space="preserve">
-    <value>Use a local account to log in</value>
+  <data name="NewTask" xml:space="preserve">
+    <value>Нове завдання</value>
+  </data>
+  <data name="UpdateChecklist" xml:space="preserve">
+    <value>Оновити список завдань</value>
+  </data>
+  <data name="UpdateTask" xml:space="preserve">
+    <value>Оновити завдання</value>
   </data>
 </root>

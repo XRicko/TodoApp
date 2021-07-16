@@ -1,4 +1,6 @@
-﻿@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer Localizer
+﻿@using ToDoList.MvcClient.Resources
+
+@inject IStringLocalizer<CreateOrUpdate> Localizer
 @model ToDoList.MvcClient.ViewModels.CreateTodoItemViewModel
 
 @{
@@ -30,7 +32,7 @@
             </div>
 
             <div class="form-group required">
-                <label asp-for="TodoItemModel.ChecklistId" class="control-label">@Localizer["Checklist"]</label>
+                <label asp-for="TodoItemModel.ChecklistId" class="control-label"></label>
                 <select class="form-control" asp-for="TodoItemModel.ChecklistId" asp-items="@new SelectList(Model.ChecklistModels, nameof(ChecklistModel.Id), nameof(ChecklistModel.Name), Model.SelectedChecklistId)">
                     <option value="" disabled>@Localizer["SelectChecklist"]</option>
                 </select>
@@ -38,7 +40,7 @@
             </div>
 
             <div class="form-group required">
-                <label asp-for="TodoItemModel.StatusId" class="control-label">@Localizer["Status"]</label>
+                <label asp-for="TodoItemModel.StatusId" class="control-label"></label>
                 <select class="form-control" asp-for="TodoItemModel.StatusId" asp-items="@new SelectList(Model.StatusModels, nameof(StatusModel.Id), nameof(StatusModel.Name), Model.SelectedStatusId)">
                     <option value="" disabled>@Localizer["SelectStatus"]</option>
                 </select>
@@ -46,7 +48,7 @@
             </div>
 
             <div class="form-group">
-                <label asp-for="TodoItemModel.CategoryId" class="control-label">@Localizer["Category"]</label>
+                <label asp-for="TodoItemModel.CategoryId" class="control-label"></label>
                 <select class="form-control" id="categorySelector" asp-for="TodoItemModel.CategoryName" asp-items="@new SelectList(Model.CategoryModels, nameof(CategoryModel.Name), nameof(CategoryModel.Name), Model.SelectedCategoryId)">
                     <option value="">@Localizer["SelectCategory"]</option>
                 </select>
@@ -70,7 +72,7 @@
             </div>
 
             <div class="form-group">
-                <label>@Localizer["Image"]</label>
+                <label asp-for="@Model.TodoItemModel.ImageId"></label>
 
                 <div class="d-flex">
                     <div class="custom-file mr-2">
@@ -82,7 +84,7 @@
                 </div>
             </div>
             <div class="form-group">
-                <input type="submit" value="Submit" class="btn btn-primary btn-block" />
+                <input type="submit" class="btn btn-primary btn-block" />
             </div>
         </form>
     </div>

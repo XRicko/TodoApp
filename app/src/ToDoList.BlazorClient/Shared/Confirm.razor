@@ -1,5 +1,9 @@
-﻿<div>
-    <p>Are you sure you want to delete this record?</p>
+﻿@using Blazored.Modal.Services
+
+@inject IStringLocalizer<General> Localizer
+
+<div>
+    <p>@Localizer["DeleteСonfirmation"]</p>
 
     <button @onclick="Close" class="btn btn-primary">Submit</button>
     <button @onclick="Cancel" class="btn btn-secondary">Cancel</button>
@@ -10,6 +14,6 @@
     [CascadingParameter]
     private BlazoredModalInstance BlazoredModal { get; set; }
 
-    async Task Close() => await BlazoredModal.CloseAsync(ModalResult.Ok(true));
-    async Task Cancel() => await BlazoredModal.CancelAsync();
+    private async Task Close() => await BlazoredModal.CloseAsync(ModalResult.Ok(true));
+    private async Task Cancel() => await BlazoredModal.CancelAsync();
 }

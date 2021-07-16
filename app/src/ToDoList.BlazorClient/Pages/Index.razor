@@ -1,13 +1,16 @@
 ﻿@page "/"
 
+@using System.Threading
+@using System.Diagnostics
+
 @using GoogleMapsComponents;
 @using GoogleMapsComponents.Maps;
 
-@inject IStringLocalizer<Index> Localizer
+@inject IStringLocalizer<General> Localizer
 
 <h1>@Localizer["Greetings"]</h1>
 
-@Localizer["Welcoming"]
+@Localizer["WelcomingInfo"]
 
 <div style="height: 400px; width: 100%;">
     <GoogleMap @ref="googleMap" Id="map" Height="100%" Options="@options" OnAfterInit="async () => await OnAfterInitAsync()" />

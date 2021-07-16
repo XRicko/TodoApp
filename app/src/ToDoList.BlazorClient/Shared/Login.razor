@@ -1,31 +1,62 @@
-﻿@inject NavigationManager NavManager
+﻿@using System.Net.Http
+@inject NavigationManager NavManager
 @inject IApiInvoker ApiInvoker
-@inject IStringLocalizer<Login> Localizer
+@inject IStringLocalizer<General> Localizer
 
-<EditForm Model="@user" OnValidSubmit="LogIn">
-    <div class="form-row">
-        <div class="col-auto">
-            <label for="username" class="sr-only">@Localizer["Username"]</label>
-            <InputText id="username" class="form-control" @bind-Value="user.Name" placeholder="@Localizer["Username"]" />
-        </div>
+<EditForm EditContext="@editContext" OnSubmit="@Submit">
+	<DataAnnotationsValidator />
 
-        <div class="col-auto">
-            <label for="password" class="sr-only">@Localizer["Password"]</label>
-            <InputText id="password" type="password" class="form-control" @bind-Value="user.Password" placeholder="@Localizer["Password"]" />
-        </div>
+	<div class="form-row">
+		<div class="col">
+			<label for="username" class="sr-only">@Localizer["Username"]</label>
+			<InputText id="username" class="form-control" @bind-Value="user.Name" placeholder="@Localizer["Username"]" />
+		</div>
 
-        <div class="col-auto">
-            <button type="submit" class="btn btn-success">@Localizer["LogIn"]</button>
-        </div>
-    </div>
+		<div class="col">
+			<label for="password" class="sr-only">@Localizer["Password"]</label>
+			<InputText id="password" type="password" class="form-control" @bind-Value="user.Password" placeholder="@Localizer["Password"]" />
+		</div>
+
+		<div>
+			<button type="submit" class="btn btn-success">@Localizer["Log In"]</button>
+		</div>
+	</div>
 </EditForm>
 
-@code {
-    private UserModel user = new();
+@if (!string.IsNullOrWhiteSpace(error))
+{
+	<Error @bind-ErrorMessage="error" />
+}
 
-    private async Task LogIn()
-    {
-        _ = await ApiInvoker.AuthenticateUserAsync("Authentication/Login", user);
-        NavManager.NavigateTo("/");
-    }
+@code {
+	private UserModel user = new();
+	private EditContext editContext;
+
+	public string error;
+
+	protected override void OnInitialized()
+	{
+		editContext = new EditContext(user);
+	}
+
+	private async Task Submit()
+	{
+		editContext.Validate();
+
+		var confirmationPasswordMessages = editContext.GetValidationMessages(editContext.Field(nameof(user.ConfirmPassword)));
+		var validationMessages = editContext.GetValidationMessages();
+
+		if (validationMessages.All(x => x == confirmationPasswordMessages.FirstOrDefault()))
+		{
+			try
+			{
+				_ = await ApiInvoker.AuthenticateUserAsync("Authentication/Login", user);
+				NavManager.NavigateTo(NavManager.Uri);
+			}
+			catch (HttpRequestException e) when (e.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+			{
+				error = Localizer["Login Failed"];
+			}
+		}
+	}
 }

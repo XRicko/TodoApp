@@ -1,4 +1,5 @@
-﻿using System.Globalization;
+﻿using System;
+using System.Globalization;
 using System.Threading.Tasks;
 
 using Blazored.LocalStorage;
@@ -10,8 +11,10 @@ namespace ToDoList.BlazorClient.Extensions
 {
     public static class WebAssemblyHostExtension
     {
-        public async static Task SetDefaultCultureAsync(this WebAssemblyHost host)
+        public static async Task SetDefaultCultureAsync(this WebAssemblyHost host)
         {
+            _ = host ?? throw new ArgumentNullException(nameof(host));
+
             var localStorage = host.Services.GetRequiredService<ILocalStorageService>();
             string localStorageCulture = await localStorage.GetItemAsStringAsync("BlazorCulture");
 

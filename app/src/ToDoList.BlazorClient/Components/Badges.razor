@@ -1,33 +1,31 @@
-﻿@if (StatusName is "Planned")
+﻿@inject IStringLocalizer<General> Localizer
+
+@if (StatusName is "Planned")
 {
     <a href="javascript:void(0)"
-       class="badge badge-secondary ml-2 mr-1"
-       @onclick="async () => await OnStatusCallback.InvokeAsync(new FilterTodoItemsArgs(StatusName, CategoryName))">
-        Planned
+       class="badge badge-secondary ml-2 mr-1">
+        @Localizer["PlannedStatus"]
     </a>
 }
 else if (StatusName is "Ongoing")
 {
     <a href="javascript:void(0)"
-       class="badge badge-warning ml-2 mr-1"
-       @onclick="async () => await OnStatusCallback.InvokeAsync(new FilterTodoItemsArgs(StatusName, CategoryName))">
-        Ongoing
+       class="badge badge-warning ml-2 mr-1">
+        @Localizer["OngoingStatus"]
     </a>
 }
 else if (StatusName is "Done")
 {
     <a href="javascript:void(0)"
-       class="badge badge-success ml-2 mr-1"
-       @onclick="async () => await OnStatusCallback.InvokeAsync(new FilterTodoItemsArgs(StatusName, CategoryName))">
-        Done
+       class="badge badge-success ml-2 mr-1">
+        @Localizer["DoneStatus"]
     </a>
 }
 
 @if (!string.IsNullOrWhiteSpace(CategoryName))
 {
-    <a href="javascript:void(0)"
-       class="badge badge-pill badge-info"
-       @onclick="async () => await OnCategoryCallback.InvokeAsync(new FilterTodoItemsArgs(StatusName, CategoryName))">
+    <a href="javasript:void(0)"
+       class="badge badge-pill badge-info">
         #@CategoryName
     </a>
 }

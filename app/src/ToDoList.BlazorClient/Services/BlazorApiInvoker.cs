@@ -16,8 +16,7 @@ namespace ToDoList.BlazorClient.Services
 
         public BlazorApiInvoker(HttpClient httpClient,
                                 ITokenStorage tokenStorage,
-                                AuthenticationStateProvider stateProvider
-                                )
+                                AuthenticationStateProvider stateProvider)
             : base(httpClient, tokenStorage)
         {
             authStateProvider = stateProvider ?? throw new ArgumentNullException(nameof(stateProvider));

@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.Http;
 
 using Moq;
 
-using ToDoList.Core;
 using ToDoList.Core.Entities;
 using ToDoList.Core.Mediator.Queries.Generics;
 using ToDoList.Core.Mediator.Response;
