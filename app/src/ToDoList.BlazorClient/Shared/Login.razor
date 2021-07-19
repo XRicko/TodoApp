@@ -17,26 +17,36 @@
 			<InputText id="password" type="password" class="form-control" @bind-Value="user.Password" placeholder="@Localizer["Password"]" />
 		</div>
 
-		<div>
-			<button type="submit" class="btn btn-success">@Localizer["Log In"]</button>
-		</div>
+		@if (!isLoading && string.IsNullOrWhiteSpace(error))
+		{
+			<div>
+				<button type="submit" class="btn btn-success">@Localizer["Log In"]</button>
+			</div>
+		}
 	</div>
 </EditForm>
 
 @if (!string.IsNullOrWhiteSpace(error))
 {
-	<Error @bind-ErrorMessage="error" />
+	<ErrorMessage @bind-Error="error" />
+}
+
+@if (isLoading)
+{
+	<Spinner />
 }
 
 @code {
 	private UserModel user = new();
 	private EditContext editContext;
 
-	public string error;
+	private string error;
+	private bool isLoading;
 
 	protected override void OnInitialized()
 	{
 		editContext = new EditContext(user);
+		isLoading = false;
 	}
 
 	private async Task Submit()
@@ -48,13 +58,18 @@
 
 		if (validationMessages.All(x => x == confirmationPasswordMessages.FirstOrDefault()))
 		{
+			isLoading = true;
+
 			try
 			{
 				_ = await ApiInvoker.AuthenticateUserAsync("Authentication/Login", user);
+				isLoading = false;
+
 				NavManager.NavigateTo(NavManager.Uri);
 			}
 			catch (HttpRequestException e) when (e.StatusCode == System.Net.HttpStatusCode.Unauthorized)
 			{
+				isLoading = false;
 				error = Localizer["Login Failed"];
 			}
 		}

@@ -36,16 +36,24 @@
 			</div>
 		</div>
 
-		<div class="row">
-			<div class="col-md-12 text-right">
-				<button type="submit" class="btn btn-success">@Localizer["Register"]</button>
+		@if (!isLoading && string.IsNullOrWhiteSpace(error))
+		{
+			<div class="row">
+				<div class="col-md-12 text-right">
+					<button type="submit" class="btn btn-success">@Localizer["Register"]</button>
+				</div>
 			</div>
-		</div>
+		}
 	</EditForm>
 
 	@if (!string.IsNullOrWhiteSpace(error))
 	{
-		<Error @bind-ErrorMessage="error" />
+		<ErrorMessage @bind-Error="error" />
+	}
+
+	@if (isLoading)
+	{
+		<Spinner />
 	}
 </div>
 
@@ -53,16 +61,22 @@
 	private UserModel user = new();
 
 	private string error;
+	private bool isLoading;
 
 	private async Task CreateUser()
 	{
+		isLoading = true;
+
 		try
 		{
 			_ = await ApiInvoker.AuthenticateUserAsync("Authentication/Register", user);
+			isLoading = false;
+
 			NavManager.NavigateTo("/");
 		}
 		catch (HttpRequestException e) when (e.StatusCode == System.Net.HttpStatusCode.Unauthorized)
 		{
+			isLoading = false;
 			error = Localizer["Registration Failed"];
 		}
 	}
