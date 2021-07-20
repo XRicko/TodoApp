@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Net.Http;
 using System.Threading.Tasks;
 
 using FluentAssertions;
@@ -17,28 +16,31 @@ namespace BlazorClient.Tests.Authenctication
 {
     public class AuthStateProviderTests
     {
+        private readonly Mock<IApiInvoker> apiInvokerMock;
+
         private readonly Mock<ITokenStorage> tokenStorageMock;
         private readonly Mock<ITokenParser> tokenParserMock;
-
-        private readonly HttpClient httpClient;
 
         private readonly AuthStateProvider authStateProvider;
 
         public AuthStateProviderTests()
         {
+            apiInvokerMock = new Mock<IApiInvoker>();
+
             tokenStorageMock = new Mock<ITokenStorage>();
             tokenParserMock = new Mock<ITokenParser>();
 
-            httpClient = new HttpClient { BaseAddress = new Uri("https://localhost:5001/api/") };
-
-            authStateProvider = new AuthStateProvider(httpClient, tokenParserMock.Object, tokenStorageMock.Object);
+            authStateProvider = new AuthStateProvider(apiInvokerMock.Object, tokenParserMock.Object, tokenStorageMock.Object);
         }
 
         [Fact]
         public async Task GetAuthenticationStateAsync_ReturnsEmptyAuthencticationStateIfNoToken()
         {
             // Arrange
+            string refreshToken = "enfeofwjeiWQpojpcowX.qwfno";
+
             tokenStorageMock.SetupGettingToken("accessToken", "");
+            tokenStorageMock.SetupGettingToken("refreshToken", refreshToken);
 
             // Act
             var actual = await authStateProvider.GetAuthenticationStateAsync();
@@ -49,27 +51,60 @@ namespace BlazorClient.Tests.Authenctication
         }
 
         [Fact]
-        public async Task GetAuthenticationStateAsync_ReturnsEmptyAuthencticationStateIfTokenExpired()
+        public async Task GetAuthenticationStateAsync_ReturnsEmptyAuthencticationStateIfNoRefreshToken()
         {
             // Arrange
-            string token = "ejnefNWPQDMpf.FE{OFekwpqvje";
+            string accessToken = "edjWDopjcNjsqw.Wdnjap[q";
 
-            var expiryDate = DateTimeOffset.Now.AddMinutes(-2);
-            var claimsPrincipal = ClaimsPrincipalHelpers.CreateClaimsPrincipal(expiryDate);
-
-            tokenParserMock.SetupGettingClaimsPrincipal(token, claimsPrincipal);
-            tokenParserMock.SetupGettingExpiryDate(token, expiryDate, claimsPrincipal);
-
-            tokenStorageMock.SetupGettingToken("accessToken", token);
+            tokenStorageMock.SetupGettingToken("accessToken", accessToken);
+            tokenStorageMock.SetupGettingToken("refreshToken", "");
 
             // Act
             var actual = await authStateProvider.GetAuthenticationStateAsync();
 
             // Assert
             actual.User.Claims.Should().BeEmpty();
+            tokenStorageMock.Verify();
+        }
+
+        [Fact]
+        public async Task GetAuthenticationStateAsync_RefreshesTokenAndReturnsAuthenticationStateWithClaimsIfTokenExpired()
+        {
+            // Arrange
+            string token = "ejnefNWPQDMpf.FE{OFekwpqvje";
+            string refreshToken = "enfeofwjeiWQpojpcowX.qwfno";
+
+            string refreshedToken = "eYsiajWNogwjemg.QspojvewjQ";
+
+            var expiredDate = DateTimeOffset.Now.AddMinutes(-2);
+            var newDate = DateTimeOffset.Now.AddMinutes(5);
+
+            var claimsPrincipalWithExpired = ClaimsPrincipalHelpers.CreateClaimsPrincipal(expiredDate);
+            var newClaimsPrincipal = ClaimsPrincipalHelpers.CreateClaimsPrincipal(newDate);
+
+            tokenParserMock.SetupGettingClaimsPrincipal(token, claimsPrincipalWithExpired);
+            tokenParserMock.SetupGettingClaimsPrincipal(refreshedToken, newClaimsPrincipal);
+
+            tokenParserMock.SetupGettingExpiryDate(token, expiredDate, claimsPrincipalWithExpired);
+
+            tokenStorageMock.SetupSequence(x => x.GetTokenAsync("accessToken"))
+                            .ReturnsAsync(token)
+                            .ReturnsAsync(refreshedToken);
+
+            tokenStorageMock.SetupGettingToken("refreshToken", refreshToken);
+
+            // Act
+            var actual = await authStateProvider.GetAuthenticationStateAsync();
+
+            // Assert
+            actual.User.Claims.Should().NotBeEmpty();
 
             tokenParserMock.Verify();
+
             tokenStorageMock.Verify();
+            tokenStorageMock.Verify(x => x.GetTokenAsync("accessToken"), Times.Exactly(2));
+
+            apiInvokerMock.Verify(x => x.AddAuthorizationHeaderAsync(refreshedToken), Times.Once);
         }
 
         [Fact]
@@ -77,25 +112,27 @@ namespace BlazorClient.Tests.Authenctication
         {
             // Arrange
             string token = "ejnefNWPQDMpf.FE{OFekwpqvje";
+            string refreshToken = "enfeofwjeiWQpojpcowX.qwfno";
 
-            var expiryDate = DateTimeOffset.Now.AddMinutes(4);
+            var expiryDate = DateTimeOffset.Now.AddMinutes(5);
             var claimsPrincipal = ClaimsPrincipalHelpers.CreateClaimsPrincipal(expiryDate);
-
-            tokenStorageMock.SetupGettingToken("accessToken", token);
 
             tokenParserMock.SetupGettingClaimsPrincipal(token, claimsPrincipal);
             tokenParserMock.SetupGettingExpiryDate(token, expiryDate, claimsPrincipal);
+
+            tokenStorageMock.SetupGettingToken("accessToken", token);
+            tokenStorageMock.SetupGettingToken("refreshToken", refreshToken);
 
             // Act
             var actual = await authStateProvider.GetAuthenticationStateAsync();
 
             // Assert
             actual.User.Claims.Should().NotBeEmpty();
-            actual.User.Claims.Should().Contain(x => x.Value == expiryDate.ToUnixTimeSeconds().ToString());
 
-            httpClient.DefaultRequestHeaders.Authorization.Parameter.Should().Be(token);
-
+            tokenParserMock.Verify();
             tokenStorageMock.Verify();
+
+            apiInvokerMock.Verify(x => x.AddAuthorizationHeaderAsync(token), Times.Once);
         }
 
         [Fact]
@@ -117,6 +154,7 @@ namespace BlazorClient.Tests.Authenctication
 
             // Assert
             eventRaised.Should().BeTrue();
+            tokenParserMock.Verify();
         }
 
         [Fact]

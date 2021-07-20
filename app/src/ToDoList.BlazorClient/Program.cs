@@ -27,10 +27,11 @@ namespace ToDoList.BlazorClient
             builder.Services.AddScoped<ITokenStorage, LocalTokenStorage>();
             builder.Services.AddScoped<ITokenParser, JwtTokenParser>();
 
-            builder.Services.AddScoped<IApiInvoker, BlazorApiInvoker>();
+            builder.Services.AddScoped<IApiInvoker, ApiInvoker>();
             builder.Services.AddSingleton<Notifier>();
 
             builder.Services.AddScoped<AuthenticationStateProvider, AuthStateProvider>();
+            builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
 
             builder.Services.AddBlazoredLocalStorage();
             builder.Services.AddBlazoredModal();

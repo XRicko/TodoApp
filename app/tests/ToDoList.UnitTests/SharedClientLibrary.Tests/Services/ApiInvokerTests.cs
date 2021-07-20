@@ -528,7 +528,7 @@ namespace SharedClientLibrary.Tests.Services
             httpMessageHandlerMock.SetupHttCall(uri, HttpMethod.Delete, HttpStatusCode.OK);
 
             // Act
-            await apiInvoker.LogoutAsync();
+            await apiInvoker.LogOutAsync();
 
             // Assert
             httpClient.DefaultRequestHeaders.Authorization.Should().BeNull();
@@ -551,7 +551,7 @@ namespace SharedClientLibrary.Tests.Services
             SetupHttpCallSequenceForRefreshingToken(uri, HttpMethod.Delete);
 
             // Act
-            await apiInvoker.LogoutAsync();
+            await apiInvoker.LogOutAsync();
 
             // Assert
             httpClient.DefaultRequestHeaders.Authorization.Should().BeNull();
@@ -571,13 +571,73 @@ namespace SharedClientLibrary.Tests.Services
             httpMessageHandlerMock.SetupHttCall(uri, HttpMethod.Delete, statusCode);
 
             // Act && Assert
-            Func<Task> action = () => apiInvoker.LogoutAsync();
+            Func<Task> action = () => apiInvoker.LogOutAsync();
 
             (await action.Should().ThrowAsync<HttpRequestException>())
                          .And.StatusCode.Should().Be(statusCode);
 
             httpMessageHandlerMock.Verify();
             tokenStorageMock.Verify();
+        }
+
+        [Fact]
+        public async Task AddAuthorizationHeaderAsync_DoesntAddHeaderIfItExists()
+        {
+            // Arrange
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", token);
+            tokenStorageMock.SetupGettingToken("accessToken", token);
+
+            // Act
+            await apiInvoker.AddAuthorizationHeaderAsync();
+
+            // Assert
+            httpClient.DefaultRequestHeaders.Authorization.Parameter.Should().Be(token);
+            tokenStorageMock.Verify();
+        }
+
+        [Fact]
+        public async Task AddAuthorizationHeaderAsync_DoesntAddHeaderIfTokenIsNull()
+        {
+            // Arrange
+            tokenStorageMock.SetupGettingToken("accessToken", null);
+
+            // Act
+            await apiInvoker.AddAuthorizationHeaderAsync();
+
+            // Assert
+            httpClient.DefaultRequestHeaders.Authorization.Should().BeNull();
+            tokenStorageMock.Verify();
+        }
+
+        [Fact]
+        public async Task AddAuthorizationHeaderAsync_AddsHeaderIfItMissing()
+        {
+            // Arrange
+            httpClient.DefaultRequestHeaders.Authorization = null;
+            string accessToken = "edjenYasjnWQdnfp";
+
+            // Act
+            await apiInvoker.AddAuthorizationHeaderAsync(accessToken);
+
+            // Assert
+            httpClient.DefaultRequestHeaders.Authorization.Parameter.Should().Be(accessToken);
+            tokenStorageMock.Verify(x => x.GetTokenAsync("accessToken"), Times.Never);
+        }
+
+        [Fact]
+        public async Task RefreshTokenAsync_RefreshesTokenAndSetsIt()
+        {
+            // Arrange
+            SetupRefreshingToken();
+
+            // Act
+            await apiInvoker.RefreshTokenAsync();
+
+            // Assert
+            httpClient.DefaultRequestHeaders.Authorization.Parameter.Should().Be(token);
+
+            tokenStorageMock.Verify();
+            httpMessageHandlerMock.Verify();
         }
 
         private void SetupHttpCallSequenceForRefreshingToken(Uri uri, HttpMethod httpMethod,

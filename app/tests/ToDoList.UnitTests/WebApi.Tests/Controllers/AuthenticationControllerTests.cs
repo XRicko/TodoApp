@@ -108,10 +108,15 @@ namespace WebApi.Tests.Controllers
 
             AuthenticatedResponse expected = new(accessToken, refreshToken);
 
-            MediatorMock.SetupSequence(x => x.Send(new GetUserByNameAndPasswordQuery(userRequest.Name, userRequest.Password),
-                                                   It.IsAny<CancellationToken>()))
+            MediatorMock.Setup(x => x.Send(new GetByNameQuery<User, UserResponse>(userRequest.Name),
+                                           It.IsAny<CancellationToken>()))
                         .ReturnsAsync(() => null)
-                        .ReturnsAsync(userResponse);
+                        .Verifiable();
+
+            MediatorMock.Setup(x => x.Send(new GetUserByNameAndPasswordQuery(userRequest.Name, userRequest.Password),
+                                           It.IsAny<CancellationToken>()))
+                        .ReturnsAsync(userResponse)
+                        .Verifiable();
 
             authenticatorMock.Setup(x => x.AuthenticateAsync(userResponse))
                              .ReturnsAsync(expected)
@@ -123,8 +128,7 @@ namespace WebApi.Tests.Controllers
             // Assert
             actual.Value.Should().Be(expected);
 
-            MediatorMock.Verify(x => x.Send(new GetUserByNameAndPasswordQuery(userRequest.Name, userRequest.Password),
-                                            It.IsAny<CancellationToken>()), Times.Exactly(2));
+            MediatorMock.Verify();
             MediatorMock.Verify(x => x.Send(new AddCommand<UserRequest>(userRequest),
                                             It.IsAny<CancellationToken>()), Times.Once);
 
@@ -138,7 +142,7 @@ namespace WebApi.Tests.Controllers
             string expectedMessage = "User exists";
             var userResponse = new UserResponse(3, "admin", "password");
 
-            MediatorMock.Setup(x => x.Send(new GetUserByNameAndPasswordQuery(userRequest.Name, userRequest.Password),
+            MediatorMock.Setup(x => x.Send(new GetByNameQuery<User, UserResponse>(userRequest.Name),
                                            It.IsAny<CancellationToken>()))
                         .ReturnsAsync(userResponse)
                         .Verifiable();

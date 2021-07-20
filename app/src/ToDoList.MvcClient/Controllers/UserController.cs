@@ -75,7 +75,7 @@ namespace ToDoList.MvcClient.Controllers
 
         public async Task<ActionResult> LogoutAsync()
         {
-            await apiInvoker.LogoutAsync();
+            await apiInvoker.LogOutAsync();
             return RedirectToAction("Index", "Home");
         }
     }

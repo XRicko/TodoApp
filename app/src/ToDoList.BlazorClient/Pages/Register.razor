@@ -1,9 +1,10 @@
 ﻿@page "/register"
 
 @using System.Net.Http
+@using ToDoList.BlazorClient.Services
 
 @inject NavigationManager NavManager
-@inject IApiInvoker ApiInvoker
+@inject IAuthenticationService AuthService
 @inject IStringLocalizer<General> Localizer
 
 <div class="d-flex flex-column position-relative">
@@ -69,7 +70,7 @@
 
 		try
 		{
-			_ = await ApiInvoker.AuthenticateUserAsync("Authentication/Register", user);
+			await AuthService.AuthenticateAsync("Register", user);
 			isLoading = false;
 
 			NavManager.NavigateTo("/");

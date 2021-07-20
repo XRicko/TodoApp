@@ -9,8 +9,10 @@ namespace TestExtensions
         {
             return new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
                 {
-                new Claim("exp", expiryDate.ToUnixTimeSeconds().ToString())
+                    new Claim("exp", expiryDate.ToUnixTimeSeconds().ToString())
                 }, "jwtAuthentication"));
         }
+
+        public static object CreateClaimsPrincipal(object expiryDate) => throw new NotImplementedException();
     }
 }

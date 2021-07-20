@@ -178,18 +178,18 @@ button.close {
     align-items: center;
     width: 100%;
     height: 100%;
+    animation: overlayAppear .25s
 }
 
 .fail {
     background: #ffcccc;
-    animation: loginAppear .25s
 }
 
 .loading {
     background: rgba(0, 0, 0, .2);
 }
 
-@keyframes loginAppear {
+@keyframes overlayAppear {
     from {
         transform: scaleX(0);
     }

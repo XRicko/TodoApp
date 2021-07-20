@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
@@ -12,15 +10,17 @@ namespace ToDoList.BlazorClient.Authentication
 {
     public class AuthStateProvider : AuthenticationStateProvider
     {
-        private readonly HttpClient httpClient;
+        private readonly IApiInvoker apiInvoker;
+
         private readonly ITokenParser tokenParser;
         private readonly ITokenStorage tokenStorage;
 
         private readonly AuthenticationState anonymous;
 
-        public AuthStateProvider(HttpClient client, ITokenParser parser, ITokenStorage storage)
+        public AuthStateProvider(IApiInvoker invoker, ITokenParser parser, ITokenStorage storage)
         {
-            httpClient = client ?? throw new ArgumentNullException(nameof(client));
+            apiInvoker = invoker ?? throw new ArgumentNullException(nameof(invoker));
+
             tokenParser = parser ?? throw new ArgumentNullException(nameof(parser));
             tokenStorage = storage ?? throw new ArgumentNullException(nameof(storage));
 
@@ -30,17 +30,23 @@ namespace ToDoList.BlazorClient.Authentication
         public override async Task<AuthenticationState> GetAuthenticationStateAsync()
         {
             string token = await tokenStorage.GetTokenAsync("accessToken");
+            string refreshToken = await tokenStorage.GetTokenAsync("refreshToken");
 
-            if (string.IsNullOrWhiteSpace(token))
+            if (string.IsNullOrWhiteSpace(token) || string.IsNullOrWhiteSpace(refreshToken))
                 return anonymous;
 
             var claimsPrincipal = tokenParser.GetClaimsPrincipal(token);
             var expiryDate = tokenParser.GetExpiryDate(token, claimsPrincipal);
 
             if (DateTimeOffset.Now > expiryDate)
-                return anonymous;
+            {
+                await apiInvoker.RefreshTokenAsync();
 
-            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", token);
+                token = await tokenStorage.GetTokenAsync("accessToken");
+                claimsPrincipal = tokenParser.GetClaimsPrincipal(token);
+            }
+
+            await apiInvoker.AddAuthorizationHeaderAsync(token);
 
             return new AuthenticationState(claimsPrincipal);
         }

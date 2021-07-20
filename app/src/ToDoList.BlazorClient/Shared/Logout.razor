@@ -1,5 +1,7 @@
-﻿@inject NavigationManager NavManager
-@inject IApiInvoker ApiInvoker
+﻿@using ToDoList.BlazorClient.Services
+
+@inject NavigationManager NavManager
+@inject IAuthenticationService AuthService
 @inject IStringLocalizer<General> Localizer
 
 <button class="btn btn-link" @onclick="LogOut"><span class="oi oi-account-logout"></span> @Localizer["Log Out"]</button>
@@ -7,7 +9,7 @@
 @code {
     private async Task LogOut()
     {
-        await ApiInvoker.LogoutAsync();
+        await AuthService.LogOutAsync();
         NavManager.NavigateTo("/");
     }
 }

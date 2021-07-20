@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net.Http;
 using System.Threading.Tasks;
 
 using FluentAssertions;
@@ -10,6 +11,7 @@ using Moq;
 
 using ToDoList.MvcClient.Controllers;
 using ToDoList.SharedClientLibrary.Models;
+using ToDoList.SharedClientLibrary.Resources;
 
 using Xunit;
 
@@ -17,7 +19,7 @@ namespace MvcClient.Tests.Controllers
 {
     public class UserControllerTests : MvcControllerBaseForTests
     {
-        private readonly Mock<IStringLocalizer<UserController>> localizerMock;
+        private readonly Mock<IStringLocalizer<General>> localizerMock;
         private readonly UserController userController;
 
         private readonly string registerViewName;
@@ -28,7 +30,7 @@ namespace MvcClient.Tests.Controllers
 
         public UserControllerTests() : base()
         {
-            localizerMock = new Mock<IStringLocalizer<UserController>>();
+            localizerMock = new Mock<IStringLocalizer<General>>();
             userController = new UserController(ApiInvokerMock.Object, localizerMock.Object);
 
             registerViewName = "Register";
@@ -64,14 +66,15 @@ namespace MvcClient.Tests.Controllers
             // Arrange
             var existingUser = new UserModel { Name = "admin", Password = "qwerty", ConfirmPassword = "qwerty" };
 
+            string key = "Registration Failed";
             string error = "User exists";
-            string key = "UserExists";
+
             var localizedString = new LocalizedString(key, error);
 
 
             ApiInvokerMock.Setup(x => x.AuthenticateUserAsync("Authentication/Register", existingUser))
-                               .ThrowsAsync(new Exception("Unauthorized"))
-                               .Verifiable();
+                          .ThrowsAsync(new HttpRequestException("Error", null, System.Net.HttpStatusCode.Unauthorized))
+                          .Verifiable();
             localizerMock.SetupGet(x => x[key])
                          .Returns(localizedString)
                          .Verifiable();
@@ -109,15 +112,16 @@ namespace MvcClient.Tests.Controllers
             // Arrange
             var invalidUser = new UserModel { Name = "admin", Password = "invalid_password" };
 
-            string key = "InvalidCredentials";
+            string key = "Login Failed";
             string error = "Username or password is incorrect";
+
             var localizedString = new LocalizedString(key, error);
 
             userController.ModelState.AddModelError("ConfirmPassword", "Confirm password doesnt match");
 
             ApiInvokerMock.Setup(x => x.AuthenticateUserAsync("Authentication/Login", invalidUser))
-                               .ThrowsAsync(new Exception("Unauthorized"))
-                               .Verifiable();
+                          .ThrowsAsync(new HttpRequestException("Error", null, System.Net.HttpStatusCode.Unauthorized))
+                          .Verifiable();
             localizerMock.SetupGet(x => x[key])
                          .Returns(localizedString)
                          .Verifiable();
@@ -164,7 +168,7 @@ namespace MvcClient.Tests.Controllers
             result.ActionName.Should().Be(indexViewName);
             result.ControllerName.Should().Be(homeControllerName);
 
-            ApiInvokerMock.Verify(x => x.LogoutAsync(), Times.Once);
+            ApiInvokerMock.Verify(x => x.LogOutAsync(), Times.Once);
         }
     }
 }
