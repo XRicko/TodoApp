@@ -23,11 +23,24 @@ namespace ToDoList.MvcClient.Services
 
         public async Task SetTokenAsync(string key, string token)
         {
-            await Task.Run(() => httpContextAccessor.HttpContext.Response.Cookies.Append(key, token,
-                new CookieOptions { Expires = tokenParser.GetExpiryDate(token) }));
+            await Task.Run(() =>
+            {
+                httpContextAccessor.HttpContext.Response.Cookies.Append(key, token, 
+                    new CookieOptions 
+                    {
+                        Expires = tokenParser.GetExpiryDate(token),
+                        HttpOnly = true,
+                        Secure = true,
+                        SameSite = SameSiteMode.Strict
+                    });
+            });
         }
 
         public async Task RemoveTokenAsync(string key) =>
-            await Task.Run(() => httpContextAccessor.HttpContext.Response.Cookies.Delete(key));
+            await Task.Run(() =>
+            {
+                httpContextAccessor.HttpContext.Response.Cookies.Delete(key);
+                httpContextAccessor.HttpContext.Response.Headers.Remove(key);
+            });
     }
 }

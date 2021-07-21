@@ -1,6 +1,7 @@
 using System;
 using System.Globalization;
 using System.Linq;
+using System.Net.Http;
 using System.Net.Http.Headers;
 
 using Microsoft.AspNetCore.Builder;
@@ -33,12 +34,29 @@ namespace ToDoList.MvcClient
             var apiConfig = Configuration.GetSection("WebApiConfig").GetValid<WebApiConfig>();
 
             services.AddSingleton(apiConfig);
-            services.AddHttpClient<IApiInvoker, ApiInvoker>(client =>
+
+            services.AddScoped<IApiInvoker, ApiInvoker>();
+
+            var httpHandler = new SocketsHttpHandler { PooledConnectionLifetime = TimeSpan.FromMinutes(2) };
+            services.AddScoped(sp =>
             {
-                client.BaseAddress = new Uri(apiConfig.BaseUrl);
+                var client = new HttpClient(httpHandler, false)
+                {
+                    BaseAddress = new Uri(apiConfig.BaseUrl)
+                };
+
                 client.DefaultRequestHeaders.Accept.Clear();
                 client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+                return client;
             });
+
+            //services.AddHttpClient("api", client =>
+            //{
+            //    client.BaseAddress = new Uri(apiConfig.BaseUrl);
+            //    client.DefaultRequestHeaders.Accept.Clear();
+            //    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            //});
 
             services.Configure<RequestLocalizationOptions>(options =>
             {

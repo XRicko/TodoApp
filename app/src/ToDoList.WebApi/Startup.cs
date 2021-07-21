@@ -8,6 +8,7 @@ using MediatR;
 
 using MicroElements.Swashbuckle.FluentValidation.AspNetCore;
 
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -71,7 +72,15 @@ namespace ToDoList.WebApi
             services.AddScoped<IFileStorage, PhysicalFileStorage>();
             services.AddScoped<IImageMinifier, MagickImageMinifier>();
 
-            services.AddCors();
+            services.AddCors(options => 
+            {
+                options.AddDefaultPolicy(builder =>
+                {
+                    builder.WithOrigins("https://localhost:44358", "https://localhost:44306")
+                           .AllowAnyHeader()
+                           .AllowAnyMethod();
+                });
+            });
 
             services.AddAuthentication(options =>
             {
@@ -170,14 +179,12 @@ namespace ToDoList.WebApi
             if (env.IsProduction())
                 app.UseHttpsRedirection();
 
+            app.UseCors();
+
             app.UseRouting();
 
             app.UseAuthentication();
             app.UseAuthorization();
-
-            app.UseCors(x => x.AllowAnyOrigin()
-                              .AllowAnyMethod()
-                              .AllowAnyHeader());
 
             app.UseEndpoints(endpoints =>
             {

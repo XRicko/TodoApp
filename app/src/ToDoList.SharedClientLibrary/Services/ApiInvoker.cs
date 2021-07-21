@@ -13,12 +13,16 @@ namespace ToDoList.SharedClientLibrary.Services
     public class ApiInvoker : IApiInvoker
     {
         private readonly HttpClient httpClient;
-        private readonly ITokenStorage tokenStorage;
 
-        public ApiInvoker(HttpClient client, ITokenStorage storage)
+        private readonly ITokenStorage tokenStorage;
+        private readonly ITokenParser tokenParser;
+
+        public ApiInvoker(HttpClient client, ITokenStorage storage, ITokenParser parser)
         {
             httpClient = client ?? throw new ArgumentNullException(nameof(client));
+
             tokenStorage = storage ?? throw new ArgumentNullException(nameof(storage));
+            tokenParser = parser ?? throw new ArgumentNullException(nameof(parser));
         }
 
         public async Task<IEnumerable<T>> GetItemsAsync<T>(string route) where T : BaseModel
@@ -137,10 +141,12 @@ namespace ToDoList.SharedClientLibrary.Services
         {
             string accessToken = token ?? await tokenStorage.GetTokenAsync("accessToken");
 
-            if (AuthorizationHeaderMissing() && !string.IsNullOrWhiteSpace(accessToken))
-                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", accessToken);
+            if (string.IsNullOrWhiteSpace(accessToken))
+                return;
 
-            bool AuthorizationHeaderMissing() => httpClient.DefaultRequestHeaders.Authorization?.Parameter is null;
+            var expiryDate = tokenParser.GetExpiryDate(accessToken);
+            if (expiryDate > DateTimeOffset.Now)
+                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", accessToken);
         }
 
         public async Task RefreshTokenAsync()
