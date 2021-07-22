@@ -1,24 +1,27 @@
 ﻿@typeparam TItem
 
-<EditForm Model="@Item"
-          OnValidSubmit="@Submit"
-          class="@($"edit-item-form {activeClass}")" >
-    <DataAnnotationsValidator />
+<div >
+    <EditForm Model="@Item"
+              OnValidSubmit="@Submit"
+              OnInvalidSubmit="@Reset"
+              class="@activeClass">
+        <DataAnnotationsValidator />
     
-    <InputText @bind-Value="Item.Name"
-               @onfocus="SetFocus"
-               class="form-control item-name-input" />
+        <InputText @bind-Value="Item.Name"
+                   @onfocus="SetFocus"
+                   class="form-control" />
 
-    @if (isInFocus)
-    {
-        <button type="submit"
-                class="border-0 btn-transition btn btn-outline-success">
-            <i class="oi oi-check"></i>
-        </button>
-        <button type="button"
-                class="border-0 btn-transition btn btn-outline-secondary"
-                @onclick="Reset">
-            <i class="oi oi-x"></i>
-        </button>
-    }
-</EditForm>
+        @if (isInFocus)
+        {
+            <button type="submit"
+                    class="border-0 btn-transition btn btn-outline-success">
+                <i class="oi oi-check"></i>
+            </button>
+            <button type="button"
+                    class="border-0 btn-transition btn btn-outline-secondary"
+                    @onclick="Reset">
+                <i class="oi oi-x"></i>
+            </button>
+        }
+    </EditForm>
+</div>

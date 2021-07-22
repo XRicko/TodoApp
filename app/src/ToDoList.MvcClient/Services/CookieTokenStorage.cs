@@ -37,10 +37,6 @@ namespace ToDoList.MvcClient.Services
         }
 
         public async Task RemoveTokenAsync(string key) =>
-            await Task.Run(() =>
-            {
-                httpContextAccessor.HttpContext.Response.Cookies.Delete(key);
-                httpContextAccessor.HttpContext.Response.Headers.Remove(key);
-            });
+            await Task.Run(() => httpContextAccessor.HttpContext.Response.Cookies.Delete(key));
     }
 }

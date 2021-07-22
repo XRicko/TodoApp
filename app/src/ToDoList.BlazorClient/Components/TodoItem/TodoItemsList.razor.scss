@@ -1,0 +1,12 @@
+﻿.list-group-item {
+    margin-right: 5px;
+
+    &:first-of-type {
+        border-top: 0;
+    }
+
+    &:last-of-type {
+        margin-bottom: 0;
+        border-bottom: 0;
+    }
+}

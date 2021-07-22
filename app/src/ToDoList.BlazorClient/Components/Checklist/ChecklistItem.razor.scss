@@ -1,0 +1,21 @@
+﻿.card-body {
+    padding-right: 16px;
+}
+
+.scrollable {
+    max-height: 600px;
+    overflow: auto;
+
+    &::-webkit-scrollbar {
+        width: 4px;
+
+        &-thumb {
+            background: #A9A9A9;
+            border-radius: .25rem;
+
+            &:hover {
+                background: #808080;
+            }
+        }
+    }
+}

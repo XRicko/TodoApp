@@ -77,12 +77,10 @@ namespace ToDoList.SharedClientLibrary.Services
                 { fileContent, "formFile", fileName }
             };
 
-            await AddAuthorizationHeaderAsync();
-            using var response = await MakeRequest(PostFile);
+            using var response = await httpClient.PostAsync(route, formContent);
+            response.EnsureSuccessStatusCode();
 
             return await response.Content.ReadFromJsonAsync<string>();
-
-            async Task<HttpResponseMessage> PostFile() => await httpClient.PostAsync(route, formContent);
         }
 
         public async Task PutItemAsync<T>(string route, T item) where T : BaseModel

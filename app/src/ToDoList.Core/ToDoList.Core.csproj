@@ -12,7 +12,7 @@
     <PackageReference Include="MediatR" Version="9.0.0" />
     <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="5.0.0" />
     <PackageReference Include="NetTopologySuite" Version="2.3.0" />
-    <PackageReference Include="System.IO.Abstractions" Version="13.2.38" />
+    <PackageReference Include="System.IO.Abstractions" Version="13.2.41" />
   </ItemGroup>
 
   <ItemGroup>

@@ -5,6 +5,7 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Http.Formatting;
 using System.Net.Http.Headers;
+using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -27,6 +28,8 @@ namespace SharedClientLibrary.Tests.Services
         private readonly ApiInvoker apiInvoker;
 
         private readonly Mock<ITokenStorage> tokenStorageMock;
+        private readonly Mock<ITokenParser> tokenParserMock;
+
         private readonly Mock<HttpMessageHandler> httpMessageHandlerMock;
 
         private readonly HttpClient httpClient;
@@ -39,10 +42,12 @@ namespace SharedClientLibrary.Tests.Services
         public ApiInvokerTests()
         {
             tokenStorageMock = new Mock<ITokenStorage>();
+            tokenParserMock = new Mock<ITokenParser>();
+
             httpMessageHandlerMock = new Mock<HttpMessageHandler>();
 
             httpClient = new HttpClient(httpMessageHandlerMock.Object) { BaseAddress = new Uri("https://localhost:5001/api/") };
-            apiInvoker = new ApiInvoker(httpClient, tokenStorageMock.Object);
+            apiInvoker = new ApiInvoker(httpClient, tokenStorageMock.Object, tokenParserMock.Object);
 
             category = new CategoryModel { Id = 543, Name = "Important" };
 
@@ -58,6 +63,8 @@ namespace SharedClientLibrary.Tests.Services
             var content = new ObjectContent<CategoryModel>(category, new JsonMediaTypeFormatter());
 
             tokenStorageMock.SetupGettingToken("accessToken", token);
+            tokenParserMock.SetupGettingExpiryDate(token, DateTimeOffset.Now.AddMinutes(2));
+
             httpMessageHandlerMock.SetupHttCall(uri, HttpMethod.Get, HttpStatusCode.OK, content);
 
             // Act
@@ -124,6 +131,8 @@ namespace SharedClientLibrary.Tests.Services
             var uri = new Uri("https://localhost:5001/api/Categories");
 
             tokenStorageMock.SetupGettingToken("accessToken", token);
+            tokenParserMock.SetupGettingExpiryDate(token, DateTimeOffset.Now.AddMinutes(2));
+
             httpMessageHandlerMock.SetupHttCall(uri, HttpMethod.Post, HttpStatusCode.OK);
 
             // Act
@@ -193,7 +202,6 @@ namespace SharedClientLibrary.Tests.Services
             byte[] bytes = new byte[123];
             new Random().NextBytes(bytes);
 
-            tokenStorageMock.SetupGettingToken("accessToken", token);
             httpMessageHandlerMock.SetupHttCall(uri, HttpMethod.Post, HttpStatusCode.OK, content);
 
             // Act
@@ -201,44 +209,7 @@ namespace SharedClientLibrary.Tests.Services
 
             // Assert
             actual.Should().Be(fileName);
-
-            httpClient.DefaultRequestHeaders.Authorization.Parameter.Should().Be(token);
-
             httpMessageHandlerMock.Verify();
-            tokenStorageMock.Verify();
-        }
-
-        [Fact]
-        public async Task PostFileAsync_RefreshesTokenIfUnathorizedAndExecutes()
-        {
-            // Arrange
-            string fileName = "rnieo.jpg";
-
-            var uri = new Uri("https://localhost:5001/api/Images");
-            var content = new ObjectContent<string>(fileName, new JsonMediaTypeFormatter());
-
-            byte[] bytes = new byte[123];
-            new Random().NextBytes(bytes);
-
-            tokenStorageMock.SetupGettingToken("accessToken", token);
-            SetupRefreshingToken();
-
-            SetupHttpCallSequenceForRefreshingToken(uri, HttpMethod.Post, content);
-
-            // Act
-            string actual = await apiInvoker.PostFileAsync("Images", "randsqw.jpeg", bytes);
-
-            // Assert
-            actual.Should().Be(fileName);
-
-            httpClient.DefaultRequestHeaders.Authorization.Parameter.Should().Be(token);
-
-            httpMessageHandlerMock.Protected().Verify("SendAsync", Times.Exactly(2),
-                                                      ItExpr.Is<HttpRequestMessage>(x => x.Method == HttpMethod.Post
-                                                                                         && x.RequestUri == uri),
-                                                      ItExpr.IsAny<CancellationToken>());
-
-            tokenStorageMock.Verify();
         }
 
         [Fact]
@@ -251,7 +222,6 @@ namespace SharedClientLibrary.Tests.Services
             byte[] bytes = new byte[123];
             new Random().NextBytes(bytes);
 
-            tokenStorageMock.SetupGettingToken("accessToken", token);
             httpMessageHandlerMock.SetupHttCall(uri, HttpMethod.Post, statusCode);
 
             // Act && Assert
@@ -261,7 +231,6 @@ namespace SharedClientLibrary.Tests.Services
                          .And.StatusCode.Should().Be(statusCode);
 
             httpMessageHandlerMock.Verify();
-            tokenStorageMock.Verify();
         }
 
         [Fact]
@@ -271,6 +240,8 @@ namespace SharedClientLibrary.Tests.Services
             var uri = new Uri("https://localhost:5001/api/Categories");
 
             tokenStorageMock.SetupGettingToken("accessToken", token);
+            tokenParserMock.SetupGettingExpiryDate(token, DateTimeOffset.Now.AddMinutes(2));
+
             httpMessageHandlerMock.SetupHttCall(uri, HttpMethod.Put, HttpStatusCode.OK);
 
             // Act
@@ -338,6 +309,8 @@ namespace SharedClientLibrary.Tests.Services
             var content = new ObjectContent<IEnumerable<CategoryModel>>(categories, new JsonMediaTypeFormatter());
 
             tokenStorageMock.SetupGettingToken("accessToken", token);
+            tokenParserMock.SetupGettingExpiryDate(token, DateTimeOffset.Now.AddMinutes(2));
+
             httpMessageHandlerMock.SetupHttCall(uri, HttpMethod.Get, HttpStatusCode.OK, content);
 
             // Act
@@ -415,6 +388,8 @@ namespace SharedClientLibrary.Tests.Services
             var content = new ObjectContent<AuthenticatedModel>(authenticatedModel, new JsonMediaTypeFormatter());
 
             SetupSettingTokens();
+            tokenParserMock.SetupGettingExpiryDate(authenticatedModel.AccessToken, DateTimeOffset.Now.AddMinutes(2));
+
             httpMessageHandlerMock.SetupHttCall(uri, HttpMethod.Post, HttpStatusCode.OK, content);
 
             // Act
@@ -424,7 +399,7 @@ namespace SharedClientLibrary.Tests.Services
             actual.AccessToken.Should().Be(authenticatedModel.AccessToken);
             actual.RefreshToken.Should().Be(authenticatedModel.RefreshToken);
 
-            httpClient.DefaultRequestHeaders.Authorization.Parameter.Should().Be(token);
+            httpClient.DefaultRequestHeaders.Authorization.Parameter.Should().Be(authenticatedModel.AccessToken);
 
             httpMessageHandlerMock.Verify();
         }
@@ -436,7 +411,7 @@ namespace SharedClientLibrary.Tests.Services
             var user = new UserModel { Name = "admin", Password = "qwerty" };
 
             var uri = new Uri("https://localhost:5001/api/User/Login");
-            var statusCode = HttpStatusCode.NotFound;
+            var statusCode = HttpStatusCode.Unauthorized;
 
             httpMessageHandlerMock.SetupHttCall(uri, HttpMethod.Post, statusCode);
 
@@ -457,6 +432,8 @@ namespace SharedClientLibrary.Tests.Services
             var uri = new Uri("https://localhost:5001/api/Categories/" + id);
 
             tokenStorageMock.SetupGettingToken("accessToken", token);
+            tokenParserMock.SetupGettingExpiryDate(token, DateTimeOffset.Now.AddMinutes(2));
+
             httpMessageHandlerMock.SetupHttCall(uri, HttpMethod.Delete, HttpStatusCode.OK);
 
             // Act
@@ -475,6 +452,7 @@ namespace SharedClientLibrary.Tests.Services
             var uri = new Uri("https://localhost:5001/api/Categories/" + id);
 
             tokenStorageMock.SetupGettingToken("accessToken", token);
+
             SetupRefreshingToken();
 
             SetupHttpCallSequenceForRefreshingToken(uri, HttpMethod.Delete);
@@ -581,24 +559,10 @@ namespace SharedClientLibrary.Tests.Services
         }
 
         [Fact]
-        public async Task AddAuthorizationHeaderAsync_DoesntAddHeaderIfItExists()
-        {
-            // Arrange
-            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", token);
-            tokenStorageMock.SetupGettingToken("accessToken", token);
-
-            // Act
-            await apiInvoker.AddAuthorizationHeaderAsync();
-
-            // Assert
-            httpClient.DefaultRequestHeaders.Authorization.Parameter.Should().Be(token);
-            tokenStorageMock.Verify();
-        }
-
-        [Fact]
         public async Task AddAuthorizationHeaderAsync_DoesntAddHeaderIfTokenIsNull()
         {
             // Arrange
+            httpClient.DefaultRequestHeaders.Authorization = null;
             tokenStorageMock.SetupGettingToken("accessToken", null);
 
             // Act
@@ -609,18 +573,40 @@ namespace SharedClientLibrary.Tests.Services
             tokenStorageMock.Verify();
         }
 
+
         [Fact]
-        public async Task AddAuthorizationHeaderAsync_AddsHeaderIfItMissing()
+        public async Task AddAuthorizationHeaderAsync_DoesntAddHeaderIfTokenIsExpired()
         {
             // Arrange
             httpClient.DefaultRequestHeaders.Authorization = null;
-            string accessToken = "edjenYasjnWQdnfp";
+
+            tokenStorageMock.SetupGettingToken("accessToken", token);
+            tokenParserMock.SetupGettingExpiryDate(token, DateTimeOffset.Now.AddMinutes(-2));
 
             // Act
-            await apiInvoker.AddAuthorizationHeaderAsync(accessToken);
+            await apiInvoker.AddAuthorizationHeaderAsync();
 
             // Assert
-            httpClient.DefaultRequestHeaders.Authorization.Parameter.Should().Be(accessToken);
+            httpClient.DefaultRequestHeaders.Authorization.Should().BeNull();
+
+            tokenStorageMock.Verify();
+            tokenParserMock.Verify();
+        }
+
+        [Fact]
+        public async Task AddAuthorizationHeaderAsync_AddsHeaderIfTokenUpToDate()
+        {
+            // Arrange
+            httpClient.DefaultRequestHeaders.Authorization = null;
+            tokenParserMock.SetupGettingExpiryDate(token, DateTimeOffset.Now.AddMinutes(2));
+
+            // Act
+            await apiInvoker.AddAuthorizationHeaderAsync(token);
+
+            // Assert
+            httpClient.DefaultRequestHeaders.Authorization.Parameter.Should().Be(token);
+
+            tokenParserMock.Verify();
             tokenStorageMock.Verify(x => x.GetTokenAsync("accessToken"), Times.Never);
         }
 
@@ -667,6 +653,8 @@ namespace SharedClientLibrary.Tests.Services
             var content = new ObjectContent<AuthenticatedModel>(authenticatedModel, new JsonMediaTypeFormatter());
 
             tokenStorageMock.SetupGettingToken("refreshToken", refreshToken);
+            tokenParserMock.SetupGettingExpiryDate(token, DateTimeOffset.Now.AddMinutes(2));
+
             SetupSettingTokens();
 
             httpMessageHandlerMock.SetupHttCall(uri, HttpMethod.Post, HttpStatusCode.OK, content);

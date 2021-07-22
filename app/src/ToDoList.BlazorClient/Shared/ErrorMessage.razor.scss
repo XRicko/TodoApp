@@ -1,0 +1,9 @@
+﻿.close {
+    margin-left: .25rem;
+    outline: none;
+
+    &, &:hover {
+        color: inherit;
+        font-size: 100%;
+    }
+}
