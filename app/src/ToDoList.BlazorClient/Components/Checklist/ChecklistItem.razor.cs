@@ -18,10 +18,18 @@ namespace ToDoList.BlazorClient.Components.Checklist
         private ICollection<TodoItemModel> ActiveTodoItems => todoItemModels.Where(x => x.StatusName != "Done").ToList();
         private ICollection<TodoItemModel> DoneTodoItems => todoItemModels.Where(x => x.StatusName == "Done").ToList();
 
+        private int dragCounter;
+        private string dropClass;
+
+        private bool isCollapsed;
+
         [Inject]
         private IApiInvoker ApiInvoker { get; set; }
         [Inject]
         private Notifier Notifier { get; set; }
+
+        [CascadingParameter]
+        private TodoItemContainer Container { get; set; }
 
         [Parameter]
         public EventCallback<int> OnDeleteCallback { get; set; }
@@ -31,8 +39,9 @@ namespace ToDoList.BlazorClient.Components.Checklist
 
         protected override async Task OnInitializedAsync()
         {
-            todoItemModels = await ApiInvoker.GetItemsAsync<TodoItemModel>("TodoItems/GetByChecklistId/" + ChecklistModel.Id);
+            dropClass = "";
 
+            await LoadTodoItems();
             Notifier.ChecklistChanged += OnTodoItemsChanged;
         }
 
@@ -44,10 +53,51 @@ namespace ToDoList.BlazorClient.Components.Checklist
             {
                 if (ChecklistModel.Id == checklistId)
                 {
-                    todoItemModels = await ApiInvoker.GetItemsAsync<TodoItemModel>("TodoItems/GetByChecklistId/" + checklistId);
+                    await LoadTodoItems();
                     StateHasChanged();
                 }
             });
         }
+
+        private void HandleDragEnter()
+        {
+            dropClass = Container.DraggedTodoItem.ChecklistId == ChecklistModel.Id
+                ? "no-drop"
+                : "yes-drop";
+
+            dragCounter++;
+        }
+
+        private void HandleDragLeave()
+        {
+            dragCounter--;
+
+            if (dragCounter == 0)
+                dropClass = "";
+        }
+
+        private async Task HandleDrop()
+        {
+            if (Container.DraggedTodoItem.ChecklistId != ChecklistModel.Id)
+            {
+                int oldChecklist = Container.DraggedTodoItem.ChecklistId;
+
+                Container.DraggedTodoItem.ChecklistId = ChecklistModel.Id;
+
+                await ApiInvoker.PutItemAsync("TodoItems", Container.DraggedTodoItem);
+                await LoadTodoItems();
+
+                await Notifier.UpdateChecklist(oldChecklist);
+            }
+
+            HandleDragLeave();
+        }
+
+        private async Task LoadTodoItems()
+        {
+            todoItemModels = await ApiInvoker.GetItemsAsync<TodoItemModel>($"TodoItems/GetByChecklistId/{ChecklistModel.Id}");
+        }
+
+        private void Collapse() => isCollapsed = !isCollapsed;
     }
 }

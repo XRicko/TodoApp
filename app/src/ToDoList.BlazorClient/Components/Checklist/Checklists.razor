@@ -1,7 +1,8 @@
 ﻿<div class="card-columns">
-    @foreach (var checklist in checklistModels)
-    {
-        <ChecklistItem @key="checklist.Id" ChecklistModel="@checklist"
-                       OnDeleteCallback="@Delete" />
-    }
+	@foreach (var checklist in checklistModels)
+	{
+		<ChecklistItem @key="checklist.Id"
+					   ChecklistModel="@checklist"
+					   OnDeleteCallback="@Delete" />
+	}
 </div>

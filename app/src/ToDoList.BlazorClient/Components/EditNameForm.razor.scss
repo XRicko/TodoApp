@@ -3,6 +3,7 @@
     flex-direction: row;
     border: 1px solid transparent;
     border-radius: .25rem;
+    margin-right: 5px;
 
     &:hover, &.active {
         border-color: #ced4da;

@@ -25,8 +25,8 @@ namespace ToDoList.MvcClient.Services
         {
             await Task.Run(() =>
             {
-                httpContextAccessor.HttpContext.Response.Cookies.Append(key, token, 
-                    new CookieOptions 
+                httpContextAccessor.HttpContext.Response.Cookies.Append(key, token,
+                    new CookieOptions
                     {
                         Expires = tokenParser.GetExpiryDate(token),
                         HttpOnly = true,

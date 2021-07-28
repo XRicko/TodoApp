@@ -1,12 +1,23 @@
 ﻿.list-group-item {
     margin-right: 5px;
-
-    &:first-of-type {
-        border-top: 0;
-    }
+    margin-bottom: 15px;
+    border: 0;
+    border-radius: .25rem;
+    box-shadow: 0 0 5px rgba(0,0,0,.1), 2px 2px 5px rgba(0,0,0,.2);
 
     &:last-of-type {
-        margin-bottom: 0;
-        border-bottom: 0;
+        margin-bottom: 0px;
     }
+}
+
+.bg-planned {
+    background: #404040;
+}
+
+.bg-ongoing {
+    background: #a08329;
+}
+
+.bg-done {
+    background: #356e1e;
 }

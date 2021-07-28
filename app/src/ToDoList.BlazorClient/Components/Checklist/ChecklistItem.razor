@@ -1,75 +1,88 @@
 ﻿@inject IStringLocalizer<General> Localizer
 
-<div class="card">
+<div class="card @dropClass"
+     ondragover="event.preventDefault();"
+     ondragstart="event.dataTransfer.setData('', event.target.id);"
+     @ondrop="HandleDrop"
+     @ondragenter="HandleDragEnter"
+     @ondragleave="HandleDragLeave">
     <div class="card-header d-flex justify-content-between align-items-center">
         <div class="d-flex align-items-center">
-            <i class="oi oi-list mr-1"></i>&nbsp;
+              <span class="d-flex collapse-button"
+                    data-toggle="collapse" 
+                    data-target="#checklist-@ChecklistModel.Id" 
+                    aria-expanded="true" 
+                    aria-controls="checklist-@ChecklistModel.Id"
+                    @onclick="Collapse">
+                <i class="oi oi-chevron-@(isCollapsed ? "bottom" : "top")"></i>
+              </span>
 
             @if (ChecklistModel.Name == "Untitled")
             {
-                <span class="item-name">@Localizer["UntitledChecklist"]</span>
+                <span class="item-name ml-2">@Localizer["UntitledChecklist"]</span>
             }
             else
             {
-                <EditNameForm TItem="@ChecklistModel"
-                              Item="@ChecklistModel"
-                              OnValidSubmit="Update" />
+                <div class="name-form">
+                    <EditNameForm TItem="@ChecklistModel"
+                                  Item="@ChecklistModel"
+                                  SubmitButtonClass="btn-outline-success"
+                                  ResetButtonClass="btn-outline-secondary"
+                                  OnValidSubmit="Update" />
+                </div>
             }
         </div>
 
-        <div>
-            @if (ChecklistModel.Name != "Untitled")
-            {
-                <form method="post"
-                      @onsubmit="async () => await OnDeleteCallback.InvokeAsync(ChecklistModel.Id)"
-                      class="d-inline">
-
-                    <button type="submit"
-                            class="border-0 btn-transition btn btn-outline-danger">
-                        <i class="oi oi-trash"></i>
-                    </button>
-                </form>
-            }
-        </div>
+        @if (ChecklistModel.Name != "Untitled")
+        {
+            <div>
+                <button class="border-0 btn-transition btn btn-outline-danger"
+                        @onclick="async () => await OnDeleteCallback.InvokeAsync(ChecklistModel.Id)">
+                    <i class="oi oi-trash"></i>
+                </button>
+            </div>
+        }
     </div>
 
-    <div class="card-body">
-        <ul class="nav nav-tabs border-0 mb-2" role="tablist" style="grid-gap: 12px;">
-            <li class="nav-item">
-                <a class="btn btn-outline-primary active"
-                   id="notDone-@ChecklistModel.Id-tab"
-                   data-toggle="tab"
-                   href="#notDone-@ChecklistModel.Id"
-                   role="tab">
-                    Active
-                    <span class="badge badge-light">
-                        @ActiveTodoItems.Count
-                    </span>
-                </a>
-            </li>
+    <div class="collapse show" id="checklist-@ChecklistModel.Id">
+        <div class="card-body">
+            <ul class="nav nav-tabs" role="tablist">
+                <li class="nav-item">
+                    <a class="btn btn-outline-primary active"
+                       id="notDone-@ChecklistModel.Id-tab"
+                       data-toggle="tab"
+                       href="#notDone-@ChecklistModel.Id"
+                       role="tab">
+                        Active
+                        <span class="badge badge-light">
+                            @ActiveTodoItems.Count
+                        </span>
+                    </a>
+                </li>
 
-            <li class="nav-item">
-                <a class="btn btn-outline-secondary"
-                   id="done-@ChecklistModel.Id-tab"
-                   data-toggle="tab"
-                   href="#done-@ChecklistModel.Id"
-                   role="tab">
-                    Done
-                    <span class="badge badge-light">
-                        @DoneTodoItems.Count
-                    </span>
-                </a>
-            </li>
-        </ul>
-
-        <div class="tab-content">
-            <ul class="tab-pane scrollable show active list-group list-group-flush" id="notDone-@ChecklistModel.Id">
-                <TodoItemsList TodoItemModels="@ActiveTodoItems" />
+                <li class="nav-item">
+                    <a class="btn btn-outline-secondary"
+                       id="done-@ChecklistModel.Id-tab"
+                       data-toggle="tab"
+                       href="#done-@ChecklistModel.Id"
+                       role="tab">
+                        Done
+                        <span class="badge badge-light">
+                            @DoneTodoItems.Count
+                        </span>
+                    </a>
+                </li>
             </ul>
 
-            <ul class="tab-pane scrollable list-group list-group-flush" id="done-@ChecklistModel.Id">
-                <TodoItemsList TodoItemModels="@DoneTodoItems" />
-            </ul>
+            <div class="tab-content">
+                <ul class="tab-pane scrollable show active list-group list-group-flush" id="notDone-@ChecklistModel.Id">
+                   <TodoItemsList TodoItemModels="@ActiveTodoItems" />
+                </ul>
+
+                <ul class="tab-pane scrollable list-group list-group-flush" id="done-@ChecklistModel.Id">
+                   <TodoItemsList TodoItemModels="@DoneTodoItems" />
+                </ul>
+            </div>
         </div>
     </div>
 </div>

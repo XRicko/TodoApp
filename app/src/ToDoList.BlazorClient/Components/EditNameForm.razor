@@ -1,6 +1,6 @@
 ﻿@typeparam TItem
 
-<div >
+<div>
     <EditForm Model="@Item"
               OnValidSubmit="@Submit"
               OnInvalidSubmit="@Reset"
@@ -14,11 +14,11 @@
         @if (isInFocus)
         {
             <button type="submit"
-                    class="border-0 btn-transition btn btn-outline-success">
+                    class="border-0 btn @SubmitButtonClass">
                 <i class="oi oi-check"></i>
             </button>
             <button type="button"
-                    class="border-0 btn-transition btn btn-outline-secondary"
+                    class="border-0 btn @ResetButtonClass"
                     @onclick="Reset">
                 <i class="oi oi-x"></i>
             </button>

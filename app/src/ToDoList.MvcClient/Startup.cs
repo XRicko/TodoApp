@@ -1,16 +1,13 @@
 using System;
-using System.Globalization;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Localization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Options;
 
 using ToDoList.Extensions;
 using ToDoList.MvcClient.API;
@@ -32,7 +29,6 @@ namespace ToDoList.MvcClient
         public void ConfigureServices(IServiceCollection services)
         {
             var apiConfig = Configuration.GetSection("WebApiConfig").GetValid<WebApiConfig>();
-
             services.AddSingleton(apiConfig);
 
             services.AddScoped<IApiInvoker, ApiInvoker>();
@@ -50,13 +46,6 @@ namespace ToDoList.MvcClient
 
                 return client;
             });
-
-            //services.AddHttpClient("api", client =>
-            //{
-            //    client.BaseAddress = new Uri(apiConfig.BaseUrl);
-            //    client.DefaultRequestHeaders.Accept.Clear();
-            //    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            //});
 
             services.Configure<RequestLocalizationOptions>(options =>
             {

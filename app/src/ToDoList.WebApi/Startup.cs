@@ -8,7 +8,6 @@ using MediatR;
 
 using MicroElements.Swashbuckle.FluentValidation.AspNetCore;
 
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -72,7 +71,7 @@ namespace ToDoList.WebApi
             services.AddScoped<IFileStorage, PhysicalFileStorage>();
             services.AddScoped<IImageMinifier, MagickImageMinifier>();
 
-            services.AddCors(options => 
+            services.AddCors(options =>
             {
                 options.AddDefaultPolicy(builder =>
                 {

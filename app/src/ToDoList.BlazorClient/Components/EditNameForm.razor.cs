@@ -10,6 +10,7 @@ namespace ToDoList.BlazorClient.Components
     {
         private string originalName;
         private bool isInFocus;
+
         private string activeClass;
 
         [Parameter]
@@ -18,17 +19,26 @@ namespace ToDoList.BlazorClient.Components
         [Parameter]
         public EventCallback OnValidSubmit { get; set; }
 
+        [Parameter]
+        public string SubmitButtonClass { get; set; }
+        [Parameter]
+        public string ResetButtonClass { get; set; }
+
         protected override void OnInitialized()
         {
             isInFocus = false;
             originalName = Item.Name;
+
             activeClass = "";
         }
 
         private async Task Submit()
         {
-            await OnValidSubmit.InvokeAsync();
-            originalName = Item.Name;
+            if (Item.Name != originalName)
+            {
+                await OnValidSubmit.InvokeAsync();
+                originalName = Item.Name;
+            }
 
             RemoveFocus();
         }

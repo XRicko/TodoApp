@@ -1,4 +1,62 @@
-﻿img {
+﻿@function rgba-white($alpha) {
+    @return rgba(255, 255, 255, $alpha);
+}
+
+.todo-item > *:not(:last-child) {
+    margin-bottom: 5px;
+}
+
+img {
     max-width: 400px;
     width: 100%;
+}
+
+.name-form {
+    ::deep form {
+        &:hover, &.active {
+            border: 1px solid rgba-white(0.6);
+        }
+
+        &:focus-within {
+            box-shadow: 0 0 0 0.1rem rgba-white(0.3);
+            transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+        }
+
+        input {
+            color: white;
+        }
+
+        &.active input {
+            color: #495057;
+        }
+
+        .task-btn {
+            color: #fff;
+        }
+    }
+}
+
+.status {
+    border: 1px solid rgba-white(0.2);
+    border-radius: 1rem;
+    padding: 1px 10px;
+    color: #fff;
+    font-size: 0.9rem;
+    margin-left: auto;
+}
+
+.category {
+    color: #fff;
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-align: center;
+}
+
+.days-ago {
+    color: rgba-white(0.4);
+}
+
+.delete {
+    cursor: pointer;
+    color: rgba-white(0.6);
 }

@@ -1,9 +1,46 @@
 ﻿.card-body {
-    padding-right: 16px;
+    padding: 20px 10px 15px 15px;
+}
+
+.name-form ::deep form {
+    .btn-submit {
+        color: #28a745;
+        border-color: #28a745;
+
+        &:hover {
+            color: #fff;
+            background-color: #28a745;
+            border-color: #28a745
+        }
+    }
+
+    .btn-cancel {
+        color: #6c757d;
+        border-color: #6c757d;
+
+        &:hover {
+            color: #fff;
+            background-color: #6c757d;
+            border-color: #6c757d;
+        }
+    }
+}
+
+.nav-tabs {
+    border: 0;
+    margin-bottom: 10px;
+    margin-left: 5px;
+    grid-gap: 12px;
+}
+
+.collapse-button {
+    cursor: pointer;
+    margin-right: 5px;
 }
 
 .scrollable {
     max-height: 600px;
+    padding: 5px;
     overflow: auto;
 
     &::-webkit-scrollbar {
@@ -18,4 +55,12 @@
             }
         }
     }
+}
+
+.no-drop {
+    border: 2px dashed red;
+}
+
+.yes-drop {
+    border: 2px dashed green;
 }
