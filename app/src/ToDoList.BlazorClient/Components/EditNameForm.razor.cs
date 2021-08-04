@@ -9,7 +9,7 @@ namespace ToDoList.BlazorClient.Components
     public partial class EditNameForm<TItem> where TItem : BaseModel
     {
         private string originalName;
-        private bool isInFocus;
+        private bool inFocus;
 
         private string activeClass;
 
@@ -26,7 +26,7 @@ namespace ToDoList.BlazorClient.Components
 
         protected override void OnInitialized()
         {
-            isInFocus = false;
+            inFocus = false;
             originalName = Item.Name;
 
             activeClass = "";
@@ -51,13 +51,13 @@ namespace ToDoList.BlazorClient.Components
 
         private void SetFocus()
         {
-            isInFocus = true;
+            inFocus = true;
             activeClass = "active";
         }
 
         private void RemoveFocus()
         {
-            isInFocus = false;
+            inFocus = false;
             activeClass = "";
         }
     }

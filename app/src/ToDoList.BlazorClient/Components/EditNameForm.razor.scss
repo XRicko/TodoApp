@@ -4,9 +4,11 @@
     border: 1px solid transparent;
     border-radius: .25rem;
     margin-right: 5px;
+    transition: border-color .1s ease-in;
 
     &:hover, &.active {
         border-color: #ced4da;
+        transition: border-color .15s ease-out;
     }
 
     &:focus-within {

@@ -2,30 +2,6 @@
     padding: 20px 10px 15px 15px;
 }
 
-.name-form ::deep form {
-    .btn-submit {
-        color: #28a745;
-        border-color: #28a745;
-
-        &:hover {
-            color: #fff;
-            background-color: #28a745;
-            border-color: #28a745
-        }
-    }
-
-    .btn-cancel {
-        color: #6c757d;
-        border-color: #6c757d;
-
-        &:hover {
-            color: #fff;
-            background-color: #6c757d;
-            border-color: #6c757d;
-        }
-    }
-}
-
 .nav-tabs {
     border: 0;
     margin-bottom: 10px;

@@ -21,7 +21,7 @@ namespace ToDoList.BlazorClient.Components.Checklist
         private int dragCounter;
         private string dropClass;
 
-        private bool isCollapsed;
+        private bool collapsed;
 
         [Inject]
         private IApiInvoker ApiInvoker { get; set; }
@@ -98,6 +98,6 @@ namespace ToDoList.BlazorClient.Components.Checklist
             todoItemModels = await ApiInvoker.GetItemsAsync<TodoItemModel>($"TodoItems/GetByChecklistId/{ChecklistModel.Id}");
         }
 
-        private void Collapse() => isCollapsed = !isCollapsed;
+        private void Collapse() => collapsed = !collapsed;
     }
 }

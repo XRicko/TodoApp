@@ -14,7 +14,7 @@
                     aria-expanded="true" 
                     aria-controls="checklist-@ChecklistModel.Id"
                     @onclick="Collapse">
-                <i class="oi oi-chevron-@(isCollapsed ? "bottom" : "top")"></i>
+                <i class="oi oi-chevron-@(collapsed ? "bottom" : "top")"></i>
               </span>
 
             @if (ChecklistModel.Name == "Untitled")
@@ -53,7 +53,7 @@
                        data-toggle="tab"
                        href="#notDone-@ChecklistModel.Id"
                        role="tab">
-                        Active
+                        @Localizer["ActiveTab"]
                         <span class="badge badge-light">
                             @ActiveTodoItems.Count
                         </span>
@@ -66,7 +66,7 @@
                        data-toggle="tab"
                        href="#done-@ChecklistModel.Id"
                        role="tab">
-                        Done
+                        @Localizer["DoneTab"]
                         <span class="badge badge-light">
                             @DoneTodoItems.Count
                         </span>

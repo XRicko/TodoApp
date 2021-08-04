@@ -2,6 +2,10 @@
     @return rgba(255, 255, 255, $alpha);
 }
 
+@mixin border-on-hover {
+    border: 1px solid rgba-white(0.6);
+}
+
 .todo-item > *:not(:last-child) {
     margin-bottom: 5px;
 }
@@ -14,7 +18,7 @@ img {
 .name-form {
     ::deep form {
         &:hover, &.active {
-            border: 1px solid rgba-white(0.6);
+            @include border-on-hover;
         }
 
         &:focus-within {
@@ -30,8 +34,8 @@ img {
             color: #495057;
         }
 
-        .task-btn {
-            color: #fff;
+        button {
+            font-size: 0.7rem;
         }
     }
 }
@@ -45,13 +49,6 @@ img {
     margin-left: auto;
 }
 
-.category {
-    color: #fff;
-    font-size: 0.8rem;
-    font-weight: 700;
-    text-align: center;
-}
-
 .days-ago {
     color: rgba-white(0.4);
 }
@@ -59,4 +56,25 @@ img {
 .delete {
     cursor: pointer;
     color: rgba-white(0.6);
+}
+
+::deep .select2-selection--single {
+    font-size: 0.8rem;
+    font-weight: 700;
+    border: 1px solid transparent;
+    border-radius: .25rem;
+    transition: border-color .1s ease-in;
+
+    &:hover {
+        @include border-on-hover;
+        transition: border-color .15s ease-out;
+    }
+}
+
+::deep .select2-selection__rendered {
+    color: #fff;
+}
+
+::deep .select2-selection__rendered[id*="placeholder"] {
+    color: rgba-white(0.4);
 }

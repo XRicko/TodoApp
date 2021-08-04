@@ -1,8 +1,9 @@
 ﻿@using System.Globalization
+@using Blazored.LocalStorage
 @using Microsoft.Extensions.Configuration
 
 @inject NavigationManager NavManager
-@inject Blazored.LocalStorage.ILocalStorageService LocalStorage
+@inject ILocalStorageService LocalStorage
 @inject IConfiguration Configuration
 
 <select class="form-control" @bind="Culture">

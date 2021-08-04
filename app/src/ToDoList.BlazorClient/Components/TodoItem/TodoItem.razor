@@ -1,10 +1,20 @@
-﻿<div class="d-flex flex-column todo-item">
-    @if (!string.IsNullOrWhiteSpace(TodoItemModel.CategoryName))
-    {
-        <div class="category">
-            #@TodoItemModel.CategoryName
-        </div>
-    }
+﻿@inject IStringLocalizer<General> Localizer
+
+<div class="d-flex flex-column todo-item">
+    <div class="text-center">
+        <select id="category-select-@TodoItemModel.Id @(TodoItemModel.CategoryId.HasValue ? "" : "placeholder")">
+            <option value="" 
+                    selected="@(!TodoItemModel.CategoryId.HasValue)"
+                    disabled="@(!TodoItemModel.CategoryId.HasValue)">
+                @Localizer["Add Category"]
+            </option>
+
+            @foreach (var category in categories)
+            {
+                <option value="@category.Id" selected="@(TodoItemModel.CategoryId == category.Id)">@category.Name</option>
+            }
+        </select>
+    </div>
 
     <div class="d-flex align-items-center">
         <div class="custom-control custom-checkbox">
@@ -12,7 +22,7 @@
                    class="custom-control-input"
                    id="todo-item-@TodoItemModel.Id"
                    @onchange="ChangeStatus"
-                   checked="@IsChecked" />
+                   checked="@Checked" />
             <label class="custom-control-label" for="todo-item-@TodoItemModel.Id">&nbsp;</label>
         </div>
 
@@ -20,7 +30,7 @@
             <EditNameForm TItem="@TodoItemModel"
                           Item="@TodoItemModel"
                           SubmitButtonClass="btn-outline-light"
-                          ResetButtonClass="btn-outline-light   "
+                          ResetButtonClass="btn-outline-light"
                           OnValidSubmit="Update" />
         </div>
 

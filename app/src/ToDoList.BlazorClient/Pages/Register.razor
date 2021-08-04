@@ -37,7 +37,7 @@
 			</div>
 		</div>
 
-		@if (!isLoading && string.IsNullOrWhiteSpace(error))
+		@if (!loading && string.IsNullOrWhiteSpace(error))
 		{
 			<div class="row">
 				<div class="col-md-12 text-right">
@@ -52,7 +52,7 @@
 		<ErrorMessage @bind-Error="error" />
 	}
 
-	@if (isLoading)
+	@if (loading)
 	{
 		<Spinner />
 	}
@@ -62,22 +62,22 @@
 	private UserModel user = new();
 
 	private string error;
-	private bool isLoading;
+	private bool loading;
 
 	private async Task CreateUser()
 	{
-		isLoading = true;
+		loading = true;
 
 		try
 		{
 			await AuthService.AuthenticateAsync("Register", user);
-			isLoading = false;
+			loading = false;
 
 			NavManager.NavigateTo("/");
 		}
 		catch (HttpRequestException e) when (e.StatusCode == System.Net.HttpStatusCode.Unauthorized)
 		{
-			isLoading = false;
+			loading = false;
 			error = Localizer["Registration Failed"];
 		}
 	}

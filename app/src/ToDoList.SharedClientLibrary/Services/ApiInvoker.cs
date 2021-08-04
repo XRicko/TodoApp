@@ -56,7 +56,7 @@ namespace ToDoList.SharedClientLibrary.Services
             _ = item ?? throw new ArgumentNullException(nameof(item));
 
             await AddAuthorizationHeaderAsync();
-            using var __ = await MakeRequest(Post);
+            using var response= await MakeRequest(Post);
 
             async Task<HttpResponseMessage> Post() => await httpClient.PostAsJsonAsync(route, item);
         }
@@ -90,7 +90,7 @@ namespace ToDoList.SharedClientLibrary.Services
             _ = item ?? throw new ArgumentNullException(nameof(item));
 
             await AddAuthorizationHeaderAsync();
-            using var __ = await MakeRequest(Put);
+            using var response = await MakeRequest(Put);
 
             async Task<HttpResponseMessage> Put() => await httpClient.PutAsJsonAsync(route, item);
         }
@@ -102,7 +102,7 @@ namespace ToDoList.SharedClientLibrary.Services
                 throw new ArgumentException($"'{nameof(route)}' cannot be null or whitespace", nameof(route));
 
             await AddAuthorizationHeaderAsync();
-            using var __ = await MakeRequest(Delete);
+            using var response= await MakeRequest(Delete);
 
             async Task<HttpResponseMessage> Delete() => await httpClient.DeleteAsync(route + id);
         }
@@ -110,7 +110,7 @@ namespace ToDoList.SharedClientLibrary.Services
         public async Task LogOutAsync()
         {
             await AddAuthorizationHeaderAsync();
-            using var __ = await MakeRequest(Logout);
+            using var response = await MakeRequest(Logout);
 
             await RemoveTokensFromStorageAsync();
             httpClient.DefaultRequestHeaders.Authorization = null;

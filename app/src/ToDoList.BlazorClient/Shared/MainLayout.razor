@@ -19,7 +19,7 @@
 					<Logout />
 				</Authorized>
 				<NotAuthorized>
-					@if (!isInRegisterPage)
+					@if (!inRegisterPage)
 					{
 						<Login />
 					}
@@ -35,20 +35,20 @@
 </div>
 
 @code {
-	private bool isInRegisterPage;
+	private bool inRegisterPage;
 
     protected override void OnInitialized()
 	{
-		isInRegisterPage = false;
+		inRegisterPage = false;
 		NavManager.LocationChanged += CheckLocation;
 	}
 
 	private void CheckLocation(object sender, LocationChangedEventArgs args)
 	{
 		if (args.Location.Contains("register", StringComparison.OrdinalIgnoreCase))
-			isInRegisterPage = true;
+			inRegisterPage = true;
 		else
-			isInRegisterPage = false;
+			inRegisterPage = false;
 
 		StateHasChanged();
 	}

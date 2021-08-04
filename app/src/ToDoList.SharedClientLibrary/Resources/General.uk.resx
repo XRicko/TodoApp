@@ -120,6 +120,9 @@
   <data name="ActiveTab" xml:space="preserve">
     <value>Активні</value>
   </data>
+  <data name="Add Category" xml:space="preserve">
+    <value>Додати категорію</value>
+  </data>
   <data name="Confirm Password" xml:space="preserve">
     <value>Підтвердіть пароль</value>
   </data>

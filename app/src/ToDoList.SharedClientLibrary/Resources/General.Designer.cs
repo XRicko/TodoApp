@@ -70,6 +70,15 @@ namespace ToDoList.SharedClientLibrary.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Add Category.
+        /// </summary>
+        public static string Add_Category {
+            get {
+                return ResourceManager.GetString("Add Category", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Confirm password.
         /// </summary>
         public static string Confirm_Password {
