@@ -1,19 +1,30 @@
 ﻿@inject IStringLocalizer<General> Localizer
 
 <div class="d-flex flex-column todo-item">
-    <div class="text-center">
+    <div class="category d-flex justify-content-center align-items-center text-center">
         <select id="category-select-@TodoItemModel.Id @(TodoItemModel.CategoryId.HasValue ? "" : "placeholder")">
-            <option value="" 
-                    selected="@(!TodoItemModel.CategoryId.HasValue)"
-                    disabled="@(!TodoItemModel.CategoryId.HasValue)">
-                @Localizer["Add Category"]
-            </option>
+            @if (!TodoItemModel.CategoryId.HasValue)
+            {
+                <option value="" 
+                        selected="@(!TodoItemModel.CategoryId.HasValue)"
+                        disabled>
+                    @Localizer["Add Category"]
+                </option>
+            }
 
             @foreach (var category in categories)
             {
                 <option value="@category.Id" selected="@(TodoItemModel.CategoryId == category.Id)">@category.Name</option>
             }
         </select>
+
+        @if (TodoItemModel.CategoryId.HasValue)
+        {
+            <button class="reset btn"
+                @onclick="ResetCategory">
+               <i class="oi oi-x"></i>
+            </button>
+        }
     </div>
 
     <div class="d-flex align-items-center">
@@ -55,9 +66,9 @@
             @TodoItemModel.DaysAgo Days ago
         </div>
 
-        <span class="d-flex delete"
+        <button class="delete"
               @onclick="Delete">
             <i class="oi oi-ban"></i>
-        </span>
+        </button>
     </div>
 </div>

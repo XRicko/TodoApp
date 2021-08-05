@@ -2,8 +2,20 @@
     @return rgba(255, 255, 255, $alpha);
 }
 
+$secondary-color: rgba-white(0.4);
+
 @mixin border-on-hover {
     border: 1px solid rgba-white(0.6);
+}
+
+@mixin custom-btn($color) {
+    all: unset;
+    cursor: pointer;
+    color: $color;
+
+    &:focus-visible {
+        outline: revert;
+    }
 }
 
 .todo-item > *:not(:last-child) {
@@ -50,20 +62,27 @@ img {
 }
 
 .days-ago {
-    color: rgba-white(0.4);
+    color: $secondary-color;
 }
 
 .delete {
-    cursor: pointer;
-    color: rgba-white(0.6);
+    @include custom-btn(rgba-white(0.6));
 }
 
-::deep .select2-selection--single {
+.reset {
+    @include custom-btn($secondary-color);
+    margin-right: 10px;
+    font-size: 0.7rem;
+}
+
+.category {
     font-size: 0.8rem;
     font-weight: 700;
     border: 1px solid transparent;
     border-radius: .25rem;
     transition: border-color .1s ease-in;
+    width: min-content;
+    align-self: center;
 
     &:hover {
         @include border-on-hover;
@@ -76,5 +95,9 @@ img {
 }
 
 ::deep .select2-selection__rendered[id*="placeholder"] {
-    color: rgba-white(0.4);
+    color: $secondary-color;
+}
+
+::deep .select2-container {
+    min-width: 95px;
 }

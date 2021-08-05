@@ -35,12 +35,15 @@ namespace ToDoList.BlazorClient.Components.TodoItem
         [Parameter]
         public TodoItemModel TodoItemModel { get; set; } = new();
 
-        protected override async Task OnInitializedAsync()
-        {
+        protected override async Task OnInitializedAsync() => 
             categories = await ApiInvoker.GetItemsAsync<CategoryModel>("Categories");
 
+        protected override async Task OnAfterRenderAsync(bool firstRender)
+        {
             objRef = DotNetObjectReference.Create(this);
-            await InitSelect2();
+
+            if (firstRender)
+                await InitSelect2();
         }
 
         [JSInvokable]
@@ -63,12 +66,10 @@ namespace ToDoList.BlazorClient.Components.TodoItem
             }
 
             await Update();
-            //await InitSelect2();
-
             StateHasChanged();
-        }
 
-        private async Task InitSelect2() => await JSRuntime.InvokeVoidAsync("initSelect", objRef, TodoItemModel.Id);
+            await InitSelect2();
+        }
 
         private async Task Delete()
         {
@@ -99,6 +100,20 @@ namespace ToDoList.BlazorClient.Components.TodoItem
             await ApiInvoker.PutItemAsync("TodoItems", TodoItemModel);
             await Notifier.UpdateChecklist(TodoItemModel.ChecklistId);
         }
+
+        private async Task ResetCategory()
+        {
+            if (TodoItemModel.CategoryId is null)
+                return;
+
+            TodoItemModel.CategoryId = null;
+            await Update();
+
+            StateHasChanged();
+            await InitSelect2();
+        }
+
+        private async Task InitSelect2() => await JSRuntime.InvokeVoidAsync("initSelect", objRef, TodoItemModel.Id);
 
         public void Dispose() => objRef?.Dispose();
     }
