@@ -20,7 +20,7 @@
 
         @if (TodoItemModel.CategoryId.HasValue)
         {
-            <button class="reset btn"
+            <button class="reset"
                 @onclick="ResetCategory">
                <i class="oi oi-x"></i>
             </button>
@@ -32,7 +32,7 @@
             <input type="checkbox"
                    class="custom-control-input"
                    id="todo-item-@TodoItemModel.Id"
-                   @onchange="ChangeStatus"
+                   @onchange="CheckTodoItem"
                    checked="@Checked" />
             <label class="custom-control-label" for="todo-item-@TodoItemModel.Id">&nbsp;</label>
         </div>
@@ -45,8 +45,25 @@
                           OnValidSubmit="Update" />
         </div>
 
-        <div class="status">
-            @TodoItemModel.StatusName
+        <div class="dropdown ml-auto">
+            <button id="dropdown-btn"
+                    class="status-btn"
+                    data-toggle="dropdown" 
+                    aria-haspopup="true"
+                    aria-expanded="false"
+                    @onclick="LoadStatuses">
+                @TodoItemModel.StatusName
+            </button>
+
+            <div class="dropdown-menu dropdown-menu-right status-menu" aria-labelledby="dropdown-btn">
+                @foreach (var status in statuses.Where(x => x.Id != TodoItemModel.StatusId))
+                {
+                    <button class="dropdown-item status-item @StatusModel.GetBackgroundColor(status.Name)" 
+                            @onclick="() => UpdateStatus(status.Id)">
+                        @status.Name
+                    </button>
+                }
+            </div>
         </div>
     </div>
 

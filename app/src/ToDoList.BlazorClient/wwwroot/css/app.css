@@ -73,6 +73,18 @@ a, .btn-link {
     }
 }
 
+.bg-planned {
+    background: #404040;
+}
+
+.bg-ongoing {
+    background: #a08329;
+}
+
+.bg-done {
+    background: #34712c;
+}
+
 .overlay {
     position: absolute;
     left: 0;
@@ -122,4 +134,19 @@ a, .btn-link {
 
 .select2-dropdown {
     background: rgba(255, 255, 255, 0.8);
+}
+
+.select2-container {
+    min-width: 95px;
+    animation: dropdownAppear .25s;
+}
+
+@keyframes dropdownAppear {
+    from {
+        transform: scaleY(0)
+    }
+
+    to {
+        transform: scaleY(1)
+    }
 }

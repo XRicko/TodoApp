@@ -17,6 +17,7 @@ namespace ToDoList.BlazorClient.Components.TodoItem
     public partial class TodoItem : IDisposable
     {
         private IEnumerable<CategoryModel> categories = Array.Empty<CategoryModel>();
+        private IEnumerable<StatusModel> statuses = Array.Empty<StatusModel>();
 
         private bool? Checked => TodoItemModel.StatusName?.Equals("Done");
 
@@ -84,7 +85,7 @@ namespace ToDoList.BlazorClient.Components.TodoItem
 
         private async Task Update() => await ApiInvoker.PutItemAsync("TodoItems", TodoItemModel);
 
-        private async Task ChangeStatus(ChangeEventArgs args)
+        private async Task CheckTodoItem(ChangeEventArgs args)
         {
             StatusModel statusModel;
 
@@ -97,7 +98,15 @@ namespace ToDoList.BlazorClient.Components.TodoItem
             TodoItemModel.StatusId = statusModel.Id;
             TodoItemModel.StatusName = statusModel.Name;
 
-            await ApiInvoker.PutItemAsync("TodoItems", TodoItemModel);
+            await Update();
+            await Notifier.UpdateChecklist(TodoItemModel.ChecklistId);
+        }
+
+        private async Task UpdateStatus(int statusId)
+        {
+            TodoItemModel.StatusId = statusId;
+
+            await Update();
             await Notifier.UpdateChecklist(TodoItemModel.ChecklistId);
         }
 
@@ -111,6 +120,11 @@ namespace ToDoList.BlazorClient.Components.TodoItem
 
             StateHasChanged();
             await InitSelect2();
+        }
+
+        private async Task LoadStatuses()
+        {
+            statuses = await ApiInvoker.GetItemsAsync<StatusModel>("Statuses");
         }
 
         private async Task InitSelect2() => await JSRuntime.InvokeVoidAsync("initSelect", objRef, TodoItemModel.Id);

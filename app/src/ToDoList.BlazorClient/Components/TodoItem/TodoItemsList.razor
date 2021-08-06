@@ -1,5 +1,5 @@
 ﻿<Virtualize Items="@TodoItemModels" Context="todoItem">
-	<li class="list-group-item @GetBackgroundColor(todoItem)"
+	<li class="list-group-item @StatusModel.GetBackgroundColor(todoItem.StatusName)"
 		draggable="true"
 		@ondragstart="() => HandleDragStart(todoItem)">
 		<TodoItem @key="todoItem.Id" TodoItemModel="todoItem" />
@@ -12,16 +12,6 @@
 
 	[Parameter]
 	public ICollection<TodoItemModel> TodoItemModels { get; set; } = Array.Empty<TodoItemModel>();
-
-	private string GetBackgroundColor(TodoItemModel todoItem)
-	{
-		return todoItem.StatusName switch
-		{
-			"Planned" => "bg-planned",
-			"Ongoing" => "bg-ongoing",
-			_ => "bg-done"
-		};
-	}
 
 	private void HandleDragStart(TodoItemModel todoItemModel) => Container.DraggedTodoItem = todoItemModel;
 }
