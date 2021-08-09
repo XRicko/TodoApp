@@ -96,15 +96,15 @@ namespace ToDoList.SharedClientLibrary.Services
         }
 
 
-        public async Task DeleteItemAsync(string route, int id)
+        public async Task DeleteItemAsync(string routeWithParameters)
         {
-            if (string.IsNullOrWhiteSpace(route))
-                throw new ArgumentException($"'{nameof(route)}' cannot be null or whitespace", nameof(route));
+            if (string.IsNullOrWhiteSpace(routeWithParameters))
+                throw new ArgumentException($"'{nameof(routeWithParameters)}' cannot be null or whitespace", nameof(routeWithParameters));
 
             await AddAuthorizationHeaderAsync();
             using var response= await MakeRequest(Delete);
 
-            async Task<HttpResponseMessage> Delete() => await httpClient.DeleteAsync(route + id);
+            async Task<HttpResponseMessage> Delete() => await httpClient.DeleteAsync(routeWithParameters);
         }
 
         public async Task LogOutAsync()

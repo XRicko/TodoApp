@@ -2,6 +2,7 @@
 
 @using System.Net.Http
 @using ToDoList.BlazorClient.Services
+@using ToDoList.SharedClientLibrary
 
 @inject NavigationManager NavManager
 @inject IAuthenticationService AuthService
@@ -70,7 +71,7 @@
 
 		try
 		{
-			await AuthService.AuthenticateAsync("Register", user);
+			await AuthService.AuthenticateAsync(ApiEndpoints.Register, user);
 			loading = false;
 
 			NavManager.NavigateTo("/");

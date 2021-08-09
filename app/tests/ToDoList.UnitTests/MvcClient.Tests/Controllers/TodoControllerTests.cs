@@ -15,6 +15,7 @@ using ToDoList.MvcClient.Controllers;
 using ToDoList.MvcClient.Models;
 using ToDoList.MvcClient.Services;
 using ToDoList.MvcClient.ViewModels;
+using ToDoList.SharedClientLibrary;
 using ToDoList.SharedClientLibrary.Models;
 using ToDoList.SharedKernel;
 
@@ -31,9 +32,7 @@ namespace MvcClient.Tests.Controllers
         private readonly string createOrUpdateViewName;
         private readonly string viewAllViewName;
 
-        private readonly string route;
         private readonly int checklistId;
-
 
         public TodoControllerTests()
         {
@@ -44,7 +43,6 @@ namespace MvcClient.Tests.Controllers
             createOrUpdateViewName = "CreateOrUpdate";
             viewAllViewName = "_ViewAll";
 
-            route = "TodoItems";
             checklistId = 1;
         }
 
@@ -178,11 +176,9 @@ namespace MvcClient.Tests.Controllers
             int existingId = 3;
             var existingTodoItem = new TodoItemModelWithFile { Id = existingId, Name = "Somehting", ChecklistId = checklistId, StatusId = 1 };
 
-            string routeWithId = $"{route}/{existingId}";
-
             var createTodoItemViewModel = GetCreateTodoItemViewModel();
 
-            ApiInvokerMock.Setup(x => x.GetItemAsync<TodoItemModelWithFile>(routeWithId))
+            ApiInvokerMock.Setup(x => x.GetItemAsync<TodoItemModelWithFile>($"{ApiEndpoints.TodoItems}/{existingId}"))
                           .ReturnsAsync(existingTodoItem)
                           .Verifiable();
 
@@ -225,11 +221,9 @@ namespace MvcClient.Tests.Controllers
                 GeoPoint = new GeoCoordinate(lng, lat)
             };
 
-            string routeWithId = $"{route}/{existingId}";
-
             var createTodoItemViewModel = GetCreateTodoItemViewModel();
 
-            ApiInvokerMock.Setup(x => x.GetItemAsync<TodoItemModelWithFile>(routeWithId))
+            ApiInvokerMock.Setup(x => x.GetItemAsync<TodoItemModelWithFile>($"{ApiEndpoints.TodoItems}/{existingId}"))
                           .ReturnsAsync(existingTodoItem)
                           .Verifiable();
 
@@ -261,9 +255,8 @@ namespace MvcClient.Tests.Controllers
         {
             // Arrange
             int invalidId = 45;
-            string routeWithId = $"{route}/{invalidId}";
 
-            ApiInvokerMock.Setup(x => x.GetItemAsync<TodoItemModelWithFile>(routeWithId))
+            ApiInvokerMock.Setup(x => x.GetItemAsync<TodoItemModelWithFile>($"{ApiEndpoints.TodoItems}/{invalidId}"))
                           .ReturnsAsync(() => null)
                           .Verifiable();
 
@@ -309,14 +302,14 @@ namespace MvcClient.Tests.Controllers
 
             IndexViewModel indexViewModel = new();
 
-            ApiInvokerMock.Setup(x => x.PostItemAsync(route, newTodoItem))
+            ApiInvokerMock.Setup(x => x.PostItemAsync(ApiEndpoints.TodoItems, newTodoItem))
                           .Callback(() =>
                           {
                               newTodoItem.Id = todoItems.Last().Id++;
                               todoItems.Add(newTodoItem);
                               indexViewModel.TodoItems = todoItems;
                           });
-            ApiInvokerMock.Setup(x => x.GetItemAsync<CategoryModel>("Categories/GetByName/" + category.Name))
+            ApiInvokerMock.Setup(x => x.GetItemAsync<CategoryModel>($"{ApiEndpoints.CategoryByName}/{category.Name}"))
                           .ReturnsAsync(category);
 
             createViewModelServiceMock.Setup(x => x.CreateIndexViewModelAsync(null, null))
@@ -338,7 +331,8 @@ namespace MvcClient.Tests.Controllers
             todoItemWithGeoPoint.GeoPoint.Should().Be(geoCoordinate);
 
             ApiInvokerMock.VerifyAll();
-            ApiInvokerMock.Verify(x => x.PostItemAsync("Categories", It.Is<CategoryModel>(m => m.Name == category.Name)), Times.Once);
+            ApiInvokerMock.Verify(x => x.PostItemAsync(ApiEndpoints.Categories,
+                                                       It.Is<CategoryModel>(m => m.Name == category.Name)), Times.Once);
 
             createViewModelServiceMock.Verify();
         }
@@ -370,7 +364,7 @@ namespace MvcClient.Tests.Controllers
 
             IndexViewModel indexViewModel = new();
 
-            ApiInvokerMock.Setup(x => x.PutItemAsync(route, todoItemToUpdate))
+            ApiInvokerMock.Setup(x => x.PutItemAsync(ApiEndpoints.TodoItems, todoItemToUpdate))
                           .Callback(() =>
                           {
                               int index = todoItems.FindIndex(c => c.Id == todoItemToUpdate.Id);
@@ -379,10 +373,10 @@ namespace MvcClient.Tests.Controllers
                               indexViewModel.TodoItems = todoItems;
                           });
 
-            ApiInvokerMock.Setup(x => x.PostFileAsync("Images", todoItemToUpdate.Image.FileName, It.IsAny<byte[]>()))
+            ApiInvokerMock.Setup(x => x.PostFileAsync(ApiEndpoints.Images, todoItemToUpdate.Image.FileName, It.IsAny<byte[]>()))
                           .ReturnsAsync(imageName)
                           .Verifiable();
-            ApiInvokerMock.Setup(x => x.GetItemAsync<ImageModel>("Images/GetByName/" + imageName))
+            ApiInvokerMock.Setup(x => x.GetItemAsync<ImageModel>($"{ApiEndpoints.ImageByName}/{imageName}"))
                           .ReturnsAsync(new ImageModel { Id = imageId })
                           .Verifiable();
 
@@ -417,7 +411,7 @@ namespace MvcClient.Tests.Controllers
 
             IndexViewModel indexViewModel = new();
 
-            ApiInvokerMock.Setup(x => x.DeleteItemAsync(route + "/", idToDelete))
+            ApiInvokerMock.Setup(x => x.DeleteItemAsync($"{ApiEndpoints.TodoItems}/{idToDelete}"))
                           .Callback(() =>
                           {
                               todoItems.Remove(todoItems.SingleOrDefault(c => c.Id == idToDelete));
@@ -463,17 +457,14 @@ namespace MvcClient.Tests.Controllers
             string statusName = isDone ? "Done" : "Ongoing";
             var status = new StatusModel { Id = 3, Name = statusName, IsDone = isDone };
 
-            string routeWithId = $"{route}/{todoItem.Id}";
-            string routeForStatus = "Statuses/GetByName/" + status.Name;
-
             IndexViewModel indexViewModel = new();
 
-            ApiInvokerMock.Setup(x => x.GetItemAsync<TodoItemModelWithFile>(routeWithId))
+            ApiInvokerMock.Setup(x => x.GetItemAsync<TodoItemModelWithFile>($"{ApiEndpoints.TodoItems}/{todoItem.Id}"))
                           .ReturnsAsync(todoItem);
-            ApiInvokerMock.Setup(x => x.GetItemAsync<StatusModel>(routeForStatus))
+            ApiInvokerMock.Setup(x => x.GetItemAsync<StatusModel>($"{ApiEndpoints.StatusByName}/{status.Name}"))
                           .ReturnsAsync(status);
 
-            ApiInvokerMock.Setup(x => x.PutItemAsync(route, todoItem))
+            ApiInvokerMock.Setup(x => x.PutItemAsync(ApiEndpoints.TodoItems, todoItem))
                           .Callback((string s, TodoItemModelWithFile m) =>
                           {
                               todoItems.SingleOrDefault(c => c.Id == todoItem.Id).StatusId = m.StatusId;

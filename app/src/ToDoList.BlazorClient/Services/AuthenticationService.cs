@@ -20,9 +20,9 @@ namespace ToDoList.BlazorClient.Services
             authenticationStateProvider = authenticationState ?? throw new ArgumentNullException(nameof(authenticationState));
         }
 
-        public async Task AuthenticateAsync(string action, UserModel user)
+        public async Task AuthenticateAsync(string route, UserModel user)
         {
-            var authenticatedModel = await apiInvoker.AuthenticateUserAsync($"Authentication/{action}", user);
+            var authenticatedModel = await apiInvoker.AuthenticateUserAsync(route, user);
             ((AuthStateProvider)authenticationStateProvider).NotifyUserAuthentication(authenticatedModel.AccessToken);
         }
 

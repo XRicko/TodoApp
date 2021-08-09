@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components;
 
 using ToDoList.BlazorClient.Services;
+using ToDoList.SharedClientLibrary;
 using ToDoList.SharedClientLibrary.Models;
 using ToDoList.SharedClientLibrary.Services;
 
@@ -45,7 +46,7 @@ namespace ToDoList.BlazorClient.Components.Checklist
             Notifier.ChecklistChanged += OnTodoItemsChanged;
         }
 
-        private async Task Update() => await ApiInvoker.PutItemAsync("Checklists", ChecklistModel);
+        private async Task Update() => await ApiInvoker.PutItemAsync(ApiEndpoints.Checklists, ChecklistModel);
 
         private async Task OnTodoItemsChanged(int checklistId)
         {
@@ -84,7 +85,7 @@ namespace ToDoList.BlazorClient.Components.Checklist
 
                 Container.DraggedTodoItem.ChecklistId = ChecklistModel.Id;
 
-                await ApiInvoker.PutItemAsync("TodoItems", Container.DraggedTodoItem);
+                await ApiInvoker.PutItemAsync(ApiEndpoints.TodoItems, Container.DraggedTodoItem);
                 await LoadTodoItems();
 
                 await Notifier.UpdateChecklist(oldChecklist);
@@ -95,7 +96,7 @@ namespace ToDoList.BlazorClient.Components.Checklist
 
         private async Task LoadTodoItems()
         {
-            todoItemModels = await ApiInvoker.GetItemsAsync<TodoItemModel>($"TodoItems/GetByChecklistId/{ChecklistModel.Id}");
+            todoItemModels = await ApiInvoker.GetItemsAsync<TodoItemModel>($"{ApiEndpoints.TodoItemByChecklistId}/{ChecklistModel.Id}");
         }
 
         private void Collapse() => collapsed = !collapsed;

@@ -2,15 +2,20 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
+using Blazored.Modal;
 using Blazored.Modal.Services;
+
+using GoogleMapsComponents.Maps;
 
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 
 using ToDoList.BlazorClient.Services;
 using ToDoList.BlazorClient.Shared;
+using ToDoList.SharedClientLibrary;
 using ToDoList.SharedClientLibrary.Models;
 using ToDoList.SharedClientLibrary.Services;
+using ToDoList.SharedKernel;
 
 namespace ToDoList.BlazorClient.Components.TodoItem
 {
@@ -37,7 +42,7 @@ namespace ToDoList.BlazorClient.Components.TodoItem
         public TodoItemModel TodoItemModel { get; set; } = new();
 
         protected override async Task OnInitializedAsync() => 
-            categories = await ApiInvoker.GetItemsAsync<CategoryModel>("Categories");
+            categories = await ApiInvoker.GetItemsAsync<CategoryModel>(ApiEndpoints.Categories);
 
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {
@@ -60,8 +65,8 @@ namespace ToDoList.BlazorClient.Components.TodoItem
             }
             else
             {
-                await ApiInvoker.PostItemAsync("Categories", new CategoryModel { Name = category });
-                var created = await ApiInvoker.GetItemAsync<CategoryModel>("Categories/GetByName/" + category);
+                await ApiInvoker.PostItemAsync(ApiEndpoints.Categories, new CategoryModel { Name = category });
+                var created = await ApiInvoker.GetItemAsync<CategoryModel>($"{ApiEndpoints.CategoryByName}/{category}");
 
                 TodoItemModel.CategoryId = created.Id;
             }
@@ -79,11 +84,11 @@ namespace ToDoList.BlazorClient.Components.TodoItem
             if (result.Cancelled)
                 return;
 
-            await ApiInvoker.DeleteItemAsync("TodoItems/", TodoItemModel.Id);
+            await ApiInvoker.DeleteItemAsync($"{ApiEndpoints.TodoItems}/{TodoItemModel.Id}");
             await Notifier.UpdateChecklist(TodoItemModel.ChecklistId);
         }
 
-        private async Task Update() => await ApiInvoker.PutItemAsync("TodoItems", TodoItemModel);
+        private async Task Update() => await ApiInvoker.PutItemAsync(ApiEndpoints.TodoItems, TodoItemModel);
 
         private async Task CheckTodoItem(ChangeEventArgs args)
         {
@@ -92,8 +97,8 @@ namespace ToDoList.BlazorClient.Components.TodoItem
             bool done = (bool)args.Value;
 
             statusModel = done
-                ? await ApiInvoker.GetItemAsync<StatusModel>("Statuses/GetByName/Done")
-                : await ApiInvoker.GetItemAsync<StatusModel>("Statuses/GetByName/Ongoing");
+                ? await ApiInvoker.GetItemAsync<StatusModel>(ApiEndpoints.StatusDone)
+                : await ApiInvoker.GetItemAsync<StatusModel>(ApiEndpoints.StatusOngoing);
 
             TodoItemModel.StatusId = statusModel.Id;
             TodoItemModel.StatusName = statusModel.Name;
@@ -101,6 +106,8 @@ namespace ToDoList.BlazorClient.Components.TodoItem
             await Update();
             await Notifier.UpdateChecklist(TodoItemModel.ChecklistId);
         }
+
+        private async Task LoadStatuses() => statuses = await ApiInvoker.GetItemsAsync<StatusModel>(ApiEndpoints.Statuses);
 
         private async Task UpdateStatus(int statusId)
         {
@@ -122,9 +129,22 @@ namespace ToDoList.BlazorClient.Components.TodoItem
             await InitSelect2();
         }
 
-        private async Task LoadStatuses()
+        private async Task UpdateLocation()
         {
-            statuses = await ApiInvoker.GetItemsAsync<StatusModel>("Statuses");
+            ModalParameters parameters = new();
+            parameters.Add(nameof(GeoCoordinate), TodoItemModel.GeoPoint);
+
+            var result = await Modal.Show<LocationSelector>("Choose location for the task", parameters).Result;
+
+            if (result.Cancelled)
+                return;
+
+            var latLng = result.Data as LatLngLiteral;
+
+            TodoItemModel.GeoPoint = new GeoCoordinate(latLng.Lng, latLng.Lat);
+            await Update();
+
+            TodoItemModel = await ApiInvoker.GetItemAsync<TodoItemModel>($"{ApiEndpoints.TodoItems}/{TodoItemModel.Id}");
         }
 
         private async Task InitSelect2() => await JSRuntime.InvokeVoidAsync("initSelect", objRef, TodoItemModel.Id);

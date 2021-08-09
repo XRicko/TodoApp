@@ -7,6 +7,7 @@ using Blazored.Modal.Services;
 using Microsoft.AspNetCore.Components;
 
 using ToDoList.BlazorClient.Shared;
+using ToDoList.SharedClientLibrary;
 using ToDoList.SharedClientLibrary.Models;
 using ToDoList.SharedClientLibrary.Services;
 
@@ -23,7 +24,7 @@ namespace ToDoList.BlazorClient.Components.Checklist
         private IEnumerable<ChecklistModel> checklistModels = Array.Empty<ChecklistModel>();
 
         protected override async Task OnInitializedAsync() =>
-            checklistModels = await ApiInvoker.GetItemsAsync<ChecklistModel>("Checklists");
+            checklistModels = await ApiInvoker.GetItemsAsync<ChecklistModel>(ApiEndpoints.Checklists);
 
         private async Task Delete(int checklistId)
         {
@@ -32,8 +33,8 @@ namespace ToDoList.BlazorClient.Components.Checklist
             if (result.Cancelled)
                 return;
 
-            await ApiInvoker.DeleteItemAsync("Checklists/", checklistId);
-            checklistModels = await ApiInvoker.GetItemsAsync<ChecklistModel>("Checklists");
+            await ApiInvoker.DeleteItemAsync($"{ApiEndpoints.Checklists}/{checklistId}");
+            checklistModels = await ApiInvoker.GetItemsAsync<ChecklistModel>(ApiEndpoints.Checklists);
         }
     }
 }

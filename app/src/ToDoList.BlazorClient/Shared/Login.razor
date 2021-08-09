@@ -1,5 +1,6 @@
 ﻿@using System.Net.Http
 @using ToDoList.BlazorClient.Services
+@using ToDoList.SharedClientLibrary
 
 @inject NavigationManager NavManager
 @inject IAuthenticationService AuthService
@@ -64,7 +65,7 @@
 
 			try
 			{
-				await AuthService.AuthenticateAsync("Login", user);
+				await AuthService.AuthenticateAsync(ApiEndpoints.Login, user);
 				loading = false;
 
 				NavManager.NavigateTo(NavManager.Uri);

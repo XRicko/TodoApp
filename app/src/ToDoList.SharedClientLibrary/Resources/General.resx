@@ -123,6 +123,9 @@
   <data name="Add Category" xml:space="preserve">
     <value>Add Category</value>
   </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
   <data name="Confirm Password" xml:space="preserve">
     <value>Confirm password</value>
   </data>
@@ -176,6 +179,9 @@
   </data>
   <data name="Registration Failed" xml:space="preserve">
     <value>User exists</value>
+  </data>
+  <data name="Submit" xml:space="preserve">
+    <value>Submit</value>
   </data>
   <data name="UntitledChecklist" xml:space="preserve">
     <value>Untitled</value>

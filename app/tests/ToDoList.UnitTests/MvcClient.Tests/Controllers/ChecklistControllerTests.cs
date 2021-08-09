@@ -12,6 +12,7 @@ using Moq;
 using ToDoList.MvcClient.Controllers;
 using ToDoList.MvcClient.Services;
 using ToDoList.MvcClient.ViewModels;
+using ToDoList.SharedClientLibrary;
 using ToDoList.SharedClientLibrary.Models;
 
 using Xunit;
@@ -25,7 +26,6 @@ namespace MvcClient.Tests.Controllers
         private readonly ChecklistController checklistController;
 
         private readonly int userId;
-        private readonly string route;
 
         private readonly string createOrUpdateViewName;
         private readonly string viewAllViewName;
@@ -33,11 +33,9 @@ namespace MvcClient.Tests.Controllers
         public ChecklistControllerTests() : base()
         {
             viewModelServiceMock = new Mock<IViewModelService>();
-
             checklistController = new ChecklistController(ApiInvokerMock.Object, viewModelServiceMock.Object);
 
             userId = 5;
-            route = "Checklists";
 
             createOrUpdateViewName = "CreateOrUpdate";
             viewAllViewName = "_ViewAll";
@@ -62,9 +60,7 @@ namespace MvcClient.Tests.Controllers
             int existingChecklistId = 3;
             var checklist = new ChecklistModel { Id = 3, Name = "Chores", UserId = userId };
 
-            string routeWithId = $"{route}/{checklist.Id}";
-
-            ApiInvokerMock.Setup(x => x.GetItemAsync<ChecklistModel>(routeWithId))
+            ApiInvokerMock.Setup(x => x.GetItemAsync<ChecklistModel>($"{ApiEndpoints.Checklists}/{existingChecklistId}"))
                           .ReturnsAsync(checklist)
                           .Verifiable();
 
@@ -84,9 +80,8 @@ namespace MvcClient.Tests.Controllers
         {
             // Arrange
             int invalidId = 45;
-            string routeWithId = $"{route}/{invalidId}";
 
-            ApiInvokerMock.Setup(x => x.GetItemAsync<ChecklistModel>(routeWithId))
+            ApiInvokerMock.Setup(x => x.GetItemAsync<ChecklistModel>($"{ApiEndpoints.Checklists}/{invalidId}"))
                           .ReturnsAsync(() => null)
                           .Verifiable();
 
@@ -123,7 +118,7 @@ namespace MvcClient.Tests.Controllers
 
             IndexViewModel indexViewModel = new();
 
-            ApiInvokerMock.Setup(x => x.PostItemAsync(route, newChecklist))
+            ApiInvokerMock.Setup(x => x.PostItemAsync(ApiEndpoints.Checklists, newChecklist))
                           .Callback(() =>
                           {
                               newChecklist.Id = checklists.Last().Id++;
@@ -155,7 +150,7 @@ namespace MvcClient.Tests.Controllers
 
             IndexViewModel indexViewModel = new();
 
-            ApiInvokerMock.Setup(x => x.PutItemAsync(route, checklistToUpdate))
+            ApiInvokerMock.Setup(x => x.PutItemAsync(ApiEndpoints.Checklists, checklistToUpdate))
                           .Callback(() =>
                           {
                               checklists.SingleOrDefault(c => c.Id == checklistToUpdate.Id).Name = checklistToUpdate.Name;
@@ -190,7 +185,7 @@ namespace MvcClient.Tests.Controllers
 
             IndexViewModel indexViewModel = new();
 
-            ApiInvokerMock.Setup(x => x.DeleteItemAsync(route + "/", idToDelete))
+            ApiInvokerMock.Setup(x => x.DeleteItemAsync($"{ApiEndpoints.Checklists}/{idToDelete}"))
                           .Callback(() =>
                           {
                               checklists.Remove(checklists.SingleOrDefault(c => c.Id == idToDelete));

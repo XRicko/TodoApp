@@ -14,7 +14,7 @@ namespace ToDoList.SharedClientLibrary.Services
         Task<string> PostFileAsync(string route, string fileName, byte[] fileBytes);
 
         Task PutItemAsync<T>(string route, T item) where T : BaseModel;
-        Task DeleteItemAsync(string route, int id);
+        Task DeleteItemAsync(string routeWithParameters);
 
         Task<AuthenticatedModel> AuthenticateUserAsync(string route, UserModel userModel);
         Task LogOutAsync();

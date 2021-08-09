@@ -9,6 +9,7 @@ using Microsoft.Extensions.Localization;
 using Moq;
 
 using ToDoList.MvcClient.Controllers;
+using ToDoList.SharedClientLibrary;
 using ToDoList.SharedClientLibrary.Models;
 using ToDoList.SharedClientLibrary.Resources;
 
@@ -71,7 +72,7 @@ namespace MvcClient.Tests.Controllers
             var localizedString = new LocalizedString(key, error);
 
 
-            ApiInvokerMock.Setup(x => x.AuthenticateUserAsync("Authentication/Register", existingUser))
+            ApiInvokerMock.Setup(x => x.AuthenticateUserAsync(ApiEndpoints.Register, existingUser))
                           .ThrowsAsync(new HttpRequestException("Error", null, System.Net.HttpStatusCode.Unauthorized))
                           .Verifiable();
             localizerMock.SetupGet(x => x[key])
@@ -102,7 +103,7 @@ namespace MvcClient.Tests.Controllers
             result.ActionName.Should().Be(indexViewName);
             result.ControllerName.Should().Be(todoControllerName);
 
-            ApiInvokerMock.Verify(x => x.AuthenticateUserAsync("Authentication/Register", newUser), Times.Once);
+            ApiInvokerMock.Verify(x => x.AuthenticateUserAsync(ApiEndpoints.Register, newUser), Times.Once);
         }
 
         [Fact]
@@ -118,7 +119,7 @@ namespace MvcClient.Tests.Controllers
 
             userController.ModelState.AddModelError("ConfirmPassword", "Confirm password doesnt match");
 
-            ApiInvokerMock.Setup(x => x.AuthenticateUserAsync("Authentication/Login", invalidUser))
+            ApiInvokerMock.Setup(x => x.AuthenticateUserAsync(ApiEndpoints.Login, invalidUser))
                           .ThrowsAsync(new HttpRequestException("Error", null, System.Net.HttpStatusCode.Unauthorized))
                           .Verifiable();
             localizerMock.SetupGet(x => x[key])
@@ -151,7 +152,7 @@ namespace MvcClient.Tests.Controllers
             result.ActionName.Should().Be(indexViewName);
             result.ControllerName.Should().Be(todoControllerName);
 
-            ApiInvokerMock.Verify(x => x.AuthenticateUserAsync("Authentication/Login", existingUser), Times.Once);
+            ApiInvokerMock.Verify(x => x.AuthenticateUserAsync(ApiEndpoints.Login, existingUser), Times.Once);
         }
 
         [Fact]

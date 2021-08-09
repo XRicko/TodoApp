@@ -5,12 +5,11 @@
 <div>
     <p>@Localizer["DeleteConfirmation"]</p>
 
-    <button @onclick="Close" class="btn btn-primary">Submit</button>
-    <button @onclick="Cancel" class="btn btn-secondary">Cancel</button>
+    <button @onclick="Close" class="btn btn-primary">@Localizer["Submit"]</button>
+    <button @onclick="Cancel" class="btn btn-secondary">@Localizer["Cancel"]</button>
 </div>
 
 @code {
-
     [CascadingParameter]
     private BlazoredModalInstance BlazoredModal { get; set; }
 

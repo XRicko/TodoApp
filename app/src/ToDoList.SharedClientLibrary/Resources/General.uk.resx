@@ -123,6 +123,9 @@
   <data name="Add Category" xml:space="preserve">
     <value>Додати категорію</value>
   </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Скасувати</value>
+  </data>
   <data name="Confirm Password" xml:space="preserve">
     <value>Підтвердіть пароль</value>
   </data>
@@ -176,6 +179,9 @@
   </data>
   <data name="Registration Failed" xml:space="preserve">
     <value>Такий користувач уже є</value>
+  </data>
+  <data name="Submit" xml:space="preserve">
+    <value>Підтвердити</value>
   </data>
   <data name="UntitledChecklist" xml:space="preserve">
     <value>Без назви</value>

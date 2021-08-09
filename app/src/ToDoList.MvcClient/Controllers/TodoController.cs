@@ -10,6 +10,7 @@ using ToDoList.Extensions;
 using ToDoList.MvcClient.Models;
 using ToDoList.MvcClient.Services;
 using ToDoList.MvcClient.ViewModels;
+using ToDoList.SharedClientLibrary;
 using ToDoList.SharedClientLibrary.Models;
 using ToDoList.SharedClientLibrary.Services;
 
@@ -42,7 +43,7 @@ namespace ToDoList.MvcClient.Controllers
                 return View(viewName, await viewModelService.CreateViewModelCreateOrUpdateTodoItemAsync(todoItem));
             }
 
-            var todoItemModel = await apiInvoker.GetItemAsync<TodoItemModelWithFile>("TodoItems/" + todoItemId);
+            var todoItemModel = await apiInvoker.GetItemAsync<TodoItemModelWithFile>($"{ApiEndpoints.TodoItems}/{todoItemId}");
 
             if (todoItemModel is null)
                 return NotFound();
@@ -89,7 +90,7 @@ namespace ToDoList.MvcClient.Controllers
         [HttpPost]
         public async Task<ActionResult> DeleteAsync(int id)
         {
-            await apiInvoker.DeleteItemAsync("TodoItems/", id);
+            await apiInvoker.DeleteItemAsync($"{ApiEndpoints.TodoItems}/{id}");
             var viewModel = await viewModelService.CreateIndexViewModelAsync();
 
             return PartialView("_ViewAll", viewModel);
@@ -98,7 +99,7 @@ namespace ToDoList.MvcClient.Controllers
         [HttpPost]
         public async Task<ActionResult> MarkTodoItemAsync(int id, bool isDone)
         {
-            var todoItemModel = await apiInvoker.GetItemAsync<TodoItemModelWithFile>("TodoItems/" + id);
+            var todoItemModel = await apiInvoker.GetItemAsync<TodoItemModelWithFile>($"{ApiEndpoints.TodoItems}/{id}");
 
             if (isDone)
                 await ChangeStatusToAsync(todoItemModel, "Done");
@@ -115,10 +116,10 @@ namespace ToDoList.MvcClient.Controllers
 
         private async Task ChangeStatusToAsync(TodoItemModelWithFile todoItemModel, string statusName)
         {
-            var status = await apiInvoker.GetItemAsync<StatusModel>("Statuses/GetByName/" + statusName);
+            var status = await apiInvoker.GetItemAsync<StatusModel>($"{ApiEndpoints.StatusByName}/{statusName}");
             todoItemModel.StatusId = status.Id;
 
-            await apiInvoker.PutItemAsync("TodoItems", todoItemModel);
+            await apiInvoker.PutItemAsync(ApiEndpoints.TodoItems, todoItemModel);
         }
 
         private static void AddGeoPoint(TodoItemModelWithFile todoItemModel)
@@ -131,22 +132,22 @@ namespace ToDoList.MvcClient.Controllers
 
         private async Task AddCategory(TodoItemModelWithFile todoItemModel)
         {
-            await apiInvoker.PostItemAsync("Categories", new CategoryModel { Name = todoItemModel.CategoryName });
+            await apiInvoker.PostItemAsync(ApiEndpoints.Categories, new CategoryModel { Name = todoItemModel.CategoryName });
 
-            var category = await apiInvoker.GetItemAsync<CategoryModel>("Categories/GetByName/" + todoItemModel.CategoryName);
+            var category = await apiInvoker.GetItemAsync<CategoryModel>($"{ApiEndpoints.CategoryByName}/{todoItemModel.CategoryName}");
             todoItemModel.CategoryId = category.Id;
         }
 
         private async Task AddTodoItem(TodoItemModelWithFile todoItemModel)
         {
             await AttachImage(todoItemModel);
-            await apiInvoker.PostItemAsync("TodoItems", todoItemModel);
+            await apiInvoker.PostItemAsync(ApiEndpoints.TodoItems, todoItemModel);
         }
 
         private async Task UpdateTodoItem(TodoItemModelWithFile todoItemModel)
         {
             await AttachImage(todoItemModel);
-            await apiInvoker.PutItemAsync("TodoItems", todoItemModel);
+            await apiInvoker.PutItemAsync(ApiEndpoints.TodoItems, todoItemModel);
         }
 
         private async Task AttachImage(TodoItemModelWithFile todoItemModel)
@@ -157,7 +158,7 @@ namespace ToDoList.MvcClient.Controllers
                 byte[] fileBytes = await stream.ToByteArrayAsync();
 
                 string file = await apiInvoker.PostFileAsync("Images", todoItemModel.Image.FileName, fileBytes);
-                var image = await apiInvoker.GetItemAsync<ImageModel>("Images/GetByName/" + file);
+                var image = await apiInvoker.GetItemAsync<ImageModel>($"{ApiEndpoints.ImageByName}/{file}");
 
                 todoItemModel.ImageId = image.Id;
             }

@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 
+using ToDoList.SharedClientLibrary;
 using ToDoList.SharedClientLibrary.Models;
 using ToDoList.SharedClientLibrary.Resources;
 using ToDoList.SharedClientLibrary.Services;
@@ -40,7 +41,7 @@ namespace ToDoList.MvcClient.Controllers
 
             try
             {
-                _ = await apiInvoker.AuthenticateUserAsync("Authentication/Register", userModel);
+                _ = await apiInvoker.AuthenticateUserAsync(ApiEndpoints.Register, userModel);
             }
             catch (HttpRequestException e) when (e.StatusCode == System.Net.HttpStatusCode.Unauthorized)
             {
@@ -59,7 +60,7 @@ namespace ToDoList.MvcClient.Controllers
 
             try
             {
-                _ = await apiInvoker.AuthenticateUserAsync("Authentication/Login", userModel);
+                _ = await apiInvoker.AuthenticateUserAsync(ApiEndpoints.Login, userModel);
             }
             catch (HttpRequestException e) when (e.StatusCode == System.Net.HttpStatusCode.Unauthorized)
             {

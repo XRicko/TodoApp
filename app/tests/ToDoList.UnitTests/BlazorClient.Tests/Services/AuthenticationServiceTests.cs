@@ -9,6 +9,7 @@ using TestExtensions;
 
 using ToDoList.BlazorClient.Authentication;
 using ToDoList.BlazorClient.Services;
+using ToDoList.SharedClientLibrary;
 using ToDoList.SharedClientLibrary.Models;
 using ToDoList.SharedClientLibrary.Services;
 
@@ -50,14 +51,14 @@ namespace BlazorClient.Tests.Services
             bool eventRaised = false;
             authStateProvider.AuthenticationStateChanged += (obj) => eventRaised = true;
 
-            apiInvokerMock.Setup(x => x.AuthenticateUserAsync("Authentication/Register", user))
+            apiInvokerMock.Setup(x => x.AuthenticateUserAsync(ApiEndpoints.Register, user))
                           .ReturnsAsync(authenticatedModel)
                           .Verifiable();
 
             tokenParserMock.SetupGettingClaimsPrincipal(authenticatedModel.AccessToken, claimsPrincipal);
 
             // Action
-            await authenticationService.AuthenticateAsync("Register", user);
+            await authenticationService.AuthenticateAsync(ApiEndpoints.Register, user);
 
             // Assert
             eventRaised.Should().BeTrue();

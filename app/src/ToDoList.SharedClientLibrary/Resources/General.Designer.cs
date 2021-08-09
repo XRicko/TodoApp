@@ -79,6 +79,15 @@ namespace ToDoList.SharedClientLibrary.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cancel.
+        /// </summary>
+        public static string Cancel {
+            get {
+                return ResourceManager.GetString("Cancel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Confirm password.
         /// </summary>
         public static string Confirm_Password {
@@ -237,6 +246,15 @@ namespace ToDoList.SharedClientLibrary.Resources {
         public static string Registration_Failed {
             get {
                 return ResourceManager.GetString("Registration Failed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Submit.
+        /// </summary>
+        public static string Submit {
+            get {
+                return ResourceManager.GetString("Submit", resourceCulture);
             }
         }
         

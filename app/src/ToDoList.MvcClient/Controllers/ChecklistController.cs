@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 
 using ToDoList.MvcClient.Services;
+using ToDoList.SharedClientLibrary;
 using ToDoList.SharedClientLibrary.Models;
 using ToDoList.SharedClientLibrary.Services;
 
@@ -26,7 +27,7 @@ namespace ToDoList.MvcClient.Controllers
             if (id == 0)
                 return View("CreateOrUpdate", new ChecklistModel { UserId = userId });
 
-            var checklistModel = await apiInvoker.GetItemAsync<ChecklistModel>("Checklists/" + id);
+            var checklistModel = await apiInvoker.GetItemAsync<ChecklistModel>($"{ApiEndpoints.Checklists}/{id}");
             return checklistModel is not null
                 ? View("CreateOrUpdate", checklistModel)
                 : NotFound();
@@ -43,10 +44,10 @@ namespace ToDoList.MvcClient.Controllers
                 return PartialView("CreateOrUpdate", checklistModel);
 
             if (checklistModel.Id == 0)
-                await apiInvoker.PostItemAsync("Checklists", checklistModel);
+                await apiInvoker.PostItemAsync(ApiEndpoints.Checklists, checklistModel);
 
             if (checklistModel.Id != 0)
-                await apiInvoker.PutItemAsync("Checklists", checklistModel);
+                await apiInvoker.PutItemAsync(ApiEndpoints.Checklists, checklistModel);
 
             var viewModel = await viewModelService.CreateIndexViewModelAsync();
             return PartialView("_ViewAll", viewModel);
@@ -57,7 +58,7 @@ namespace ToDoList.MvcClient.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> DeleteAsync(int id)
         {
-            await apiInvoker.DeleteItemAsync("Checklists/", id);
+            await apiInvoker.DeleteItemAsync($"{ApiEndpoints.Checklists}/{id}");
             var viewModel = await viewModelService.CreateIndexViewModelAsync();
 
             return PartialView("_ViewAll", viewModel);

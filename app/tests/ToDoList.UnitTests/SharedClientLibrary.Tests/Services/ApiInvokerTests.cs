@@ -15,6 +15,7 @@ using Moq.Protected;
 
 using TestExtensions;
 
+using ToDoList.SharedClientLibrary;
 using ToDoList.SharedClientLibrary.Models;
 using ToDoList.SharedClientLibrary.Services;
 
@@ -67,7 +68,7 @@ namespace SharedClientLibrary.Tests.Services
             httpMessageHandlerMock.SetupHttCall(uri, HttpMethod.Get, HttpStatusCode.OK, content);
 
             // Act
-            var actual = await apiInvoker.GetItemAsync<CategoryModel>("Categories/GetByName/Important");
+            var actual = await apiInvoker.GetItemAsync<CategoryModel>($"{ApiEndpoints.CategoryByName}/Important");
 
             // Assert
             actual.Id.Should().Be(category.Id);
@@ -90,7 +91,7 @@ namespace SharedClientLibrary.Tests.Services
             SetupHttpCallSequenceForRefreshingToken(uri, HttpMethod.Get, content);
 
             // Act
-            var actual = await apiInvoker.GetItemAsync<CategoryModel>("Categories/GetByName/Important");
+            var actual = await apiInvoker.GetItemAsync<CategoryModel>($"{ApiEndpoints.CategoryByName}/Important");
 
             // Assert
             actual.Id.Should().Be(category.Id);
@@ -114,7 +115,7 @@ namespace SharedClientLibrary.Tests.Services
             httpMessageHandlerMock.SetupHttCall(uri, HttpMethod.Get, statusCode);
 
             // Act && Assert
-            Func<Task> action = () => apiInvoker.GetItemAsync<CategoryModel>("Categories/GetByName/Important");
+            Func<Task> action = () => apiInvoker.GetItemAsync<CategoryModel>($"{ApiEndpoints.CategoryByName}/Important");
 
             (await action.Should().ThrowAsync<HttpRequestException>())
                          .And.StatusCode.Should().Be(statusCode);
@@ -135,7 +136,7 @@ namespace SharedClientLibrary.Tests.Services
             httpMessageHandlerMock.SetupHttCall(uri, HttpMethod.Post, HttpStatusCode.OK);
 
             // Act
-            await apiInvoker.PostItemAsync("Categories", category);
+            await apiInvoker.PostItemAsync(ApiEndpoints.Categories, category);
 
             // Assert
             httpClient.DefaultRequestHeaders.Authorization.Parameter.Should().Be(token);
@@ -156,7 +157,7 @@ namespace SharedClientLibrary.Tests.Services
             SetupHttpCallSequenceForRefreshingToken(uri, HttpMethod.Post);
 
             // Act
-            await apiInvoker.PostItemAsync("Categories", category);
+            await apiInvoker.PostItemAsync(ApiEndpoints.Categories, category);
 
             // Assert
             httpClient.DefaultRequestHeaders.Authorization.Parameter.Should().Be(token);
@@ -180,7 +181,7 @@ namespace SharedClientLibrary.Tests.Services
             httpMessageHandlerMock.SetupHttCall(uri, HttpMethod.Post, statusCode);
 
             // Act && Assert
-            Func<Task> action = () => apiInvoker.PostItemAsync("Categories", category);
+            Func<Task> action = () => apiInvoker.PostItemAsync(ApiEndpoints.Categories, category);
 
             (await action.Should().ThrowAsync<HttpRequestException>())
                          .And.StatusCode.Should().Be(statusCode);
@@ -204,7 +205,7 @@ namespace SharedClientLibrary.Tests.Services
             httpMessageHandlerMock.SetupHttCall(uri, HttpMethod.Post, HttpStatusCode.OK, content);
 
             // Act
-            string actual = await apiInvoker.PostFileAsync("Images", "randsqw.jpeg", bytes);
+            string actual = await apiInvoker.PostFileAsync(ApiEndpoints.Images, "randsqw.jpeg", bytes);
 
             // Assert
             actual.Should().Be(fileName);
@@ -224,7 +225,7 @@ namespace SharedClientLibrary.Tests.Services
             httpMessageHandlerMock.SetupHttCall(uri, HttpMethod.Post, statusCode);
 
             // Act && Assert
-            Func<Task> action = async () => await apiInvoker.PostFileAsync("Images", "randsqw.jpeg", bytes);
+            Func<Task> action = async () => await apiInvoker.PostFileAsync(ApiEndpoints.Images, "randsqw.jpeg", bytes);
 
             (await action.Should().ThrowAsync<HttpRequestException>())
                          .And.StatusCode.Should().Be(statusCode);
@@ -244,7 +245,7 @@ namespace SharedClientLibrary.Tests.Services
             httpMessageHandlerMock.SetupHttCall(uri, HttpMethod.Put, HttpStatusCode.OK);
 
             // Act
-            await apiInvoker.PutItemAsync("Categories", category);
+            await apiInvoker.PutItemAsync(ApiEndpoints.Categories, category);
 
             // Assert
             httpClient.DefaultRequestHeaders.Authorization.Parameter.Should().Be(token);
@@ -265,7 +266,7 @@ namespace SharedClientLibrary.Tests.Services
             SetupHttpCallSequenceForRefreshingToken(uri, HttpMethod.Put);
 
             // Act
-            await apiInvoker.PutItemAsync("Categories", category);
+            await apiInvoker.PutItemAsync(ApiEndpoints.Categories, category);
 
             // Assert
             httpClient.DefaultRequestHeaders.Authorization.Parameter.Should().Be(token);
@@ -289,7 +290,7 @@ namespace SharedClientLibrary.Tests.Services
             httpMessageHandlerMock.SetupHttCall(uri, HttpMethod.Put, statusCode);
 
             // Act && Assert
-            Func<Task> action = () => apiInvoker.PutItemAsync("Categories", category);
+            Func<Task> action = () => apiInvoker.PutItemAsync(ApiEndpoints.Categories, category);
 
             (await action.Should().ThrowAsync<HttpRequestException>())
                          .And.StatusCode.Should().Be(statusCode);
@@ -313,7 +314,7 @@ namespace SharedClientLibrary.Tests.Services
             httpMessageHandlerMock.SetupHttCall(uri, HttpMethod.Get, HttpStatusCode.OK, content);
 
             // Act
-            var result = await apiInvoker.GetItemsAsync<CategoryModel>("Categories");
+            var result = await apiInvoker.GetItemsAsync<CategoryModel>(ApiEndpoints.Categories);
 
             // Assert
             result.Count().Should().Be(categories.Count);
@@ -340,7 +341,7 @@ namespace SharedClientLibrary.Tests.Services
             SetupHttpCallSequenceForRefreshingToken(uri, HttpMethod.Get, content);
 
             // Act
-            var result = await apiInvoker.GetItemsAsync<CategoryModel>("Categories");
+            var result = await apiInvoker.GetItemsAsync<CategoryModel>(ApiEndpoints.Categories);
 
             // Assert
             result.Count().Should().Be(categories.Count);
@@ -367,7 +368,7 @@ namespace SharedClientLibrary.Tests.Services
             httpMessageHandlerMock.SetupHttCall(uri, HttpMethod.Get, statusCode);
 
             // Act && Assert
-            Func<Task> action = () => apiInvoker.GetItemsAsync<CategoryModel>("Categories");
+            Func<Task> action = () => apiInvoker.GetItemsAsync<CategoryModel>(ApiEndpoints.Categories);
 
             (await action.Should().ThrowAsync<HttpRequestException>())
                          .And.StatusCode.Should().Be(statusCode);
@@ -392,7 +393,7 @@ namespace SharedClientLibrary.Tests.Services
             httpMessageHandlerMock.SetupHttCall(uri, HttpMethod.Post, HttpStatusCode.OK, content);
 
             // Act
-            var actual = await apiInvoker.AuthenticateUserAsync("Authentication/Login", user);
+            var actual = await apiInvoker.AuthenticateUserAsync(ApiEndpoints.Login, user);
 
             // Assert
             actual.AccessToken.Should().Be(authenticatedModel.AccessToken);
@@ -409,13 +410,13 @@ namespace SharedClientLibrary.Tests.Services
             // Arrange
             var user = new UserModel { Name = "admin", Password = "qwerty" };
 
-            var uri = new Uri("https://localhost:5001/api/User/Login");
+            var uri = new Uri("https://localhost:5001/api/Authentication/Login");
             var statusCode = HttpStatusCode.Unauthorized;
 
             httpMessageHandlerMock.SetupHttCall(uri, HttpMethod.Post, statusCode);
 
             // Act && Assert
-            Func<Task> action = () => apiInvoker.AuthenticateUserAsync("User/Login", user);
+            Func<Task> action = () => apiInvoker.AuthenticateUserAsync(ApiEndpoints.Login, user);
 
             (await action.Should().ThrowAsync<HttpRequestException>())
                          .And.StatusCode.Should().Be(statusCode);
@@ -428,7 +429,7 @@ namespace SharedClientLibrary.Tests.Services
         {
             // Arrange 
             int id = 4;
-            var uri = new Uri("https://localhost:5001/api/Categories/" + id);
+            var uri = new Uri($"https://localhost:5001/api/Categories/{id}");
 
             tokenStorageMock.SetupGettingToken("accessToken", token);
             tokenParserMock.SetupGettingExpiryDate(token, DateTimeOffset.Now.AddMinutes(2));
@@ -436,7 +437,7 @@ namespace SharedClientLibrary.Tests.Services
             httpMessageHandlerMock.SetupHttCall(uri, HttpMethod.Delete, HttpStatusCode.OK);
 
             // Act
-            await apiInvoker.DeleteItemAsync("Categories/", id);
+            await apiInvoker.DeleteItemAsync($"{ApiEndpoints.Categories}/{id}");
 
             // Assert
             httpClient.DefaultRequestHeaders.Authorization.Parameter.Should().Be(token);
@@ -448,7 +449,7 @@ namespace SharedClientLibrary.Tests.Services
         {
             // Arrange 
             int id = 4;
-            var uri = new Uri("https://localhost:5001/api/Categories/" + id);
+            var uri = new Uri($"https://localhost:5001/api/Categories/{id}");
 
             tokenStorageMock.SetupGettingToken("accessToken", token);
 
@@ -457,7 +458,7 @@ namespace SharedClientLibrary.Tests.Services
             SetupHttpCallSequenceForRefreshingToken(uri, HttpMethod.Delete);
 
             // Act
-            await apiInvoker.DeleteItemAsync("Categories/", id);
+            await apiInvoker.DeleteItemAsync($"{ApiEndpoints.Categories}/{id}");
 
             // Assert
             httpClient.DefaultRequestHeaders.Authorization.Parameter.Should().Be(token);
@@ -476,14 +477,14 @@ namespace SharedClientLibrary.Tests.Services
             // Arrange 
             int id = 4;
 
-            var uri = new Uri("https://localhost:5001/api/Categories/" + id);
+            var uri = new Uri($"https://localhost:5001/api/Categories/{id}");
             var statusCode = HttpStatusCode.InternalServerError;
 
             tokenStorageMock.SetupGettingToken("accessToken", token);
             httpMessageHandlerMock.SetupHttCall(uri, HttpMethod.Delete, statusCode);
 
             // Act && Assert
-            Func<Task> action = () => apiInvoker.DeleteItemAsync("Categories/", id);
+            Func<Task> action = () => apiInvoker.DeleteItemAsync($"{ApiEndpoints.Categories}/{id}");
 
             (await action.Should().ThrowAsync<HttpRequestException>())
                          .And.StatusCode.Should().Be(statusCode);
