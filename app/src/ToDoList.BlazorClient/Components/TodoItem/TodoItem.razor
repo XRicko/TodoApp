@@ -2,11 +2,11 @@
 
 <div class="d-flex flex-column todo-item">
     <div class="category d-flex justify-content-center align-items-center text-center">
-        <select id="category-select-@TodoItemModel.Id @(TodoItemModel.CategoryId.HasValue ? "" : "placeholder")">
-            @if (!TodoItemModel.CategoryId.HasValue)
+        <select id="category-select-@todoItemModel.Id @(todoItemModel.CategoryId.HasValue ? "" : "placeholder")">
+            @if (!todoItemModel.CategoryId.HasValue)
             {
                 <option value="" 
-                        selected="@(!TodoItemModel.CategoryId.HasValue)"
+                        selected="@(!todoItemModel.CategoryId.HasValue)"
                         disabled>
                     @Localizer["Add Category"]
                 </option>
@@ -14,13 +14,13 @@
 
             @foreach (var category in categories)
             {
-                <option value="@category.Id" selected="@(TodoItemModel.CategoryId == category.Id)">@category.Name</option>
+                <option value="@category.Id" selected="@(todoItemModel.CategoryId == category.Id)">@category.Name</option>
             }
         </select>
 
-        @if (TodoItemModel.CategoryId.HasValue)
+        @if (todoItemModel.CategoryId.HasValue)
         {
-            <button class="reset"
+            <button class="secondary-custom-btn mr-2"
                 @onclick="ResetCategory">
                <i class="oi oi-x"></i>
             </button>
@@ -31,15 +31,15 @@
         <div class="custom-control custom-checkbox">
             <input type="checkbox"
                    class="custom-control-input"
-                   id="todo-item-@TodoItemModel.Id"
+                   id="todo-item-@todoItemModel.Id"
                    @onchange="CheckTodoItem"
                    checked="@Checked" />
-            <label class="custom-control-label" for="todo-item-@TodoItemModel.Id">&nbsp;</label>
+            <label class="custom-control-label" for="todo-item-@todoItemModel.Id">&nbsp;</label>
         </div>
 
         <div class="name-form">
             <EditNameForm TItem="@TodoItemModel"
-                          Item="@TodoItemModel"
+                          Item="@todoItemModel"
                           SubmitButtonClass="btn-outline-light"
                           ResetButtonClass="btn-outline-light"
                           OnValidSubmit="Update" />
@@ -52,11 +52,11 @@
                     aria-haspopup="true"
                     aria-expanded="false"
                     @onclick="LoadStatuses">
-                @TodoItemModel.StatusName
+                @todoItemModel.StatusName
             </button>
 
             <div class="dropdown-menu dropdown-menu-right status-menu" aria-labelledby="dropdown-btn">
-                @foreach (var status in statuses.Where(x => x.Id != TodoItemModel.StatusId))
+                @foreach (var status in statuses.Where(x => x.Id != todoItemModel.StatusId))
                 {
                     <button class="dropdown-item status-item @StatusModel.GetBackgroundColor(status.Name)" 
                             @onclick="() => UpdateStatus(status.Id)">
@@ -67,23 +67,40 @@
         </div>
     </div>
 
-    @if (!string.IsNullOrWhiteSpace(TodoItemModel.Address))
+    @if (todoItemModel.ImageContent is not null)
     {
-        <a href="http://maps.google.com/?q=@TodoItemModel.Address" target="_blank">@TodoItemModel.Address</a>
-        <button @onclick="UpdateLocation">
-            Update
-        </button>
+        <img src="data:image;base64,@Convert.ToBase64String(todoItemModel.ImageContent)"
+             class="img-fluid align-self-center" />
     }
 
-    @if (TodoItemModel.ImageContent is not null)
+    @if (string.IsNullOrWhiteSpace(todoItemModel.Address))
     {
-        <img src="data:image;base64,@Convert.ToBase64String(TodoItemModel.ImageContent)"
-             class="img-fluid align-self-center" />
+        <button class="add-location-btn" 
+                @onclick=ChangeLocation>
+            @Localizer["Add Location"]
+        </button>
+    }
+    else 
+    {
+        <div class="location d-flex">
+            <a href="http://maps.google.com/?q=@todoItemModel.Address" target="_blank">@todoItemModel.Address</a>
+
+            <div class="d-flex ml-3">
+                <button class="secondary-custom-btn mr-3"
+                        @onclick="ChangeLocation">
+                    <i class="oi oi-pencil"></i>
+                </button>
+                <button class="secondary-custom-btn"
+                        @onclick="ResetLocation">
+                    <i class="oi oi-x"></i>
+                </button>
+            </div>
+        </div>
     }
 
     <div class="d-flex justify-content-between align-items-center">
         <div class="days-ago">
-            @TodoItemModel.DaysAgo Days ago
+            @todoItemModel.DaysAgo Days ago
         </div>
 
         <button class="delete"

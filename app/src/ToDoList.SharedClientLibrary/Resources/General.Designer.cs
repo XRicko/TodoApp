@@ -79,6 +79,15 @@ namespace ToDoList.SharedClientLibrary.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Add Location.
+        /// </summary>
+        public static string Add_Location {
+            get {
+                return ResourceManager.GetString("Add Location", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Cancel.
         /// </summary>
         public static string Cancel {

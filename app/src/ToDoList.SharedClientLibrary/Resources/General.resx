@@ -123,6 +123,9 @@
   <data name="Add Category" xml:space="preserve">
     <value>Add Category</value>
   </data>
+  <data name="Add Location" xml:space="preserve">
+    <value>Add Location</value>
+  </data>
   <data name="Cancel" xml:space="preserve">
     <value>Cancel</value>
   </data>

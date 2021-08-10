@@ -4,14 +4,38 @@
 
 $secondary-color: rgba-white(0.4);
 
+@mixin standart-item {
+    font-size: 0.8rem;
+    font-weight: 700;
+    border: 1px solid transparent;
+    border-radius: .25rem;
+    @include standart-hover-transition(border-color);
+
+    &:hover {
+        @include border-on-hover;
+    }
+}
+
+@mixin standart-hover-transition($property) {
+    transition: $property .1s ease-in;
+
+    &:hover {
+        transition: $property .15s ease-out;
+    }
+}
+
 @mixin border-on-hover {
     border: 1px solid rgba-white(0.6);
 }
 
-@mixin custom-btn($color) {
+@mixin custom-btn($color, $hover-color:null) {
     all: unset;
     cursor: pointer;
     color: $color;
+
+    &:hover {
+        color: $hover-color;
+    }
 
     &:focus-visible {
         outline: revert;
@@ -35,7 +59,6 @@ img {
 
         &:focus-within {
             box-shadow: 0 0 0 0.1rem rgba-white(0.3);
-            transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
         }
 
         input {
@@ -61,9 +84,14 @@ img {
 
 .status-btn {
     @include custom-btn(#fff);
+    @include standart-hover-transition(border-color);
     @include status;
     background: transparent;
     border: 1px solid rgba-white(0.2);
+
+    &:hover {
+        border-color: rgba-white(0.5);
+    }
 }
 
 .status-menu {
@@ -86,10 +114,10 @@ img {
 
 .status-item {
     @include status;
+    @include standart-hover-transition(all);
     max-width: fit-content;
     color: #fff;
     border: 1px solid rgba(0, 0, 0, 0.2);
-    transition: all .15s ease-in;
     outline: none;
 
     &:focus-visible {
@@ -99,7 +127,6 @@ img {
     &:hover, &:focus {
         background: #fff;
         color: #000;
-        transition: all .2s ease-out;
     }
 
     &:not(:first-child) {
@@ -112,28 +139,41 @@ img {
 }
 
 .delete {
-    @include custom-btn(rgba-white(0.6));
+    @include custom-btn(rgba-white(0.6), rgba-white(0.8));
+    @include standart-hover-transition(color);
 }
 
-.reset {
-    @include custom-btn($secondary-color);
-    margin-right: 10px;
+.secondary-custom-btn {
+    @include custom-btn($secondary-color, rgba-white(0.7));
+    @include standart-hover-transition(color);
     font-size: 0.7rem;
 }
 
 .category {
-    font-size: 0.8rem;
-    font-weight: 700;
-    border: 1px solid transparent;
-    border-radius: .25rem;
-    transition: border-color .1s ease-in;
+    @include standart-item;
     width: min-content;
     align-self: center;
+}
 
-    &:hover {
-        @include border-on-hover;
-        transition: border-color .15s ease-out;
+.location {
+    @include standart-item;
+    @include standart-hover-transition(color);
+    padding: 5px 10px;
+
+    a {
+        color: $secondary-color;
+
+        &:hover {
+            color: rgba-white(0.6);
+        }
     }
+}
+
+.add-location-btn {
+    @include custom-btn($secondary-color);
+    @include standart-item;
+    text-align: center;
+    padding: 3px;
 }
 
 ::deep .select2-selection__rendered {
