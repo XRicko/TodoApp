@@ -21,8 +21,9 @@
         @if (todoItemModel.CategoryId.HasValue)
         {
             <button class="secondary-custom-btn mr-2"
-                @onclick="ResetCategory">
-               <i class="oi oi-x"></i>
+                    title="@Localizer["Reset"]"
+                    @onclick="ResetCategory">
+                <i class="oi oi-x"></i>
             </button>
         }
     </div>
@@ -69,28 +70,25 @@
 
     @if (todoItemModel.ImageContent is not null)
     {
-        <img src="data:image;base64,@Convert.ToBase64String(todoItemModel.ImageContent)"
-             class="img-fluid align-self-center" />
+        <div class="image-container">
+            <img src="data:image;base64,@Convert.ToBase64String(todoItemModel.ImageContent)"
+                 class="img-fluid align-self-center" />
+            <button class="reset-image"
+                    title="@Localizer["Reset"]"
+                    @onclick="ResetImage">
+                <i class="oi oi-x"></i>
+            </button>
+        </div>
     }
 
-    @if (string.IsNullOrWhiteSpace(todoItemModel.Address))
-    {
-        <button class="add-location-btn" 
-                @onclick=ChangeLocation>
-            @Localizer["Add Location"]
-        </button>
-    }
-    else 
+    @if (!string.IsNullOrWhiteSpace(todoItemModel.Address))
     {
         <div class="location d-flex">
             <a href="http://maps.google.com/?q=@todoItemModel.Address" target="_blank">@todoItemModel.Address</a>
 
             <div class="d-flex ml-3">
-                <button class="secondary-custom-btn mr-3"
-                        @onclick="ChangeLocation">
-                    <i class="oi oi-pencil"></i>
-                </button>
                 <button class="secondary-custom-btn"
+                        title="@Localizer["Reset"]"
                         @onclick="ResetLocation">
                     <i class="oi oi-x"></i>
                 </button>
@@ -98,13 +96,32 @@
         </div>
     }
 
-    <div class="d-flex justify-content-between align-items-center">
-        <div class="days-ago">
-            @todoItemModel.DaysAgo Days ago
+    <div class="days-ago">
+        @todoItemModel.DaysAgo Days ago
+    </div>
+
+    <hr>
+
+    <div class="d-flex justify-content-center align-items-center">
+        <div class="controls">
+            <button class="secondary-custom-btn"
+                    title="@Localizer["Location"]"
+                    @onclick="ChangeLocation">
+                <i class="oi oi-map-marker"></i>
+            </button>
+
+            <label for="image-@todoItemModel.Id"
+                   class="secondary-custom-btn"
+                   title="@Localizer["Image"]">
+               <i class="oi oi-image"></i>
+           </label>
+           <InputFile OnChange="@ChangeImage"
+                      id="@($"image-{todoItemModel.Id}")" />
         </div>
 
         <button class="delete"
-              @onclick="Delete">
+                title="@Localizer["Delete"]"
+                @onclick="Delete">
             <i class="oi oi-ban"></i>
         </button>
     </div>

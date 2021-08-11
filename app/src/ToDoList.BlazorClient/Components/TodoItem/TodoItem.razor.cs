@@ -8,10 +8,12 @@ using Blazored.Modal.Services;
 using GoogleMapsComponents.Maps;
 
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.JSInterop;
 
 using ToDoList.BlazorClient.Services;
 using ToDoList.BlazorClient.Shared;
+using ToDoList.Extensions;
 using ToDoList.SharedClientLibrary;
 using ToDoList.SharedClientLibrary.Models;
 using ToDoList.SharedClientLibrary.Services;
@@ -47,7 +49,6 @@ namespace ToDoList.BlazorClient.Components.TodoItem
             if (parameters.TryGetValue<TodoItemModel>(nameof(TodoItemModel), out var value))
                 todoItemModel = value;
 
-            Console.WriteLine("Set");
             return base.SetParametersAsync(parameters);
         }
 
@@ -163,6 +164,28 @@ namespace ToDoList.BlazorClient.Components.TodoItem
             await Update();
 
             todoItemModel = await ApiInvoker.GetItemAsync<TodoItemModel>($"{ApiEndpoints.TodoItems}/{todoItemModel.Id}");
+        }
+
+        private async Task ChangeImage(InputFileChangeEventArgs e)
+        {
+            using var stream = e.File.OpenReadStream(2000000);
+            byte[] fileBytes = await stream.ToByteArrayAsync();
+
+            string file = await ApiInvoker.PostFileAsync(ApiEndpoints.Images, e.File.Name, fileBytes);
+            var image = await ApiInvoker.GetItemAsync<ImageModel>($"{ApiEndpoints.ImageByName}/{file}");
+
+            todoItemModel.ImageId = image.Id;
+            todoItemModel.ImageContent = image.Content;
+
+            await Update();
+        }
+
+        private async Task ResetImage()
+        {
+            todoItemModel.ImageId = null;
+            todoItemModel.ImageContent = null;
+
+            await Update();
         }
 
         private async Task InitSelect2() => await JSRuntime.InvokeVoidAsync("initSelect", objRef, todoItemModel.Id);

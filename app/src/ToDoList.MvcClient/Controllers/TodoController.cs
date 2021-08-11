@@ -157,7 +157,7 @@ namespace ToDoList.MvcClient.Controllers
                 using var stream = todoItemModel.Image.OpenReadStream();
                 byte[] fileBytes = await stream.ToByteArrayAsync();
 
-                string file = await apiInvoker.PostFileAsync("Images", todoItemModel.Image.FileName, fileBytes);
+                string file = await apiInvoker.PostFileAsync(ApiEndpoints.Images, todoItemModel.Image.FileName, fileBytes);
                 var image = await apiInvoker.GetItemAsync<ImageModel>($"{ApiEndpoints.ImageByName}/{file}");
 
                 todoItemModel.ImageId = image.Id;

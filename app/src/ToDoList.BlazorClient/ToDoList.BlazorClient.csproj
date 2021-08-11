@@ -17,6 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\ToDoList.Extensions\ToDoList.Extensions.csproj" />
     <ProjectReference Include="..\ToDoList.SharedClientLibrary\ToDoList.SharedClientLibrary.csproj">
       <TreatAsUsed>true</TreatAsUsed>
     </ProjectReference>

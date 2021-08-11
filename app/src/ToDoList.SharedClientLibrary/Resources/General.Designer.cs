@@ -79,15 +79,6 @@ namespace ToDoList.SharedClientLibrary.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Add Location.
-        /// </summary>
-        public static string Add_Location {
-            get {
-                return ResourceManager.GetString("Add Location", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Cancel.
         /// </summary>
         public static string Cancel {
@@ -111,6 +102,15 @@ namespace ToDoList.SharedClientLibrary.Resources {
         public static string DaysAgo {
             get {
                 return ResourceManager.GetString("DaysAgo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Delete.
+        /// </summary>
+        public static string Delete {
+            get {
+                return ResourceManager.GetString("Delete", resourceCulture);
             }
         }
         
@@ -165,6 +165,24 @@ namespace ToDoList.SharedClientLibrary.Resources {
         public static string Home {
             get {
                 return ResourceManager.GetString("Home", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Image.
+        /// </summary>
+        public static string Image {
+            get {
+                return ResourceManager.GetString("Image", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Location.
+        /// </summary>
+        public static string Location {
+            get {
+                return ResourceManager.GetString("Location", resourceCulture);
             }
         }
         
@@ -255,6 +273,15 @@ namespace ToDoList.SharedClientLibrary.Resources {
         public static string Registration_Failed {
             get {
                 return ResourceManager.GetString("Registration Failed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Reset.
+        /// </summary>
+        public static string Reset {
+            get {
+                return ResourceManager.GetString("Reset", resourceCulture);
             }
         }
         

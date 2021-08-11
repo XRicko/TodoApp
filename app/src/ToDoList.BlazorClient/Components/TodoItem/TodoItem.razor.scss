@@ -28,10 +28,11 @@ $secondary-color: rgba-white(0.4);
     border: 1px solid rgba-white(0.6);
 }
 
-@mixin custom-btn($color, $hover-color:null) {
+@mixin custom-btn($color, $hover-color: null) {
     all: unset;
     cursor: pointer;
     color: $color;
+    @include standart-hover-transition(color);
 
     &:hover {
         color: $hover-color;
@@ -46,9 +47,38 @@ $secondary-color: rgba-white(0.4);
     margin-bottom: 5px;
 }
 
-img {
-    max-width: 400px;
-    width: 100%;
+.secondary-custom-btn {
+    @include custom-btn($secondary-color, rgba-white(0.7));
+    font-size: 0.7rem;
+}
+
+.image-container {
+    position: relative;
+    max-width: fit-content;
+    align-self: center;
+
+    img {
+        max-width: 400px;
+        width: 100%;
+    }
+
+    .reset-image {
+        @extend .secondary-custom-btn;
+        opacity: 0;
+        transition: all .1s ease-in;
+        position: absolute;
+        top: 0;
+        right: 0;
+        padding: 4px;
+        background: rgba(0, 0, 0, 0.7);
+        border-radius: .25rem;
+        border-top-right-radius: 0;
+    }
+
+    &:hover .reset-image {
+        transition: all .15s ease-out;
+        opacity: 1;
+    }
 }
 
 .name-form {
@@ -140,13 +170,7 @@ img {
 
 .delete {
     @include custom-btn(rgba-white(0.6), rgba-white(0.8));
-    @include standart-hover-transition(color);
-}
-
-.secondary-custom-btn {
-    @include custom-btn($secondary-color, rgba-white(0.7));
-    @include standart-hover-transition(color);
-    font-size: 0.7rem;
+    margin-left: auto;
 }
 
 .category {
@@ -157,10 +181,10 @@ img {
 
 .location {
     @include standart-item;
-    @include standart-hover-transition(color);
     padding: 5px 10px;
 
     a {
+        @include standart-hover-transition(color);
         color: $secondary-color;
 
         &:hover {
@@ -169,17 +193,28 @@ img {
     }
 }
 
-.add-location-btn {
-    @include custom-btn($secondary-color);
-    @include standart-item;
-    text-align: center;
-    padding: 3px;
-}
-
 ::deep .select2-selection__rendered {
     color: #fff;
 }
 
 ::deep .select2-selection__rendered[id*="placeholder"] {
     color: $secondary-color;
+}
+
+hr {
+    width: 100%;
+    border-color: rgba-white(0.3);
+    margin-top: 8px;
+}
+
+.controls {
+    margin-left: auto;
+
+    .secondary-custom-btn:not(:last-child) {
+        margin-right: 5px;
+    }
+
+    ::deep input[type=file] {
+        display: none;
+    }
 }
