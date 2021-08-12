@@ -28,6 +28,13 @@ $secondary-color: rgba-white(0.4);
     border: 1px solid rgba-white(0.6);
 }
 
+@mixin reset-btn-opacity-on-parent-hover {
+    &:hover .reset-btn {
+        transition: all .15s ease-out;
+        opacity: 1;
+    }
+}
+
 @mixin custom-btn($color, $hover-color: null) {
     all: unset;
     cursor: pointer;
@@ -52,6 +59,12 @@ $secondary-color: rgba-white(0.4);
     font-size: 0.7rem;
 }
 
+.reset-btn {
+    @extend .secondary-custom-btn;
+    opacity: 0;
+    transition: all .1s ease-in;
+}
+
 .image-container {
     position: relative;
     max-width: fit-content;
@@ -62,22 +75,16 @@ $secondary-color: rgba-white(0.4);
         width: 100%;
     }
 
-    .reset-image {
-        @extend .secondary-custom-btn;
-        opacity: 0;
-        transition: all .1s ease-in;
+    @include reset-btn-opacity-on-parent-hover;
+
+    .reset-image-btn {
+        @extend .reset-btn;
         position: absolute;
         top: 0;
         right: 0;
         padding: 4px;
         background: rgba(0, 0, 0, 0.7);
-        border-radius: .25rem;
-        border-top-right-radius: 0;
-    }
-
-    &:hover .reset-image {
-        transition: all .15s ease-out;
-        opacity: 1;
+        border-bottom-left-radius: .25rem;
     }
 }
 
@@ -175,13 +182,22 @@ $secondary-color: rgba-white(0.4);
 
 .category {
     @include standart-item;
+    @include reset-btn-opacity-on-parent-hover;
     width: min-content;
     align-self: center;
 }
 
-.location {
+.standart-resettable {
     @include standart-item;
+    @include reset-btn-opacity-on-parent-hover;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     padding: 5px 10px;
+}
+
+.location {
+    @extend .standart-resettable;
 
     a {
         @include standart-hover-transition(color);
@@ -191,6 +207,13 @@ $secondary-color: rgba-white(0.4);
             color: rgba-white(0.6);
         }
     }
+}
+
+.due-date {
+    @extend .standart-resettable;
+    font-size: 1rem;
+    font-weight: normal;
+    color: $secondary-color;
 }
 
 ::deep .select2-selection__rendered {
@@ -210,11 +233,27 @@ hr {
 .controls {
     margin-left: auto;
 
-    .secondary-custom-btn:not(:last-child) {
+    > .secondary-custom-btn:not(:last-child) {
         margin-right: 5px;
     }
 
-    ::deep input[type=file] {
+    .due-date-selector {
+        position: relative;
+        display: inline-flex;
+        margin-right: 5px;
+
+        input {
+            position: absolute;
+            top: -20%;
+            left: -75%;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            z-index: -1;
+        }
+    }
+
+    > ::deep input[type="file"] {
         display: none;
     }
 }

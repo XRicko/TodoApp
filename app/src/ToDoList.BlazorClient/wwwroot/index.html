@@ -14,6 +14,9 @@
     <link href="ToDoList.BlazorClient.styles.css" rel="stylesheet" />
     <link href="manifest.json" rel="manifest" />
     <link href="_content/Blazored.Modal/blazored-modal.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css" 
+          integrity="sha512-mSYUmp1HYZDFaVKK//63EcZq4iFWFjxSL+Z3T/aCt4IO9Cejm03q3NKKYN6pFQzY0SBOr8h+eCIAZHPXcpZaNw==" 
+          crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="apple-touch-icon" sizes="512x512" href="icon-512.png" />
 
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDpbZWpbB_u-pkZ0tpm7CrzE9QzvgNimKY&libraries=&v=weekly"
@@ -37,6 +40,10 @@
             integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
             integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js" 
+            integrity="sha512-T/tUfKSV1bihCnd+MxKD0Hm1uBBroVYBOYSk1knyvQ9VyZJpc/ALb4P0r6ubwVPSGB2GvjeoMAJJImBG12TiaQ==" 
+            crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
 
     <script src="_content/Blazored.Modal/blazored.modal.js"></script>
     <script src="_content/BlazorGoogleMaps/objectManager.js"></script>
@@ -46,6 +53,14 @@
     <script>navigator.serviceWorker.register('service-worker.js');</script>
 
     <script>
+        function init(dotNetHelper, todoId) {
+            initSelect(dotNetHelper, todoId);
+
+            $(`#due-date-${todoId}`).on('changeDate', function (e) {
+                dotNetHelper.invokeMethodAsync('ChangeDueDateAsync', this.value);
+            });
+        }
+
         function initSelect(dotNetHelper, todoId) {
             $(`select[id^="category-select-${todoId}"]`).select2({ tags: true })
                 .on('change.select2', function (e) {

@@ -20,7 +20,7 @@
 
         @if (todoItemModel.CategoryId.HasValue)
         {
-            <button class="secondary-custom-btn mr-2"
+            <button class="reset-btn mr-2"
                     title="@Localizer["Reset"]"
                     @onclick="ResetCategory">
                 <i class="oi oi-x"></i>
@@ -73,7 +73,7 @@
         <div class="image-container">
             <img src="data:image;base64,@Convert.ToBase64String(todoItemModel.ImageContent)"
                  class="img-fluid align-self-center" />
-            <button class="reset-image"
+            <button class="reset-image-btn"
                     title="@Localizer["Reset"]"
                     @onclick="ResetImage">
                 <i class="oi oi-x"></i>
@@ -83,27 +83,53 @@
 
     @if (!string.IsNullOrWhiteSpace(todoItemModel.Address))
     {
-        <div class="location d-flex">
+        <div class="location">
             <a href="http://maps.google.com/?q=@todoItemModel.Address" target="_blank">@todoItemModel.Address</a>
 
-            <div class="d-flex ml-3">
-                <button class="secondary-custom-btn"
-                        title="@Localizer["Reset"]"
-                        @onclick="ResetLocation">
-                    <i class="oi oi-x"></i>
-                </button>
-            </div>
+            <button class="reset-btn ml-3"
+                    title="@Localizer["Reset"]"
+                    @onclick="ResetLocation">
+                <i class="oi oi-x"></i>
+            </button>
         </div>
     }
 
-    <div class="days-ago">
-        @todoItemModel.DaysAgo Days ago
+    <div class="d-flex align-items-center justify-content-between">
+        <div class="days-ago">
+            @todoItemModel.DaysAgo Days ago
+        </div>  
+        
+        @if (todoItemModel.DueDate.HasValue)
+        {
+            <div class="due-date">
+                @Localizer["Due"] @todoItemModel.DueDate.Value.ToShortDateString()
+
+                <button class="reset-btn ml-2"
+                        title="@Localizer["Reset"]"
+                        @onclick="ResetDueDate">
+                    <i class="oi oi-x"></i>
+                </button>
+            </div>
+        }
     </div>
 
     <hr>
 
     <div class="d-flex justify-content-center align-items-center">
         <div class="controls">
+            <div class="due-date-selector">
+                <label for="due-date-@todoItemModel.Id"
+                       class="secondary-custom-btn"
+                       title="@Localizer["Due"]">
+                    <i class="oi oi-calendar"></i>
+                </label>
+                <input data-provide="datepicker"
+                       value="@todoItemModel.DueDate.GetValueOrDefault().ToShortDateString()"
+                       id="due-date-@todoItemModel.Id"
+                       data-date-start-date="1d"
+                       data-date-autoclose="true" />
+            </div>
+
             <button class="secondary-custom-btn"
                     title="@Localizer["Location"]"
                     @onclick="ChangeLocation">
@@ -113,10 +139,10 @@
             <label for="image-@todoItemModel.Id"
                    class="secondary-custom-btn"
                    title="@Localizer["Image"]">
-               <i class="oi oi-image"></i>
-           </label>
-           <InputFile OnChange="@ChangeImage"
-                      id="@($"image-{todoItemModel.Id}")" />
+                <i class="oi oi-image"></i>
+            </label>
+            <InputFile OnChange="@ChangeImage"
+                       id="@($"image-{todoItemModel.Id}")" />
         </div>
 
         <button class="delete"

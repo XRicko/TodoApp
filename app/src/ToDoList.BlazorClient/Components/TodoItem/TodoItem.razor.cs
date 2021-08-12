@@ -9,6 +9,7 @@ using GoogleMapsComponents.Maps;
 
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
+using Microsoft.AspNetCore.Components.Web;
 using Microsoft.JSInterop;
 
 using ToDoList.BlazorClient.Services;
@@ -60,7 +61,7 @@ namespace ToDoList.BlazorClient.Components.TodoItem
             objRef = DotNetObjectReference.Create(this);
 
             if (firstRender)
-                await InitSelect2();
+                await Init("init");
         }
 
         [JSInvokable]
@@ -85,7 +86,19 @@ namespace ToDoList.BlazorClient.Components.TodoItem
             await Update();
             StateHasChanged();
 
-            await InitSelect2();
+            await Init("initSelect");
+        }
+
+        [JSInvokable]
+        public async Task ChangeDueDateAsync(string date)
+        {
+            if (DateTime.TryParse(date, out var result))
+            {
+                todoItemModel.DueDate = result;
+                await Update();
+
+                StateHasChanged();
+            }
         }
 
         private async Task Delete()
@@ -111,11 +124,7 @@ namespace ToDoList.BlazorClient.Components.TodoItem
                 ? await ApiInvoker.GetItemAsync<StatusModel>(ApiEndpoints.StatusDone)
                 : await ApiInvoker.GetItemAsync<StatusModel>(ApiEndpoints.StatusOngoing);
 
-            todoItemModel.StatusId = statusModel.Id;
-            todoItemModel.StatusName = statusModel.Name;
-
-            await Update();
-            await Notifier.UpdateChecklist(todoItemModel.ChecklistId);
+            await UpdateStatus(statusModel.Id);
         }
 
         private async Task LoadStatuses() => statuses = await ApiInvoker.GetItemsAsync<StatusModel>(ApiEndpoints.Statuses);
@@ -130,14 +139,10 @@ namespace ToDoList.BlazorClient.Components.TodoItem
 
         private async Task ResetCategory()
         {
-            if (todoItemModel.CategoryId is null)
-                return;
-
             todoItemModel.CategoryId = null;
             await Update();
 
-            StateHasChanged();
-            await InitSelect2();
+            await Init("initSelect");
         }
 
         private async Task ChangeLocation()
@@ -152,19 +157,10 @@ namespace ToDoList.BlazorClient.Components.TodoItem
 
             var latLng = result.Data as LatLngLiteral;
 
-            todoItemModel.GeoPoint = new GeoCoordinate(latLng.Lng, latLng.Lat);
-            await Update();
-
-            todoItemModel = await ApiInvoker.GetItemAsync<TodoItemModel>($"{ApiEndpoints.TodoItems}/{todoItemModel.Id}");
+            await SetLocation(latLng);
         }
 
-        private async Task ResetLocation()
-        {
-            todoItemModel.GeoPoint = null;
-            await Update();
-
-            todoItemModel = await ApiInvoker.GetItemAsync<TodoItemModel>($"{ApiEndpoints.TodoItems}/{todoItemModel.Id}");
-        }
+        private async Task ResetLocation() => await SetLocation(null);
 
         private async Task ChangeImage(InputFileChangeEventArgs e)
         {
@@ -174,21 +170,36 @@ namespace ToDoList.BlazorClient.Components.TodoItem
             string file = await ApiInvoker.PostFileAsync(ApiEndpoints.Images, e.File.Name, fileBytes);
             var image = await ApiInvoker.GetItemAsync<ImageModel>($"{ApiEndpoints.ImageByName}/{file}");
 
-            todoItemModel.ImageId = image.Id;
-            todoItemModel.ImageContent = image.Content;
-
-            await Update();
+            await SetImage(image.Id, image.Content);
         }
 
-        private async Task ResetImage()
+        private async Task ResetImage() => await SetImage(null, null);
+
+        private async Task ResetDueDate()
         {
-            todoItemModel.ImageId = null;
-            todoItemModel.ImageContent = null;
+            todoItemModel.DueDate = null;
+            await Update();
+        }
+
+        private async Task Init(string method) => await JSRuntime.InvokeVoidAsync(method, objRef, todoItemModel.Id);
+
+        private async Task SetImage(int? imageId, byte[] imageContent)
+        {
+            todoItemModel.ImageId = imageId;
+            todoItemModel.ImageContent = imageContent;
 
             await Update();
         }
 
-        private async Task InitSelect2() => await JSRuntime.InvokeVoidAsync("initSelect", objRef, todoItemModel.Id);
+        private async Task SetLocation(LatLngLiteral latLng)
+        {
+            todoItemModel.GeoPoint = latLng is not null 
+                ? new GeoCoordinate(latLng.Lng, latLng.Lat)
+                : null;
+            await Update();
+
+            todoItemModel = await ApiInvoker.GetItemAsync<TodoItemModel>($"{ApiEndpoints.TodoItems}/{todoItemModel.Id}");
+        }
 
         public void Dispose() => objRef?.Dispose();
     }
