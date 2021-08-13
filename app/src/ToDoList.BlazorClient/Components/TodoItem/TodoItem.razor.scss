@@ -180,13 +180,6 @@ $secondary-color: rgba-white(0.4);
     margin-left: auto;
 }
 
-.category {
-    @include standart-item;
-    @include reset-btn-opacity-on-parent-hover;
-    width: min-content;
-    align-self: center;
-}
-
 .standart-resettable {
     @include standart-item;
     @include reset-btn-opacity-on-parent-hover;
@@ -194,6 +187,27 @@ $secondary-color: rgba-white(0.4);
     align-items: center;
     justify-content: space-between;
     padding: 5px 10px;
+}
+
+.category {
+    @extend .standart-resettable;
+    position: relative;
+    color: #fff;
+    align-self: center;
+}
+
+.category-select {
+    position: absolute;
+    width: 100%;
+    opacity: 0;
+    z-index: -1;
+    min-width: 95px;
+}
+
+.category-select-new {
+    @extend .category-select;
+    top: -50%;
+    left: -50%;
 }
 
 .location {
@@ -216,14 +230,6 @@ $secondary-color: rgba-white(0.4);
     color: $secondary-color;
 }
 
-::deep .select2-selection__rendered {
-    color: #fff;
-}
-
-::deep .select2-selection__rendered[id*="placeholder"] {
-    color: $secondary-color;
-}
-
 hr {
     width: 100%;
     border-color: rgba-white(0.3);
@@ -233,14 +239,13 @@ hr {
 .controls {
     margin-left: auto;
 
-    > .secondary-custom-btn:not(:last-child) {
+    > *:not(:last-child) {
         margin-right: 5px;
     }
 
     .due-date-selector {
         position: relative;
         display: inline-flex;
-        margin-right: 5px;
 
         input {
             position: absolute;

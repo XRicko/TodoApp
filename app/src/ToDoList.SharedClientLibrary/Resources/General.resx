@@ -120,11 +120,11 @@
   <data name="ActiveTab" xml:space="preserve">
     <value>Active</value>
   </data>
-  <data name="Add Category" xml:space="preserve">
-    <value>Add Category</value>
-  </data>
   <data name="Cancel" xml:space="preserve">
     <value>Cancel</value>
+  </data>
+  <data name="Category" xml:space="preserve">
+    <value>Category</value>
   </data>
   <data name="Confirm Password" xml:space="preserve">
     <value>Confirm password</value>

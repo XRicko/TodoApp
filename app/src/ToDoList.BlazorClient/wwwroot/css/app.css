@@ -122,6 +122,7 @@ a, .btn-link {
 }
 
 .select2-container--default .select2-results > .select2-results__options::-webkit-scrollbar {
+    height: 4px;
     width: 4px;
 }
 
@@ -142,17 +143,16 @@ a, .btn-link {
     background: rgba(255, 255, 255, 0.8);
 }
 
-.select2-container {
-    min-width: 95px;
+.select2-dropdown {
     animation: dropdownAppear .25s;
 }
 
 @keyframes dropdownAppear {
     from {
-        transform: scaleY(0)
+        opacity: 0
     }
 
     to {
-        transform: scaleY(1)
+        opacity: 1
     }
 }

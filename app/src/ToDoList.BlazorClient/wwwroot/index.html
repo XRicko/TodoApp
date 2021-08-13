@@ -55,18 +55,29 @@
     <script>
         function init(dotNetHelper, todoId) {
             initSelect(dotNetHelper, todoId);
-
-            $(`#due-date-${todoId}`).on('changeDate', function (e) {
-                dotNetHelper.invokeMethodAsync('ChangeDueDateAsync', this.value);
-            });
+            initDatepicker(dotNetHelper, todoId);
         }
 
         function initSelect(dotNetHelper, todoId) {
-            $(`select[id^="category-select-${todoId}"]`).select2({ tags: true })
+            $(`#category-selector-${todoId}`).select2({ tags: true, width: '100%' })
                 .on('change.select2', function (e) {
-                    let selectedCategory = e.target.value;
-                    dotNetHelper.invokeMethodAsync('UpdateCategoryAsync', selectedCategory);
+                    let select = e.target;
+
+                    let selectedCategoryId = select.value;
+                    let selectCategoryName = select.options[select.selectedIndex].text;
+
+                    dotNetHelper.invokeMethodAsync('UpdateCategoryAsync', selectedCategoryId, selectCategoryName);
                 });
+
+            $(`#open-selector-${todoId}`).on('click', function () {
+                $(`#category-selector-${todoId}`).select2('open');
+            });
+        }
+
+        function initDatepicker(dotNetHelper, todoId) {
+            $(`#due-date-${todoId}`).on('changeDate', function (e) {
+                dotNetHelper.invokeMethodAsync('ChangeDueDateAsync', this.value);
+            });
         }
     </script>
 </body>

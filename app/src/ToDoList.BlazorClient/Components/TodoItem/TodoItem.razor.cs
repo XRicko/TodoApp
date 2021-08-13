@@ -65,15 +65,17 @@ namespace ToDoList.BlazorClient.Components.TodoItem
         }
 
         [JSInvokable]
-        public async Task UpdateCategoryAsync(string category)
+        public async Task UpdateCategoryAsync(string category, string categoryName)
         {
             if (string.IsNullOrWhiteSpace(category))
             {
                 todoItemModel.CategoryId = null;
+                todoItemModel.CategoryName = null;
             }
             else if (int.TryParse(category?.ToString(), out int value))
             {
                 todoItemModel.CategoryId = value;
+                todoItemModel.CategoryName = categoryName;
             }
             else
             {
@@ -81,6 +83,7 @@ namespace ToDoList.BlazorClient.Components.TodoItem
                 var created = await ApiInvoker.GetItemAsync<CategoryModel>($"{ApiEndpoints.CategoryByName}/{category}");
 
                 todoItemModel.CategoryId = created.Id;
+                todoItemModel.CategoryName = created.Name;
             }
 
             await Update();
@@ -181,8 +184,6 @@ namespace ToDoList.BlazorClient.Components.TodoItem
             await Update();
         }
 
-        private async Task Init(string method) => await JSRuntime.InvokeVoidAsync(method, objRef, todoItemModel.Id);
-
         private async Task SetImage(int? imageId, byte[] imageContent)
         {
             todoItemModel.ImageId = imageId;
@@ -190,6 +191,8 @@ namespace ToDoList.BlazorClient.Components.TodoItem
 
             await Update();
         }
+
+        private async Task Init(string method) => await JSRuntime.InvokeVoidAsync(method, objRef, todoItemModel.Id);
 
         private async Task SetLocation(LatLngLiteral latLng)
         {
