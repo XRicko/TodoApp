@@ -90,7 +90,7 @@ $secondary-color: rgba-white(0.4);
 
 .name-form {
     ::deep form {
-        &:hover, &.active {
+        &:hover, &:focus-within {
             @include border-on-hover;
         }
 
@@ -100,10 +100,10 @@ $secondary-color: rgba-white(0.4);
 
         input {
             color: white;
-        }
 
-        &.active input {
-            color: #495057;
+            &:focus {
+                color: #495057;
+            }
         }
 
         button {

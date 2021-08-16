@@ -9,7 +9,6 @@ using GoogleMapsComponents.Maps;
 
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
-using Microsoft.AspNetCore.Components.Web;
 using Microsoft.JSInterop;
 
 using ToDoList.BlazorClient.Services;
@@ -53,7 +52,7 @@ namespace ToDoList.BlazorClient.Components.TodoItem
             return base.SetParametersAsync(parameters);
         }
 
-        protected override async Task OnInitializedAsync() => 
+        protected override async Task OnInitializedAsync() =>
             categories = await ApiInvoker.GetItemsAsync<CategoryModel>(ApiEndpoints.Categories);
 
         protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -69,27 +68,19 @@ namespace ToDoList.BlazorClient.Components.TodoItem
         {
             if (string.IsNullOrWhiteSpace(category))
             {
-                todoItemModel.CategoryId = null;
-                todoItemModel.CategoryName = null;
+                await SetCategory(null, null);
             }
             else if (int.TryParse(category?.ToString(), out int value))
             {
-                todoItemModel.CategoryId = value;
-                todoItemModel.CategoryName = categoryName;
+                await SetCategory(value, categoryName);
             }
             else
             {
                 await ApiInvoker.PostItemAsync(ApiEndpoints.Categories, new CategoryModel { Name = category });
                 var created = await ApiInvoker.GetItemAsync<CategoryModel>($"{ApiEndpoints.CategoryByName}/{category}");
 
-                todoItemModel.CategoryId = created.Id;
-                todoItemModel.CategoryName = created.Name;
+                await SetCategory(created.Id, created.Name);
             }
-
-            await Update();
-            StateHasChanged();
-
-            await Init("initSelect");
         }
 
         [JSInvokable]
@@ -104,6 +95,8 @@ namespace ToDoList.BlazorClient.Components.TodoItem
             }
         }
 
+        private async Task Update() => await ApiInvoker.PutItemAsync(ApiEndpoints.TodoItems, todoItemModel);
+
         private async Task Delete()
         {
             var result = await Modal.Show<Confirm>("Confirmation").Result;
@@ -112,10 +105,8 @@ namespace ToDoList.BlazorClient.Components.TodoItem
                 return;
 
             await ApiInvoker.DeleteItemAsync($"{ApiEndpoints.TodoItems}/{todoItemModel.Id}");
-            await Notifier.UpdateChecklist(todoItemModel.ChecklistId);
+            await Notifier.OnChecklistChanged(todoItemModel.ChecklistId);
         }
-
-        private async Task Update() => await ApiInvoker.PutItemAsync(ApiEndpoints.TodoItems, todoItemModel);
 
         private async Task CheckTodoItem(ChangeEventArgs args)
         {
@@ -127,26 +118,21 @@ namespace ToDoList.BlazorClient.Components.TodoItem
                 ? await ApiInvoker.GetItemAsync<StatusModel>(ApiEndpoints.StatusDone)
                 : await ApiInvoker.GetItemAsync<StatusModel>(ApiEndpoints.StatusOngoing);
 
-            await UpdateStatus(statusModel.Id);
+            await UpdateStatus(statusModel);
         }
 
         private async Task LoadStatuses() => statuses = await ApiInvoker.GetItemsAsync<StatusModel>(ApiEndpoints.Statuses);
 
-        private async Task UpdateStatus(int statusId)
+        private async Task UpdateStatus(StatusModel status)
         {
-            todoItemModel.StatusId = statusId;
+            todoItemModel.StatusId = status.Id;
+            todoItemModel.StatusName = status.Name;
 
             await Update();
-            await Notifier.UpdateChecklist(todoItemModel.ChecklistId);
+            await Notifier.OnChecklistChanged(todoItemModel.ChecklistId);
         }
 
-        private async Task ResetCategory()
-        {
-            todoItemModel.CategoryId = null;
-            await Update();
-
-            await Init("initSelect");
-        }
+        private async Task ResetCategory() => await SetCategory(null, null);
 
         private async Task ChangeLocation()
         {
@@ -184,6 +170,17 @@ namespace ToDoList.BlazorClient.Components.TodoItem
             await Update();
         }
 
+        private async Task SetCategory(int? categoryId, string categoryName)
+        {
+            todoItemModel.CategoryId = categoryId;
+            todoItemModel.CategoryName = categoryName;
+
+            await Update();
+            StateHasChanged();
+
+            await Init("initSelect");
+        }
+
         private async Task SetImage(int? imageId, byte[] imageContent)
         {
             todoItemModel.ImageId = imageId;
@@ -192,17 +189,17 @@ namespace ToDoList.BlazorClient.Components.TodoItem
             await Update();
         }
 
-        private async Task Init(string method) => await JSRuntime.InvokeVoidAsync(method, objRef, todoItemModel.Id);
-
         private async Task SetLocation(LatLngLiteral latLng)
         {
-            todoItemModel.GeoPoint = latLng is not null 
+            todoItemModel.GeoPoint = latLng is not null
                 ? new GeoCoordinate(latLng.Lng, latLng.Lat)
                 : null;
             await Update();
 
             todoItemModel = await ApiInvoker.GetItemAsync<TodoItemModel>($"{ApiEndpoints.TodoItems}/{todoItemModel.Id}");
         }
+
+        private async Task Init(string method) => await JSRuntime.InvokeVoidAsync(method, objRef, todoItemModel.Id);
 
         public void Dispose() => objRef?.Dispose();
     }

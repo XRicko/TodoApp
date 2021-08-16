@@ -46,7 +46,13 @@ namespace ToDoList.BlazorClient.Components.Checklist
             Notifier.ChecklistChanged += OnTodoItemsChanged;
         }
 
-        private async Task Update() => await ApiInvoker.PutItemAsync(ApiEndpoints.Checklists, ChecklistModel);
+        private async Task Submit()
+        {
+            if (ChecklistModel.Id == 0)
+                await ApiInvoker.PostItemAsync(ApiEndpoints.Checklists, ChecklistModel);
+            if (ChecklistModel.Id > 0)
+                await ApiInvoker.PutItemAsync(ApiEndpoints.Checklists, ChecklistModel);
+        }
 
         private async Task OnTodoItemsChanged(int checklistId)
         {
@@ -88,7 +94,7 @@ namespace ToDoList.BlazorClient.Components.Checklist
                 await ApiInvoker.PutItemAsync(ApiEndpoints.TodoItems, Container.DraggedTodoItem);
                 await LoadTodoItems();
 
-                await Notifier.UpdateChecklist(oldChecklist);
+                await Notifier.OnChecklistChanged(oldChecklist);
             }
 
             HandleDragLeave();

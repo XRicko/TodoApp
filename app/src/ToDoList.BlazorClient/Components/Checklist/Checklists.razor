@@ -1,4 +1,12 @@
-﻿<div class="card-columns">
+﻿<div class="d-flex justify-content-end mb-2">
+	<button class="border-0 btn btn-outline-primary" 
+			title="Add"
+			@onclick="Add">
+		<i class="oi oi-plus"></i>
+	</button>
+</div>
+
+<div class="card-columns">
 	@foreach (var checklist in checklistModels)
 	{
 		<ChecklistItem @key="checklist.Id"

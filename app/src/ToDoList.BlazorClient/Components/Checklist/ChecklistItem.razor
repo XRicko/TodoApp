@@ -26,9 +26,8 @@
                 <div class="name-form">
                     <EditNameForm TItem="@ChecklistModel"
                                   Item="@ChecklistModel"
-                                  SubmitButtonClass="btn-outline-success"
                                   ResetButtonClass="btn-outline-secondary"
-                                  OnValidSubmit="Update" />
+                                  OnValidSubmit="Submit" />
                 </div>
             }
         </div>
@@ -36,7 +35,7 @@
         @if (ChecklistModel.Name != "Untitled")
         {
             <div>
-                <button class="border-0 btn-transition btn btn-outline-danger"
+                <button class="border-0 btn btn-outline-danger"
                         @onclick="async () => await OnDeleteCallback.InvokeAsync(ChecklistModel.Id)">
                     <i class="oi oi-trash"></i>
                 </button>

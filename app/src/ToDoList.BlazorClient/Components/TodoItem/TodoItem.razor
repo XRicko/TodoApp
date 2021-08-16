@@ -30,13 +30,12 @@
                    id="todo-item-@todoItemModel.Id"
                    @onchange="CheckTodoItem"
                    checked="@Checked" />
-            <label class="custom-control-label" for="todo-item-@todoItemModel.Id">&nbsp;</label>
+            <label class="custom-control-label" for="todo-item-@todoItemModel.Id"></label>
         </div>
 
         <div class="name-form">
             <EditNameForm TItem="@TodoItemModel"
                           Item="@todoItemModel"
-                          SubmitButtonClass="btn-outline-light"
                           ResetButtonClass="btn-outline-light"
                           OnValidSubmit="Update" />
         </div>
@@ -55,7 +54,7 @@
                 @foreach (var status in statuses.Where(x => x.Id != todoItemModel.StatusId))
                 {
                     <button class="dropdown-item status-item @StatusModel.GetBackgroundColor(status.Name)" 
-                            @onclick="() => UpdateStatus(status.Id)">
+                            @onclick="() => UpdateStatus(status)">
                         @status.Name
                     </button>
                 }

@@ -1,24 +1,20 @@
 ﻿@typeparam TItem
 
 <div>
-    <EditForm Model="@Item"
-              OnValidSubmit="@Submit"
-              OnInvalidSubmit="@Reset"
-              class="@activeClass">
+    <EditForm EditContext="@editContext">
         <DataAnnotationsValidator />
     
-        <InputText @bind-Value="Item.Name"
-                   @onfocus="SetFocus"
-                   class="form-control" />
+        <CustomInputText @bind-Value="Item.Name"
+                         @onfocus="Focus"
+                         @onblur="HandleSubmit"
+                         id="@GetInputId(Item)"
+                         class="form-control" />
 
         @if (inFocus)
         {
-            <button type="submit"
-                    class="border-0 btn @SubmitButtonClass">
-                <i class="oi oi-check"></i>
-            </button>
             <button type="button"
                     class="border-0 btn @ResetButtonClass"
+                    onmousedown="event.preventDefault()"
                     @onclick="Reset">
                 <i class="oi oi-x"></i>
             </button>

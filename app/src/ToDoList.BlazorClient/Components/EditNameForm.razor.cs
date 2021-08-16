@@ -1,7 +1,10 @@
 ﻿using System.Threading.Tasks;
 
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Forms;
+using Microsoft.JSInterop;
 
+using ToDoList.BlazorClient.Services;
 using ToDoList.SharedClientLibrary.Models;
 
 namespace ToDoList.BlazorClient.Components
@@ -11,7 +14,13 @@ namespace ToDoList.BlazorClient.Components
         private string originalName;
         private bool inFocus;
 
-        private string activeClass;
+        private EditContext editContext;
+
+        [Inject]
+        private IJSRuntime JSRuntime { get; set; }
+
+        [Inject]
+        private Notifier Notifier { get; set; }
 
         [Parameter]
         public TItem Item { get; set; }
@@ -20,8 +29,6 @@ namespace ToDoList.BlazorClient.Components
         public EventCallback OnValidSubmit { get; set; }
 
         [Parameter]
-        public string SubmitButtonClass { get; set; }
-        [Parameter]
         public string ResetButtonClass { get; set; }
 
         protected override void OnInitialized()
@@ -29,7 +36,22 @@ namespace ToDoList.BlazorClient.Components
             inFocus = false;
             originalName = Item.Name;
 
-            activeClass = "";
+            editContext = new EditContext(Item);
+
+            Notifier.ItemAdded += FocusInput;
+        }
+
+        private async Task HandleSubmit()
+        {
+            if (editContext.Validate())
+            {
+                await Submit();
+            }
+            else
+            {
+                Reset();
+                Unfocus();
+            }
         }
 
         private async Task Submit()
@@ -40,25 +62,17 @@ namespace ToDoList.BlazorClient.Components
                 originalName = Item.Name;
             }
 
-            RemoveFocus();
+            Unfocus();
         }
 
-        private void Reset()
-        {
-            Item.Name = originalName;
-            RemoveFocus();
-        }
+        private void Reset() => Item.Name = originalName;
 
-        private void SetFocus()
-        {
-            inFocus = true;
-            activeClass = "active";
-        }
+        private void Focus() => inFocus = true;
+        private void Unfocus() => inFocus = false;
 
-        private void RemoveFocus()
-        {
-            inFocus = false;
-            activeClass = "";
-        }
+        private async Task FocusInput(BaseModel item) => 
+            await JSRuntime.InvokeVoidAsync("focusInput", GetInputId(item)); // Change in .Net 6
+
+        private static string GetInputId(BaseModel item) => $"{item.GetType().Name}-name-{item.Id}";
     }
 }
