@@ -97,24 +97,6 @@ namespace ToDoList.MvcClient.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Reset.
-        /// </summary>
-        public static string Reset {
-            get {
-                return ResourceManager.GetString("Reset", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Select category.
-        /// </summary>
-        public static string SelectCategory {
-            get {
-                return ResourceManager.GetString("SelectCategory", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Select checklist.
         /// </summary>
         public static string SelectChecklist {

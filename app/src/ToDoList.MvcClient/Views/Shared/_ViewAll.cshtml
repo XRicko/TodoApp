@@ -1,7 +1,6 @@
 ﻿@using ToDoList.MvcClient.Resources
 
-@inject IStringLocalizer<General> GeneralLocalizer
-@inject IStringLocalizer<ViewAll> ViewAllLocalizer
+@inject IStringLocalizer<General> Localizer
 @model ToDoList.MvcClient.ViewModels.IndexViewModel
 
 @{
@@ -18,7 +17,7 @@
     @if (Model.SelectedStatus is "Planned")
     {
         <div class="badge badge-secondary position-relative">
-            @GeneralLocalizer["PlannedStatus"]
+            @Localizer["PlannedStatus"]
             <a class="close stretched-link"
                href="javascript:void(0)"
                onclick="ajaxGet('@Url.Action("Index", "Todo", new { categoryName = Model.SelectedCategory }, Context.Request.Scheme)')">
@@ -29,7 +28,7 @@
     else if (Model.SelectedStatus is "Ongoing")
     {
         <div class="badge badge-warning position-relative">
-            @GeneralLocalizer["OngoingStatus"]
+            @Localizer["OngoingStatus"]
             <a class="close stretched-link"
                href="javascript:void(0)"
                onclick="ajaxGet('@Url.Action("Index", "Todo", new { categoryName = Model.SelectedCategory }, Context.Request.Scheme)')">
@@ -40,7 +39,7 @@
     else if (Model.SelectedStatus is "Done")
     {
         <div class="badge badge-success position-relative">
-            @GeneralLocalizer["DoneStatus"]
+            @Localizer["DoneStatus"]
             <a class="close stretched-link"
                href="javascript:void(0)"
                onclick="ajaxGet('@Url.Action("Index", "Todo", new { categoryName = Model.SelectedCategory }, Context.Request.Scheme)')">
@@ -62,9 +61,9 @@
     }
 
     <div class="ml-auto text-center">
-        <button onclick="showPopup('@Url.Action("CreateOrUpdate", "Checklist", new { userId }, Context.Request.Scheme)', '@ViewAllLocalizer["NewChecklist"]')"
+        <button onclick="showPopup('@Url.Action("CreateOrUpdate", "Checklist", new { userId }, Context.Request.Scheme)', '@Localizer["NewChecklist"]')"
                 class="btn btn-primary">
-            @ViewAllLocalizer["NewChecklist"]
+            @Localizer["NewChecklist"]
         </button>
     </div>
 </div>
@@ -77,7 +76,7 @@
                 @if (checklist.Name is "Untitled")
                 {
                     <div class="text-capitalize font-weight-normal">
-                        <i class="bi bi-list-task"></i>&nbsp;@GeneralLocalizer["Untitled"]
+                        <i class="bi bi-list-task"></i>&nbsp;@Localizer["Untitled"]
                     </div>
                 }
                 else
@@ -88,7 +87,7 @@
                 }
 
                 <div>
-                    <button onclick="showPopup('@Url.Action("CreateOrUpdate", "Checklist", new { checklist.Id }, Context.Request.Scheme)', '@ViewAllLocalizer["UpdateChecklist"]')"
+                    <button onclick="showPopup('@Url.Action("CreateOrUpdate", "Checklist", new { checklist.Id }, Context.Request.Scheme)', '@Localizer["UpdateChecklist"]')"
                             class="border-0 btn-transition btn btn-outline-info">
                         <i class="bi bi-pencil"></i>
                     </button>
@@ -119,7 +118,7 @@
                            id="notDone-@checklist.Id-tab"
                            data-toggle="tab"
                            href="#notDone-@checklist.Id">
-                            @GeneralLocalizer["ActiveTab"]
+                            @Localizer["ActiveTab"]
                             <span class="badge badge-light">
                                 @GetActiveTodoItems(checklist.Id).Count()
                             </span>
@@ -130,7 +129,7 @@
                            id="done-@checklist.Id-tab"
                            data-toggle="tab" da
                            href="#done-@checklist.Id">
-                            @GeneralLocalizer["DoneTab"]
+                            @Localizer["DoneTab"]
                             <span class="badge badge-light">
                                 @GetDoneTodoItems(checklist.Id).Count()
                             </span>
@@ -162,7 +161,7 @@
                                                 <a href="javascript:void(0)"
                                                    onclick="ajaxGet('@Url.Action("Index", "Todo", new { todoItem.StatusName, categoryName = Model.SelectedCategory }, Context.Request.Scheme)')"
                                                    class="badge badge-secondary ml-2">
-                                                    @GeneralLocalizer["PlannedStatus"]
+                                                    @Localizer["PlannedStatus"]
                                                 </a>
                                             }
                                             else if (todoItem.StatusName is "Ongoing")
@@ -170,7 +169,7 @@
                                                 <a href="javascript:void(0)"
                                                    onclick="ajaxGet('@Url.Action("Index", "Todo", new { todoItem.StatusName, categoryName = Model.SelectedCategory }, Context.Request.Scheme)')"
                                                    class="badge badge-warning ml-2">
-                                                    @GeneralLocalizer["OngoingStatus"]
+                                                    @Localizer["OngoingStatus"]
                                                 </a>
                                             }
 
@@ -189,7 +188,7 @@
                                     @if (todoItem.DueDate is not null)
                                     {
                                         <div class="text-right text-secondary">
-                                            @GeneralLocalizer["Due"] @todoItem.DueDate
+                                            @Localizer["Due"] @todoItem.DueDate
                                         </div>
                                     }
 
@@ -204,11 +203,11 @@
 
                                     <div class="d-flex justify-content-between align-items-center">
                                         <div class="text-muted">
-                                            @todoItem.DaysAgo @GeneralLocalizer["DaysAgo"]
+                                            @todoItem.DaysAgo @Localizer["DaysAgo"]
                                         </div>
 
                                         <div>
-                                            <button onclick="showPopup('@Url.Action("CreateOrUpdate", "Todo", new { TodoItemId = todoItem.Id, ChecklistId = checklist.Id }, Context.Request.Scheme)', '@GeneralLocalizer["UpdateTask"]', this)"
+                                            <button onclick="showPopup('@Url.Action("CreateOrUpdate", "Todo", new { TodoItemId = todoItem.Id, ChecklistId = checklist.Id }, Context.Request.Scheme)', '@Localizer["UpdateTask"]', this)"
                                                     class="border-0 btn-transition btn btn-outline-info todoItem">
                                                 <i class="bi bi-pencil"></i>
                                             </button>
@@ -252,7 +251,7 @@
                                             <a href="javascript:void(0)"
                                                onclick="ajaxGet('@Url.Action("Index", "Todo", new { todoItem.StatusName, categoryName = Model.SelectedCategory }, Context.Request.Scheme)')"
                                                class="badge badge-success ml-2">
-                                                @GeneralLocalizer["DoneStatus"]
+                                                @Localizer["DoneStatus"]
                                             </a>
 
                                             @if (todoItem.CategoryName is not null)
@@ -301,9 +300,9 @@
             </div>
 
             <div class="d-block text-right card-footer">
-                <button onclick="showPopup('@Url.Action("CreateOrUpdate", "Todo", new { ChecklistId = checklist.Id }, Context.Request.Scheme)', '@ViewAllLocalizer["NewTask"]', this)"
+                <button onclick="showPopup('@Url.Action("CreateOrUpdate", "Todo", new { ChecklistId = checklist.Id }, Context.Request.Scheme)', '@Localizer["NewTask"]', this)"
                         class="btn btn-primary todoItem">
-                    @ViewAllLocalizer["NewTask"]
+                    @Localizer["NewTask"]
                 </button>
             </div>
         </div>

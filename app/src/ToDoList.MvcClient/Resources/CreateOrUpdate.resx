@@ -129,12 +129,6 @@
   <data name="Longitude" xml:space="preserve">
     <value>Longitude</value>
   </data>
-  <data name="Reset" xml:space="preserve">
-    <value>Reset</value>
-  </data>
-  <data name="SelectCategory" xml:space="preserve">
-    <value>Select category</value>
-  </data>
   <data name="SelectChecklist" xml:space="preserve">
     <value>Select checklist</value>
   </data>

@@ -53,6 +53,11 @@ namespace ToDoList.WebApi.Controllers
         public async Task<ActionResult<ChecklistResponse>> Get(int id) =>
             await Mediator.Send(new GetByIdQuery<Checklist, ChecklistResponse>(id));
 
+        [HttpGet]
+        [Route("[action]/{name}")]
+        public async Task<ActionResult<ChecklistResponse>> GetByNameAndUserId(string name) =>
+            await Mediator.Send(new GetChecklistByNameAndUserIdQuery(name, UserId));
+
         [HttpPost]
         public async Task<IActionResult> Add(ChecklistCreateRequest createRequest)
         {

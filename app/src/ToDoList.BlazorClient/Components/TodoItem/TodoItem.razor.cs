@@ -22,7 +22,9 @@ using ToDoList.SharedKernel;
 namespace ToDoList.BlazorClient.Components.TodoItem
 {
     public partial class TodoItem : IDisposable
-    {
+    {        
+        private TodoItemModel todoItemModel;
+
         private IEnumerable<CategoryModel> categories = Array.Empty<CategoryModel>();
         private IEnumerable<StatusModel> statuses = Array.Empty<StatusModel>();
 
@@ -42,7 +44,6 @@ namespace ToDoList.BlazorClient.Components.TodoItem
 
         [Parameter]
         public TodoItemModel TodoItemModel { get; set; } = new();
-        private TodoItemModel todoItemModel;
 
         public override Task SetParametersAsync(ParameterView parameters)
         {
@@ -89,13 +90,22 @@ namespace ToDoList.BlazorClient.Components.TodoItem
             if (DateTime.TryParse(date, out var result))
             {
                 todoItemModel.DueDate = result;
-                await Update();
+                await Submit();
 
                 StateHasChanged();
             }
         }
 
-        private async Task Update() => await ApiInvoker.PutItemAsync(ApiEndpoints.TodoItems, todoItemModel);
+        private async Task Submit()
+        {
+            if (todoItemModel.Id == 0)
+            {
+                await ApiInvoker.PostItemAsync(ApiEndpoints.TodoItems, todoItemModel);
+                await Notifier.OnChecklistChanged(todoItemModel.ChecklistId);
+            }
+            if (todoItemModel.Id > 0)
+                await ApiInvoker.PutItemAsync(ApiEndpoints.TodoItems, todoItemModel);
+        }
 
         private async Task Delete()
         {
@@ -128,7 +138,7 @@ namespace ToDoList.BlazorClient.Components.TodoItem
             todoItemModel.StatusId = status.Id;
             todoItemModel.StatusName = status.Name;
 
-            await Update();
+            await Submit();
             await Notifier.OnChecklistChanged(todoItemModel.ChecklistId);
         }
 
@@ -167,7 +177,7 @@ namespace ToDoList.BlazorClient.Components.TodoItem
         private async Task ResetDueDate()
         {
             todoItemModel.DueDate = null;
-            await Update();
+            await Submit();
         }
 
         private async Task SetCategory(int? categoryId, string categoryName)
@@ -175,7 +185,7 @@ namespace ToDoList.BlazorClient.Components.TodoItem
             todoItemModel.CategoryId = categoryId;
             todoItemModel.CategoryName = categoryName;
 
-            await Update();
+            await Submit();
             StateHasChanged();
 
             await Init("initSelect");
@@ -186,7 +196,7 @@ namespace ToDoList.BlazorClient.Components.TodoItem
             todoItemModel.ImageId = imageId;
             todoItemModel.ImageContent = imageContent;
 
-            await Update();
+            await Submit();
         }
 
         private async Task SetLocation(LatLngLiteral latLng)
@@ -194,7 +204,7 @@ namespace ToDoList.BlazorClient.Components.TodoItem
             todoItemModel.GeoPoint = latLng is not null
                 ? new GeoCoordinate(latLng.Lng, latLng.Lat)
                 : null;
-            await Update();
+            await Submit();
 
             todoItemModel = await ApiInvoker.GetItemAsync<TodoItemModel>($"{ApiEndpoints.TodoItems}/{todoItemModel.Id}");
         }

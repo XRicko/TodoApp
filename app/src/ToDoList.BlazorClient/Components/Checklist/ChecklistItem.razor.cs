@@ -14,10 +14,14 @@ namespace ToDoList.BlazorClient.Components.Checklist
 {
     public partial class ChecklistItem
     {
-        private IEnumerable<TodoItemModel> todoItemModels = Array.Empty<TodoItemModel>();
+        private ChecklistModel checklistModel;
+
+        private List<TodoItemModel> todoItemModels = new();
 
         private ICollection<TodoItemModel> ActiveTodoItems => todoItemModels.Where(x => x.StatusName != "Done").ToList();
         private ICollection<TodoItemModel> DoneTodoItems => todoItemModels.Where(x => x.StatusName == "Done").ToList();
+
+        private readonly List<Func<Task>> toRunAfterRender = new();
 
         private int dragCounter;
         private string dropClass;
@@ -38,6 +42,14 @@ namespace ToDoList.BlazorClient.Components.Checklist
         [Parameter]
         public ChecklistModel ChecklistModel { get; set; } = new();
 
+        public override Task SetParametersAsync(ParameterView parameters)
+        {
+            if (parameters.TryGetValue<ChecklistModel>(nameof(ChecklistModel), out var value))
+                checklistModel = value;
+
+            return base.SetParametersAsync(parameters);
+        }
+
         protected override async Task OnInitializedAsync()
         {
             dropClass = "";
@@ -46,19 +58,32 @@ namespace ToDoList.BlazorClient.Components.Checklist
             Notifier.ChecklistChanged += OnTodoItemsChanged;
         }
 
+        protected override async Task OnAfterRenderAsync(bool firstRender)
+        {
+            foreach (var action in toRunAfterRender)
+            {
+                await action();
+            }
+
+            toRunAfterRender.Clear();
+        }
+
         private async Task Submit()
         {
-            if (ChecklistModel.Id == 0)
-                await ApiInvoker.PostItemAsync(ApiEndpoints.Checklists, ChecklistModel);
-            if (ChecklistModel.Id > 0)
-                await ApiInvoker.PutItemAsync(ApiEndpoints.Checklists, ChecklistModel);
+            if (checklistModel.Id == 0)
+            {
+                await ApiInvoker.PostItemAsync(ApiEndpoints.Checklists, checklistModel);
+                checklistModel = await ApiInvoker.GetItemAsync<ChecklistModel>($"{ApiEndpoints.ChecklistByNameAndUserId}/{checklistModel.Name}");
+            }
+            if (checklistModel.Id > 0)
+                await ApiInvoker.PutItemAsync(ApiEndpoints.Checklists, checklistModel);
         }
 
         private async Task OnTodoItemsChanged(int checklistId)
         {
             await InvokeAsync(async () =>
             {
-                if (ChecklistModel.Id == checklistId)
+                if (checklistModel.Id == checklistId)
                 {
                     await LoadTodoItems();
                     StateHasChanged();
@@ -66,9 +91,23 @@ namespace ToDoList.BlazorClient.Components.Checklist
             });
         }
 
+        private void AddTodoItem()
+        {
+            var todoItem = new TodoItemModel
+            {
+                StartDate = DateTime.Now,
+                ChecklistId = checklistModel.Id,
+                StatusId = 1,
+                StatusName = "Planned"
+            };
+            todoItemModels.Add(todoItem);
+
+            toRunAfterRender.Add(() => Notifier.OnItemAdded(todoItem));
+        }
+
         private void HandleDragEnter()
         {
-            dropClass = Container.DraggedTodoItem.ChecklistId == ChecklistModel.Id
+            dropClass = Container.DraggedTodoItem.ChecklistId == checklistModel.Id
                 ? "no-drop"
                 : "yes-drop";
 
@@ -85,11 +124,11 @@ namespace ToDoList.BlazorClient.Components.Checklist
 
         private async Task HandleDrop()
         {
-            if (Container.DraggedTodoItem.ChecklistId != ChecklistModel.Id)
+            if (Container.DraggedTodoItem.ChecklistId != checklistModel.Id)
             {
                 int oldChecklist = Container.DraggedTodoItem.ChecklistId;
 
-                Container.DraggedTodoItem.ChecklistId = ChecklistModel.Id;
+                Container.DraggedTodoItem.ChecklistId = checklistModel.Id;
 
                 await ApiInvoker.PutItemAsync(ApiEndpoints.TodoItems, Container.DraggedTodoItem);
                 await LoadTodoItems();
@@ -100,10 +139,8 @@ namespace ToDoList.BlazorClient.Components.Checklist
             HandleDragLeave();
         }
 
-        private async Task LoadTodoItems()
-        {
-            todoItemModels = await ApiInvoker.GetItemsAsync<TodoItemModel>($"{ApiEndpoints.TodoItemByChecklistId}/{ChecklistModel.Id}");
-        }
+        private async Task LoadTodoItems() => 
+            todoItemModels = (await ApiInvoker.GetItemsAsync<TodoItemModel>($"{ApiEndpoints.TodoItemsByChecklistId}/{checklistModel.Id}")).ToList();
 
         private void Collapse() => collapsed = !collapsed;
     }

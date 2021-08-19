@@ -120,6 +120,12 @@
   <data name="ActiveTab" xml:space="preserve">
     <value>Active</value>
   </data>
+  <data name="AddChecklist" xml:space="preserve">
+    <value>Add checklist</value>
+  </data>
+  <data name="AddTask" xml:space="preserve">
+    <value>Add task</value>
+  </data>
   <data name="Cancel" xml:space="preserve">
     <value>Cancel</value>
   </data>
@@ -160,10 +166,10 @@
     <value>Location</value>
   </data>
   <data name="Log In" xml:space="preserve">
-    <value>Log In</value>
+    <value>Log in</value>
   </data>
   <data name="Log Out" xml:space="preserve">
-    <value>Log Out</value>
+    <value>Log out</value>
   </data>
   <data name="Login Failed" xml:space="preserve">
     <value>Username or password is incorrect</value>

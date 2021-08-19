@@ -1,6 +1,7 @@
 ﻿@using ToDoList.MvcClient.Resources
 
-@inject IStringLocalizer<CreateOrUpdate> Localizer
+@inject IStringLocalizer<General> Localizer
+@inject IStringLocalizer<CreateOrUpdate> ViewLocalizer
 @model ToDoList.MvcClient.ViewModels.CreateTodoItemViewModel
 
 @{
@@ -34,7 +35,7 @@
             <div class="form-group required">
                 <label asp-for="TodoItemModel.ChecklistId" class="control-label"></label>
                 <select class="form-control" asp-for="TodoItemModel.ChecklistId" asp-items="@new SelectList(Model.ChecklistModels, nameof(ChecklistModel.Id), nameof(ChecklistModel.Name), Model.SelectedChecklistId)">
-                    <option value="" disabled>@Localizer["SelectChecklist"]</option>
+                    <option value="" disabled>@ViewLocalizer["SelectChecklist"]</option>
                 </select>
                 <span asp-validation-for="TodoItemModel.ChecklistId" class="text-danger"></span>
             </div>
@@ -42,7 +43,7 @@
             <div class="form-group required">
                 <label asp-for="TodoItemModel.StatusId" class="control-label"></label>
                 <select class="form-control" asp-for="TodoItemModel.StatusId" asp-items="@new SelectList(Model.StatusModels, nameof(StatusModel.Id), nameof(StatusModel.Name), Model.SelectedStatusId)">
-                    <option value="" disabled>@Localizer["SelectStatus"]</option>
+                    <option value="" disabled>@ViewLocalizer["SelectStatus"]</option>
                 </select>
                 <span asp-validation-for="TodoItemModel.StatusId" class="text-danger"></span>
             </div>
@@ -50,17 +51,17 @@
             <div class="form-group">
                 <label asp-for="TodoItemModel.CategoryId" class="control-label"></label>
                 <select class="form-control" id="categorySelector" asp-for="TodoItemModel.CategoryName" asp-items="@new SelectList(Model.CategoryModels, nameof(CategoryModel.Name), nameof(CategoryModel.Name), Model.SelectedCategoryId)">
-                    <option value="">@Localizer["SelectCategory"]</option>
+                    <option value="">@Localizer["Category"]</option>
                 </select>
                 <span asp-validation-for="TodoItemModel.CategoryId" class="text-danger"></span>
             </div>
 
             <div class="form-row mb-2">
                 <div class="col">
-                    <input id="latitude" class="form-control" placeholder="@Localizer["Latitude"]" readonly asp-for="TodoItemModel.Latitude" value="@Model.TodoItemModel.Latitude" />
+                    <input id="latitude" class="form-control" placeholder="@ViewLocalizer["Latitude"]" readonly asp-for="TodoItemModel.Latitude" value="@Model.TodoItemModel.Latitude" />
                 </div>
                 <div class="col">
-                    <input id="longitude" class="form-control" placeholder="@Localizer["Longitude"]" readonly asp-for="TodoItemModel.Longitude" value="@Model.TodoItemModel.Longitude" />
+                    <input id="longitude" class="form-control" placeholder="@ViewLocalizer["Longitude"]" readonly asp-for="TodoItemModel.Longitude" value="@Model.TodoItemModel.Longitude" />
                 </div>    
                 <div class="col flex-grow-0">
                     <button id="resetLocation" class="btn btn-outline-secondary" type="button">@Localizer["Reset"]</button>
@@ -77,7 +78,7 @@
                 <div class="d-flex">
                     <div class="custom-file mr-2">
                         <input asp-for="TodoItemModel.Image" class="custom-file-input" id="customFile" />
-                        <label asp-for="TodoItemModel.Image" id="fileLabel" class="custom-file-label">@Localizer["ChooseImage"]</label>
+                        <label asp-for="TodoItemModel.Image" id="fileLabel" class="custom-file-label">@ViewLocalizer["ChooseImage"]</label>
                     </div>
 
                     <button id="resetImage" class="btn btn-outline-secondary" type="button">@Localizer["Reset"]</button>
@@ -92,7 +93,7 @@
 
 <style>
     #fileLabel::after {
-        content: "@Localizer["Browse"]";
+        content: "@ViewLocalizer["Browse"]";
     }
 </style>
 

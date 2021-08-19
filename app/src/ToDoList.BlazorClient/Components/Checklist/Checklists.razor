@@ -1,6 +1,8 @@
-﻿<div class="d-flex justify-content-end mb-2">
+﻿@inject IStringLocalizer<General> Localizer
+
+<div class="d-flex justify-content-end mb-2">
 	<button class="border-0 btn btn-outline-primary" 
-			title="Add"
+			title="@Localizer["AddChecklist"]"
 			@onclick="Add">
 		<i class="oi oi-plus"></i>
 	</button>

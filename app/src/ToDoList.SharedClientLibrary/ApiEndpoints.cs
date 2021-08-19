@@ -15,12 +15,13 @@
         public const string CategoryByName = $"{Categories}/{GetByName}";
 
         public const string Checklists = "Checklists";
+        public const string ChecklistByNameAndUserId = $"{Checklists}/{GetByName}AndUserId";
 
         public const string Images = "Images";
         public const string ImageByName = $"{Images}/{GetByName}";
 
         public const string TodoItems = "TodoItems";
-        public const string TodoItemByChecklistId = $"{TodoItems}/GetByChecklistId";
+        public const string TodoItemsByChecklistId = $"{TodoItems}/GetByChecklistId";
 
         public const string Register = "Authentication/Register";
         public const string Login = "Authentication/Login";

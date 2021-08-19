@@ -29,21 +29,12 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>CreateOrUpdate.resx</DependentUpon>
     </Compile>
-    <Compile Update="Resources\ViewAll.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>ViewAll.resx</DependentUpon>
-    </Compile>
   </ItemGroup>
 
   <ItemGroup>
     <EmbeddedResource Update="Resources\CreateOrUpdate.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>CreateOrUpdate.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Update="Resources\ViewAll.resx">
-      <Generator>PublicResXFileCodeGenerator</Generator>
-      <LastGenOutput>ViewAll.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
 

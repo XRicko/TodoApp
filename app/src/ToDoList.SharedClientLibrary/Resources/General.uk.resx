@@ -123,6 +123,12 @@
   <data name="Add Location" xml:space="preserve">
     <value>Додайте місце</value>
   </data>
+  <data name="AddChecklist" xml:space="preserve">
+    <value>Додати список</value>
+  </data>
+  <data name="AddTask" xml:space="preserve">
+    <value>Додати завдання</value>
+  </data>
   <data name="Cancel" xml:space="preserve">
     <value>Скасувати</value>
   </data>

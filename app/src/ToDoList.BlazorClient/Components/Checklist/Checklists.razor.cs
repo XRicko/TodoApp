@@ -19,6 +19,9 @@ namespace ToDoList.BlazorClient.Components.Checklist
 {
     public partial class Checklists
     {
+        private List<ChecklistModel> checklistModels = new();
+        private readonly List<Func<Task>> toRunAfterRender = new();
+
         [CascadingParameter]
         private IModalService Modal { get; set; }
 
@@ -30,10 +33,18 @@ namespace ToDoList.BlazorClient.Components.Checklist
         [Inject]
         private Notifier Notifier { get; set; }
 
-        private List<ChecklistModel> checklistModels = new();
-
         protected override async Task OnInitializedAsync() =>
             checklistModels = (await ApiInvoker.GetItemsAsync<ChecklistModel>(ApiEndpoints.Checklists)).ToList();
+
+        protected override async Task OnAfterRenderAsync(bool firstRender)
+        {
+            foreach (var action in toRunAfterRender)
+            {
+                await action();
+            }
+
+            toRunAfterRender.Clear();
+        }
 
         private async Task Add()
         {
@@ -45,9 +56,7 @@ namespace ToDoList.BlazorClient.Components.Checklist
             var checklist = new ChecklistModel { UserId = userId };
             checklistModels.Add(checklist);
 
-            await Task.Delay(10);
-
-            await Notifier.OnItemAdded(checklist);
+            toRunAfterRender.Add(() => Notifier.OnItemAdded(checklist));
         }
 
         private async Task Delete(int checklistId)

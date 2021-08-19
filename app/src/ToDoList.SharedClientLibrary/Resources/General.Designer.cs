@@ -70,6 +70,24 @@ namespace ToDoList.SharedClientLibrary.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Add checklist.
+        /// </summary>
+        public static string AddChecklist {
+            get {
+                return ResourceManager.GetString("AddChecklist", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add task.
+        /// </summary>
+        public static string AddTask {
+            get {
+                return ResourceManager.GetString("AddTask", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Cancel.
         /// </summary>
         public static string Cancel {
@@ -187,7 +205,7 @@ namespace ToDoList.SharedClientLibrary.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Log In.
+        ///   Looks up a localized string similar to Log in.
         /// </summary>
         public static string Log_In {
             get {
@@ -196,7 +214,7 @@ namespace ToDoList.SharedClientLibrary.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Log Out.
+        ///   Looks up a localized string similar to Log out.
         /// </summary>
         public static string Log_Out {
             get {

@@ -72,11 +72,13 @@ namespace ToDoList.MvcClient.Controllers
             if (CategoryExists())
                 await AddCategory(createViewModel.TodoItemModel);
 
+            await AttachImage(createViewModel.TodoItemModel);
+
             if (IsNewItem())
-                await AddTodoItem(createViewModel.TodoItemModel);
+                await apiInvoker.PostItemAsync(ApiEndpoints.TodoItems, createViewModel.TodoItemModel);
 
             if (!IsNewItem())
-                await UpdateTodoItem(createViewModel.TodoItemModel);
+                await apiInvoker.PutItemAsync(ApiEndpoints.TodoItems, createViewModel.TodoItemModel);
 
             return PartialView("_ViewAll", await viewModelService.CreateIndexViewModelAsync());
 
@@ -136,18 +138,6 @@ namespace ToDoList.MvcClient.Controllers
 
             var category = await apiInvoker.GetItemAsync<CategoryModel>($"{ApiEndpoints.CategoryByName}/{todoItemModel.CategoryName}");
             todoItemModel.CategoryId = category.Id;
-        }
-
-        private async Task AddTodoItem(TodoItemModelWithFile todoItemModel)
-        {
-            await AttachImage(todoItemModel);
-            await apiInvoker.PostItemAsync(ApiEndpoints.TodoItems, todoItemModel);
-        }
-
-        private async Task UpdateTodoItem(TodoItemModelWithFile todoItemModel)
-        {
-            await AttachImage(todoItemModel);
-            await apiInvoker.PutItemAsync(ApiEndpoints.TodoItems, todoItemModel);
         }
 
         private async Task AttachImage(TodoItemModelWithFile todoItemModel)

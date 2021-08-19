@@ -178,9 +178,9 @@ namespace ToDoList.WebApi
             if (env.IsProduction())
                 app.UseHttpsRedirection();
 
-            app.UseCors();
-
             app.UseRouting();
+
+            app.UseCors();
 
             app.UseAuthentication();
             app.UseAuthorization();
