@@ -33,10 +33,14 @@
     }
 }
 
+.drop-area {
+    opacity: 0.4;
+}
+
 .no-drop {
-    border: 2px dashed red;
+    background-color: rgba(255, 0, 0, 0.7);
 }
 
 .yes-drop {
-    border: 2px dashed green;
+    background-color: rgba(0, 128, 0, 0.7);
 }

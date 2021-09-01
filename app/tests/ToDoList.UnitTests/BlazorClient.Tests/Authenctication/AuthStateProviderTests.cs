@@ -1,16 +1,9 @@
 ﻿using System;
 using System.Threading.Tasks;
 
-using FluentAssertions;
-
-using Moq;
-
 using TestExtensions;
 
 using ToDoList.BlazorClient.Authentication;
-using ToDoList.SharedClientLibrary.Services;
-
-using Xunit;
 
 namespace BlazorClient.Tests.Authenctication
 {

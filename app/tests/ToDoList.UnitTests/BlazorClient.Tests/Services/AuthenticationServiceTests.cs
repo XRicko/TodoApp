@@ -1,19 +1,10 @@
 ﻿using System;
 using System.Threading.Tasks;
 
-using FluentAssertions;
-
-using Moq;
-
 using TestExtensions;
 
 using ToDoList.BlazorClient.Authentication;
 using ToDoList.BlazorClient.Services;
-using ToDoList.SharedClientLibrary;
-using ToDoList.SharedClientLibrary.Models;
-using ToDoList.SharedClientLibrary.Services;
-
-using Xunit;
 
 namespace BlazorClient.Tests.Services
 {

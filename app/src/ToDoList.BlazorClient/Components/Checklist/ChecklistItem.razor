@@ -1,11 +1,17 @@
 ﻿@inject IStringLocalizer<General> Localizer
 
-<div class="card @dropClass"
+<div class="card position-relative @cardDropClass"
      ondragover="event.preventDefault();"
      ondragstart="event.dataTransfer.setData('', event.target.id);"
      @ondrop="HandleDrop"
      @ondragenter="HandleDragEnter"
      @ondragleave="HandleDragLeave">
+
+    @if (!string.IsNullOrWhiteSpace(overlayClass))
+    {
+        <div class=" @overlayClass overlay"></div>
+    }
+
     <div class="card-header d-flex justify-content-between align-items-center">
         <div class="d-flex align-items-center">
               <span class="d-flex collapse-button"

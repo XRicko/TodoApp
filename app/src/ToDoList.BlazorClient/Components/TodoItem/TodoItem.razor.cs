@@ -22,7 +22,7 @@ using ToDoList.SharedKernel;
 namespace ToDoList.BlazorClient.Components.TodoItem
 {
     public partial class TodoItem : IDisposable
-    {        
+    {
         private TodoItemModel todoItemModel;
 
         private IEnumerable<CategoryModel> categories = Array.Empty<CategoryModel>();

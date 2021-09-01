@@ -24,7 +24,9 @@ namespace ToDoList.BlazorClient.Components.Checklist
         private readonly List<Func<Task>> toRunAfterRender = new();
 
         private int dragCounter;
-        private string dropClass;
+
+        private string cardDropClass;
+        private string overlayClass;
 
         private bool collapsed;
 
@@ -52,7 +54,7 @@ namespace ToDoList.BlazorClient.Components.Checklist
 
         protected override async Task OnInitializedAsync()
         {
-            dropClass = "";
+            overlayClass = "";
 
             await LoadTodoItems();
             Notifier.ChecklistChanged += OnTodoItemsChanged;
@@ -107,7 +109,8 @@ namespace ToDoList.BlazorClient.Components.Checklist
 
         private void HandleDragEnter()
         {
-            dropClass = Container.DraggedTodoItem.ChecklistId == checklistModel.Id
+            cardDropClass = "drop-area";
+            overlayClass = Container.DraggedTodoItem.ChecklistId == checklistModel.Id
                 ? "no-drop"
                 : "yes-drop";
 
@@ -119,7 +122,10 @@ namespace ToDoList.BlazorClient.Components.Checklist
             dragCounter--;
 
             if (dragCounter == 0)
-                dropClass = "";
+            {
+                cardDropClass = "";
+                cardDropClass = overlayClass = "";
+            }
         }
 
         private async Task HandleDrop()
@@ -139,7 +145,7 @@ namespace ToDoList.BlazorClient.Components.Checklist
             HandleDragLeave();
         }
 
-        private async Task LoadTodoItems() => 
+        private async Task LoadTodoItems() =>
             todoItemModels = (await ApiInvoker.GetItemsAsync<TodoItemModel>($"{ApiEndpoints.TodoItemsByChecklistId}/{checklistModel.Id}")).ToList();
 
         private void Collapse() => collapsed = !collapsed;

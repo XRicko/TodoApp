@@ -12,7 +12,5 @@ namespace TestExtensions
                     new Claim("exp", expiryDate.ToUnixTimeSeconds().ToString())
                 }, "jwtAuthentication"));
         }
-
-        public static object CreateClaimsPrincipal(object expiryDate) => throw new NotImplementedException();
     }
 }

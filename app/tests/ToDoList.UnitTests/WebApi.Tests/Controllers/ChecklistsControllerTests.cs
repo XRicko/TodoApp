@@ -60,8 +60,7 @@ namespace WebApi.Tests.Controllers
             // Arrange
             var expected = GetSampleChecklistResponsesByUser();
 
-            MediatorMock.Setup(x => x.Send(It.Is<GetChecklistsByUserIdQuery>(q => q.UserId == userId),
-                                           It.IsAny<CancellationToken>()))
+            MediatorMock.Setup(x => x.Send(new GetChecklistsByUserIdQuery(userId), It.IsAny<CancellationToken>()))
                         .ReturnsAsync(expected)
                         .Verifiable();
 
@@ -89,8 +88,7 @@ namespace WebApi.Tests.Controllers
 
             // Assert
             actual.Should().Equal(expected);
-            MediatorMock.Verify(x => x.Send(It.Is<GetChecklistsByUserIdQuery>(q => q.UserId == userId),
-                                            It.IsAny<CancellationToken>()), Times.Never);
+            MediatorMock.Verify(x => x.Send(new GetChecklistsByUserIdQuery(userId), It.IsAny<CancellationToken>()), Times.Never);
         }
 
         [Fact]
@@ -100,8 +98,7 @@ namespace WebApi.Tests.Controllers
             int id = 131;
             var expected = new ChecklistResponse(id, "smth", 1);
 
-            MediatorMock.Setup(x => x.Send(It.Is<GetByIdQuery<Checklist, ChecklistResponse>>(q => q.Id == id),
-                                           It.IsAny<CancellationToken>()))
+            MediatorMock.Setup(x => x.Send(new GetByIdQuery<Checklist, ChecklistResponse>(id), It.IsAny<CancellationToken>()))
                         .ReturnsAsync(expected)
                         .Verifiable();
 
@@ -114,13 +111,12 @@ namespace WebApi.Tests.Controllers
         }
 
         [Fact]
-        public async Task Get_ReturnsChecklistResponseGivenInvalidId()
+        public async Task Get_ReturnsNullChecklistResponseGivenInvalidId()
         {
             // Arrange
             int id = 131;
 
-            MediatorMock.Setup(x => x.Send(It.Is<GetByIdQuery<Checklist, ChecklistResponse>>(q => q.Id == id),
-                                           It.IsAny<CancellationToken>()))
+            MediatorMock.Setup(x => x.Send(new GetByIdQuery<Checklist, ChecklistResponse>(id), It.IsAny<CancellationToken>()))
                         .ReturnsAsync(() => null)
                         .Verifiable();
 
@@ -130,6 +126,25 @@ namespace WebApi.Tests.Controllers
             // Assert
             actual.Value.Should().BeNull();
             MediatorMock.Verify();
+        }
+
+        [Fact]
+        public async Task GetByNameAndUserId_ReturnsNullChecklistResponseGivenInvalidData()
+        {
+            // Arrange
+            string name = "Name";
+
+            MediatorMock.Setup(x => x.Send(new GetChecklistByNameAndUserIdQuery(name, userId), It.IsAny<CancellationToken>()))
+                        .ReturnsAsync(() => null)
+                        .Verifiable();
+
+            // Act
+            var actual = await checklistsController.GetByNameAndUserId(name);
+
+            // Assert
+            actual.Value.Should().BeNull();
+            MediatorMock.Verify();
+
         }
 
         [Fact]
@@ -148,8 +163,7 @@ namespace WebApi.Tests.Controllers
             cache.Get(recordKey).Should().BeNull();
             result.Should().BeAssignableTo<NoContentResult>();
 
-            MediatorMock.Verify(x => x.Send(It.Is<AddCommand<ChecklistCreateRequest>>(q => q.Request == createRequest),
-                                            It.IsAny<CancellationToken>()), Times.Once);
+            MediatorMock.Verify(x => x.Send(new AddCommand<ChecklistCreateRequest>(createRequest), It.IsAny<CancellationToken>()), Times.Once);
         }
 
         [Fact]
@@ -168,8 +182,7 @@ namespace WebApi.Tests.Controllers
             cache.Get(recordKey).Should().BeNull();
             result.Should().BeAssignableTo<NoContentResult>();
 
-            MediatorMock.Verify(x => x.Send(It.Is<RemoveCommand<Checklist>>(q => q.Id == id),
-                                            It.IsAny<CancellationToken>()), Times.Once);
+            MediatorMock.Verify(x => x.Send(new RemoveCommand<Checklist>(id), It.IsAny<CancellationToken>()), Times.Once);
         }
 
         [Fact]
@@ -188,8 +201,7 @@ namespace WebApi.Tests.Controllers
             cache.Get(recordKey).Should().BeNull();
             result.Should().BeAssignableTo<NoContentResult>();
 
-            MediatorMock.Verify(x => x.Send(It.Is<UpdateCommand<ChecklistUpdateRequest>>(q => q.Request == updateRequest),
-                                            It.IsAny<CancellationToken>()), Times.Once);
+            MediatorMock.Verify(x => x.Send(new UpdateCommand<ChecklistUpdateRequest>(updateRequest), It.IsAny<CancellationToken>()), Times.Once);
         }
 
 

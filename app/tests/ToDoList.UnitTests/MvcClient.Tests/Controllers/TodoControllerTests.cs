@@ -399,6 +399,26 @@ namespace MvcClient.Tests.Controllers
         }
 
         [Fact]
+        public async Task Post_CreateOrUpdate_ReturnsSamePartialViewGivenInvalidModel()
+        {
+            // Arrange
+            todoController.ModelState.AddModelError("error", "something wrong");
+
+            var todoItem = new TodoItemModelWithFile { Name = "" };
+            var createTodoItemViewModel = GetCreateTodoItemViewModel();
+
+            createTodoItemViewModel.TodoItemModel = todoItem;
+
+            // Act
+            var result = await todoController.CreateOrUpdateAsync(createTodoItemViewModel) as PartialViewResult;
+            var model = result.ViewData.Model as TodoItemModelWithFile;
+
+            // Assert
+            result.ViewName.Should().Be(createOrUpdateViewName);
+            model.Should().Be(todoItem);
+        }
+
+        [Fact]
         public async Task Post_Delete_ReturnsViewAllWithDeletedTodoItem()
         {
             // Arrange

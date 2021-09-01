@@ -1,6 +1,9 @@
 ﻿@inject IStringLocalizer<General> Localizer
 
-<div class="d-flex flex-column todo-item">
+<div class="d-flex flex-column todo-item" 
+     draggable="true"
+     ondragstart="event.preventDefault();
+                  event.stopPropagation();">
     @if (todoItemModel.CategoryId.HasValue)
     {
         <div class="category d-flex justify-content-center align-items-center text-center">

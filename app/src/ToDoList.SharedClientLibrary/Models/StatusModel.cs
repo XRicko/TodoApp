@@ -13,7 +13,8 @@
             {
                 "Planned" => "bg-planned",
                 "Ongoing" => "bg-ongoing",
-                _ => "bg-done"
+                "Done" => "bg-done",
+                _ => ""
             };
         }
     }

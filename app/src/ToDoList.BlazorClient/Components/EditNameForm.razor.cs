@@ -70,7 +70,7 @@ namespace ToDoList.BlazorClient.Components
         private void Focus() => inFocus = true;
         private void Unfocus() => inFocus = false;
 
-        private async Task FocusInput(BaseModel item) => 
+        private async Task FocusInput(BaseModel item) =>
             await JSRuntime.InvokeVoidAsync("focusInput", GetInputId(item)); // Change in .Net 6
 
         private static string GetInputId(BaseModel item) => $"{item.GetType().Name}-name-{item.Id}";

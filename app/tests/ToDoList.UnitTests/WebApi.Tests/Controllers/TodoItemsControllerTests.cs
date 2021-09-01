@@ -34,6 +34,8 @@ namespace WebApi.Tests.Controllers
         private readonly TodoItemsController todoItemsController;
 
         private readonly int userId;
+        private readonly int checklistId;
+
         private readonly string recordKey;
 
         public TodoItemsControllerTests() : base()
@@ -43,7 +45,9 @@ namespace WebApi.Tests.Controllers
 
             todoItemsController = new TodoItemsController(MediatorMock.Object, cache);
 
-            userId = 4;
+            userId = 420;
+            checklistId = 69;
+
             recordKey = $"TodoItems_User_{userId}";
 
             var contextMock = new Mock<HttpContext>();
@@ -58,10 +62,9 @@ namespace WebApi.Tests.Controllers
         [Fact]
         public async Task Get_ReturnsNewListOfTodoItemResponsesByUserAndSetsCache()
         {
-            var expected = GetSampleTodoItemResponsesByUser();
+            var expected = GetSampleTodoItemResponsesByUserAndChecklist();
 
-            MediatorMock.Setup(x => x.Send(It.Is<GetTodoItemsByUserIdQuery>(q => q.UserId == userId),
-                                           It.IsAny<CancellationToken>()))
+            MediatorMock.Setup(x => x.Send(new GetTodoItemsByUserIdQuery(userId), It.IsAny<CancellationToken>()))
                         .ReturnsAsync(expected)
                         .Verifiable();
 
@@ -79,7 +82,8 @@ namespace WebApi.Tests.Controllers
         [Fact]
         public async Task Get_ReturnsListOfTodoItemResponsesByUserFromCache()
         {
-            var expected = GetSampleTodoItemResponsesByUser();
+            // Arrange
+            var expected = GetSampleTodoItemResponsesByUserAndChecklist();
 
             cache.SetString(recordKey, JsonSerializer.Serialize(expected));
 
@@ -88,12 +92,29 @@ namespace WebApi.Tests.Controllers
 
             // Assert
             actual.Should().Equal(expected);
-            MediatorMock.Verify(x => x.Send(It.Is<GetTodoItemsByUserIdQuery>(q => q.UserId == userId),
-                                            It.IsAny<CancellationToken>()), Times.Never);
+            MediatorMock.Verify(x => x.Send(new GetTodoItemsByUserIdQuery(userId), It.IsAny<CancellationToken>()), Times.Never);
         }
 
         [Fact]
-        public async Task Get_ReturnsChecklistResponseGivenExistingId()
+        public async Task GetByChecklistId_ReturnsListOfTodoItemResponsesByChecklistId()
+        {
+            // Arrange
+            var expected = GetSampleTodoItemResponsesByUserAndChecklist();
+
+            MediatorMock.Setup(x => x.Send(new GetTodoItemsByChecklistIdQuery(checklistId), It.IsAny<CancellationToken>()))
+                        .ReturnsAsync(expected)
+                        .Verifiable();
+
+            // Act
+            var actual = await todoItemsController.GetByChecklistId(checklistId);
+
+            // Assert
+            actual.Should().Equal(expected);
+            MediatorMock.Verify();
+        }
+
+        [Fact]
+        public async Task Get_ReturnsTodoItemResponseGivenExistingId()
         {
             // Arrange
             int id = 11;
@@ -113,7 +134,7 @@ namespace WebApi.Tests.Controllers
         }
 
         [Fact]
-        public async Task Get_ReturnsChecklistResponseGivenInvalidId()
+        public async Task Get_ReturnsTodoItemResponseGivenInvalidId()
         {
             // Arrange
             int id = 11;
@@ -136,7 +157,7 @@ namespace WebApi.Tests.Controllers
         {
             // Arrange
             var createRequest = new TodoItemCreateRequest("Essential", 2, 1, DateTime.Now.AddDays(2));
-            var responses = GetSampleTodoItemResponsesByUser();
+            var responses = GetSampleTodoItemResponsesByUserAndChecklist();
 
             cache.SetString(recordKey, JsonSerializer.Serialize(responses));
 
@@ -156,7 +177,7 @@ namespace WebApi.Tests.Controllers
         {
             // Arrange
             int id = 3;
-            var responses = GetSampleTodoItemResponsesByUser();
+            var responses = GetSampleTodoItemResponsesByUserAndChecklist();
 
             cache.SetString(recordKey, JsonSerializer.Serialize(responses));
 
@@ -176,7 +197,7 @@ namespace WebApi.Tests.Controllers
         {
             // Arrange
             var updateRequest = new TodoItemUpdateRequest(2, "Cleaninig", 2, 1, DateTime.Now);
-            var responses = GetSampleTodoItemResponsesByUser();
+            var responses = GetSampleTodoItemResponsesByUserAndChecklist();
 
             cache.SetString(recordKey, JsonSerializer.Serialize(responses));
 
@@ -191,10 +212,8 @@ namespace WebApi.Tests.Controllers
                                             It.IsAny<CancellationToken>()), Times.Once);
         }
 
-        private static List<TodoItemResponse> GetSampleTodoItemResponsesByUser()
+        private List<TodoItemResponse> GetSampleTodoItemResponsesByUserAndChecklist()
         {
-            int checklistId = 5;
-
             var todoItems = new List<TodoItemResponse>
             {
                 new(4123, "Do smth", DateTime.Now, checklistId, "Chores", 1, "Planned"),
