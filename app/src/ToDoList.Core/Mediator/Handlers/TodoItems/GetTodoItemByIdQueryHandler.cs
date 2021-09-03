@@ -16,13 +16,13 @@ using ToDoList.SharedKernel.Interfaces;
 
 namespace ToDoList.Core.Mediator.Handlers.TodoItems
 {
-    public class GetTodoItemByIdQueryHandler : GetByIdQueryHandler<TodoItem, TodoItemResponse>
+    internal class GetTodoItemByIdQueryHandler : GetByIdQueryHandler<TodoItem, TodoItemResponse>
     {
-        private readonly ICreateWithAddressService createAddressService;
+        private readonly IAddressService createAddressService;
         private readonly IFileSystem fileSystem;
 
         public GetTodoItemByIdQueryHandler(IUnitOfWork unitOfWork, IMapper mapper,
-                                           ICreateWithAddressService addressService, IFileSystem system) : base(unitOfWork, mapper)
+                                           IAddressService addressService, IFileSystem system) : base(unitOfWork, mapper)
         {
             createAddressService = addressService ?? throw new ArgumentNullException(nameof(addressService));
             fileSystem = system ?? throw new ArgumentNullException(nameof(system));

@@ -1,5 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
-
+﻿
 using Microsoft.EntityFrameworkCore;
 
 using ToDoList.Core.Entities;
@@ -7,7 +6,6 @@ using ToDoList.Infrastructure.Data.Config;
 
 namespace ToDoList.Infrastructure.Data
 {
-    [ExcludeFromCodeCoverage]
     public class TodoListContext : DbContext
     {
         public TodoListContext(DbContextOptions<TodoListContext> options)

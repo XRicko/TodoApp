@@ -15,7 +15,7 @@ using ToDoList.SharedKernel.Interfaces;
 
 namespace ToDoList.Core.Mediator.Handlers.RefreshTokens
 {
-    public class GetRefreshTokenByTokenQueryHandler : HandlerBase, IRequestHandler<GetRefreshTokenByTokenQuery, RefreshTokenResponse>
+    internal class GetRefreshTokenByTokenQueryHandler : HandlerBase, IRequestHandler<GetRefreshTokenByTokenQuery, RefreshTokenResponse>
     {
         public GetRefreshTokenByTokenQueryHandler(IUnitOfWork unitOfWork, IMapper mapper) : base(unitOfWork, mapper)
         {

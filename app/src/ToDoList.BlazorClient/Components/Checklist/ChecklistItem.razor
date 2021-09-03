@@ -1,6 +1,6 @@
 ﻿@inject IStringLocalizer<General> Localizer
 
-<div class="card position-relative @cardDropClass"
+<div class="card item position-relative @cardDropClass"
      ondragover="event.preventDefault();"
      ondragstart="event.dataTransfer.setData('', event.target.id);"
      @ondrop="HandleDrop"

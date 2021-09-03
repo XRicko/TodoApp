@@ -13,7 +13,7 @@ using ToDoList.SharedKernel.Interfaces;
 
 namespace ToDoList.Core.Mediator.Handlers.Generics
 {
-    public class GetByNameQueryHandler<TEntity, TResponse> : HandlerBase, IRequestHandler<GetByNameQuery<TEntity, TResponse>, TResponse>
+    internal class GetByNameQueryHandler<TEntity, TResponse> : HandlerBase, IRequestHandler<GetByNameQuery<TEntity, TResponse>, TResponse>
         where TEntity : BaseEntity
         where TResponse : BaseResponse
     {

@@ -2,7 +2,7 @@
 
 namespace ToDoList.Core
 {
-    public class ApiOptions
+    internal class ApiKeys
     {
         public const string Apis = "Apis";
 

@@ -7,7 +7,7 @@ using ToDoList.SharedKernel.Interfaces;
 
 namespace ToDoList.Core.Mediator.Handlers.Categories
 {
-    public class GetCategoryByNameQueryHandler : GetByNameQueryHandler<Category, CategoryResponse>
+    internal class GetCategoryByNameQueryHandler : GetByNameQueryHandler<Category, CategoryResponse>
     {
         public GetCategoryByNameQueryHandler(IUnitOfWork unitOfWork, IMapper mapper) : base(unitOfWork, mapper)
         {

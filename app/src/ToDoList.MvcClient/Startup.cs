@@ -9,8 +9,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
-using ToDoList.Extensions;
-using ToDoList.MvcClient.API;
 using ToDoList.MvcClient.Services;
 using ToDoList.SharedClientLibrary.Services;
 
@@ -28,9 +26,6 @@ namespace ToDoList.MvcClient
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            var apiConfig = Configuration.GetSection("WebApiConfig").GetValid<WebApiConfig>();
-            services.AddSingleton(apiConfig);
-
             services.AddScoped<IApiInvoker, ApiInvoker>();
 
             var httpHandler = new SocketsHttpHandler { PooledConnectionLifetime = TimeSpan.FromMinutes(2) };
@@ -38,7 +33,7 @@ namespace ToDoList.MvcClient
             {
                 var client = new HttpClient(httpHandler, false)
                 {
-                    BaseAddress = new Uri(apiConfig.BaseUrl)
+                    BaseAddress = new Uri(Configuration["baseApiUrl"])
                 };
 
                 client.DefaultRequestHeaders.Accept.Clear();

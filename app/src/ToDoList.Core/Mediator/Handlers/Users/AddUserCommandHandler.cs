@@ -16,7 +16,7 @@ using ToDoList.SharedKernel.Interfaces;
 
 namespace ToDoList.Core.Mediator.Handlers.Users
 {
-    public class AddUserCommandHandler : AddCommandHandler<UserRequest, User>
+    internal class AddUserCommandHandler : AddCommandHandler<UserRequest, User>
     {
         private readonly IPasswordHasher passwordHasher;
 

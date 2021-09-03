@@ -5,7 +5,7 @@ using ToDoList.Core.Mediator.Response;
 
 namespace ToDoList.Core.Services
 {
-    public interface ICreateWithAddressService
+    public interface IAddressService
     {
         Task<IEnumerable<TodoItemResponse>> GetItemsWithAddressAsync(IEnumerable<TodoItemResponse> todoItemResponses);
         Task<TodoItemResponse> GetItemWithAddressAsync(TodoItemResponse todoItemResponse);

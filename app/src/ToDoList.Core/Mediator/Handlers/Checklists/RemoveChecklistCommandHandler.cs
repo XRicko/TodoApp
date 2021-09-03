@@ -14,7 +14,7 @@ using ToDoList.SharedKernel.Interfaces;
 
 namespace ToDoList.Core.Mediator.Handlers.Checklists
 {
-    public class RemoveChecklistCommandHandler : RemoveCommandHandler<Checklist>
+    internal class RemoveChecklistCommandHandler : RemoveCommandHandler<Checklist>
     {
         public RemoveChecklistCommandHandler(IUnitOfWork unitOfWork, IMapper mapper) : base(unitOfWork, mapper)
         {

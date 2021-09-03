@@ -91,6 +91,20 @@ a, .btn-link {
     background: #34712c;
 }
 
+.item {
+    animation: itemAppear .25s;
+}
+
+@keyframes itemAppear {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
 .overlay {
     position: absolute;
     left: 0;

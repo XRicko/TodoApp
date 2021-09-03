@@ -19,13 +19,13 @@ using ToDoList.SharedKernel.Interfaces;
 
 namespace ToDoList.Core.Mediator.Handlers.TodoItems
 {
-    public class GetTodoItemsByUserIdQueryHandler : HandlerBase, IRequestHandler<GetTodoItemsByUserIdQuery, IEnumerable<TodoItemResponse>>
+    internal class GetTodoItemsByUserIdQueryHandler : HandlerBase, IRequestHandler<GetTodoItemsByUserIdQuery, IEnumerable<TodoItemResponse>>
     {
-        private readonly ICreateWithAddressService createWithAddressService;
+        private readonly IAddressService createWithAddressService;
         private readonly IFileSystem fileSystem;
 
         public GetTodoItemsByUserIdQueryHandler(IUnitOfWork unitOfWork, IMapper mapper,
-                                                ICreateWithAddressService addressService, IFileSystem system) : base(unitOfWork, mapper)
+                                                IAddressService addressService, IFileSystem system) : base(unitOfWork, mapper)
         {
             createWithAddressService = addressService ?? throw new ArgumentNullException(nameof(addressService));
             fileSystem = system ?? throw new ArgumentNullException(nameof(system));

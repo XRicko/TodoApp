@@ -26,12 +26,12 @@ namespace Core.Tests.Handlers.TodoItems
     {
         private readonly GetTodoItemByIdQueryHandler handler;
 
-        private readonly Mock<ICreateWithAddressService> createAddressServiceMock;
+        private readonly Mock<IAddressService> createAddressServiceMock;
         private readonly Mock<IFileSystem> fileSystemMock;
 
         public GetTodoItemByIdQueryHandlerTests()
         {
-            createAddressServiceMock = new Mock<ICreateWithAddressService>();
+            createAddressServiceMock = new Mock<IAddressService>();
             fileSystemMock = new Mock<IFileSystem>();
 
             handler = new GetTodoItemByIdQueryHandler(UnitOfWorkMock.Object, Mapper,

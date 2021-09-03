@@ -1,21 +1,30 @@
 ﻿using System;
 using System.Threading.Tasks;
 
+using FluentAssertions;
+
+using Moq;
+
 using TestExtensions;
 
 using ToDoList.BlazorClient.Authentication;
 using ToDoList.BlazorClient.Services;
+using ToDoList.SharedClientLibrary;
+using ToDoList.SharedClientLibrary.Models;
+using ToDoList.SharedClientLibrary.Services;
+
+using Xunit;
 
 namespace BlazorClient.Tests.Services
 {
     public class AuthenticationServiceTests
     {
-        private Mock<IApiInvoker> apiInvokerMock;
-        private Mock<ITokenParser> tokenParserMock;
+        private readonly Mock<IApiInvoker> apiInvokerMock;
+        private readonly Mock<ITokenParser> tokenParserMock;
 
-        private AuthStateProvider authStateProvider;
+        private readonly AuthStateProvider authStateProvider;
 
-        private AuthenticationService authenticationService;
+        private readonly AuthenticationService authenticationService;
 
         public AuthenticationServiceTests()
         {

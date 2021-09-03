@@ -1,5 +1,5 @@
 ﻿<Virtualize Items="@TodoItemModels" Context="todoItem">
-	<li class="list-group-item @StatusModel.GetBackgroundColor(todoItem.StatusName)"
+	<li class="list-group-item item @StatusModel.GetBackgroundColor(todoItem.StatusName)"
 		draggable="true"
 		@ondragstart="() => HandleDragStart(todoItem)">
 		<TodoItem @key="todoItem.Id" TodoItemModel="todoItem" />

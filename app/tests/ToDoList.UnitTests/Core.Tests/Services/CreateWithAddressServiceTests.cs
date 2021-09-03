@@ -24,7 +24,7 @@ namespace Core.Tests.Services
         private readonly Mock<IGeocodingService> geocodingMock;
 
         private readonly IDistributedCache cache;
-        private readonly CreateWithAddressService addressService;
+        private readonly AddressService addressService;
 
         private readonly string address;
 
@@ -38,7 +38,7 @@ namespace Core.Tests.Services
             geocodingMock = new Mock<IGeocodingService>();
 
             cache = new MemoryDistributedCache(opts);
-            addressService = new CreateWithAddressService(geocodingMock.Object, cache);
+            addressService = new AddressService(geocodingMock.Object, cache);
 
             address = "Khalamenyuka St, 4, Kremenchuk, Poltavs'ka oblast, Ukraine, 39600";
 

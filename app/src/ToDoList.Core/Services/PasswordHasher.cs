@@ -3,7 +3,7 @@ using System.Security.Cryptography;
 
 namespace ToDoList.Core.Services
 {
-    public class PasswordHasher : IPasswordHasher
+    internal class PasswordHasher : IPasswordHasher
     {
         private const int SaltSize = 16;
         private const int HashSize = 20;
@@ -20,6 +20,7 @@ namespace ToDoList.Core.Services
             byte[] hash = pbkdf2.GetBytes(HashSize);
 
             byte[] hashBytes = new byte[SaltSize + HashSize];
+
             Array.Copy(salt, 0, hashBytes, 0, SaltSize);
             Array.Copy(hash, 0, hashBytes, SaltSize, HashSize);
 
@@ -39,6 +40,7 @@ namespace ToDoList.Core.Services
                 throw new NotSupportedException("The hashtype is not supported");
 
             string[] splittedHashString = hashedPassword.Replace("$MYHASH$V1$", "").Split('$');
+
             int iterations = int.Parse(splittedHashString[0]);
             string base64Hash = splittedHashString[1];
 
@@ -59,9 +61,6 @@ namespace ToDoList.Core.Services
             return true;
         }
 
-        private static bool IsHashSupported(string hashString)
-        {
-            return hashString.Contains("$MYHASH$V1$");
-        }
+        private static bool IsHashSupported(string hashString) => hashString.Contains("$MYHASH$V1$");
     }
 }

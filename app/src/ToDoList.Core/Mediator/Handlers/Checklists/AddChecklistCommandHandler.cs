@@ -15,7 +15,7 @@ using ToDoList.SharedKernel.Interfaces;
 
 namespace ToDoList.Core.Mediator.Handlers.Checklists
 {
-    public class AddChecklistCommandHandler : AddCommandHandler<ChecklistCreateRequest, Checklist>
+    internal class AddChecklistCommandHandler : AddCommandHandler<ChecklistCreateRequest, Checklist>
     {
         public AddChecklistCommandHandler(IUnitOfWork unitOfWork, IMapper mapper) : base(unitOfWork, mapper)
         {

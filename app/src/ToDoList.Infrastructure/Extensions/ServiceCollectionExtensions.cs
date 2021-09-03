@@ -1,6 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
-
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
 using ToDoList.Infrastructure.Data;
@@ -8,7 +6,6 @@ using ToDoList.SharedKernel.Interfaces;
 
 namespace ToDoList.Infrastructure.Extensions
 {
-    [ExcludeFromCodeCoverage]
     public static class ServiceCollectionExtensions
     {
         public static IServiceCollection AddInfrastructure(this IServiceCollection services, string connectionString)

@@ -24,13 +24,13 @@ namespace Core.Tests.Handlers.TodoItems
     public class GetTodoItemsByChecklistIdQueryHandlerTests : HandlerBaseForTests
     {
         private readonly GetTodoItemsByChecklistIdQueryHandler handler;
-        private readonly Mock<ICreateWithAddressService> addressServiceMock;
+        private readonly Mock<IAddressService> addressServiceMock;
 
         private readonly int checklistId;
 
         public GetTodoItemsByChecklistIdQueryHandlerTests()
         {
-            addressServiceMock = new Mock<ICreateWithAddressService>();
+            addressServiceMock = new Mock<IAddressService>();
             Mock<IFileSystem> fileSystemMock = new();
 
             handler = new GetTodoItemsByChecklistIdQueryHandler(UnitOfWorkMock.Object, Mapper, addressServiceMock.Object, fileSystemMock.Object);

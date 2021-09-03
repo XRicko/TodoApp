@@ -8,7 +8,7 @@ using ToDoList.SharedKernel.Interfaces;
 
 namespace ToDoList.Core.Mediator.Handlers.TodoItems
 {
-    public class UpdateTodoItemCommandHandler : UpdateCommandHandler<TodoItemUpdateRequest, TodoItem>
+    internal class UpdateTodoItemCommandHandler : UpdateCommandHandler<TodoItemUpdateRequest, TodoItem>
     {
         public UpdateTodoItemCommandHandler(IUnitOfWork unitOfWork, IMapper mapper) : base(unitOfWork, mapper)
         {

@@ -1,5 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
-
+﻿
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -7,7 +6,6 @@ using ToDoList.Core.Entities;
 
 namespace ToDoList.Infrastructure.Data.Config
 {
-    [ExcludeFromCodeCoverage]
     internal class TodoItemConfig : IEntityTypeConfiguration<TodoItem>
     {
         public void Configure(EntityTypeBuilder<TodoItem> builder)

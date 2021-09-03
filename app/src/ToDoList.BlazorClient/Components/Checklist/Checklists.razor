@@ -9,10 +9,9 @@
 </div>
 
 <div class="card-columns">
-	@foreach (var checklist in checklistModels)
-	{
+	<Virtualize Items="@checklistModels" Context="checklist">
 		<ChecklistItem @key="checklist.Id"
 					   ChecklistModel="@checklist"
 					   OnDeleteCallback="@Delete" />
-	}
+	</Virtualize>
 </div>

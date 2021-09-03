@@ -9,12 +9,12 @@ using ToDoList.Extensions;
 
 namespace ToDoList.Core.Services
 {
-    public class CreateWithAddressService : ICreateWithAddressService
+    internal class AddressService : IAddressService
     {
         private readonly IGeocodingService geocodingService;
         private readonly IDistributedCache cache;
 
-        public CreateWithAddressService(IGeocodingService service, IDistributedCache distributedCache)
+        public AddressService(IGeocodingService service, IDistributedCache distributedCache)
         {
             geocodingService = service ?? throw new ArgumentNullException(nameof(service));
             cache = distributedCache ?? throw new ArgumentNullException(nameof(distributedCache));
@@ -39,21 +39,19 @@ namespace ToDoList.Core.Services
         {
             _ = todoItemResponse ?? throw new ArgumentNullException(nameof(todoItemResponse));
 
-            if (todoItemResponse.GeoPoint is not null)
+            if (todoItemResponse.GeoPoint is null)
+                return todoItemResponse;
+
+            string recordKey = $"Address_{todoItemResponse.GeoPoint.Latitude}_{todoItemResponse.GeoPoint.Longitude}";
+            string address = await cache.GetRecordAsync<string>(recordKey);
+
+            if (address is null)
             {
-                string recordKey = $"Address_{todoItemResponse.GeoPoint.Latitude}_{todoItemResponse.GeoPoint.Longitude}";
-                string address = await cache.GetRecordAsync<string>(recordKey);
-
-                if (address is null)
-                {
-                    address = await geocodingService.GetAddressAsync(todoItemResponse.GeoPoint.Latitude, todoItemResponse.GeoPoint.Longitude);
-                    await cache.SetRecordAsync(recordKey, address, TimeSpan.FromDays(3));
-                }
-
-                return todoItemResponse with { Address = address };
+                address = await geocodingService.GetAddressAsync(todoItemResponse.GeoPoint.Latitude, todoItemResponse.GeoPoint.Longitude);
+                await cache.SetRecordAsync(recordKey, address, TimeSpan.FromDays(3));
             }
 
-            return todoItemResponse;
+            return todoItemResponse with { Address = address };
         }
     }
 }

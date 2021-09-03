@@ -26,14 +26,14 @@ namespace Core.Tests.Handlers.TodoItems
     {
         private readonly GetTodoItemsByUserIdQueryHandler getTodoItemsHandler;
 
-        private readonly Mock<ICreateWithAddressService> addressServiceMock;
+        private readonly Mock<IAddressService> addressServiceMock;
         private readonly Mock<IFileSystem> fileSystemMock;
 
         private readonly string imagePath;
 
         public GetTodoItemsByUserQueryHandlerTests()
         {
-            addressServiceMock = new Mock<ICreateWithAddressService>();
+            addressServiceMock = new Mock<IAddressService>();
             fileSystemMock = new Mock<IFileSystem>();
 
             getTodoItemsHandler = new GetTodoItemsByUserIdQueryHandler(UnitOfWorkMock.Object, Mapper,
