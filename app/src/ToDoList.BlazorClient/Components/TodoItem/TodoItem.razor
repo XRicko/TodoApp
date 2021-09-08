@@ -6,7 +6,7 @@
                   event.stopPropagation();">
     @if (todoItemModel.CategoryId.HasValue)
     {
-        <div class="category d-flex justify-content-center align-items-center text-center">
+         <div class="category d-flex justify-content-center align-items-center text-center">
             <span>@todoItemModel.CategoryName</span>
 
             <button class="reset-btn ml-2"
@@ -43,25 +43,9 @@
                           OnValidSubmit="Submit" />
         </div>
 
-        <div class="dropdown ml-auto">
-            <button id="dropdown-btn"
-                    class="status-btn"
-                    data-toggle="dropdown" 
-                    aria-haspopup="true"
-                    aria-expanded="false"
-                    @onclick="LoadStatuses">
-                @todoItemModel.StatusName
-            </button>
-
-            <div class="dropdown-menu dropdown-menu-right status-menu" aria-labelledby="dropdown-btn">
-                @foreach (var status in statuses.Where(x => x.Id != todoItemModel.StatusId))
-                {
-                    <button class="dropdown-item status-item @StatusModel.GetBackgroundColor(status.Name)" 
-                            @onclick="() => UpdateStatus(status)">
-                        @status.Name
-                    </button>
-                }
-            </div>
+        <div class="ml-auto">
+            <StatusSelector StatusName="@todoItemModel.StatusName" 
+                            OnStatusChanged="@UpdateStatus"/>
         </div>
     </div>
 
@@ -125,7 +109,7 @@
                 {
                     <div class="category-select-new">
                         <select id="category-selector-@todoItemModel.Id">
-                            @foreach (var category in categories.Where(x => x.Id != todoItemModel.CategoryId))
+                            @foreach (var category in categories)
                             {
                                 <option value="@category.Id">@category.Name</option>
                             }
@@ -155,7 +139,8 @@
 
             <label for="image-@todoItemModel.Id"
                    class="secondary-custom-btn"
-                   title="@Localizer["Image"]">
+                   title="@Localizer["Image"]"
+                   tabindex="0">
                 <i class="oi oi-image"></i>
             </label>
             <InputFile OnChange="@ChangeImage"

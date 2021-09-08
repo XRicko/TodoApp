@@ -1,6 +1,8 @@
 ﻿@inject IStringLocalizer<General> Localizer
 
-<div class="d-flex justify-content-end mb-2">
+<div class="d-flex align-items-center justify-content-between mb-2">
+	<Filter />
+
 	<button class="border-0 btn btn-outline-primary" 
 			title="@Localizer["AddChecklist"]"
 			@onclick="Add">

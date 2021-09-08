@@ -1,4 +1,6 @@
-﻿.card-body {
+﻿@import '../../Shared SCSS/main.scss';
+
+.card-body {
     padding: 20px 10px 15px 15px;
 }
 
@@ -15,22 +17,10 @@
 }
 
 .scrollable {
+    @include custom-scrollbar;
     max-height: 600px;
     padding: 5px;
     overflow: auto;
-
-    &::-webkit-scrollbar {
-        width: 4px;
-
-        &-thumb {
-            background: #A9A9A9;
-            border-radius: .25rem;
-
-            &:hover {
-                background: #808080;
-            }
-        }
-    }
 }
 
 .drop-area {

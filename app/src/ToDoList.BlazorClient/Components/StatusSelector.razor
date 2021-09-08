@@ -1,0 +1,34 @@
+﻿@using ToDoList.SharedClientLibrary
+
+@inject IApiInvoker ApiInvoker
+
+<div class="dropdown">
+    <button id="dropdown-btn"
+            class="custom-dropdown-btn @StatusModel.GetBackgroundColor(StatusName)"
+            data-toggle="dropdown" 
+            aria-haspopup="true"
+            aria-expanded="false">
+        @StatusName
+    </button>
+
+    <div class="dropdown-menu dropdown-menu-right custom-dropdown-menu" aria-labelledby="dropdown-btn">
+        @foreach (var status in statuses.Where(x => x.Name != StatusName))
+        {
+            <button class="dropdown-item custom-dropdown-item @StatusModel.GetBackgroundColor(status.Name)" 
+                    @onclick="() => OnStatusChanged.InvokeAsync(status)">
+                @status.Name
+            </button>
+        }
+    </div>
+</div>
+
+@code {
+    private IEnumerable<StatusModel> statuses = Array.Empty<StatusModel>();
+
+    [Parameter]
+    public string StatusName { get; set; }
+    [Parameter]
+    public EventCallback<StatusModel> OnStatusChanged { get; set; }
+
+    protected override async Task OnInitializedAsync() => statuses = await ApiInvoker.GetItemsAsync<StatusModel>(ApiEndpoints.Statuses);
+}

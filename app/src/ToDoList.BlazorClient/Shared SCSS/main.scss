@@ -1,0 +1,145 @@
+﻿@function rgba-white($alpha) {
+    @return rgba(255, 255, 255, $alpha);
+}
+
+@function rgba-black($alpha) {
+    @return rgba(0, 0, 0, $alpha);
+}
+
+$secondary-color: rgba-white(0.4);
+
+@mixin standart-hover-transition($property) {
+    transition: $property .1s ease-in;
+
+    &:hover {
+        transition: $property .15s ease-out;
+    }
+}
+
+@mixin standart-item {
+    font-size: 0.8rem;
+    font-weight: 700;
+    border: 1px solid transparent;
+    border-radius: .25rem;
+    @include standart-hover-transition(border-color);
+
+    &:hover {
+        @include border-on-hover;
+    }
+}
+
+@mixin border-on-hover {
+    border: 1px solid rgba-white(0.6);
+}
+
+@mixin reset-btn-opacity-on-focus {
+    .reset-btn:focus-visible, &:hover .reset-btn {
+        transition: all .15s ease-out;
+        opacity: 1;
+    }
+}
+
+@mixin custom-scrollbar {
+    &::-webkit-scrollbar {
+        width: 4px;
+
+        &-thumb {
+            background: #A9A9A9;
+            border-radius: .25rem;
+
+            &:hover {
+                background: #808080;
+            }
+        }
+    }
+}
+
+.custom-btn {
+    cursor: pointer;
+    padding: 0;
+    outline: none;
+    @include standart-hover-transition(color);
+
+    &:focus-visible {
+        outline: revert;
+    }
+}
+
+.secondary-custom-btn {
+    @extend .custom-btn;
+    color: $secondary-color;
+    font-size: 0.7rem;
+    border: none;
+    background: none;
+
+    &:hover {
+        color: rgba-white(0.7);
+    }
+}
+
+.reset-btn {
+    @extend .secondary-custom-btn;
+    background: none;
+    opacity: 0;
+    transition: all .1s ease-in;
+}
+
+.standart-resettable {
+    @include standart-item;
+    @include reset-btn-opacity-on-focus;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 5px 10px;
+}
+
+.custom-dropdown-menu {
+    background: transparent;
+    border: none;
+    transition: max-height 0.3s ease-in, opacity 0.2s 0.1s ease-in, visibility 0s 0.3s ease-in;
+    max-height: 0;
+    display: block;
+    overflow: hidden;
+    opacity: 0;
+    visibility: hidden;
+}
+
+.dropdown.show .custom-dropdown-menu {
+    transition: max-height 0.3s ease-out, opacity 0.2s ease-out, visibility 0s ease-out;
+    opacity: 1;
+    visibility: visible;
+}
+
+.custom-dropdown-items {
+    padding: 1px 10px;
+    margin-left: auto;
+    font-size: 0.9rem;
+}
+
+.custom-dropdown-btn {
+    @extend .custom-btn;
+    @extend .custom-dropdown-items;
+    @include standart-hover-transition(border-color);
+}
+
+.custom-dropdown-item {
+    @extend .custom-dropdown-items;
+    @include standart-hover-transition(all);
+    max-width: fit-content;
+    color: #fff;
+    border: 1px solid rgba-black(0.2);
+    outline: none;
+
+    &:focus-visible {
+        outline: revert;
+    }
+
+    &:hover, &:focus {
+        background: #fff;
+        color: #000;
+    }
+
+    &:not(:first-child) {
+        margin-top: 10px;
+    }
+}

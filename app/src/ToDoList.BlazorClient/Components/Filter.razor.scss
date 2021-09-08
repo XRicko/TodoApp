@@ -1,0 +1,51 @@
+﻿@import '../Shared SCSS/main.scss';
+
+.filter {
+    @include reset-btn-opacity-on-focus;
+    display: flex;
+    align-items: center;
+
+    &:not(:last-child) {
+        margin-right: 15px;
+    }
+}
+
+.category-menu {
+    @extend .custom-dropdown-menu;
+}
+
+.dropdown.show .category-menu {
+    @include custom-scrollbar;
+    max-height: 300px;
+    overflow: auto;
+}
+
+.category-filter {
+    .custom-dropdown-items {
+        border-radius: .25rem;
+    }
+
+    .custom-dropdown-btn {
+        color: #fff;
+    }
+}
+
+.bg-category {
+    background-color: #0275d8;
+}
+
+::deep .custom-dropdown-btn {
+    border: 1px solid rgba-black(0.2);
+
+    &:hover {
+        border-color: rgba-black(0.5);
+    }
+}
+
+.reset-btn {
+    color: rgba-black(0.4);
+
+    &:hover {
+        color: rgba-black(0.7);
+    }
+}

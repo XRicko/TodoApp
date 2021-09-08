@@ -12,7 +12,6 @@ namespace ToDoList.BlazorClient.Components
     public partial class EditNameForm<TItem> where TItem : BaseModel
     {
         private string originalName;
-        private bool inFocus;
 
         private EditContext editContext;
 
@@ -33,7 +32,6 @@ namespace ToDoList.BlazorClient.Components
 
         protected override void OnInitialized()
         {
-            inFocus = false;
             originalName = Item.Name;
 
             editContext = new EditContext(Item);
@@ -44,14 +42,9 @@ namespace ToDoList.BlazorClient.Components
         private async Task HandleSubmit()
         {
             if (editContext.Validate())
-            {
                 await Submit();
-            }
             else
-            {
                 Reset();
-                Unfocus();
-            }
         }
 
         private async Task Submit()
@@ -61,14 +54,9 @@ namespace ToDoList.BlazorClient.Components
                 await OnValidSubmit.InvokeAsync();
                 originalName = Item.Name;
             }
-
-            Unfocus();
         }
 
         private void Reset() => Item.Name = originalName;
-
-        private void Focus() => inFocus = true;
-        private void Unfocus() => inFocus = false;
 
         private async Task FocusInput(BaseModel item) =>
             await JSRuntime.InvokeVoidAsync("focusInput", GetInputId(item)); // Change in .Net 6

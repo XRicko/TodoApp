@@ -1,0 +1,80 @@
+﻿@using ToDoList.BlazorClient.Services
+@using ToDoList.SharedClientLibrary
+
+@inject IStringLocalizer<General> Localizer
+@inject IApiInvoker ApiInvoker
+@inject Notifier Notifier
+
+<div class="d-flex">
+    <div class="filter">
+        <StatusSelector StatusName="@(string.IsNullOrWhiteSpace(statusName) ? @Localizer["Status"] : statusName)"
+                        OnStatusChanged="UpdateStatus"/>
+
+        <button class="reset-btn ml-2"
+                title="@Localizer["Reset"]"
+                @onclick="ResetStatus">
+                <i class="oi oi-x"></i>
+        </button>
+    </div>
+
+    <div class="filter category-filter">
+        <div class="dropdown">
+            <button id="dropdown-btn"
+                    class="custom-dropdown-btn bg-category"
+                    data-toggle="dropdown" 
+                    aria-haspopup="true"
+                    aria-expanded="false">
+                #@(string.IsNullOrWhiteSpace(categoryName) ? @Localizer["Category"] : categoryName)
+            </button>
+
+            <div class="dropdown-menu dropdown-menu-right category-menu" aria-labelledby="dropdown-btn">
+                @foreach (var category in categories.Where(x => x.Name != categoryName))
+                {
+                    <button class="dropdown-item custom-dropdown-item bg-category" 
+                            @onclick="() => UpdateCategory(category.Name)">
+                        #@category.Name
+                    </button>
+                }
+            </div>
+        </div>
+
+        <button class="reset-btn ml-2"
+                title="@Localizer["Reset"]"
+                @onclick="ResetCategory">
+                <i class="oi oi-x"></i>
+        </button>
+    </div>
+</div>
+
+@code {
+    private string statusName = "";
+    private string categoryName = "";
+
+    private IEnumerable<CategoryModel> categories = Array.Empty<CategoryModel>();
+
+    private async Task ResetStatus()
+    {
+        statusName = "";
+        await Notifier.OnFilterChosen("", categoryName);
+    }
+
+    private async Task ResetCategory()
+    {
+        categoryName = "";
+        await Notifier.OnFilterChosen(statusName, "");
+    }
+
+    protected override async Task OnInitializedAsync() => categories = await ApiInvoker.GetItemsAsync<CategoryModel>(ApiEndpoints.Categories);
+
+    private async Task UpdateStatus(StatusModel status)
+    {
+        statusName = status.Name;
+        await Notifier.OnFilterChosen(statusName, categoryName);
+    }
+
+    private async Task UpdateCategory(string name)
+    {
+        categoryName = name;
+        await Notifier.OnFilterChosen(statusName, categoryName);
+    }
+}

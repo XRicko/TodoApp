@@ -26,7 +26,6 @@ namespace ToDoList.BlazorClient.Components.TodoItem
         private TodoItemModel todoItemModel;
 
         private IEnumerable<CategoryModel> categories = Array.Empty<CategoryModel>();
-        private IEnumerable<StatusModel> statuses = Array.Empty<StatusModel>();
 
         private bool? Checked => todoItemModel.StatusName?.Equals("Done");
 
@@ -130,8 +129,6 @@ namespace ToDoList.BlazorClient.Components.TodoItem
 
             await UpdateStatus(statusModel);
         }
-
-        private async Task LoadStatuses() => statuses = await ApiInvoker.GetItemsAsync<StatusModel>(ApiEndpoints.Statuses);
 
         private async Task UpdateStatus(StatusModel status)
         {

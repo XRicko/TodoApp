@@ -58,6 +58,7 @@ namespace ToDoList.BlazorClient.Components.Checklist
 
             await LoadTodoItems();
             Notifier.ChecklistChanged += OnTodoItemsChanged;
+            Notifier.FilterChosen += OnFilterChosen;
         }
 
         protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -79,18 +80,6 @@ namespace ToDoList.BlazorClient.Components.Checklist
             }
             if (checklistModel.Id > 0)
                 await ApiInvoker.PutItemAsync(ApiEndpoints.Checklists, checklistModel);
-        }
-
-        private async Task OnTodoItemsChanged(int checklistId)
-        {
-            await InvokeAsync(async () =>
-            {
-                if (checklistModel.Id == checklistId)
-                {
-                    await LoadTodoItems();
-                    StateHasChanged();
-                }
-            });
         }
 
         private void AddTodoItem()
@@ -124,7 +113,7 @@ namespace ToDoList.BlazorClient.Components.Checklist
             if (dragCounter == 0)
             {
                 cardDropClass = "";
-                cardDropClass = overlayClass = "";
+                overlayClass = "";
             }
         }
 
@@ -149,5 +138,32 @@ namespace ToDoList.BlazorClient.Components.Checklist
             todoItemModels = (await ApiInvoker.GetItemsAsync<TodoItemModel>($"{ApiEndpoints.TodoItemsByChecklistId}/{checklistModel.Id}")).ToList();
 
         private void Collapse() => collapsed = !collapsed;
+
+        private async Task OnTodoItemsChanged(int checklistId)
+        {
+            await InvokeAsync(async () =>
+            {
+                if (checklistModel.Id == checklistId)
+                {
+                    await LoadTodoItems();
+                    StateHasChanged();
+                }
+            });
+        }
+
+        private async Task OnFilterChosen(string statusName, string categoryName)
+        {
+            await LoadTodoItems();
+            IEnumerable<TodoItemModel> filtered = todoItemModels;
+
+            if (!string.IsNullOrWhiteSpace(statusName))
+                filtered = filtered.Where(x => x.StatusName == statusName);
+            if (!string.IsNullOrWhiteSpace(categoryName))
+                filtered = filtered.Where(x => x.CategoryName == categoryName);
+
+            todoItemModels = filtered.ToList();
+
+            StateHasChanged();
+        }
     }
 }

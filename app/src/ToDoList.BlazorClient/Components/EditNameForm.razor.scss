@@ -15,6 +15,16 @@
         border-color: #80bdff;
         box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
         transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+
+        button {
+            visibility: visible;
+            transition: all .15s ease-out;
+        }
+    }
+
+    button {
+        visibility: hidden;
+        transition: all .1s ease-in;
     }
 }
 

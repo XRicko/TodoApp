@@ -1,68 +1,7 @@
-﻿@function rgba-white($alpha) {
-    @return rgba(255, 255, 255, $alpha);
-}
-
-$secondary-color: rgba-white(0.4);
-
-@mixin standart-item {
-    font-size: 0.8rem;
-    font-weight: 700;
-    border: 1px solid transparent;
-    border-radius: .25rem;
-    @include standart-hover-transition(border-color);
-
-    &:hover {
-        @include border-on-hover;
-    }
-}
-
-@mixin standart-hover-transition($property) {
-    transition: $property .1s ease-in;
-
-    &:hover {
-        transition: $property .15s ease-out;
-    }
-}
-
-@mixin border-on-hover {
-    border: 1px solid rgba-white(0.6);
-}
-
-@mixin reset-btn-opacity-on-parent-hover {
-    &:hover .reset-btn {
-        transition: all .15s ease-out;
-        opacity: 1;
-    }
-}
-
-@mixin custom-btn($color, $hover-color: null) {
-    all: unset;
-    cursor: pointer;
-    color: $color;
-    @include standart-hover-transition(color);
-
-    &:hover {
-        color: $hover-color;
-    }
-
-    &:focus-visible {
-        outline: revert;
-    }
-}
+﻿@import '../../Shared SCSS/main.scss';
 
 .todo-item > *:not(:last-child) {
     margin-bottom: 5px;
-}
-
-.secondary-custom-btn {
-    @include custom-btn($secondary-color, rgba-white(0.7));
-    font-size: 0.7rem;
-}
-
-.reset-btn {
-    @extend .secondary-custom-btn;
-    opacity: 0;
-    transition: all .1s ease-in;
 }
 
 .image-container {
@@ -75,7 +14,7 @@ $secondary-color: rgba-white(0.4);
         width: 100%;
     }
 
-    @include reset-btn-opacity-on-parent-hover;
+    @include reset-btn-opacity-on-focus;
 
     .reset-image-btn {
         @extend .reset-btn;
@@ -83,7 +22,7 @@ $secondary-color: rgba-white(0.4);
         top: 0;
         right: 0;
         padding: 4px;
-        background: rgba(0, 0, 0, 0.7);
+        background: rgba-black(0.7);
         border-bottom-left-radius: .25rem;
     }
 }
@@ -112,81 +51,28 @@ $secondary-color: rgba-white(0.4);
     }
 }
 
-@mixin status {
-    border-radius: 1rem;
-    padding: 1px 10px;
-    margin-left: auto;
-    font-size: 0.9rem;
-}
-
-.status-btn {
-    @include custom-btn(#fff);
-    @include standart-hover-transition(border-color);
-    @include status;
-    background: transparent;
-    border: 1px solid rgba-white(0.2);
-
-    &:hover {
-        border-color: rgba-white(0.5);
-    }
-}
-
-.status-menu {
-    background: transparent;
-    border: none;
-    transition: max-height 0.3s ease-in, opacity 0.2s 0.1s ease-in, visibility 0s 0.3s ease-in;
-    max-height: 0;
-    display: block;
-    overflow: hidden;
-    opacity: 0;
-    visibility: hidden;
-}
-
-.dropdown.show .status-menu {
-    transition: max-height 0.3s ease-out, opacity 0.2s ease-out, visibility 0s ease-out;
-    max-height: 100px;
-    opacity: 1;
-    visibility: visible;
-}
-
-.status-item {
-    @include status;
-    @include standart-hover-transition(all);
-    max-width: fit-content;
-    color: #fff;
-    border: 1px solid rgba(0, 0, 0, 0.2);
-    outline: none;
-
-    &:focus-visible {
-        outline: revert;
-    }
-
-    &:hover, &:focus {
-        background: #fff;
-        color: #000;
-    }
-
-    &:not(:first-child) {
-        margin-top: 10px;
-    }
-}
-
 .days-ago {
     color: $secondary-color;
 }
 
 .delete {
-    @include custom-btn(rgba-white(0.6), rgba-white(0.8));
+    @extend .custom-btn;
+    border: none;
+    background: none;
+    color: rgba-white(0.6);
     margin-left: auto;
+
+    &:hover {
+        color: rgba-white(0.8);
+    }
 }
 
-.standart-resettable {
-    @include standart-item;
-    @include reset-btn-opacity-on-parent-hover;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 5px 10px;
+::deep .custom-dropdown-btn {
+    border: 1px solid rgba-white(0.2);
+
+    &:hover {
+        border-color: rgba-white(0.5);
+    }
 }
 
 .category {

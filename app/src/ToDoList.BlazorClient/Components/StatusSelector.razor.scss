@@ -1,0 +1,9 @@
+﻿@import '../Shared SCSS/main.scss';
+
+.dropdown.show .custom-dropdown-menu {
+    max-height: 120px;
+}
+
+.custom-dropdown-items {
+    border-radius: 1rem;
+}

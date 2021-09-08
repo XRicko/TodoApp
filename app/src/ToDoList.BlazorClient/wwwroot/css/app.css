@@ -80,14 +80,17 @@ a, .btn-link {
 }
 
 .bg-planned {
+    color: #fff;
     background: #404040;
 }
 
 .bg-ongoing {
+    color: #fff;
     background: #a08329;
 }
 
 .bg-done {
+    color: #fff;
     background: #34712c;
 }
 

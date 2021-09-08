@@ -1,23 +1,19 @@
 ﻿@typeparam TItem
 
 <div>
-    <EditForm EditContext="@editContext">
-        <DataAnnotationsValidator />
-    
-        <CustomInputText @bind-Value="Item.Name"
-                         @onfocus="Focus"
-                         @onblur="HandleSubmit"
-                         id="@GetInputId(Item)"
-                         class="form-control" />
+	<EditForm EditContext="@editContext">
+		<DataAnnotationsValidator />
 
-        @if (inFocus)
-        {
-            <button type="button"
-                    class="border-0 btn @ResetButtonClass"
-                    onmousedown="event.preventDefault()"
-                    @onclick="Reset">
-                <i class="oi oi-x"></i>
-            </button>
-        }
-    </EditForm>
+		<CustomInputText @bind-Value="Item.Name"
+						 @onblur="HandleSubmit"
+						 id="@GetInputId(Item)"
+						 class="form-control" />
+
+		<button type="button"
+				class="border-0 btn @ResetButtonClass"
+				onmousedown="event.preventDefault()"
+				@onclick="Reset">
+			<i class="oi oi-x"></i>
+		</button>
+	</EditForm>
 </div>
