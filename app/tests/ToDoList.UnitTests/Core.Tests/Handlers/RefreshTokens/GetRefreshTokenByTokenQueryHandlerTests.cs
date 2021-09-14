@@ -5,8 +5,6 @@ using System.Threading.Tasks;
 
 using FluentAssertions;
 
-using MockQueryable.Moq;
-
 using ToDoList.Core.Entities;
 using ToDoList.Core.Mediator.Handlers.RefreshTokens;
 using ToDoList.Core.Mediator.Queries.RefreshTokens;
@@ -31,16 +29,15 @@ namespace Core.Tests.Handlers.RefreshTokens
             // Arrange
             RefreshTokenResponse expected = new(5, "neoWRWQUOfjoi}DW[", 1);
 
+
             var refreshTokens = new List<RefreshToken>
             {
                 new RefreshToken { Id = 12, Name = "fnuognweoijef84", UserId = 5 },
                 new RefreshToken { Id = expected.Id, Name = expected.Name, UserId = expected.UserId }
-            };
-
-            var refreshTokensMock = refreshTokens.AsQueryable().BuildMock();
+            }.AsQueryable();
 
             RepoMock.Setup(x => x.GetAll<RefreshToken>())
-                    .Returns(refreshTokensMock.Object)
+                    .Returns(refreshTokens)
                     .Verifiable();
 
             // Act

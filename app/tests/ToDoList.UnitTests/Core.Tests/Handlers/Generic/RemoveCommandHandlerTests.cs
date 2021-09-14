@@ -3,8 +3,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-using MockQueryable.Moq;
-
 using Moq;
 
 using ToDoList.Core.Entities;
@@ -22,7 +20,7 @@ namespace Core.Tests.Handlers.Generic
         private readonly int id;
         private readonly string name;
 
-        private readonly Mock<IQueryable<TodoItem>> todoItemsMock;
+        private readonly IQueryable<TodoItem> todoItems;
 
         public RemoveCommandHandlerTests() : base()
         {
@@ -31,11 +29,22 @@ namespace Core.Tests.Handlers.Generic
             id = 420;
             name = "Clean my room";
 
-            var todoItems = GetSampleTodoItems();
-            todoItemsMock = todoItems.AsQueryable().BuildMock();
+            todoItems = new List<TodoItem>
+            {
+                new TodoItem
+                {
+                    Id = id,
+                    Name = name
+                },
+                new TodoItem
+                {
+                    Id = 12,
+                    Name = "Something random"
+                }
+            }.AsQueryable();
 
             RepoMock.Setup(x => x.GetAll<TodoItem>())
-                    .Returns(todoItemsMock.Object)
+                    .Returns(todoItems)
                     .Verifiable();
         }
 
@@ -67,23 +76,6 @@ namespace Core.Tests.Handlers.Generic
             RepoMock.Verify(x => x.Remove(It.IsAny<TodoItem>()), Times.Never);
 
             UnitOfWorkMock.Verify(x => x.SaveAsync(), Times.Never);
-        }
-
-        private List<TodoItem> GetSampleTodoItems()
-        {
-            return new List<TodoItem>
-            {
-                new TodoItem
-                {
-                    Id = id,
-                    Name = name
-                },
-                new TodoItem
-                {
-                    Id = 12,
-                    Name = "Something random"
-                }
-            };
         }
     }
 }

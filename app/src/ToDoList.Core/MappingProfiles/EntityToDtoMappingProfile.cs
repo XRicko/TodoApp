@@ -59,14 +59,10 @@ namespace ToDoList.Core.MappingProfiles
                            opt => opt.MapFrom(src => src.Category.Name))
                 .ForMember(dest => dest.ChecklistName,
                            opt => opt.MapFrom(src => src.Checklist.Name))
-                .ForMember(dest => dest.ImageContent,
-                           opt =>
-                           {
-                               opt.Condition(x => x.Image?.Path is not null);
-                               opt.MapFrom(src => File.ReadAllBytes(src.Image.Path));
-                           })
                 .ForMember(dest => dest.ImageName,
                            opt => opt.MapFrom(src => src.Image.Name))
+                .ForMember(dest => dest.ImageContent,
+                           opt => opt.MapFrom(src => src.Image == null ? null : File.ReadAllBytes(src.Image.Path)))
                 .ForAllOtherMembers(opt => opt.Ignore());
 
             CreateMap<TodoItemCreateRequest, TodoItem>(MemberList.Source);

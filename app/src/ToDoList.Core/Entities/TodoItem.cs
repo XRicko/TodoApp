@@ -10,6 +10,7 @@ namespace ToDoList.Core.Entities
     {
         public DateTime StartDate { get; init; }
         public DateTime? DueDate { get; set; }
+
         public Point GeoPoint { get; set; }
 
         public int StatusId { get; set; }

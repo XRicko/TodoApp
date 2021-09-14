@@ -7,8 +7,6 @@ using System.Threading.Tasks;
 
 using FluentAssertions;
 
-using MockQueryable.Moq;
-
 using Moq;
 
 using ToDoList.Core.Entities;
@@ -48,8 +46,7 @@ namespace Core.Tests.Handlers.TodoItems
             // Arrange
             int userId = 12;
 
-            var todoItems = GetSampleTodoItems();
-            var todoItemsMock = todoItems.AsQueryable().BuildMock();
+            var todoItems = GetSampleTodoItems().AsQueryable();
 
             byte[] bytes = new byte[321];
             new Random().NextBytes(bytes);
@@ -64,7 +61,7 @@ namespace Core.Tests.Handlers.TodoItems
             var expected = GetWithAddress(responses);
 
             RepoMock.Setup(x => x.GetAll<TodoItem>())
-                    .Returns(todoItemsMock.Object)
+                    .Returns(todoItems)
                     .Verifiable();
 
 

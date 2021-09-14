@@ -5,8 +5,6 @@ using System.Threading.Tasks;
 
 using FluentAssertions;
 
-using MockQueryable.Moq;
-
 using Moq;
 
 using ToDoList.Core.Entities;
@@ -31,13 +29,22 @@ namespace Core.Tests.Handlers.Generic
         public async Task Handle_ReturnsListOfResponses()
         {
             // Arrange
-            var entities = GetSampleEntities();
-            var expected = GetSampleResponses();
+            var expected = new List<CategoryResponse>
+            {
+                new(0, "Important"),
+                new(0, "Unimportant"),
+                new(0, "For fun")
+            };
 
-            var entitiesMock = entities.AsQueryable().BuildMock();
+            var entities = new List<Category>
+            {
+                new() { Name = "Important"},
+                new() { Name = "Unimportant" },
+                new() { Name = "For fun" }
+            }.AsQueryable();
 
             RepoMock.Setup(x => x.GetAll<Category>())
-                    .Returns(entitiesMock.Object);
+                    .Returns(entities);
 
             // Act
             var actual = await getAllHandler.Handle(new GetAllQuery<Category, CategoryResponse>(), new CancellationToken());
@@ -45,26 +52,6 @@ namespace Core.Tests.Handlers.Generic
             // Assert
             actual.Should().Equal(expected);
             RepoMock.Verify(x => x.GetAll<Category>(), Times.Once);
-        }
-
-        private static IEnumerable<Category> GetSampleEntities()
-        {
-            return new List<Category>
-            {
-                new() { Name = "Important"},
-                new() { Name = "Unimportant" },
-                new() { Name = "For fun" }
-            };
-        }
-
-        private static IEnumerable<CategoryResponse> GetSampleResponses()
-        {
-            return new List<CategoryResponse>
-            {
-                new(0, "Important"),
-                new(0, "Unimportant"),
-                new(0, "For fun")
-            };
         }
     }
 }

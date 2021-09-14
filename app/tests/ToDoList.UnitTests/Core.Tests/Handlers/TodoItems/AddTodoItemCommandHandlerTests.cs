@@ -5,8 +5,6 @@ using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
 
-using MockQueryable.Moq;
-
 using Moq;
 
 using ToDoList.Core.Entities;
@@ -41,13 +39,11 @@ namespace Core.Tests.Handlers.TodoItems
         public async Task Handle_AddsTodoItemGivenNew()
         {
             // Arrange
-            var todoItems = new List<TodoItem> { new TodoItem { Id = 3256, Name = "Sommething", ChecklistId = 12, StatusId = 1 } };
             var newRequest = new TodoItemCreateRequest(name, checklistId, 1);
-
-            var todoItemsMock = todoItems.AsQueryable().BuildMock();
+            var todoItems = new List<TodoItem> { new TodoItem { Id = 3256, Name = "Sommething", ChecklistId = 12, StatusId = 1 } }.AsQueryable();
 
             RepoMock.Setup(x => x.GetAll<TodoItem>())
-                    .Returns(todoItemsMock.Object)
+                    .Returns(todoItems)
                     .Verifiable();
 
             // Act
@@ -67,11 +63,10 @@ namespace Core.Tests.Handlers.TodoItems
             var existingTodoItem = new TodoItem { Id = 3, Name = name, ChecklistId = checklistId, StatusId = 2 };
             var request = new TodoItemCreateRequest(name, checklistId, 2);
 
-            var todoItems = new List<TodoItem> { existingTodoItem };
-            var todoItemsMock = todoItems.AsQueryable().BuildMock();
+            var todoItems = new List<TodoItem> { existingTodoItem }.AsQueryable();
 
             RepoMock.Setup(x => x.GetAll<TodoItem>())
-                    .Returns(todoItemsMock.Object)
+                    .Returns(todoItems)
                     .Verifiable();
 
             // Act

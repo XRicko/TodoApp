@@ -5,10 +5,6 @@ using System.Threading.Tasks;
 
 using FluentAssertions;
 
-using MockQueryable.Moq;
-
-using Moq;
-
 using ToDoList.Core.Entities;
 using ToDoList.Core.Mediator.Handlers.Checklists;
 using ToDoList.Core.Mediator.Queries.Checklists;
@@ -25,7 +21,7 @@ namespace Core.Tests.Handlers.Checklists
         private readonly string name;
         private readonly int userId;
 
-        private readonly Mock<IQueryable<Checklist>> checklistsMock;
+        private readonly IQueryable<Checklist> checklists;
 
         public GetChecklistByNameAndUserIdQueryHandlerTests()
         {
@@ -34,11 +30,10 @@ namespace Core.Tests.Handlers.Checklists
             name = "Some name";
             userId = 13;
 
-            var checklists = GetSampleChecklists();
-            checklistsMock = checklists.AsQueryable().BuildMock();
+            checklists = GetSampleChecklists().AsQueryable();
 
             RepoMock.Setup(x => x.GetAll<Checklist>())
-                    .Returns(checklistsMock.Object)
+                    .Returns(checklists)
                     .Verifiable();
         }
 

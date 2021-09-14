@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 
 using AutoMapper;
+using AutoMapper.QueryableExtensions;
 
 using MediatR;
 
@@ -25,10 +26,12 @@ namespace ToDoList.Core.Mediator.Handlers.Checklists
         {
             _ = request ?? throw new ArgumentNullException(nameof(request));
 
-            var entity = UnitOfWork.Repository.GetAll<Checklist>()
-                                              .SingleOrDefault(x => x.Name == request.Name && x.UserId == request.UserId);
+            var checklistResponse = UnitOfWork.Repository.GetAll<Checklist>()
+                                                         .Where(x => x.Name == request.Name && x.UserId == request.UserId)
+                                                         .ProjectTo<ChecklistResponse>(Mapper.ConfigurationProvider)
+                                                         .SingleOrDefault();
 
-            return Task.FromResult(Mapper.Map<ChecklistResponse>(entity));
+            return Task.FromResult(checklistResponse);
         }
     }
 }

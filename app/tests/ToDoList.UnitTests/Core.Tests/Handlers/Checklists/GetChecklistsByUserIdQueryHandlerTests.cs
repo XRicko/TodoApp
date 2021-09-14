@@ -5,8 +5,6 @@ using System.Threading.Tasks;
 
 using FluentAssertions;
 
-using MockQueryable.Moq;
-
 using ToDoList.Core.Entities;
 using ToDoList.Core.Mediator.Handlers.Checklists;
 using ToDoList.Core.Mediator.Queries.Checklists;
@@ -33,41 +31,29 @@ namespace Core.Tests.Handlers.Checklists
         public async Task Handle_ReturnsListOfChecklistResponsesByUser()
         {
             // Arrange
-            var expected = GetSampleChecklistResponsesByUser();
-            var checklists = GetSampleChecklists();
-
-            var checklistsMock = checklists.AsQueryable().BuildMock();
-
-            RepoMock.Setup(x => x.GetAll<Checklist>())
-                    .Returns(checklistsMock.Object)
-                    .Verifiable();
-
-            // Act
-            var actual = await getChecklistsByUserIdHandler.Handle(new GetChecklistsByUserIdQuery(desirableUserId),
-                                                                   new CancellationToken());
-
-            // Assert
-            actual.Should().Equal(expected);
-            RepoMock.Verify();
-        }
-
-        private IEnumerable<Checklist> GetSampleChecklists()
-        {
-            return new List<Checklist>
-            {
-                new Checklist { Id = 1, Name= "Chores", UserId = 31 },
-                new Checklist { Id = 3, Name= "Work", UserId = desirableUserId },
-                new Checklist { Id = 5, Name= "Birthday", UserId = desirableUserId },
-            };
-        }
-
-        private IEnumerable<ChecklistResponse> GetSampleChecklistResponsesByUser()
-        {
-            return new List<ChecklistResponse>
+            var expected = new List<ChecklistResponse>
             {
                 new(3, "Work", desirableUserId),
                 new(5, "Birthday", desirableUserId)
             };
+
+            var checklists = new List<Checklist>
+            {
+                new Checklist { Id = 1, Name= "Chores", UserId = 31 },
+                new Checklist { Id = 3, Name= "Work", UserId = desirableUserId },
+                new Checklist { Id = 5, Name= "Birthday", UserId = desirableUserId },
+            }.AsQueryable();
+
+            RepoMock.Setup(x => x.GetAll<Checklist>())
+                    .Returns(checklists)
+                    .Verifiable();
+
+            // Act
+            var actual = await getChecklistsByUserIdHandler.Handle(new GetChecklistsByUserIdQuery(desirableUserId), new CancellationToken());
+
+            // Assert
+            actual.Should().Equal(expected);
+            RepoMock.Verify();
         }
     }
 }

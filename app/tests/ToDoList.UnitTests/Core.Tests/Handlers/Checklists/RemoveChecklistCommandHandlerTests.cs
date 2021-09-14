@@ -3,8 +3,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-using MockQueryable.Moq;
-
 using Moq;
 
 using ToDoList.Core.Entities;
@@ -22,8 +20,7 @@ namespace Core.Tests.Handlers.Checklists
         private readonly int id;
         private readonly string defaultName;
 
-        private readonly List<Checklist> checklists;
-        private readonly Mock<IQueryable<Checklist>> checklistsMock;
+        private readonly IQueryable<Checklist> checklists;
 
         public RemoveChecklistCommandHandlerTests() : base()
         {
@@ -32,8 +29,7 @@ namespace Core.Tests.Handlers.Checklists
             id = 9;
             defaultName = "Untitled";
 
-            checklists = GetSampleChecklists();
-            checklistsMock = checklists.AsQueryable().BuildMock();
+            checklists = GetSampleChecklists().AsQueryable();
         }
 
         [Fact]
@@ -43,7 +39,7 @@ namespace Core.Tests.Handlers.Checklists
             var checklistToDelete = checklists.SingleOrDefault(x => x.Id == id);
 
             RepoMock.Setup(x => x.GetAll<Checklist>())
-                    .Returns(checklistsMock.Object)
+                    .Returns(checklists)
                     .Verifiable();
 
             // Act
@@ -65,7 +61,7 @@ namespace Core.Tests.Handlers.Checklists
             int invalidId = 13456;
 
             RepoMock.Setup(x => x.GetAll<Checklist>())
-                    .Returns(checklistsMock.Object)
+                    .Returns(checklists)
                     .Verifiable();
 
             // Act
@@ -87,7 +83,7 @@ namespace Core.Tests.Handlers.Checklists
             var defaultChecklist = checklists.SingleOrDefault(x => x.Name == defaultName);
 
             RepoMock.Setup(x => x.GetAll<Checklist>())
-                    .Returns(checklistsMock.Object);
+                    .Returns(checklists);
 
             // Act
             await removeChecklistHandler.Handle(new RemoveCommand<Checklist>(defaultId), new CancellationToken());

@@ -7,8 +7,6 @@ using System.Threading.Tasks;
 
 using FluentAssertions;
 
-using MockQueryable.Moq;
-
 using Moq;
 
 using ToDoList.Core.Entities;
@@ -45,6 +43,7 @@ namespace Core.Tests.Handlers.TodoItems
             int id = 21;
             string imagePath = "c:\\";
 
+
             var todoItems = new List<TodoItem>
             {
                 new TodoItem
@@ -67,9 +66,7 @@ namespace Core.Tests.Handlers.TodoItems
                     Category = new Category(),
                     Image = new Image()
                 }
-            };
-
-            var todoItemsMock = todoItems.AsQueryable().BuildMock();
+            }.AsQueryable();
 
             byte[] bytes = new byte[321];
             new Random().NextBytes(bytes);
@@ -85,7 +82,7 @@ namespace Core.Tests.Handlers.TodoItems
             };
 
             RepoMock.Setup(x => x.GetAll<TodoItem>())
-                    .Returns(todoItemsMock.Object)
+                    .Returns(todoItems)
                     .Verifiable();
 
             fileSystemMock.Setup(x => x.File.ReadAllBytes(imagePath))

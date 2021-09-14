@@ -16,6 +16,8 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 
+using MongoDbCache;
+
 using ToDoList.Core.Extensions;
 using ToDoList.Core.Validators;
 using ToDoList.Extensions;
@@ -69,8 +71,16 @@ namespace ToDoList.WebApi
             //    options.InstanceName = "TodoListApp_";
             //});
 
-            // Uncomment when not using Redis
-            services.AddDistributedMemoryCache();
+            // Uncomment when using memory cache
+            //services.AddDistributedMemoryCache();
+
+            // Uncomment when using MongoDB
+            services.AddMongoDbCache(options =>
+            {
+                options.MongoClientSettings = new MongoDB.Driver.MongoClientSettings();
+                options.DatabaseName = "TodoListApp_";
+                options.CollectionName = "Cache";
+            });
 
             services.AddControllers()
                     .AddFluentValidation(config =>

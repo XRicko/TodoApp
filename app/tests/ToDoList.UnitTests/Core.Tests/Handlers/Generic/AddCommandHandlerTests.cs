@@ -3,8 +3,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-using MockQueryable.Moq;
-
 using Moq;
 
 using ToDoList.Core.Entities;
@@ -21,7 +19,7 @@ namespace Core.Tests.Handlers.Generic
         private readonly AddCategoryCommandHandler addCommandHandler;
 
         private readonly string name;
-        private readonly Mock<IQueryable<Category>> categoriesMock;
+        private readonly IQueryable<Category> categories;
 
         public AddCommandHandlerTests() : base()
         {
@@ -29,8 +27,11 @@ namespace Core.Tests.Handlers.Generic
 
             name = "Misc";
 
-            var categories = GetSampleCategories();
-            categoriesMock = categories.AsQueryable().BuildMock();
+            categories = new List<Category>
+            {
+                new Category { Id = 13, Name = name },
+                new Category { Id = 63, Name = "Inro"}
+            }.AsQueryable();
         }
 
         [Fact]
@@ -40,7 +41,7 @@ namespace Core.Tests.Handlers.Generic
             var request = new CategoryCreateRequest("New category");
 
             RepoMock.Setup(x => x.GetAll<Category>())
-                    .Returns(categoriesMock.Object)
+                    .Returns(categories)
                     .Verifiable();
 
             // Act
@@ -60,7 +61,7 @@ namespace Core.Tests.Handlers.Generic
             var request = new CategoryCreateRequest(name);
 
             RepoMock.Setup(x => x.GetAll<Category>())
-                    .Returns(categoriesMock.Object)
+                    .Returns(categories)
                     .Verifiable();
 
             // Act
@@ -71,15 +72,6 @@ namespace Core.Tests.Handlers.Generic
             RepoMock.Verify(x => x.Add(It.Is<Category>(x => x.Name == request.Name)), Times.Never);
 
             UnitOfWorkMock.Verify(x => x.SaveAsync(), Times.Never);
-        }
-
-        private List<Category> GetSampleCategories()
-        {
-            return new List<Category>
-            {
-                new Category { Id = 13, Name = name },
-                new Category { Id = 63, Name = "Inro"}
-            };
         }
     }
 }

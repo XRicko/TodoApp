@@ -7,8 +7,6 @@ using System.Threading.Tasks;
 
 using FluentAssertions;
 
-using MockQueryable.Moq;
-
 using Moq;
 
 using ToDoList.Core.Entities;
@@ -42,8 +40,7 @@ namespace Core.Tests.Handlers.TodoItems
         public async Task Handle_ReturnsTodoItems()
         {
             // Arrange
-            var todoItems = GetSampleTodoItems();
-            var todoItemsMock = todoItems.AsQueryable().BuildMock();
+            var todoItems = GetSampleTodoItems().AsQueryable();
 
             var expected = new List<TodoItemResponse>
             {
@@ -51,7 +48,7 @@ namespace Core.Tests.Handlers.TodoItems
             };
 
             RepoMock.Setup(x => x.GetAll<TodoItem>())
-                    .Returns(todoItemsMock.Object)
+                    .Returns(todoItems)
                     .Verifiable();
 
             addressServiceMock.Setup(x => x.GetItemsWithAddressAsync(It.IsAny<IEnumerable<TodoItemResponse>>()))

@@ -5,8 +5,6 @@ using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
 
-using MockQueryable.Moq;
-
 using Moq;
 
 using ToDoList.Core.Entities;
@@ -47,11 +45,10 @@ namespace Core.Tests.Handlers.Checklists
         public async Task Handle_UpdatesChecklistAndAddsDefaultChecklistGivenUserWithoutIt()
         {
             // Arrange
-            var checklists = new List<Checklist> { new Checklist { Id = 13, Name = "Chores", UserId = 134 } };
-            var checklistsMock = checklists.AsQueryable().BuildMock();
+            var checklists = new List<Checklist> { new Checklist { Id = 13, Name = "Chores", UserId = 134 } }.AsQueryable();
 
             RepoMock.Setup(x => x.GetAll<Checklist>())
-                    .Returns(checklistsMock.Object)
+                    .Returns(checklists)
                     .Verifiable();
 
             // Act
@@ -69,11 +66,10 @@ namespace Core.Tests.Handlers.Checklists
         public async Task Handle_UpdatesChecklistAndDoesntAddDefaultChecklistGivenUserWithIt()
         {
             // Arrange
-            var checklists = new List<Checklist> { new Checklist { Id = 3, Name = "Untitled", UserId = userId } };
-            var checklistsMock = checklists.AsQueryable().BuildMock();
+            var checklists = new List<Checklist> { new Checklist { Id = 3, Name = "Untitled", UserId = userId } }.AsQueryable();
 
             RepoMock.Setup(x => x.GetAll<Checklist>())
-                    .Returns(checklistsMock.Object)
+                    .Returns(checklists)
                     .Verifiable();
 
             // Act

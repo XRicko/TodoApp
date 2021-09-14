@@ -3,8 +3,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-using MockQueryable.Moq;
-
 using Moq;
 
 using ToDoList.Core.Entities;
@@ -38,10 +36,10 @@ namespace Core.Tests.Handlers.RefreshTokens
                 new RefreshToken { Id = 90, Name = "vnirvpWKDPEJF402f9j290fj", UserId = 789 }
             };
 
-            var refreshTokensMock = refreshTokens.AsQueryable().BuildMock();
+            var refreshTokensQueryable = refreshTokens.AsQueryable();
 
             RepoMock.Setup(x => x.GetAll<RefreshToken>())
-                    .Returns(refreshTokensMock.Object)
+                    .Returns(refreshTokensQueryable)
                     .Verifiable();
 
             // Act

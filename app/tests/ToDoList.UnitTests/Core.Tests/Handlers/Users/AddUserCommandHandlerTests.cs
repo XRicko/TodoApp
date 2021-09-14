@@ -5,8 +5,6 @@ using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
 
-using MockQueryable.Moq;
-
 using Moq;
 
 using ToDoList.Core.Entities;
@@ -44,13 +42,12 @@ namespace Core.Tests.Handlers.Users
         public async Task Handle_AddUserGivenNew()
         {
             // Arrange
-            var users = new List<User> { new User { Id = 341, Name = "root", Password = "$MYHASH$V1$1000$jeqnfoqeigjq" } };
             var newUser = new UserRequest(username, password);
 
-            var usersMock = users.AsQueryable().BuildMock();
+            var users = new List<User> { new User { Id = 341, Name = "root", Password = "$MYHASH$V1$1000$jeqnfoqeigjq" } }.AsQueryable();
 
             RepoMock.Setup(x => x.GetAll<User>())
-                    .Returns(usersMock.Object)
+                    .Returns(users)
                     .Verifiable();
 
             // Act
@@ -71,11 +68,10 @@ namespace Core.Tests.Handlers.Users
             var existingUser = new User { Id = 420, Name = username, Password = passwordHasher.Hash(password) };
             var request = new UserRequest(username, password);
 
-            var users = new List<User> { existingUser };
-            var usersMock = users.AsQueryable().BuildMock();
+            var users = new List<User> { existingUser }.AsQueryable();
 
             RepoMock.Setup(x => x.GetAll<User>())
-                    .Returns(usersMock.Object)
+                    .Returns(users)
                     .Verifiable();
 
             // Act
