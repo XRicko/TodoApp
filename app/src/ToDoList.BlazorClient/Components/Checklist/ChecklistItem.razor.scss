@@ -1,7 +1,17 @@
 ﻿@import '../../Shared SCSS/main.scss';
 
+.card {
+    border-color: var(--border-color);
+    background-color: transparent;
+}
+
+.card-header {
+    background: var(--header-background);
+}
+
 .card-body {
     padding: 20px 10px 15px 15px;
+    background: var(--card-background);
 }
 
 .nav-tabs {

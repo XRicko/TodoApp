@@ -44,7 +44,7 @@ $secondary-color: rgba-white(0.4);
         width: 4px;
 
         &-thumb {
-            background: #A9A9A9;
+            background: var(--scrollbar-color);
             border-radius: .25rem;
 
             &:hover {

@@ -5,13 +5,13 @@
 
 @inject IStringLocalizer<General> Localizer
 
-<div style="height: 500px; width: 100%;">
+<div style="height: 450px; width: 100%;">
 	<GoogleMap @ref="googleMap" Id="map" Height="100%" Options="@options" OnAfterInit="() => OnAfterInitAsync()" />
 </div>
 
 <div class="mt-3">
-    <button @onclick="Close" class="btn btn-primary">@Localizer["Submit"]</button>
-    <button @onclick="Cancel" class="btn btn-secondary">@Localizer["Cancel"]</button>
+    <button @onclick="Close" class="btn custom-primary-btn">@Localizer["Submit"]</button>
+    <button @onclick="Cancel" class="btn custom-secondary-outline-btn">@Localizer["Cancel"]</button>
 </div>
 
 @code {

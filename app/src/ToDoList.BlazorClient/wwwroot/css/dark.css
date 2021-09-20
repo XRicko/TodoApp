@@ -1,0 +1,28 @@
+﻿:root {
+    --color: rgba(255, 255, 255, .87);
+    --main-background: rgb(10, 10, 10);
+    --border-color: rgba(255, 255, 255, .1);
+    --header-background: rgb(28, 28, 30);
+    --dialog-background: rgb(44, 44, 46);
+    --sidebar-background: rgb(0, 0, 0);
+    --card-background: rgb(18, 18, 20);
+    --input-background: rgb(59, 59, 59);
+    --scrollbar-color: rgb(85,85,85);
+    --primary-btn-color: rgb(186, 222, 253);
+    --danger-btn-color: rgb(241, 158, 166);
+    --secondary-btn-color: rgb(210, 213, 216);
+    --hovered-btn-color: rgb(0, 0, 0);
+    --link-color: rgb(213 226 255);
+    --link-hover-color: rgb(228 236 255);
+    --name-input-border-color: rgba(255, 255, 255, 0.6);
+    --name-input-box-shadow: rgba(255, 255, 255, 0.3);
+    --select2-dropdown-background: rgba(0, 0, 0, 0.8);
+}
+
+img {
+    filter: brightness(.9) contrast(1.1);
+}
+
+.filter .reset-btn {
+    filter: invert(100%);
+}

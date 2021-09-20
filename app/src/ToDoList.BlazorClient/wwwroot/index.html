@@ -8,14 +8,28 @@
     <title>Todo List</title>
     <base href="/" />
 
+
+    <script type="module" src="https://unpkg.com/dark-mode-toggle"></script>
+    <script>
+        if (window.matchMedia('(prefers-color-scheme: dark)').media === 'not all') {
+            document.documentElement.style.display = 'none';
+            document.head.insertAdjacentHTML(
+                'beforeend',
+                '<link rel="stylesheet" href="/css/light.css" onload="document.documentElement.style.display = \'\'">',
+            );
+        }
+    </script>
+
+    <link rel="stylesheet" href="/css/dark.css" media="(prefers-color-scheme: dark)" />
+    <link rel="stylesheet" href="/css/light.css" media="(prefers-color-scheme: light)" />
     <link href="css/bootstrap/bootstrap.min.css" rel="stylesheet" />
     <link href="css/app.css" rel="stylesheet" />
     <link href="css/select2/select2.min.css" rel="stylesheet" />
     <link href="ToDoList.BlazorClient.styles.css" rel="stylesheet" />
     <link href="manifest.json" rel="manifest" />
     <link href="_content/Blazored.Modal/blazored-modal.css" rel="stylesheet" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css" 
-          integrity="sha512-mSYUmp1HYZDFaVKK//63EcZq4iFWFjxSL+Z3T/aCt4IO9Cejm03q3NKKYN6pFQzY0SBOr8h+eCIAZHPXcpZaNw==" 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css"
+          integrity="sha512-mSYUmp1HYZDFaVKK//63EcZq4iFWFjxSL+Z3T/aCt4IO9Cejm03q3NKKYN6pFQzY0SBOr8h+eCIAZHPXcpZaNw=="
           crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="apple-touch-icon" sizes="512x512" href="icon-512.png" />
 

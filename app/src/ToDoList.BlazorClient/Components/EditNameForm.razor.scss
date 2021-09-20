@@ -6,14 +6,13 @@
     margin-right: 5px;
     transition: border-color .1s ease-in;
 
-    &:hover {
-        border-color: #ced4da;
+    &:hover, &:focus-within {
+        border-color: var(--name-input-border-color);
         transition: border-color .15s ease-out;
     }
 
     &:focus-within {
-        border-color: #80bdff;
-        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+        box-shadow: 0 0 0 0.2rem var(--name-input-box-shadow);
         transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
 
         button {

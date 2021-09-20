@@ -38,10 +38,10 @@
         }
 
         input {
-            color: white;
+            color: #fff;
 
             &:focus {
-                color: #495057;
+                color: var(--color);
             }
         }
 
