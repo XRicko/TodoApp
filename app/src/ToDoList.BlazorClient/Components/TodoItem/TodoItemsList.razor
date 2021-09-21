@@ -1,7 +1,7 @@
 ﻿<Virtualize Items="@TodoItemModels" Context="todoItem">
-	<li class="list-group-item item @StatusModel.GetBackgroundColor(todoItem.StatusName)"
-		draggable="true"
-		@ondragstart="() => HandleDragStart(todoItem)">
+	<li class="list-group-item item @StatusModel.GetBackgroundColor(todoItem.StatusName)" 
+		id="draggable-@todoItem.Id"
+		@ondragend="HandleDragEnd">
 		<TodoItem @key="todoItem.Id" TodoItemModel="todoItem" />
 	</li>
 </Virtualize>
@@ -13,5 +13,5 @@
 	[Parameter]
 	public ICollection<TodoItemModel> TodoItemModels { get; set; } = Array.Empty<TodoItemModel>();
 
-	private void HandleDragStart(TodoItemModel todoItemModel) => Container.DraggedTodoItem = todoItemModel;
+	private void HandleDragEnd() => Container.DraggedTodoItem = null;
 }

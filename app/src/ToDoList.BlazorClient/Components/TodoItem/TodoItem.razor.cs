@@ -32,6 +32,9 @@ namespace ToDoList.BlazorClient.Components.TodoItem
         [CascadingParameter]
         private IModalService Modal { get; set; }
 
+        [CascadingParameter]
+        private TodoItemContainer Container { get; set; }
+
         [Inject]
         private IApiInvoker ApiInvoker { get; set; }
         [Inject]
@@ -52,8 +55,10 @@ namespace ToDoList.BlazorClient.Components.TodoItem
             return base.SetParametersAsync(parameters);
         }
 
-        protected override async Task OnInitializedAsync() =>
+        protected override async Task OnInitializedAsync()
+        {
             categories = await ApiInvoker.GetItemsAsync<CategoryModel>(ApiEndpoints.Categories);
+        }
 
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {
@@ -61,6 +66,8 @@ namespace ToDoList.BlazorClient.Components.TodoItem
 
             if (firstRender)
                 await Init("init");
+            else
+                await Init("initDragAndDrop");
         }
 
         [JSInvokable]
@@ -94,6 +101,9 @@ namespace ToDoList.BlazorClient.Components.TodoItem
                 StateHasChanged();
             }
         }
+
+        [JSInvokable]
+        public void HandleDragStart() => Container.DraggedTodoItem = todoItemModel;
 
         private async Task Submit()
         {

@@ -70,6 +70,7 @@
         function init(dotNetHelper, todoId) {
             initSelect(dotNetHelper, todoId);
             initDatepicker(dotNetHelper, todoId);
+            initDragAndDrop(dotNetHelper, todoId);
         }
 
         function initSelect(dotNetHelper, todoId) {
@@ -96,6 +97,28 @@
 
         function focusInput(id) {
             document.getElementById(id).focus();
+        }
+
+        function initDragAndDrop(dotNetHelper, todoId) {
+            var draggable = document.getElementById(`draggable-${todoId}`);
+            var handle = document.getElementById(`drag-handle-${todoId}`);
+
+            handle.onmousedown = function (e) {
+                e.target.parentNode.closest(`#draggable-${todoId}`).setAttribute('draggable', 'true');
+            };
+
+            handle.onmouseup = function (e) {
+                e.target.parentNode.closest(`#draggable-${todoId}`).setAttribute('draggable', 'false');
+            };
+
+            draggable.ondragstart = function (e) {
+                if (e.target.classList.contains('item'))
+                    dotNetHelper.invokeMethod('HandleDragStart');
+            };
+
+            draggable.ondragend = function (e) {
+                e.target.setAttribute('draggable', 'false');
+            };
         }
     </script>
 </body>

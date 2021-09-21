@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Web;
 
 using ToDoList.BlazorClient.Services;
 using ToDoList.SharedClientLibrary;
@@ -98,6 +99,9 @@ namespace ToDoList.BlazorClient.Components.Checklist
 
         private void HandleDragEnter()
         {
+            if (Container.DraggedTodoItem is null)
+                return;
+
             cardDropClass = "drop-area";
             overlayClass = Container.DraggedTodoItem.ChecklistId == checklistModel.Id
                 ? "no-drop"
@@ -108,18 +112,18 @@ namespace ToDoList.BlazorClient.Components.Checklist
 
         private void HandleDragLeave()
         {
+            if (Container.DraggedTodoItem is null)
+                return;
+
             dragCounter--;
 
             if (dragCounter == 0)
-            {
-                cardDropClass = "";
-                overlayClass = "";
-            }
+                ResetDragAndDropClasses();
         }
 
-        private async Task HandleDrop()
+        private async Task HandleDrop(DragEventArgs args)
         {
-            if (Container.DraggedTodoItem.ChecklistId != checklistModel.Id)
+            if (Container.DraggedTodoItem?.ChecklistId != checklistModel.Id && Container.DraggedTodoItem is not null)
             {
                 int oldChecklist = Container.DraggedTodoItem.ChecklistId;
 
@@ -131,7 +135,14 @@ namespace ToDoList.BlazorClient.Components.Checklist
                 await Notifier.OnChecklistChanged(oldChecklist);
             }
 
-            HandleDragLeave();
+            ResetDragAndDropClasses();
+            dragCounter--;
+        }
+
+        private void ResetDragAndDropClasses()
+        {
+            cardDropClass = "";
+            overlayClass = "";
         }
 
         private async Task LoadTodoItems() =>
