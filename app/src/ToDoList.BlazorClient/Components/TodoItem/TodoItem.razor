@@ -24,7 +24,9 @@
             </div>
         }
 
-        <span class="secondary-custom-btn ml-auto" id="drag-handle-@todoItemModel.Id">
+        <span class="secondary-custom-btn ml-auto" 
+              id="drag-handle-@todoItemModel.Id"
+              title="@Localizer["Drag"]">
             <i class="oi oi-grid-two-up"></i>
         </span>
     </div>
@@ -80,7 +82,7 @@
 
     <div class="d-flex align-items-center justify-content-between">
         <div class="days-ago">
-            @todoItemModel.DaysAgo Days ago
+            @todoItemModel.DaysAgo @Localizer["DaysAgo"]
         </div>  
         
         @if (todoItemModel.DueDate.HasValue)

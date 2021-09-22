@@ -48,7 +48,8 @@
             @if (ChecklistModel.Name != "Untitled")
             {
                     <button class="border-0 btn custom-danger-outline-btn"
-                            @onclick="async () => await OnDeleteCallback.InvokeAsync(ChecklistModel.Id)">
+                            @onclick="async () => await OnDeleteCallback.InvokeAsync(ChecklistModel.Id)"
+                            title="@Localizer["Delete"]">
                         <i class="oi oi-trash"></i>
                     </button>
             }

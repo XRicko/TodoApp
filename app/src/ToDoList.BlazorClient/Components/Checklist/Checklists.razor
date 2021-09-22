@@ -1,6 +1,8 @@
-﻿@inject IStringLocalizer<General> Localizer
+﻿@attribute [Microsoft.AspNetCore.Authorization.Authorize]
 
-<div class="d-flex align-items-center justify-content-between mb-2">
+@inject IStringLocalizer<General> Localizer
+
+<div class="d-flex align-items-center justify-content-between mb-3">
 	<Filter />
 
 	<button class="border-0 btn custom-primary-outline-btn" 

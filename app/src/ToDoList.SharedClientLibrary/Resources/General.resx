@@ -150,6 +150,9 @@
   <data name="DoneTab" xml:space="preserve">
     <value>Done</value>
   </data>
+  <data name="Drag" xml:space="preserve">
+    <value>Drag it!</value>
+  </data>
   <data name="Due" xml:space="preserve">
     <value>Due</value>
   </data>
@@ -197,6 +200,12 @@
   </data>
   <data name="Reset" xml:space="preserve">
     <value>Reset</value>
+  </data>
+  <data name="SearchPlaceholder" xml:space="preserve">
+    <value>Search tasks</value>
+  </data>
+  <data name="Status" xml:space="preserve">
+    <value>Status</value>
   </data>
   <data name="Submit" xml:space="preserve">
     <value>Submit</value>

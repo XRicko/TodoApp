@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 
 using ToDoList.BlazorClient.Services;
+using ToDoList.BlazorClient.State;
 using ToDoList.SharedClientLibrary;
 using ToDoList.SharedClientLibrary.Models;
 using ToDoList.SharedClientLibrary.Services;
@@ -33,11 +34,12 @@ namespace ToDoList.BlazorClient.Components.Checklist
 
         [Inject]
         private IApiInvoker ApiInvoker { get; set; }
+
         [Inject]
         private Notifier Notifier { get; set; }
 
-        [CascadingParameter]
-        private TodoItemContainer Container { get; set; }
+        [Inject]
+        private StateContainer State { get; set; }
 
         [Parameter]
         public EventCallback<int> OnDeleteCallback { get; set; }
@@ -99,11 +101,11 @@ namespace ToDoList.BlazorClient.Components.Checklist
 
         private void HandleDragEnter()
         {
-            if (Container.DraggedTodoItem is null)
+            if (State.DraggedTodoItem is null)
                 return;
 
             cardDropClass = "drop-area";
-            overlayClass = Container.DraggedTodoItem.ChecklistId == checklistModel.Id
+            overlayClass = State.DraggedTodoItem.ChecklistId == checklistModel.Id
                 ? "no-drop"
                 : "yes-drop";
 
@@ -112,7 +114,7 @@ namespace ToDoList.BlazorClient.Components.Checklist
 
         private void HandleDragLeave()
         {
-            if (Container.DraggedTodoItem is null)
+            if (State.DraggedTodoItem is null)
                 return;
 
             dragCounter--;
@@ -123,13 +125,13 @@ namespace ToDoList.BlazorClient.Components.Checklist
 
         private async Task HandleDrop(DragEventArgs args)
         {
-            if (Container.DraggedTodoItem?.ChecklistId != checklistModel.Id && Container.DraggedTodoItem is not null)
+            if (State.DraggedTodoItem?.ChecklistId != checklistModel.Id && State.DraggedTodoItem is not null)
             {
-                int oldChecklist = Container.DraggedTodoItem.ChecklistId;
+                int oldChecklist = State.DraggedTodoItem.ChecklistId;
 
-                Container.DraggedTodoItem.ChecklistId = checklistModel.Id;
+                State.DraggedTodoItem.ChecklistId = checklistModel.Id;
 
-                await ApiInvoker.PutItemAsync(ApiEndpoints.TodoItems, Container.DraggedTodoItem);
+                await ApiInvoker.PutItemAsync(ApiEndpoints.TodoItems, State.DraggedTodoItem);
                 await LoadTodoItems();
 
                 await Notifier.OnChecklistChanged(oldChecklist);
@@ -162,17 +164,16 @@ namespace ToDoList.BlazorClient.Components.Checklist
             });
         }
 
-        private async Task OnFilterChosen(string statusName, string categoryName)
+        private async Task OnFilterChosen()
         {
             await LoadTodoItems();
-            IEnumerable<TodoItemModel> filtered = todoItemModels;
 
-            if (!string.IsNullOrWhiteSpace(statusName))
-                filtered = filtered.Where(x => x.StatusName == statusName);
-            if (!string.IsNullOrWhiteSpace(categoryName))
-                filtered = filtered.Where(x => x.CategoryName == categoryName);
-
-            todoItemModels = filtered.ToList();
+            if (!string.IsNullOrWhiteSpace(State.StatusName))
+                todoItemModels = todoItemModels.FindAll(x => x.StatusName == State.StatusName);
+            if (!string.IsNullOrWhiteSpace(State.CategoryName))
+                todoItemModels = todoItemModels.FindAll(x => x.CategoryName == State.CategoryName);
+            if (!string.IsNullOrWhiteSpace(State.SearchTerm))
+                todoItemModels = todoItemModels.FindAll(x => x.Name.Contains(State.SearchTerm));
 
             StateHasChanged();
         }

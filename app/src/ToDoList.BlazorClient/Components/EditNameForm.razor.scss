@@ -4,16 +4,15 @@
     border: 1px solid transparent;
     border-radius: .25rem;
     margin-right: 5px;
-    transition: border-color .1s ease-in;
+    transition: all .1s ease-in;
 
     &:hover, &:focus-within {
-        border-color: var(--name-input-border-color);
-        transition: border-color .15s ease-out;
+        border-color: var(--input-border-color);
+        transition: all .15s ease-out;
     }
 
     &:focus-within {
-        box-shadow: 0 0 0 0.2rem var(--name-input-box-shadow);
-        transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+        box-shadow: 0 0 0 0.2rem var(--input-box-shadow);
 
         button {
             visibility: visible;

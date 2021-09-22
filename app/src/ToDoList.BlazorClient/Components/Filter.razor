@@ -4,10 +4,11 @@
 @inject IStringLocalizer<General> Localizer
 @inject IApiInvoker ApiInvoker
 @inject Notifier Notifier
+@inject StateContainer State
 
 <div class="d-flex">
     <div class="filter">
-        <StatusSelector StatusName="@(string.IsNullOrWhiteSpace(statusName) ? @Localizer["Status"] : statusName)"
+        <StatusSelector StatusName="@(string.IsNullOrWhiteSpace(State.StatusName) ? @Localizer["Status"] : State.StatusName)"
                         OnStatusChanged="UpdateStatus"/>
 
         <button class="reset-btn ml-2"
@@ -24,11 +25,11 @@
                     data-toggle="dropdown" 
                     aria-haspopup="true"
                     aria-expanded="false">
-                #@(string.IsNullOrWhiteSpace(categoryName) ? @Localizer["Category"] : categoryName)
+                #@(string.IsNullOrWhiteSpace(State.CategoryName) ? @Localizer["Category"] : State.CategoryName)
             </button>
 
             <div class="dropdown-menu dropdown-menu-right category-menu" aria-labelledby="dropdown-btn">
-                @foreach (var category in categories.Where(x => x.Name != categoryName))
+                @foreach (var category in categories.Where(x => x.Name != State.CategoryName))
                 {
                     <button class="dropdown-item custom-dropdown-item bg-category" 
                             @onclick="() => UpdateCategory(category.Name)">
@@ -44,37 +45,55 @@
                 <i class="oi oi-x"></i>
         </button>
     </div>
+
+    <div>
+        <input class="form-control search" @oninput="UpdateSearchTerm" placeholder="@Localizer["SearchPlaceholder"]" />
+    </div>
 </div>
 
 @code {
-    private string statusName = "";
-    private string categoryName = "";
-
     private IEnumerable<CategoryModel> categories = Array.Empty<CategoryModel>();
 
     private async Task ResetStatus()
     {
-        statusName = "";
-        await Notifier.OnFilterChosen("", categoryName);
+        if (string.IsNullOrWhiteSpace(State.StatusName))
+            return;
+
+        State.StatusName = "";
+        await Notifier.OnFilterChosen();
     }
 
     private async Task ResetCategory()
     {
-        categoryName = "";
-        await Notifier.OnFilterChosen(statusName, "");
+        if (string.IsNullOrWhiteSpace(State.CategoryName))
+            return;
+
+        State.CategoryName = "";
+        await Notifier.OnFilterChosen();
     }
 
     protected override async Task OnInitializedAsync() => categories = await ApiInvoker.GetItemsAsync<CategoryModel>(ApiEndpoints.Categories);
 
     private async Task UpdateStatus(StatusModel status)
     {
-        statusName = status.Name;
-        await Notifier.OnFilterChosen(statusName, categoryName);
+        State.StatusName = status.Name;
+        await Notifier.OnFilterChosen();
     }
 
     private async Task UpdateCategory(string name)
     {
-        categoryName = name;
-        await Notifier.OnFilterChosen(statusName, categoryName);
+        State.CategoryName = name;
+        await Notifier.OnFilterChosen();
+    }
+
+    private async Task UpdateSearchTerm(ChangeEventArgs args)
+    {
+        string searchTerm = args.Value.ToString();
+
+        if (searchTerm.Length != 0 && string.IsNullOrWhiteSpace(searchTerm))
+            return;
+
+        State.SearchTerm = searchTerm;
+        await Notifier.OnFilterChosen();
     }
 }

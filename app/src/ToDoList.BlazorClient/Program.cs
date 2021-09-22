@@ -13,6 +13,7 @@ using Microsoft.Extensions.DependencyInjection;
 using ToDoList.BlazorClient.Authentication;
 using ToDoList.BlazorClient.Extensions;
 using ToDoList.BlazorClient.Services;
+using ToDoList.BlazorClient.State;
 using ToDoList.SharedClientLibrary.Services;
 
 namespace ToDoList.BlazorClient
@@ -28,6 +29,8 @@ namespace ToDoList.BlazorClient
             builder.Services.AddScoped<ITokenParser, JwtTokenParser>();
 
             builder.Services.AddScoped<IApiInvoker, ApiInvoker>();
+
+            builder.Services.AddSingleton<StateContainer>();
             builder.Services.AddSingleton<Notifier>();
 
             builder.Services.AddScoped<AuthenticationStateProvider, AuthStateProvider>();

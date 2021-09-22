@@ -2,6 +2,12 @@
 
 @inject IStringLocalizer<General> Localizer
 
-<h1>@Localizer["Greetings"]</h1>
-
-@Localizer["WelcomingInfo"]
+<AuthorizeView>
+	<Authorized>
+		<Checklists />
+	</Authorized>
+	<NotAuthorized>
+		<h1>@Localizer["Greetings"]</h1>
+		@Localizer["WelcomingInfo"]
+	</NotAuthorized>
+</AuthorizeView>

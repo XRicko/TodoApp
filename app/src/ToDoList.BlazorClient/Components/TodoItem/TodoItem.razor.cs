@@ -13,6 +13,7 @@ using Microsoft.JSInterop;
 
 using ToDoList.BlazorClient.Services;
 using ToDoList.BlazorClient.Shared;
+using ToDoList.BlazorClient.State;
 using ToDoList.Extensions;
 using ToDoList.SharedClientLibrary;
 using ToDoList.SharedClientLibrary.Models;
@@ -32,13 +33,14 @@ namespace ToDoList.BlazorClient.Components.TodoItem
         [CascadingParameter]
         private IModalService Modal { get; set; }
 
-        [CascadingParameter]
-        private TodoItemContainer Container { get; set; }
-
         [Inject]
         private IApiInvoker ApiInvoker { get; set; }
+
         [Inject]
         private Notifier Notifier { get; set; }
+
+        [Inject]
+        private StateContainer State { get; set; }
 
         [Inject]
         private IJSRuntime JSRuntime { get; set; }
@@ -103,7 +105,7 @@ namespace ToDoList.BlazorClient.Components.TodoItem
         }
 
         [JSInvokable]
-        public void HandleDragStart() => Container.DraggedTodoItem = todoItemModel;
+        public void HandleDragStart() => State.DraggedTodoItem = todoItemModel;
 
         private async Task Submit()
         {

@@ -1,5 +1,6 @@
 ﻿@using ToDoList.SharedClientLibrary
 
+@inject IStringLocalizer<General> Localizer
 @inject IApiInvoker ApiInvoker
 
 <div class="dropdown">
@@ -8,7 +9,7 @@
             data-toggle="dropdown" 
             aria-haspopup="true"
             aria-expanded="false">
-        @StatusName
+        @Localizer["Status"]
     </button>
 
     <div class="dropdown-menu dropdown-menu-right custom-dropdown-menu" aria-labelledby="dropdown-btn">
@@ -16,7 +17,7 @@
         {
             <button class="dropdown-item custom-dropdown-item @StatusModel.GetBackgroundColor(status.Name)" 
                     @onclick="() => OnStatusChanged.InvokeAsync(status)">
-                @status.Name
+                @Localizer[$"{status.Name}Status"]
             </button>
         }
     </div>

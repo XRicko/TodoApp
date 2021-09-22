@@ -14,8 +14,8 @@
     --hovered-btn-color: rgb(0, 0, 0);
     --link-color: rgb(213 226 255);
     --link-hover-color: rgb(228 236 255);
-    --name-input-border-color: rgba(255, 255, 255, 0.6);
-    --name-input-box-shadow: rgba(255, 255, 255, 0.3);
+    --input-border-color: rgba(255, 255, 255, 0.6);
+    --input-box-shadow: rgba(255, 255, 255, 0.3);
     --select2-dropdown-background: rgba(0, 0, 0, 0.8);
 }
 

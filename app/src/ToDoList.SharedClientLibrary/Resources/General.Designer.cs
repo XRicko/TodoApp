@@ -160,6 +160,15 @@ namespace ToDoList.SharedClientLibrary.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Drag it!.
+        /// </summary>
+        public static string Drag {
+            get {
+                return ResourceManager.GetString("Drag", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Due.
         /// </summary>
         public static string Due {
@@ -300,6 +309,24 @@ namespace ToDoList.SharedClientLibrary.Resources {
         public static string Reset {
             get {
                 return ResourceManager.GetString("Reset", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Search tasks.
+        /// </summary>
+        public static string SearchPlaceholder {
+            get {
+                return ResourceManager.GetString("SearchPlaceholder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Status.
+        /// </summary>
+        public static string Status {
+            get {
+                return ResourceManager.GetString("Status", resourceCulture);
             }
         }
         

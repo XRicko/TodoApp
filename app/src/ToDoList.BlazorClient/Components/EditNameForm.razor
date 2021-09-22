@@ -1,5 +1,7 @@
 ﻿@typeparam TItem
 
+@inject IStringLocalizer<General> Localizer
+
 <div>
 	<EditForm EditContext="@editContext">
 		<DataAnnotationsValidator />
@@ -12,6 +14,7 @@
 		<button type="button"
 				class="border-0 btn @ResetButtonClass"
 				onmousedown="event.preventDefault()"
+				title="@Localizer["Reset"]"
 				@onclick="Reset">
 			<i class="oi oi-x"></i>
 		</button>

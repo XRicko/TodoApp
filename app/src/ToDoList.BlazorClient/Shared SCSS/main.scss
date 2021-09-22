@@ -126,7 +126,6 @@ $secondary-color: rgba-white(0.4);
     @extend .custom-dropdown-items;
     @include standart-hover-transition(all);
     max-width: fit-content;
-    color: #fff;
     border: 1px solid rgba-black(0.2);
     outline: none;
 
@@ -134,7 +133,7 @@ $secondary-color: rgba-white(0.4);
         outline: revert;
     }
 
-    &:hover, &:focus {
+    &:hover {
         background: #fff;
         color: #000;
     }

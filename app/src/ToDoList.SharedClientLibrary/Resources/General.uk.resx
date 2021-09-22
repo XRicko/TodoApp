@@ -153,6 +153,9 @@
   <data name="DoneTab" xml:space="preserve">
     <value>Виконані</value>
   </data>
+  <data name="Drag" xml:space="preserve">
+    <value>Тягніть!</value>
+  </data>
   <data name="Due" xml:space="preserve">
     <value>До</value>
   </data>
@@ -200,6 +203,12 @@
   </data>
   <data name="Reset" xml:space="preserve">
     <value>Скинути</value>
+  </data>
+  <data name="SearchPlaceholder" xml:space="preserve">
+    <value>Шукайте серед завдань</value>
+  </data>
+  <data name="Status" xml:space="preserve">
+    <value>Статус</value>
   </data>
   <data name="Submit" xml:space="preserve">
     <value>Підтвердити</value>

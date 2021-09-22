@@ -1,4 +1,6 @@
-﻿<Virtualize Items="@TodoItemModels" Context="todoItem">
+﻿@inject StateContainer State
+
+<Virtualize Items="@TodoItemModels" Context="todoItem">
 	<li class="list-group-item item @StatusModel.GetBackgroundColor(todoItem.StatusName)" 
 		id="draggable-@todoItem.Id"
 		@ondragend="HandleDragEnd">
@@ -7,11 +9,8 @@
 </Virtualize>
 
 @code {
-	[CascadingParameter]
-	private TodoItemContainer Container { get; set; }
-
 	[Parameter]
 	public ICollection<TodoItemModel> TodoItemModels { get; set; } = Array.Empty<TodoItemModel>();
 
-	private void HandleDragEnd() => Container.DraggedTodoItem = null;
+	private void HandleDragEnd() => State.DraggedTodoItem = null;
 }
