@@ -14,13 +14,9 @@ body {
     transition: color 0.3s ease, background-color 0.3s ease;
 }
 
-a, .btn-link {
+a, a:hover, .btn-link, .btn-link:hover {
     color: var(--link-color);
 }
-
-    .btn-link:hover {
-        color: var(--link-hover-color);
-    }
 
 .btn-primary {
     color: #fff;
@@ -33,23 +29,23 @@ a, .btn-link {
 }
 
 .valid.modified:not([type=checkbox]), .valid.modified:not([type=checkbox]):focus {
-    border-color: rgb(38, 176, 80);
+    border-color: rgb(var(--success-rgb));
 }
 
     .valid.modified:not([type=checkbox]):focus {
-        box-shadow: 0 0 0 0.2rem rgba(38, 176, 80, 0.25);
+        box-shadow: 0 0 0 0.2rem rgba(var(--success-rgb), 0.25);
     }
 
 .invalid, .invalid:focus {
-    border-color: red;
+    border-color: rgb(var(--danger-rgb));
 }
 
     .invalid:focus {
-        box-shadow: 0 0 0 0.2rem rgba(255, 0, 0, 0.25);
+        box-shadow: 0 0 0 0.2rem rgba(var(--danger-rgb), 0.25);
     }
 
 .validation-message {
-    color: red;
+    color: rgb(var(--danger-rgb));
 }
 
 .oi {
@@ -66,7 +62,12 @@ a, .btn-link {
     position: fixed;
     width: 100%;
     z-index: 1000;
+    color: #000;
 }
+
+    #blazor-error-ui .reload {
+        color: #007bff;
+    }
 
     #blazor-error-ui .dismiss {
         cursor: pointer;
@@ -74,6 +75,14 @@ a, .btn-link {
         right: 0.75rem;
         top: 0.5rem;
     }
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 30px var(--autocomplete-input-background) inset;
+    -webkit-text-fill-color: var(--color);
+}
 
 @media (max-width: 991px) {
     .card-columns {
@@ -98,19 +107,29 @@ a, .btn-link {
     color: var(--color);
 }
 
+.standart-input, .standart-input:focus {
+    border: 1px solid var(--input-border-color);
+    transition: all .1s ease-in;
+}
+
+    .standart-input:focus {
+        box-shadow: 0 0 0 0.2rem var(--input-box-shadow);
+        transition: all .15s ease-out;
+    }
+
 .bg-planned {
     color: #fff;
-    background: #404040;
+    background: var(--planned-color);
 }
 
 .bg-ongoing {
     color: #fff;
-    background: #a08329;
+    background: var(--ongoing-color);
 }
 
 .bg-done {
     color: #fff;
-    background: #34712c;
+    background: var(--done-color);
 }
 
 .dialog {
@@ -118,52 +137,61 @@ a, .btn-link {
     color: var(--color);
 }
 
-.custom-primary-btn {
-    color: var(--hovered-btn-color);
-    background-color: var(--primary-btn-color);
+.custom-primary-btn, .custom-primary-btn:hover {
+    color: var(--hovered-btn-text);
+    background-color: rgb(var(--primary-btn-rgb));
 }
 
 .custom-primary-outline-btn {
-    color: var(--primary-btn-color);
-    border-color: var(--primary-btn-color);
+    color: rgb(var(--primary-btn-rgb));
+    border-color: rgb(var(--primary-btn-rgb));
 }
 
     .custom-primary-outline-btn:hover, .custom-primary-outline-btn:active, .custom-primary-outline-btn.active {
-        color: var(--hovered-btn-color);
-        background-color: var(--primary-btn-color);
+        color: var(--hovered-btn-text);
+        background-color: rgb(var(--primary-btn-rgb));
     }
 
     .custom-primary-btn:focus, .custom-primary-outline-btn:focus {
-        box-shadow: 0 0 0 0.2rem rgba(186, 222, 253, 50%);
+        box-shadow: 0 0 0 0.2rem rgba(var(--primary-btn-rgb), 50%);
     }
 
 .custom-danger-outline-btn {
-    color: var(--danger-btn-color);
-    border-color: var(--danger-btn-color);
+    color: rgb(var(--danger-rgb));
+    border-color: rgb(var(--danger-rgb));
 }
 
     .custom-danger-outline-btn:hover, .custom-danger-outline-btn:active, .custom-danger-outline-btn.active {
-        color: var(--hovered-btn-color);
-        background-color: var(--danger-btn-color);
+        color: var(--hovered-btn-text);
+        background-color: rgb(var(--danger-rgb));
     }
 
     .custom-danger-outline-btn:focus {
-        box-shadow: 0 0 0 0.2rem rgba(241, 158, 166, 50%);
+        box-shadow: 0 0 0 0.2rem rgba(var(--danger-rgb), 50%);
     }
 
 
 .custom-secondary-outline-btn {
-    color: var(--secondary-btn-color);
-    border-color: var(--secondary-btn-color);
+    color: rgb(var(--secondary-btn-rgb));
+    border-color: rgb(var(--secondary-btn-rgb));
 }
 
     .custom-secondary-outline-btn:hover, .custom-secondary-outline-btn:active, .custom-secondary-outline-btn.active {
-        color: var(--hovered-btn-color);
-        background-color: var(--secondary-btn-color);
+        color: var(--hovered-btn-text);
+        background-color: rgb(var(--secondary-btn-rgb));
     }
 
-   .custom-secondary-outline-btn:focus {
-        box-shadow: 0 0 0 0.2rem rgba(210, 213, 216, 50%);
+    .custom-secondary-outline-btn:focus {
+        box-shadow: 0 0 0 0.2rem rgba(var(--secondary-btn-rgb), 50%);
+    }
+
+.custom-success-btn, .custom-success-btn:hover {
+    color: var(--hovered-btn-text);
+    background-color: rgb(var(--success-rgb));
+}
+
+    .custom-success-btn:focus {
+        box-shadow: 0 0 0 0.2rem rgba(var(--success-rgb), 50%);
     }
 
 .item {
@@ -240,7 +268,7 @@ a, .btn-link {
 }
 
 .select2-dropdown {
-    background: var(--select2-dropdown-background);
+    background: var(--picker-background);
     animation: dropdownAppear .25s;
 }
 
@@ -259,7 +287,7 @@ a, .btn-link {
 }
 
 .datepicker-dropdown {
-    background-color: var(--select2-dropdown-background);
+    background-color: var(--picker-background);
     color: var(--color);
 }
 

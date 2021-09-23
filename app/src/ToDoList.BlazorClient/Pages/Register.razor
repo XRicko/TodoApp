@@ -25,7 +25,7 @@
 		<div class="form-group row">
 			<label for="password" class="col-md-2 col-form-label">@Localizer["Password"]: </label>
 			<div class="col-md-10">
-				<InputText type="password" id="password" class="form-control" @bind-Value="user.Password" />
+				<InputText type="password" id="password" class="form-control" @bind-Value="user.Password" autocomplete="new-password"/>
 				<ValidationMessage For="@(() => user.Password)" />
 			</div>
 		</div>
@@ -33,7 +33,7 @@
 		<div class="form-group row">
 			<label for="confirm-password" class="col-md-2 col-form-label">@Localizer["Confirm Password"]: </label>
 			<div class="col-md-10">
-				<InputText type="password" id="confirm-password" class="form-control" @bind-Value="user.ConfirmPassword" />
+				<InputText type="password" id="confirm-password" class="form-control" @bind-Value="user.ConfirmPassword" autocomplete="new-password" />
 				<ValidationMessage For="@(() => user.ConfirmPassword)" />
 			</div>
 		</div>
@@ -42,7 +42,7 @@
 		{
 			<div class="row">
 				<div class="col-md-12 text-right">
-					<button type="submit" class="btn btn-success">@Localizer["Register"]</button>
+					<button type="submit" class="btn custom-success-btn">@Localizer["Register"]</button>
 				</div>
 			</div>
 		}

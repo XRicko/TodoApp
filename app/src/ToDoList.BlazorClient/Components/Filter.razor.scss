@@ -25,21 +25,11 @@
 }
 
 .custom-dropdown-btn, .custom-dropdown-item {
-    color: var(--hovered-btn-color);
-}
-
-.search {
-    border: 1px solid var(--input-border-color);
-    transition: all .1s ease-in;
-
-    &:focus {
-        box-shadow: 0 0 0 0.2rem var(--input-box-shadow);
-        transition: all .15s ease-out;
-    }
+    color: var(--hovered-btn-text);
 }
 
 .bg-category {
-    background-color: var(--primary-btn-color);
+    background-color: RGB(var(--primary-btn-rgb));
 }
 
 ::deep .custom-dropdown-btn {

@@ -1,22 +1,26 @@
 ﻿:root {
     --color: rgba(255, 255, 255, .87);
-    --main-background: rgb(10, 10, 10);
+    --main-background: rgb(18, 18, 20);
     --border-color: rgba(255, 255, 255, .1);
-    --header-background: rgb(28, 28, 30);
+    --header-background: rgb(34, 34, 36);
     --dialog-background: rgb(44, 44, 46);
-    --sidebar-background: rgb(0, 0, 0);
-    --card-background: rgb(18, 18, 20);
+    --sidebar-background: rgb(14, 14, 16);
+    --card-background: rgb(24, 24, 26);
+    --planned-color: rgb(46, 46, 46);
+    --ongoing-color: rgb(110, 87, 0);
+    --done-color: rgb(0, 69, 0);
     --input-background: rgb(59, 59, 59);
     --scrollbar-color: rgb(85,85,85);
-    --primary-btn-color: rgb(186, 222, 253);
-    --danger-btn-color: rgb(241, 158, 166);
-    --secondary-btn-color: rgb(210, 213, 216);
-    --hovered-btn-color: rgb(0, 0, 0);
-    --link-color: rgb(213 226 255);
-    --link-hover-color: rgb(228 236 255);
+    --success-rgb: 133, 230, 180;
+    --danger-rgb: 232, 160, 165;
+    --primary-btn-rgb: 174, 198, 246;
+    --secondary-btn-rgb: 214, 215, 216;
+    --hovered-btn-text: rgb(0, 0, 0);
+    --link-color: rgb(161, 214, 255);
     --input-border-color: rgba(255, 255, 255, 0.6);
     --input-box-shadow: rgba(255, 255, 255, 0.3);
-    --select2-dropdown-background: rgba(0, 0, 0, 0.8);
+    --autocomplete-input-background: rgba(70, 90, 126, 0.4);
+    --picker-background: rgba(0, 0, 0, 0.8);
 }
 
 img {
