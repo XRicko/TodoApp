@@ -3,6 +3,7 @@
 .card {
     border-color: var(--border-color);
     background-color: transparent;
+    transition: all .1s ease-in;
 }
 
 .card-header {
@@ -33,14 +34,17 @@
     overflow: auto;
 }
 
-.drop-area {
+.yes-drop, .no-drop {
     opacity: 0.4;
+    transition: all .15s ease-out;
 }
 
 .no-drop {
-    background-color: rgba(255, 0, 0, 0.7);
+    border-color: RGB(var(--danger-rgb));
+    box-shadow: 0 0 0 0.2rem rgba(var(--danger-rgb), 50%);
 }
 
 .yes-drop {
-    background-color: rgba(0, 128, 0, 0.7);
+    border-color: RGB(var(--success-rgb));
+    box-shadow: 0 0 0 0.2rem rgba(var(--success-rgb), 50%);
 }

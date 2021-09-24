@@ -24,7 +24,7 @@
             </div>
         }
 
-        <span class="secondary-custom-btn ml-auto" 
+        <span class="secondary-custom-btn handle ml-auto" 
               id="drag-handle-@todoItemModel.Id"
               title="@Localizer["Drag"]">
             <i class="oi oi-grid-two-up"></i>
@@ -45,7 +45,8 @@
             <EditNameForm TItem="@TodoItemModel"
                           Item="@todoItemModel"
                           ResetButtonClass="btn-outline-light"
-                          OnValidSubmit="Submit" />
+                          OnValidSubmit="SubmitValid"
+                          OnInvalidSubmit="SubmitInvalid"/>
         </div>
 
         <div class="ml-auto">

@@ -33,8 +33,7 @@ namespace ToDoList.BlazorClient.Components.Checklist
         [Inject]
         private Notifier Notifier { get; set; }
 
-        protected override async Task OnInitializedAsync() =>
-            checklistModels = (await ApiInvoker.GetItemsAsync<ChecklistModel>(ApiEndpoints.Checklists)).ToList();
+        protected override async Task OnInitializedAsync() => await LoadChecklists();
 
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {
@@ -53,21 +52,33 @@ namespace ToDoList.BlazorClient.Components.Checklist
             var user = authState.User;
             int userId = Convert.ToInt32(user.FindFirst(ClaimTypes.NameIdentifier).Value);
 
-            var checklist = new ChecklistModel { UserId = userId };
-            checklistModels.Add(checklist);
+            var checklist = checklistModels.Find(x => x.Id == 0);
+
+            if (checklist is null)
+            {
+                checklist = new ChecklistModel { UserId = userId };
+                checklistModels.Add(checklist);
+            }
 
             toRunAfterRender.Add(() => Notifier.OnItemAdded(checklist));
         }
 
         private async Task Delete(int checklistId)
         {
-            var result = await Modal.Show<Confirm>("Confirmation").Result;
+            if (checklistId > 0)
+            {
+                var result = await Modal.Show<Confirm>("Confirmation").Result;
 
-            if (result.Cancelled)
-                return;
+                if (result.Cancelled)
+                    return;
 
-            await ApiInvoker.DeleteItemAsync($"{ApiEndpoints.Checklists}/{checklistId}");
-            checklistModels.RemoveAll(x => x.Id == checklistId);
+                await ApiInvoker.DeleteItemAsync($"{ApiEndpoints.Checklists}/{checklistId}");
+            }
+
+            await LoadChecklists();
         }
+
+        private async Task LoadChecklists() => 
+            checklistModels = (await ApiInvoker.GetItemsAsync<ChecklistModel>(ApiEndpoints.Checklists)).ToList();
     }
 }

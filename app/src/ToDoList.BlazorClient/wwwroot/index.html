@@ -112,12 +112,15 @@
             };
 
             draggable.ondragstart = function (e) {
-                if (e.target.classList.contains('item'))
+                if (e.target.classList.contains('item')) {
                     dotNetHelper.invokeMethod('HandleDragStart');
+                    e.target.style.opacity = '0.4';
+                }
             };
 
             draggable.ondragend = function (e) {
                 e.target.setAttribute('draggable', 'false');
+                e.target.style.opacity = '1';
             };
         }
     </script>

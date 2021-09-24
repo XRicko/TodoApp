@@ -1,16 +1,11 @@
 ﻿@inject IStringLocalizer<General> Localizer
 
-<div class="card item position-relative @cardDropClass"
+<div class="card item @cardDropClass"
      ondragover="event.preventDefault();"
      ondragstart="event.dataTransfer.setData('', event.target.id);"
      @ondrop="HandleDrop"
      @ondragenter="HandleDragEnter"
      @ondragleave="HandleDragLeave">
-
-    @if (!string.IsNullOrWhiteSpace(overlayClass))
-    {
-        <div class=" @overlayClass overlay"></div>
-    }
 
     <div class="card-header d-flex justify-content-between align-items-center">
         <div class="d-flex align-items-center">
@@ -33,7 +28,8 @@
                     <EditNameForm TItem="@ChecklistModel"
                                   Item="@ChecklistModel"
                                   ResetButtonClass="btn-outline-secondary"
-                                  OnValidSubmit="Submit" />
+                                  OnValidSubmit="SubmitValid"
+                                  OnInvalidSubmit="SubmitInvalid"/>
                 </div>
             }
         </div>
@@ -48,7 +44,7 @@
             @if (ChecklistModel.Name != "Untitled")
             {
                     <button class="border-0 btn custom-danger-outline-btn"
-                            @onclick="async () => await OnDeleteCallback.InvokeAsync(ChecklistModel.Id)"
+                            @onclick="async () => await OnDeleteCallback.InvokeAsync(checklistModel.Id)"
                             title="@Localizer["Delete"]">
                         <i class="oi oi-trash"></i>
                     </button>

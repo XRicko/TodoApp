@@ -26,6 +26,9 @@ namespace ToDoList.BlazorClient.Components
 
         [Parameter]
         public EventCallback OnValidSubmit { get; set; }
+        
+        [Parameter]
+        public EventCallback OnInvalidSubmit { get; set; }
 
         [Parameter]
         public string ResetButtonClass { get; set; }
@@ -44,7 +47,7 @@ namespace ToDoList.BlazorClient.Components
             if (editContext.Validate())
                 await Submit();
             else
-                Reset();
+                await OnInvalidSubmit.InvokeAsync();
         }
 
         private async Task Submit()
@@ -59,7 +62,7 @@ namespace ToDoList.BlazorClient.Components
         private void Reset() => Item.Name = originalName;
 
         private async Task FocusInput(BaseModel item) =>
-            await JSRuntime.InvokeVoidAsync("focusInput", GetInputId(item)); // Change in .Net 6
+            await JSRuntime.InvokeVoidAsync("focusInput", GetInputId(item)); // TODO: Change in .Net 6
 
         private static string GetInputId(BaseModel item) => $"{item.GetType().Name}-name-{item.Id}";
     }
