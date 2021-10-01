@@ -1,5 +1,4 @@
-﻿
-using FluentValidation;
+﻿using FluentValidation;
 
 using ToDoList.Core.Mediator.Requests.Create;
 
@@ -13,7 +12,7 @@ namespace ToDoList.Core.Validators.CreateRequests
                 .NotEmpty()
                 .Length(3, 75);
 
-            RuleFor(x => x.UserId)
+            RuleFor(x => x.ProjectId)
                 .GreaterThanOrEqualTo(1);
         }
     }

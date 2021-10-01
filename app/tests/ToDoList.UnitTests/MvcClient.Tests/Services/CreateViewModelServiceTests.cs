@@ -30,7 +30,7 @@ namespace MvcClient.Tests.Services
 
             checklists = GetChecklistsSample();
 
-            apiInvokerMock.Setup(x => x.GetItemsAsync<ChecklistModel>(ApiEndpoints.Checklists))
+            apiInvokerMock.Setup(x => x.GetItemsAsync<ChecklistModel>(ApiEndpoints.ChecklistsByProjectId))
                           .ReturnsAsync(checklists)
                           .Verifiable();
         }
@@ -180,9 +180,9 @@ namespace MvcClient.Tests.Services
         {
             return new List<ChecklistModel>
             {
-                new ChecklistModel { Id = 1, Name = "University", UserId = 1 },
-                new ChecklistModel { Id = 2, Name = "Nirhtday", UserId = 1 },
-                new ChecklistModel { Id = 3, Name = "Chores", UserId = 1 }
+                new ChecklistModel { Id = 1, Name = "University", ProjectId = 1 },
+                new ChecklistModel { Id = 2, Name = "Nirhtday", ProjectId = 1 },
+                new ChecklistModel { Id = 3, Name = "Chores", ProjectId = 1 }
             };
         }
 

@@ -36,7 +36,7 @@ namespace ToDoList.Core.Mediator.Handlers.TodoItems
             _ = request ?? throw new ArgumentNullException(nameof(request));
 
             var responsesByUser = UnitOfWork.Repository.GetAll<TodoItem>()
-                                                       .Where(x => x.Checklist.UserId == request.UserId)
+                                                       .Where(x => x.Checklist.Project.UserId == request.UserId)
                                                        .AsTodoItemResponses(Mapper, fileSystem)
                                                        .ToList();
 

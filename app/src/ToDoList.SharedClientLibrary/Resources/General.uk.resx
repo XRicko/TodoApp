@@ -120,11 +120,11 @@
   <data name="ActiveTab" xml:space="preserve">
     <value>Активні</value>
   </data>
-  <data name="Add Location" xml:space="preserve">
-    <value>Додайте місце</value>
-  </data>
   <data name="AddChecklist" xml:space="preserve">
     <value>Додати список</value>
+  </data>
+  <data name="AddProject" xml:space="preserve">
+    <value>Додати проєкт</value>
   </data>
   <data name="AddTask" xml:space="preserve">
     <value>Додати завдання</value>
@@ -205,7 +205,7 @@
     <value>Скинути</value>
   </data>
   <data name="SearchPlaceholder" xml:space="preserve">
-    <value>Шукайте серед завдань</value>
+    <value>Шукайте серед записів</value>
   </data>
   <data name="Status" xml:space="preserve">
     <value>Статус</value>

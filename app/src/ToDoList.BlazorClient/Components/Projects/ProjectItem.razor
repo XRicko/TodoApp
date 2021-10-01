@@ -1,0 +1,55 @@
+﻿@using Blazored.Modal.Services
+@using ToDoList.SharedClientLibrary
+
+@inject IApiInvoker ApiInvoker
+
+<div class="card item">
+	<a href="project/@project.Id" class="stretched-link"></a>
+	<div class="card-body">
+		<div class="project-content">
+			<EditNameForm TItem="@ProjectModel"
+						  Item="project"
+						  ResetButtonClass="btn-outline-secondary"
+						  OnValidSubmit="@SubmitValid"
+						  OnInvalidSubmit="@Delete"/>
+
+			@if (project.Name != "Untitled")
+			{
+				<DeleteButton OnClick="@Delete" />
+			}
+		</div>
+	</div>
+</div>
+
+@code {
+	private ProjectModel project;
+
+	[Parameter]
+	public ProjectModel ProjectModel { get; set; } = new();
+
+	[Parameter]
+	public EventCallback<int> OnDeleteCallback { get; set; }
+
+	private void Click() => Console.WriteLine("click");
+
+	public override Task SetParametersAsync(ParameterView parameters)
+	{
+		if (parameters.TryGetValue<ProjectModel>(nameof(ProjectModel), out var value))
+			project = value;
+
+		return base.SetParametersAsync(parameters);
+	}
+
+	private async Task SubmitValid()
+	{
+		if (project.Id == 0)
+		{
+			await ApiInvoker.PostItemAsync(ApiEndpoints.Projects, project);
+			project = await ApiInvoker.GetItemAsync<ProjectModel>($"{ApiEndpoints.ProjectByName}/{project.Name}");
+		}
+		if (project.Id > 0)
+			await ApiInvoker.PutItemAsync(ApiEndpoints.Projects, project);
+	}
+
+	private async Task Delete() => await OnDeleteCallback.InvokeAsync(project.Id);
+}

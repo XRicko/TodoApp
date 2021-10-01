@@ -1,5 +1,4 @@
-﻿
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 using ToDoList.Core.Entities;
@@ -13,15 +12,15 @@ namespace ToDoList.Infrastructure.Data.Config
             builder.ToTable("Image");
 
             builder.HasIndex(e => e.Path)
-                .IsUnique();
+                   .IsUnique();
 
             builder.Property(e => e.Name)
-                .IsRequired()
-                .HasMaxLength(255);
+                   .IsRequired()
+                   .HasMaxLength(255);
 
             builder.Property(e => e.Path)
-                .IsRequired()
-                .HasMaxLength(260);
+                   .IsRequired()
+                   .HasMaxLength(260);
         }
     }
 }

@@ -14,7 +14,7 @@ using ToDoList.SharedClientLibrary.Services;
 
 namespace ToDoList.BlazorClient.Components.Checklist
 {
-    public partial class ChecklistItem
+    public partial class ChecklistItem : IDisposable
     {
         private ChecklistModel checklistModel;
 
@@ -56,6 +56,7 @@ namespace ToDoList.BlazorClient.Components.Checklist
         protected override async Task OnInitializedAsync()
         {
             await LoadTodoItems();
+
             Notifier.ChecklistChanged += OnTodoItemsChanged;
             Notifier.FilterChosen += OnFilterChosen;
         }
@@ -75,13 +76,14 @@ namespace ToDoList.BlazorClient.Components.Checklist
             if (checklistModel.Id == 0)
             {
                 await ApiInvoker.PostItemAsync(ApiEndpoints.Checklists, checklistModel);
-                checklistModel = await ApiInvoker.GetItemAsync<ChecklistModel>($"{ApiEndpoints.ChecklistByNameAndUserId}/{checklistModel.Name}");
+                checklistModel = await ApiInvoker.GetItemAsync<ChecklistModel>(
+                    $"{ApiEndpoints.ChecklistByProjectIdAndName}?name={checklistModel.Name}&projectId={checklistModel.ProjectId}");
             }
             if (checklistModel.Id > 0)
                 await ApiInvoker.PutItemAsync(ApiEndpoints.Checklists, checklistModel);
         }
 
-        private async Task SubmitInvalid() => await OnDeleteCallback.InvokeAsync(checklistModel.Id);
+        private async Task Delete() => await OnDeleteCallback.InvokeAsync(checklistModel.Id);
 
         private void AddTodoItem()
         {
@@ -171,9 +173,15 @@ namespace ToDoList.BlazorClient.Components.Checklist
             if (!string.IsNullOrWhiteSpace(State.CategoryName))
                 todoItemModels = todoItemModels.FindAll(x => x.CategoryName == State.CategoryName);
             if (!string.IsNullOrWhiteSpace(State.SearchTerm))
-                todoItemModels = todoItemModels.FindAll(x => x.Name.Contains(State.SearchTerm));
+                todoItemModels = todoItemModels.FindAll(x => x.Name.Contains(State.SearchTerm, StringComparison.OrdinalIgnoreCase));
 
             StateHasChanged();
+        }
+
+        public void Dispose()
+        {
+            Notifier.ChecklistChanged -= OnTodoItemsChanged;
+            Notifier.FilterChosen -= OnFilterChosen;
         }
     }
 }

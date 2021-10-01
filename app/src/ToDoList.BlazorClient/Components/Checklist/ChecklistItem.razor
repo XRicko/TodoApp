@@ -1,4 +1,6 @@
-﻿@inject IStringLocalizer<General> Localizer
+﻿@attribute [Authorize]
+
+@inject IStringLocalizer<General> Localizer
 
 <div class="card item @cardDropClass"
      ondragover="event.preventDefault();"
@@ -11,55 +13,41 @@
         <div class="d-flex align-items-center">
               <span class="d-flex collapse-button"
                     data-toggle="collapse" 
-                    data-target="#checklist-@ChecklistModel.Id" 
+                    data-target="#checklist-@checklistModel.Id" 
                     aria-expanded="true" 
-                    aria-controls="checklist-@ChecklistModel.Id"
+                    aria-controls="checklist-@checklistModel.Id"
                     @onclick="Collapse">
                 <i class="oi oi-chevron-@(collapsed ? "bottom" : "top")"></i>
               </span>
 
-            @if (ChecklistModel.Name == "Untitled")
-            {
-                <span class="item-name ml-2">@Localizer["UntitledChecklist"]</span>
-            }
-            else
-            {
-                <div class="name-form">
-                    <EditNameForm TItem="@ChecklistModel"
-                                  Item="@ChecklistModel"
-                                  ResetButtonClass="btn-outline-secondary"
-                                  OnValidSubmit="SubmitValid"
-                                  OnInvalidSubmit="SubmitInvalid"/>
-                </div>
-            }
+            <div class="name-form">
+                <EditNameForm TItem="@ChecklistModel"
+                              Item="@checklistModel"
+                              ResetButtonClass="btn-outline-secondary"
+                              OnValidSubmit="SubmitValid"
+                              OnInvalidSubmit="Delete"/>
+            </div>
         </div>
 
         <div class="d-flex">
-            <button class="border-0 btn custom-primary-outline-btn" 
-                    title="@Localizer["AddTask"]"
-                    @onclick="AddTodoItem">
-		            <i class="oi oi-plus"></i>
-            </button>
+            <AddButton Hint="@Localizer["AddTask"]"
+                       OnClick="@AddTodoItem" />
 
-            @if (ChecklistModel.Name != "Untitled")
+            @if (checklistModel.Name != "Untitled")
             {
-                    <button class="border-0 btn custom-danger-outline-btn"
-                            @onclick="async () => await OnDeleteCallback.InvokeAsync(checklistModel.Id)"
-                            title="@Localizer["Delete"]">
-                        <i class="oi oi-trash"></i>
-                    </button>
+                <DeleteButton OnClick="@Delete" />
             }
         </div>
     </div>
 
-    <div class="collapse show" id="checklist-@ChecklistModel.Id">
+    <div class="collapse show" id="checklist-@checklistModel.Id">
         <div class="card-body">
             <ul class="nav nav-tabs" role="tablist">
                 <li class="nav-item">
                     <a class="btn custom-primary-outline-btn active"
-                       id="notDone-@ChecklistModel.Id-tab"
+                       id="notDone-@checklistModel.Id-tab"
                        data-toggle="tab"
-                       href="#notDone-@ChecklistModel.Id"
+                       href="#notDone-@checklistModel.Id"
                        role="tab">
                         @Localizer["ActiveTab"]
                         <span class="badge badge-light">
@@ -70,9 +58,9 @@
 
                 <li class="nav-item">
                     <a class="btn custom-secondary-outline-btn"
-                       id="done-@ChecklistModel.Id-tab"
+                       id="done-@checklistModel.Id-tab"
                        data-toggle="tab"
-                       href="#done-@ChecklistModel.Id"
+                       href="#done-@checklistModel.Id"
                        role="tab">
                         @Localizer["DoneTab"]
                         <span class="badge badge-light">
@@ -83,11 +71,11 @@
             </ul>
 
             <div class="tab-content">
-                <ul class="tab-pane scrollable show active list-group list-group-flush" id="notDone-@ChecklistModel.Id">
+                <ul class="tab-pane scrollable show active list-group list-group-flush" id="notDone-@checklistModel.Id">
                    <TodoItemsList TodoItemModels="@ActiveTodoItems" />
                 </ul>
 
-                <ul class="tab-pane scrollable list-group list-group-flush" id="done-@ChecklistModel.Id">
+                <ul class="tab-pane scrollable list-group list-group-flush" id="done-@checklistModel.Id">
                    <TodoItemsList TodoItemModels="@DoneTodoItems" />
                 </ul>
             </div>

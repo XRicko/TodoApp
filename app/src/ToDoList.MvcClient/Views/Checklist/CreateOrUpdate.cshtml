@@ -7,7 +7,7 @@
 <div class="row">
     <div class="col-md-12">
         <form asp-action="CreateOrUpdate" asp-route-id="@Model.Id" onsubmit="return ajaxPost(this);">
-            @Html.HiddenFor(m => m.UserId)
+            @Html.HiddenFor(m => m.ProjectId)
 
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 

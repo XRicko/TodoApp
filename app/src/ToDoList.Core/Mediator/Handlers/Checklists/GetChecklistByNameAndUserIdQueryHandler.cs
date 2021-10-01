@@ -16,22 +16,20 @@ using ToDoList.SharedKernel.Interfaces;
 
 namespace ToDoList.Core.Mediator.Handlers.Checklists
 {
-    internal class GetChecklistByNameAndUserIdQueryHandler : HandlerBase, IRequestHandler<GetChecklistByNameAndUserIdQuery, ChecklistResponse>
+    internal class GetChecklistByNameAndProjectIdQueryHandler : HandlerBase, IRequestHandler<GetChecklistByNameAndProjectIdQuery, ChecklistResponse>
     {
-        public GetChecklistByNameAndUserIdQueryHandler(IUnitOfWork unitOfWork, IMapper mapper) : base(unitOfWork, mapper)
+        public GetChecklistByNameAndProjectIdQueryHandler(IUnitOfWork unitOfWork, IMapper mapper) : base(unitOfWork, mapper)
         {
         }
 
-        public Task<ChecklistResponse> Handle(GetChecklistByNameAndUserIdQuery request, CancellationToken cancellationToken)
+        public Task<ChecklistResponse> Handle(GetChecklistByNameAndProjectIdQuery request, CancellationToken cancellationToken)
         {
             _ = request ?? throw new ArgumentNullException(nameof(request));
 
-            var checklistResponse = UnitOfWork.Repository.GetAll<Checklist>()
-                                                         .Where(x => x.Name == request.Name && x.UserId == request.UserId)
-                                                         .ProjectTo<ChecklistResponse>(Mapper.ConfigurationProvider)
-                                                         .SingleOrDefault();
-
-            return Task.FromResult(checklistResponse);
+            return Task.FromResult(UnitOfWork.Repository.GetAll<Checklist>()
+                                                        .Where(x => x.Name == request.Name && x.ProjectId == request.ProjectId)
+                                                        .ProjectTo<ChecklistResponse>(Mapper.ConfigurationProvider)
+                                                        .SingleOrDefault());
         }
     }
 }

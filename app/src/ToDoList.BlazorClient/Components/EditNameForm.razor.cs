@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
@@ -9,7 +10,8 @@ using ToDoList.SharedClientLibrary.Models;
 
 namespace ToDoList.BlazorClient.Components
 {
-    public partial class EditNameForm<TItem> where TItem : BaseModel
+    public partial class EditNameForm<TItem> : IDisposable
+        where TItem : BaseModel
     {
         private string originalName;
 
@@ -26,7 +28,7 @@ namespace ToDoList.BlazorClient.Components
 
         [Parameter]
         public EventCallback OnValidSubmit { get; set; }
-        
+
         [Parameter]
         public EventCallback OnInvalidSubmit { get; set; }
 
@@ -65,5 +67,6 @@ namespace ToDoList.BlazorClient.Components
             await JSRuntime.InvokeVoidAsync("focusInput", GetInputId(item)); // TODO: Change in .Net 6
 
         private static string GetInputId(BaseModel item) => $"{item.GetType().Name}-name-{item.Id}";
+        public void Dispose() => Notifier.ItemAdded -= FocusInput;
     }
 }

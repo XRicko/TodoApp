@@ -1,4 +1,6 @@
-﻿@inject StateContainer State
+﻿@attribute [Authorize]
+
+@inject StateContainer State
 
 <Virtualize Items="@TodoItemModels" Context="todoItem">
 	<li class="list-group-item item @StatusModel.GetBackgroundColor(todoItem.StatusName)" 

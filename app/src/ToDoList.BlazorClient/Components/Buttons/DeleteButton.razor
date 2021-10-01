@@ -1,0 +1,12 @@
+﻿@inject IStringLocalizer<General> Localizer
+
+<button class="border-0 btn custom-danger-outline-btn"
+        @onclick="OnClick"
+        title="@Localizer["Delete"]">
+    <i class="oi oi-trash"></i>
+</button>
+
+@code {
+    [Parameter]
+    public EventCallback OnClick { get; set; }
+}

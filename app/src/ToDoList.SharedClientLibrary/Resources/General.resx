@@ -123,6 +123,9 @@
   <data name="AddChecklist" xml:space="preserve">
     <value>Add checklist</value>
   </data>
+  <data name="AddProject" xml:space="preserve">
+    <value>Add project</value>
+  </data>
   <data name="AddTask" xml:space="preserve">
     <value>Add task</value>
   </data>
@@ -202,7 +205,7 @@
     <value>Reset</value>
   </data>
   <data name="SearchPlaceholder" xml:space="preserve">
-    <value>Search tasks</value>
+    <value>Search for items</value>
   </data>
   <data name="Status" xml:space="preserve">
     <value>Status</value>

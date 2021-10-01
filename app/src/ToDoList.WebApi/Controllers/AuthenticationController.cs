@@ -20,8 +20,8 @@ using ToDoList.WebApi.Services;
 
 namespace ToDoList.WebApi.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
+    [Route("api/[controller]")]
     public class AuthenticationController : Base
     {
         private readonly IAuthenticator authenticator;

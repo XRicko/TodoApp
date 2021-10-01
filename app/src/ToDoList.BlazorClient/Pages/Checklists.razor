@@ -1,15 +1,13 @@
-﻿@attribute [Microsoft.AspNetCore.Authorization.Authorize]
+﻿@page "/project/{projectId:int}"
+
+@attribute [Authorize]
 
 @inject IStringLocalizer<General> Localizer
 
 <div class="d-flex align-items-center justify-content-between mb-3">
 	<Filter />
-
-	<button class="border-0 btn custom-primary-outline-btn" 
-			title="@Localizer["AddChecklist"]"
-			@onclick="Add">
-		<i class="oi oi-plus"></i>
-	</button>
+	<AddButton Hint="@Localizer["AddChecklist"]"
+			   OnClick="@Add" />
 </div>
 
 <div class="card-columns">

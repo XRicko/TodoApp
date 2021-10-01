@@ -16,8 +16,8 @@ using ToDoList.Extensions;
 
 namespace ToDoList.WebApi.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
+    [Route("api/[controller]")]
     public class CategoriesController : Base
     {
         private readonly IDistributedCache cache;

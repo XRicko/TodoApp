@@ -42,9 +42,14 @@ namespace ToDoList.Core.Mediator.Handlers.Users
                 UnitOfWork.Repository.Add(user);
                 await UnitOfWork.SaveAsync();
 
-                var defaultCheckilst = new Checklist { Name = "Untitled", UserId = user.Id };
+                var defaultProject = new Project { Name = "Untitled", UserId = user.Id };
 
-                UnitOfWork.Repository.Add(defaultCheckilst);
+                UnitOfWork.Repository.Add(defaultProject);
+                await UnitOfWork.SaveAsync();
+
+                var defaultChecklist = new Checklist { Name = "Untitled", ProjectId = defaultProject.Id };
+
+                UnitOfWork.Repository.Add(defaultChecklist);
                 await UnitOfWork.SaveAsync();
             }
 

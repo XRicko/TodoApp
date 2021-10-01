@@ -14,6 +14,7 @@ namespace ToDoList.Infrastructure.Data
         }
 
         public virtual DbSet<Category> Categories { get; set; }
+        public virtual DbSet<Project> Projects { get; set; }
         public virtual DbSet<Checklist> Checklists { get; set; }
         public virtual DbSet<Image> Images { get; set; }
         public virtual DbSet<Status> Statuses { get; set; }
@@ -30,6 +31,7 @@ namespace ToDoList.Infrastructure.Data
             modelBuilder.ApplyConfiguration(new ImageConfig());
             modelBuilder.ApplyConfiguration(new CategoryConfig());
             modelBuilder.ApplyConfiguration(new StatusConfig());
+            modelBuilder.ApplyConfiguration(new ProjectConfig());
             modelBuilder.ApplyConfiguration(new ChecklistConfig());
             modelBuilder.ApplyConfiguration(new ChecklistConfig());
             modelBuilder.ApplyConfiguration(new TodoItemConfig());

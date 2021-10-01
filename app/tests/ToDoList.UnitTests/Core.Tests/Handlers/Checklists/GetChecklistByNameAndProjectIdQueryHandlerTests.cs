@@ -14,23 +14,28 @@ using Xunit;
 
 namespace Core.Tests.Handlers.Checklists
 {
-    public class GetChecklistByNameAndUserIdQueryHandlerTests : HandlerBaseForTests
+    public class GetChecklistByNameAndProjectIdQueryHandlerTests : HandlerBaseForTests
     {
-        private readonly GetChecklistByNameAndUserIdQueryHandler handler;
+        private readonly GetChecklistByNameAndProjectIdQueryHandler handler;
 
         private readonly string name;
-        private readonly int userId;
+        private readonly int projectId;
 
         private readonly IQueryable<Checklist> checklists;
 
-        public GetChecklistByNameAndUserIdQueryHandlerTests()
+        public GetChecklistByNameAndProjectIdQueryHandlerTests()
         {
-            handler = new GetChecklistByNameAndUserIdQueryHandler(UnitOfWorkMock.Object, Mapper);
+            handler = new GetChecklistByNameAndProjectIdQueryHandler(UnitOfWorkMock.Object, Mapper);
 
             name = "Some name";
-            userId = 13;
+            projectId = 13;
 
-            checklists = GetSampleChecklists().AsQueryable();
+            checklists = new List<Checklist>
+            {
+                new Checklist { Id = 69, Name= name, ProjectId = projectId },
+                new Checklist { Id = 3, Name= "Work", ProjectId = projectId },
+                new Checklist { Id = 5, Name= "Birthday", ProjectId = 2 }
+            }.AsQueryable();
 
             RepoMock.Setup(x => x.GetAll<Checklist>())
                     .Returns(checklists)
@@ -41,7 +46,7 @@ namespace Core.Tests.Handlers.Checklists
         public async Task Handle_ReturnsNullGivenInvalidValues()
         {
             // Act
-            var actual = await handler.Handle(new GetChecklistByNameAndUserIdQuery(name, 420), new CancellationToken());
+            var actual = await handler.Handle(new GetChecklistByNameAndProjectIdQuery(name, 420), new CancellationToken());
 
             // Assert
             actual.Should().BeNull();
@@ -52,24 +57,14 @@ namespace Core.Tests.Handlers.Checklists
         public async Task Handle_ReturnsChecklistResponeByNameAndUserIdGivenProperValues()
         {
             // Arrange
-            ChecklistResponse expected = new(69, name, userId);
+            ChecklistResponse expected = new(69, name, projectId);
 
             // Act
-            var actual = await handler.Handle(new GetChecklistByNameAndUserIdQuery(name, userId), new CancellationToken());
+            var actual = await handler.Handle(new GetChecklistByNameAndProjectIdQuery(name, projectId), new CancellationToken());
 
             // Assert
             actual.Should().Be(expected);
             RepoMock.Verify();
-        }
-
-        private IEnumerable<Checklist> GetSampleChecklists()
-        {
-            return new List<Checklist>
-            {
-                new Checklist { Id = 69, Name= name, UserId = userId },
-                new Checklist { Id = 3, Name= "Work", UserId = userId },
-                new Checklist { Id = 5, Name= "Birthday", UserId = 2 }
-            };
         }
     }
 }

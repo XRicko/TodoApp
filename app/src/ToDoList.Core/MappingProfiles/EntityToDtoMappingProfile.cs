@@ -48,6 +48,10 @@ namespace ToDoList.Core.MappingProfiles
 
             CreateMap<Status, StatusResponse>();
 
+            CreateMap<Project, ProjectResponse>();
+            CreateMap<ProjectCreateRequest, Project>(MemberList.Source);
+            CreateMap<ProjectUpdateRequest, Project>(MemberList.Source);
+
             CreateMap<Checklist, ChecklistResponse>();
             CreateMap<ChecklistCreateRequest, Checklist>(MemberList.Source);
             CreateMap<ChecklistUpdateRequest, Checklist>(MemberList.Source);

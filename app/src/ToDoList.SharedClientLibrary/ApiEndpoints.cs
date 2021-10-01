@@ -14,8 +14,12 @@
         public const string Categories = "Categories";
         public const string CategoryByName = $"{Categories}/{GetByName}";
 
+        public const string Projects = "Projects";
+        public const string ProjectByName = $"{Projects}/{GetByName}";
+
         public const string Checklists = "Checklists";
-        public const string ChecklistByNameAndUserId = $"{Checklists}/{GetByName}AndUserId";
+        public const string ChecklistsByProjectId = $"{Checklists}/GetByProjectId";
+        public const string ChecklistByProjectIdAndName = $"{ChecklistsByProjectId}AndName";
 
         public const string Images = "Images";
         public const string ImageByName = $"{Images}/{GetByName}";

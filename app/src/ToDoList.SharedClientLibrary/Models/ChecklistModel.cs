@@ -2,8 +2,6 @@
 {
     public class ChecklistModel : BaseModel
     {
-        public int UserId { get; set; }
-
-        public string UserName { get; set; }
+        public int ProjectId { get; set; }
     }
 }

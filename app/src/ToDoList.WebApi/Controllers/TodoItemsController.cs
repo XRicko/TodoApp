@@ -20,9 +20,9 @@ using ToDoList.Extensions;
 
 namespace ToDoList.WebApi.Controllers
 {
+    [ApiController]
     [Authorize]
     [Route("api/[controller]")]
-    [ApiController]
     public class TodoItemsController : Base
     {
         private readonly IDistributedCache cache;

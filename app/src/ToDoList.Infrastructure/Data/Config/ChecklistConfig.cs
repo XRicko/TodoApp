@@ -1,5 +1,4 @@
-﻿
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 using ToDoList.Core.Entities;
@@ -12,16 +11,17 @@ namespace ToDoList.Infrastructure.Data.Config
         {
             builder.ToTable("Checklist");
 
-            builder.HasIndex(e => new { e.Name, e.UserId })
-                .IsUnique();
+            builder.HasIndex(e => new { e.Name, e.ProjectId })
+                   .IsUnique();
 
             builder.Property(e => e.Name)
+                   .IsRequired()
                    .HasMaxLength(75);
 
-            builder.HasOne(d => d.User)
+            builder.HasOne(d => d.Project)
                    .WithMany(p => p.Checklists)
-                   .HasForeignKey(d => d.UserId)
-                   .OnDelete(DeleteBehavior.ClientSetNull);
+                   .HasForeignKey(d => d.ProjectId)
+                   .OnDelete(DeleteBehavior.ClientCascade);
         }
     }
 }

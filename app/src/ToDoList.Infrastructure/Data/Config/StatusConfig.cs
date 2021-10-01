@@ -1,5 +1,4 @@
-﻿
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 using ToDoList.Core.Entities;
@@ -13,11 +12,11 @@ namespace ToDoList.Infrastructure.Data.Config
             builder.ToTable("Status");
 
             builder.HasIndex(e => e.Name)
-                .IsUnique();
+                   .IsUnique();
 
             builder.Property(e => e.Name)
-                .IsRequired()
-                .HasMaxLength(75);
+                   .IsRequired()
+                   .HasMaxLength(75);
 
             builder.HasData(new Status { Id = 1, Name = "Planned", IsDone = false },
                             new Status { Id = 2, Name = "Ongoing", IsDone = false },

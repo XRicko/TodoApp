@@ -23,6 +23,8 @@ namespace ToDoList.Extensions
 
         public static async Task<T> GetRecordAsync<T>(this IDistributedCache cache, string recordId)
         {
+            _ = cache ?? throw new ArgumentNullException(nameof(cache));
+
             string jsonData = await cache.GetStringAsync(recordId);
 
             return jsonData is not null

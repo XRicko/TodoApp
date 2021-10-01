@@ -1,5 +1,4 @@
-﻿
-using FluentValidation;
+﻿using FluentValidation;
 
 using ToDoList.Core.Mediator.Requests.Update;
 
@@ -16,7 +15,7 @@ namespace ToDoList.Core.Validators.UpdateRequests
                 .NotEmpty()
                 .Length(3, 75);
 
-            RuleFor(x => x.UserId)
+            RuleFor(x => x.ProjectId)
                 .GreaterThanOrEqualTo(1);
         }
     }

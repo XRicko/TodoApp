@@ -50,7 +50,7 @@ namespace Core.Tests.Handlers.TodoItems
                 {
                     Id = id,
                     Name = "Complete some course",
-                    Checklist = new Checklist { Id = 12, Name = "Chores", UserId = 4 },
+                    Checklist = new Checklist { Id = 12, Name = "Chores", ProjectId = 4 },
                     Category = new Category(),
                     Status = new Status { Id = 2, Name = "Planned" },
                     Image = new Image { Id = 12, Name = "rand.jpg", Path = imagePath },

@@ -1,10 +1,13 @@
 ﻿@page "/"
 
+@using ToDoList.SharedClientLibrary
+@using ToDoList.BlazorClient.Components.Projects
+
 @inject IStringLocalizer<General> Localizer
 
 <AuthorizeView>
 	<Authorized>
-		<Checklists />
+		<Projects />
 	</Authorized>
 	<NotAuthorized>
 		<h1>@Localizer["Greetings"]</h1>

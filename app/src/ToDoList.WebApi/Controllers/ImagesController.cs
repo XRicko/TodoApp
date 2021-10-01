@@ -15,8 +15,8 @@ using ToDoList.WebApi.Validators;
 
 namespace ToDoList.WebApi.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
+    [Route("api/[controller]")]
     public class ImagesController : Base
     {
         private readonly IFileStorage fileStorage;

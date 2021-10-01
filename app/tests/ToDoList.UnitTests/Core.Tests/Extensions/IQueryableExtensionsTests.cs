@@ -39,7 +39,7 @@ namespace Core.Tests.Extensions
             {
                 Id = 2,
                 Name = "Visit",
-                Checklist = new Checklist { Id = 13, Name = "Chores", UserId = 1 },
+                Checklist = new Checklist { Id = 13, Name = "Chores", ProjectId = 1 },
                 ChecklistId = 13,
                 StartDate = DateTime.Now.AddDays(-2),
                 Status = new Status { Id = 1, Name = "Planned", IsDone = false },

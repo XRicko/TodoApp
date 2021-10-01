@@ -28,7 +28,7 @@ namespace ToDoList.Core.Mediator.Handlers.Checklists
 
             bool recordExists = UnitOfWork.Repository.GetAll<Checklist>()
                                                      .Any(e => e.Name == request.Request.Name
-                                                               && e.UserId == request.Request.UserId);
+                                                               && e.ProjectId == request.Request.ProjectId);
 
             if (!recordExists)
             {

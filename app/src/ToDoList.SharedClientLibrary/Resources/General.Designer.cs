@@ -79,6 +79,15 @@ namespace ToDoList.SharedClientLibrary.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Add project.
+        /// </summary>
+        public static string AddProject {
+            get {
+                return ResourceManager.GetString("AddProject", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Add task.
         /// </summary>
         public static string AddTask {
@@ -313,7 +322,7 @@ namespace ToDoList.SharedClientLibrary.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Search tasks.
+        ///   Looks up a localized string similar to Search for items.
         /// </summary>
         public static string SearchPlaceholder {
             get {

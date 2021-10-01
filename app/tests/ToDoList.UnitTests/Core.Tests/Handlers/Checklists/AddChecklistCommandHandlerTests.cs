@@ -31,9 +31,9 @@ namespace Core.Tests.Handlers.Checklists
         public async Task Handle_AddsChecklistGivenNew()
         {
             // Arrange
-            int userId = 1;
+            int projectId = 1;
 
-            var newChecklist = new ChecklistCreateRequest(name, userId);
+            var newChecklist = new ChecklistCreateRequest(name, projectId);
 
             var checklists = new List<Checklist> { new Checklist { Id = 12, Name = "Chores" } }.AsQueryable();
 
@@ -46,7 +46,7 @@ namespace Core.Tests.Handlers.Checklists
 
             // Assert
             RepoMock.Verify();
-            RepoMock.Verify(x => x.Add(It.Is<Checklist>(e => e.Name == name && e.UserId == userId)), Times.Once);
+            RepoMock.Verify(x => x.Add(It.Is<Checklist>(e => e.Name == name && e.ProjectId == projectId)), Times.Once);
 
             UnitOfWorkMock.Verify(x => x.SaveAsync(), Times.Once);
         }
@@ -55,10 +55,10 @@ namespace Core.Tests.Handlers.Checklists
         public async Task Handle_DoesntAddChecklistGivenExisting()
         {
             // Arrange
-            int userId = 2;
+            int projectId = 2;
 
-            var existingChecklist = new Checklist { Id = 3, Name = name, UserId = userId };
-            var request = new ChecklistCreateRequest(name, userId);
+            var existingChecklist = new Checklist { Id = 3, Name = name, ProjectId = projectId };
+            var request = new ChecklistCreateRequest(name, projectId);
 
             var checklists = new List<Checklist> { existingChecklist }.AsQueryable();
 
@@ -71,7 +71,7 @@ namespace Core.Tests.Handlers.Checklists
 
             // Assert
             RepoMock.Verify();
-            RepoMock.Verify(x => x.Add(It.Is<Checklist>(e => e.Name == name && e.UserId == userId)), Times.Never);
+            RepoMock.Verify(x => x.Add(It.Is<Checklist>(e => e.Name == name && e.ProjectId == projectId)), Times.Never);
 
             UnitOfWorkMock.Verify(x => x.SaveAsync(), Times.Never);
         }

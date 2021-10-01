@@ -4,7 +4,7 @@
 @model ToDoList.MvcClient.ViewModels.IndexViewModel
 
 @{
-    int userId = Model.ChecklistModels.First().UserId;
+    int projectId = Model.ChecklistModels.First().ProjectId;
 
     IEnumerable<TodoItemModel> GetActiveTodoItems(int checklistId) =>
         Model.TodoItems.Where(x => x.ChecklistId == checklistId && x.StatusName != "Done");
@@ -61,7 +61,7 @@
     }
 
     <div class="ml-auto text-center">
-        <button onclick="showPopup('@Url.Action("CreateOrUpdate", "Checklist", new { userId }, Context.Request.Scheme)', '@Localizer["NewChecklist"]')"
+        <button onclick="showPopup('@Url.Action("CreateOrUpdate", "Checklist", new { projectId }, Context.Request.Scheme)', '@Localizer["NewChecklist"]')"
                 class="btn btn-primary">
             @Localizer["NewChecklist"]
         </button>

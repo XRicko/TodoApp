@@ -18,7 +18,6 @@ namespace Core.Tests.Handlers.Checklists
         private readonly RemoveChecklistCommandHandler removeChecklistHandler;
 
         private readonly int id;
-        private readonly string defaultName;
 
         private readonly IQueryable<Checklist> checklists;
 
@@ -27,7 +26,6 @@ namespace Core.Tests.Handlers.Checklists
             removeChecklistHandler = new RemoveChecklistCommandHandler(UnitOfWorkMock.Object, Mapper);
 
             id = 9;
-            defaultName = "Untitled";
 
             checklists = GetSampleChecklists().AsQueryable();
         }
@@ -48,8 +46,7 @@ namespace Core.Tests.Handlers.Checklists
             // Arrange
             RepoMock.Verify();
             RepoMock.Verify(x => x.Remove(It.Is<Checklist>(x => x.Id == id)), Times.Once);
-            RepoMock.Verify(x => x.Remove(It.Is<TodoItem>(i => i.ChecklistId == id)),
-                            Times.Exactly(checklistToDelete.TodoItems.Count));
+            RepoMock.Verify(x => x.Remove(It.Is<TodoItem>(i => i.ChecklistId == id)), Times.Exactly(checklistToDelete.TodoItems.Count));
 
             UnitOfWorkMock.Verify(x => x.SaveAsync(), Times.Once);
         }
@@ -71,28 +68,6 @@ namespace Core.Tests.Handlers.Checklists
             RepoMock.Verify();
             RepoMock.Verify(x => x.Remove(It.IsAny<Checklist>()), Times.Never);
             RepoMock.Verify(x => x.Remove(It.IsAny<TodoItem>()), Times.Never);
-
-            UnitOfWorkMock.Verify(x => x.SaveAsync(), Times.Never);
-        }
-
-        [Fact]
-        public async Task Handle_DoesntDeleteChecklistGivenDefaultName()
-        {
-            // Arrange
-            int defaultId = 1;
-            var defaultChecklist = checklists.SingleOrDefault(x => x.Name == defaultName);
-
-            RepoMock.Setup(x => x.GetAll<Checklist>())
-                    .Returns(checklists);
-
-            // Act
-            await removeChecklistHandler.Handle(new RemoveCommand<Checklist>(defaultId), new CancellationToken());
-
-            // Assert
-            RepoMock.Verify(x => x.Remove(It.IsAny<Checklist>()), Times.Never);
-            RepoMock.Verify(x => x.Remove(It.Is<TodoItem>(i => i.ChecklistId == defaultId)), Times.Never);
-
-            UnitOfWorkMock.Verify(x => x.SaveAsync(), Times.Never);
         }
 
         private List<Checklist> GetSampleChecklists()
@@ -119,16 +94,6 @@ namespace Core.Tests.Handlers.Checklists
                     TodoItems = new List<TodoItem>
                     {
                         new TodoItem { Name = "Clean a room", ChecklistId = 5 },
-                    }
-                },
-                new Checklist
-                {
-                    Id = 1,
-                    Name = defaultName,
-
-                    TodoItems = new List<TodoItem>
-                    {
-                        new TodoItem {Name = "Something", ChecklistId = 1}
                     }
                 }
             };

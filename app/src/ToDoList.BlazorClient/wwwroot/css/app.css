@@ -102,6 +102,20 @@ input:-webkit-autofill:active {
     }
 }
 
+.card {
+    border-color: var(--border-color);
+    background-color: transparent;
+    transition: all .1s ease-in;
+}
+
+.card-header {
+    background: var(--header-background);
+}
+
+.card-body {
+    background: var(--card-background);
+}
+
 .form-control, .form-control:focus, button {
     background-color: var(--input-background);
     color: var(--color);

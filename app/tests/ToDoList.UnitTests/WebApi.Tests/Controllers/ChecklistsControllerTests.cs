@@ -1,16 +1,10 @@
 ﻿using System.Collections.Generic;
-using System.Security.Claims;
-using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
 using FluentAssertions;
 
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Caching.Distributed;
-using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Options;
 
 using Moq;
 
@@ -29,66 +23,34 @@ namespace WebApi.Tests.Controllers
 {
     public class ChecklistsControllerTests : ApiControllerBaseForTests
     {
-        private readonly IDistributedCache cache;
         private readonly ChecklistsController checklistsController;
 
-        private readonly int userId;
-        private readonly string recordKey;
+        private readonly int projectId;
 
         public ChecklistsControllerTests() : base()
         {
-            var opts = Options.Create(new MemoryDistributedCacheOptions());
-            cache = new MemoryDistributedCache(opts);
+            checklistsController = new ChecklistsController(MediatorMock.Object);
 
-            checklistsController = new ChecklistsController(MediatorMock.Object, cache);
-
-            var contextMock = new Mock<HttpContext>();
-            checklistsController.ControllerContext.HttpContext = contextMock.Object;
-
-            userId = 2;
-            recordKey = $"Checklists_User_{userId}";
-
-            var claim = new Claim(ClaimTypes.NameIdentifier, userId.ToString());
-
-            contextMock.Setup(x => x.User.FindFirst(ClaimTypes.NameIdentifier))
-                       .Returns(claim);
+            projectId = 5;
         }
 
         [Fact]
-        public async Task Get_ReturnsNewListOfChecklistResponsesByUserAndSetsCache()
+        public async Task Get_ReturnsNewListOfChecklistResponsesByProject()
         {
             // Arrange
-            var expected = GetSampleChecklistResponsesByUser();
+            var expected = GetSampleChecklistResponsesByProject();
 
-            MediatorMock.Setup(x => x.Send(new GetChecklistsByUserIdQuery(userId), It.IsAny<CancellationToken>()))
+            MediatorMock.Setup(x => x.Send(new GetChecklistsByProjectIdQuery(projectId), It.IsAny<CancellationToken>()))
                         .ReturnsAsync(expected)
                         .Verifiable();
 
             // Act
-            var actual = await checklistsController.Get();
-            var cached = JsonSerializer.Deserialize<List<ChecklistResponse>>(cache.GetString(recordKey));
+            var actual = await checklistsController.GetByProjectId(projectId);
 
             // Assert
             actual.Should().Equal(expected);
-            cached.Should().Equal(expected);
 
             MediatorMock.Verify();
-        }
-
-        [Fact]
-        public async Task Get_ReturnsListOfChecklistResponsesByUserFromCache()
-        {
-            // Arrange
-            var expected = GetSampleChecklistResponsesByUser();
-
-            cache.SetString(recordKey, JsonSerializer.Serialize(expected));
-
-            // Act
-            var actual = await checklistsController.Get();
-
-            // Assert
-            actual.Should().Equal(expected);
-            MediatorMock.Verify(x => x.Send(new GetChecklistsByUserIdQuery(userId), It.IsAny<CancellationToken>()), Times.Never);
         }
 
         [Fact]
@@ -129,22 +91,40 @@ namespace WebApi.Tests.Controllers
         }
 
         [Fact]
-        public async Task GetByNameAndUserId_ReturnsNullChecklistResponseGivenInvalidData()
+        public async Task GetByNameAndProjectId_ReturnsNullGivenInvalidData()
         {
             // Arrange
             string name = "Name";
 
-            MediatorMock.Setup(x => x.Send(new GetChecklistByNameAndUserIdQuery(name, userId), It.IsAny<CancellationToken>()))
+            MediatorMock.Setup(x => x.Send(new GetChecklistByNameAndProjectIdQuery(name, projectId), It.IsAny<CancellationToken>()))
                         .ReturnsAsync(() => null)
                         .Verifiable();
 
             // Act
-            var actual = await checklistsController.GetByNameAndUserId(name);
+            var actual = await checklistsController.GetByProjectIdAndName(name, projectId);
 
             // Assert
             actual.Value.Should().BeNull();
             MediatorMock.Verify();
+        }
 
+        [Fact]
+        public async Task GetByNameAndProjectId_ReturnsChecklistResponseGivenValidData()
+        {
+            // Arrange
+            string name = "Name";
+            ChecklistResponse expected = new(42, name, projectId);
+
+            MediatorMock.Setup(x => x.Send(new GetChecklistByNameAndProjectIdQuery(name, projectId), It.IsAny<CancellationToken>()))
+                        .ReturnsAsync(expected)
+                        .Verifiable();
+
+            // Act
+            var actual = await checklistsController.GetByProjectIdAndName(name, projectId);
+
+            // Assert
+            actual.Value.Should().Be(expected);
+            MediatorMock.Verify();
         }
 
         [Fact]
@@ -152,15 +132,12 @@ namespace WebApi.Tests.Controllers
         {
             // Arrange
             var createRequest = new ChecklistCreateRequest("Essential", 2);
-            var responses = GetSampleChecklistResponsesByUser();
-
-            cache.SetString(recordKey, JsonSerializer.Serialize(responses));
+            var responses = GetSampleChecklistResponsesByProject();
 
             // Act
             var result = await checklistsController.Add(createRequest);
 
             // Assert
-            cache.Get(recordKey).Should().BeNull();
             result.Should().BeAssignableTo<NoContentResult>();
 
             MediatorMock.Verify(x => x.Send(new AddCommand<ChecklistCreateRequest>(createRequest), It.IsAny<CancellationToken>()), Times.Once);
@@ -171,15 +148,12 @@ namespace WebApi.Tests.Controllers
         {
             // Arrange
             int id = 3;
-            var responses = GetSampleChecklistResponsesByUser();
-
-            cache.SetString(recordKey, JsonSerializer.Serialize(responses));
+            var responses = GetSampleChecklistResponsesByProject();
 
             // Act
             var result = await checklistsController.Delete(id);
 
             // Assert
-            cache.Get(recordKey).Should().BeNull();
             result.Should().BeAssignableTo<NoContentResult>();
 
             MediatorMock.Verify(x => x.Send(new RemoveCommand<Checklist>(id), It.IsAny<CancellationToken>()), Times.Once);
@@ -190,27 +164,24 @@ namespace WebApi.Tests.Controllers
         {
             // Arrange
             var updateRequest = new ChecklistUpdateRequest(4, "Chores", 9);
-            var responses = GetSampleChecklistResponsesByUser();
-
-            cache.SetString(recordKey, JsonSerializer.Serialize(responses));
+            var responses = GetSampleChecklistResponsesByProject();
 
             // Act
             var result = await checklistsController.Update(updateRequest);
 
             // Assert
-            cache.Get(recordKey).Should().BeNull();
             result.Should().BeAssignableTo<NoContentResult>();
 
             MediatorMock.Verify(x => x.Send(new UpdateCommand<ChecklistUpdateRequest>(updateRequest), It.IsAny<CancellationToken>()), Times.Once);
         }
 
 
-        private List<ChecklistResponse> GetSampleChecklistResponsesByUser()
+        private List<ChecklistResponse> GetSampleChecklistResponsesByProject()
         {
             return new List<ChecklistResponse>
             {
-                new(1, "Birthday", userId),
-                new(3, "Chores", userId)
+                new(1, "Birthday", projectId),
+                new(3, "Chores", projectId)
             };
         }
     }

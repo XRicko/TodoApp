@@ -107,8 +107,8 @@ namespace Core.Tests.Handlers.TodoItems
 
         private IEnumerable<TodoItem> GetSampleTodoItems()
         {
-            var checklist1 = new Checklist { Id = 12, Name = "Chores", UserId = 4 };
-            var checklist2 = new Checklist { Id = 22, Name = "Chores", UserId = 12 };
+            var checklist1 = new Checklist { Id = 12, Name = "Chores", Project = new Project { UserId = 4 } };
+            var checklist2 = new Checklist { Id = 22, Name = "Chores", Project = new Project { UserId = 12 } };
 
             var todoItems = new List<TodoItem>
             {

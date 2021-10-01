@@ -214,13 +214,11 @@ namespace WebApi.Tests.Controllers
 
         private List<TodoItemResponse> GetSampleTodoItemResponsesByUserAndChecklist()
         {
-            var todoItems = new List<TodoItemResponse>
+            return new List<TodoItemResponse>
             {
                 new(4123, "Do smth", DateTime.Now, checklistId, "Chores", 1, "Planned"),
                 new(23, "Clean", DateTime.Now, checklistId, "Chores", 1, "Planned")
             };
-
-            return todoItems;
         }
     }
 }

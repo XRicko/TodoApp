@@ -6,14 +6,14 @@ namespace ToDoList.Core.Entities
 {
     public class Checklist : BaseEntity
     {
-        public int UserId { get; set; }
+        public int ProjectId { get; set; }
 
         public Checklist() : base()
         {
             TodoItems = new HashSet<TodoItem>();
         }
 
-        public User User { get; set; }
+        public Project Project { get; set; }
         public ICollection<TodoItem> TodoItems { get; set; }
     }
 }

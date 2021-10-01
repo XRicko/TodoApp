@@ -8,12 +8,13 @@ namespace ToDoList.Core.Entities
     {
         public User() : base()
         {
-            Checklists = new HashSet<Checklist>();
+            Projects = new HashSet<Project>();
+            RefreshTokens = new HashSet<RefreshToken>();
         }
 
         public string Password { get; set; }
 
-        public ICollection<Checklist> Checklists { get; set; }
+        public ICollection<Project> Projects { get; set; }
         public ICollection<RefreshToken> RefreshTokens { get; set; }
     }
 }

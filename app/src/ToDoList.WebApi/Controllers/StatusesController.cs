@@ -14,8 +14,8 @@ using ToDoList.Extensions;
 
 namespace ToDoList.WebApi.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
+    [Route("api/[controller]")]
     public class StatusesController : Base
     {
         private readonly IDistributedCache cache;

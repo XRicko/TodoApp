@@ -17,7 +17,7 @@ namespace ToDoList.Infrastructure.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
-                .HasAnnotation("ProductVersion", "5.0.5")
+                .HasAnnotation("ProductVersion", "5.0.10")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
             modelBuilder.Entity("ToDoList.Core.Entities.Category", b =>
@@ -48,19 +48,19 @@ namespace ToDoList.Infrastructure.Migrations
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasMaxLength(75)
                         .HasColumnType("nvarchar(75)");
 
-                    b.Property<int>("UserId")
+                    b.Property<int>("ProjectId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("ProjectId");
 
-                    b.HasIndex("Name", "UserId")
-                        .IsUnique()
-                        .HasFilter("[Name] IS NOT NULL");
+                    b.HasIndex("Name", "ProjectId")
+                        .IsUnique();
 
                     b.ToTable("Checklist");
                 });
@@ -88,6 +88,31 @@ namespace ToDoList.Infrastructure.Migrations
                         .IsUnique();
 
                     b.ToTable("Image");
+                });
+
+            modelBuilder.Entity("ToDoList.Core.Entities.Project", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(175)
+                        .HasColumnType("nvarchar(175)");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("Name", "UserId")
+                        .IsUnique();
+
+                    b.ToTable("Project");
                 });
 
             modelBuilder.Entity("ToDoList.Core.Entities.RefreshToken", b =>
@@ -231,9 +256,21 @@ namespace ToDoList.Infrastructure.Migrations
 
             modelBuilder.Entity("ToDoList.Core.Entities.Checklist", b =>
                 {
-                    b.HasOne("ToDoList.Core.Entities.User", "User")
+                    b.HasOne("ToDoList.Core.Entities.Project", "Project")
                         .WithMany("Checklists")
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.ClientCascade)
+                        .IsRequired();
+
+                    b.Navigation("Project");
+                });
+
+            modelBuilder.Entity("ToDoList.Core.Entities.Project", b =>
+                {
+                    b.HasOne("ToDoList.Core.Entities.User", "User")
+                        .WithMany("Projects")
                         .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.ClientCascade)
                         .IsRequired();
 
                     b.Navigation("User");
@@ -295,6 +332,11 @@ namespace ToDoList.Infrastructure.Migrations
                     b.Navigation("TodoItems");
                 });
 
+            modelBuilder.Entity("ToDoList.Core.Entities.Project", b =>
+                {
+                    b.Navigation("Checklists");
+                });
+
             modelBuilder.Entity("ToDoList.Core.Entities.Status", b =>
                 {
                     b.Navigation("TodoItems");
@@ -302,7 +344,7 @@ namespace ToDoList.Infrastructure.Migrations
 
             modelBuilder.Entity("ToDoList.Core.Entities.User", b =>
                 {
-                    b.Navigation("Checklists");
+                    b.Navigation("Projects");
 
                     b.Navigation("RefreshTokens");
                 });

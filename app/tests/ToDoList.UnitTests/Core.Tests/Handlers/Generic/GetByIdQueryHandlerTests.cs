@@ -20,7 +20,7 @@ namespace Core.Tests.Handlers.Generic
 
         private readonly int id;
         private readonly string name;
-        private readonly int userId;
+        private readonly int projectId;
 
         public GetByIdQueryHandlerTests() : base()
         {
@@ -28,15 +28,15 @@ namespace Core.Tests.Handlers.Generic
 
             id = 3;
             name = "Chores";
-            userId = 85;
+            projectId = 85;
         }
 
         [Fact]
         public async Task Handle_ReturnsResponseGivenProperId()
         {
             // Arrange
-            var expected = new ChecklistResponse(id, name, userId);
-            var entity = new Checklist { Id = id, Name = name, UserId = userId };
+            var expected = new ChecklistResponse(id, name, projectId);
+            var entity = new Checklist { Id = id, Name = name, ProjectId = projectId };
 
             RepoMock.Setup(x => x.FindByPrimaryKeysAsync<Checklist>(id))
                     .ReturnsAsync(entity);

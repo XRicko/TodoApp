@@ -1,5 +1,7 @@
 ﻿@using ToDoList.SharedClientLibrary
 
+@attribute [Authorize]
+
 @inject IStringLocalizer<General> Localizer
 @inject IApiInvoker ApiInvoker
 
@@ -9,7 +11,14 @@
             data-toggle="dropdown" 
             aria-haspopup="true"
             aria-expanded="false">
-        @Localizer["Status"]
+        @if (Localizer["Status"] == StatusName)
+        {
+            @StatusName
+        }
+        else
+        {
+            @Localizer[$"{StatusName}Status"]
+        }
     </button>
 
     <div class="dropdown-menu dropdown-menu-right custom-dropdown-menu" aria-labelledby="dropdown-btn">

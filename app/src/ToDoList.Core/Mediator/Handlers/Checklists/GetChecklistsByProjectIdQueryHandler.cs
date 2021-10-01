@@ -17,18 +17,18 @@ using ToDoList.SharedKernel.Interfaces;
 
 namespace ToDoList.Core.Mediator.Handlers.Checklists
 {
-    internal class GetChecklistsByUserIdQueryHandler : HandlerBase, IRequestHandler<GetChecklistsByUserIdQuery, IEnumerable<ChecklistResponse>>
+    internal class GetChecklistsByProjectIdQueryHandler : HandlerBase, IRequestHandler<GetChecklistsByProjectIdQuery, IEnumerable<ChecklistResponse>>
     {
-        public GetChecklistsByUserIdQueryHandler(IUnitOfWork unitOfWork, IMapper mapper) : base(unitOfWork, mapper)
+        public GetChecklistsByProjectIdQueryHandler(IUnitOfWork unitOfWork, IMapper mapper) : base(unitOfWork, mapper)
         {
         }
 
-        public async Task<IEnumerable<ChecklistResponse>> Handle(GetChecklistsByUserIdQuery request, CancellationToken cancellationToken)
+        public async Task<IEnumerable<ChecklistResponse>> Handle(GetChecklistsByProjectIdQuery request, CancellationToken cancellationToken)
         {
             _ = request ?? throw new ArgumentNullException(nameof(request));
 
             return await Task.FromResult(UnitOfWork.Repository.GetAll<Checklist>()
-                                                              .Where(x => x.UserId == request.UserId)
+                                                              .Where(x => x.ProjectId == request.ProjectId)
                                                               .ProjectTo<ChecklistResponse>(Mapper.ConfigurationProvider)
                                                               .ToList());
         }

@@ -22,12 +22,12 @@ namespace ToDoList.MvcClient.Controllers
         }
 
         // GET: ChecklistController/CreateOrUpdate
-        public async Task<ActionResult> CreateOrUpdateAsync(int id = 0, int userId = 0)
+        public async Task<ActionResult> CreateOrUpdateAsync(int id = 0, int projectId = 0)
         {
             if (id == 0)
-                return View("CreateOrUpdate", new ChecklistModel { UserId = userId });
+                return View("CreateOrUpdate", new ChecklistModel { ProjectId = projectId });
 
-            var checklistModel = await apiInvoker.GetItemAsync<ChecklistModel>($"{ApiEndpoints.Checklists}/{id}");
+            var checklistModel = await apiInvoker.GetItemAsync<ChecklistModel>($"{ApiEndpoints.ChecklistsByProjectId}/{id}");
             return checklistModel is not null
                 ? View("CreateOrUpdate", checklistModel)
                 : NotFound();

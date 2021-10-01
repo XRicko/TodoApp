@@ -15,7 +15,7 @@ using ToDoList.SharedClientLibrary;
 using ToDoList.SharedClientLibrary.Models;
 using ToDoList.SharedClientLibrary.Services;
 
-namespace ToDoList.BlazorClient.Components.Checklist
+namespace ToDoList.BlazorClient.Pages
 {
     public partial class Checklists
     {
@@ -32,6 +32,9 @@ namespace ToDoList.BlazorClient.Components.Checklist
         private IApiInvoker ApiInvoker { get; set; }
         [Inject]
         private Notifier Notifier { get; set; }
+
+        [Parameter]
+        public int ProjectId { get; set; }
 
         protected override async Task OnInitializedAsync() => await LoadChecklists();
 
@@ -56,7 +59,7 @@ namespace ToDoList.BlazorClient.Components.Checklist
 
             if (checklist is null)
             {
-                checklist = new ChecklistModel { UserId = userId };
+                checklist = new ChecklistModel { ProjectId = userId };
                 checklistModels.Add(checklist);
             }
 
@@ -78,7 +81,7 @@ namespace ToDoList.BlazorClient.Components.Checklist
             await LoadChecklists();
         }
 
-        private async Task LoadChecklists() => 
-            checklistModels = (await ApiInvoker.GetItemsAsync<ChecklistModel>(ApiEndpoints.Checklists)).ToList();
+        private async Task LoadChecklists() =>
+            checklistModels = (await ApiInvoker.GetItemsAsync<ChecklistModel>($"{ApiEndpoints.ChecklistsByProjectId}/{ProjectId}")).ToList();
     }
 }

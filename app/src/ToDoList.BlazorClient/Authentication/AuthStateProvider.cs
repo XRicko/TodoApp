@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Net;
+using System.Net.Http;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
@@ -40,7 +42,14 @@ namespace ToDoList.BlazorClient.Authentication
 
             if (DateTimeOffset.Now > expiryDate)
             {
-                await apiInvoker.RefreshTokenAsync();
+                try
+                {
+                    await apiInvoker.RefreshTokenAsync();
+                }
+                catch (HttpRequestException ex) when (ex.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    return anonymous;
+                }
 
                 token = await tokenStorage.GetTokenAsync("accessToken");
                 claimsPrincipal = tokenParser.GetClaimsPrincipal(token);

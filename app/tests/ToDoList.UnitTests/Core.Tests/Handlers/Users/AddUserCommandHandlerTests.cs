@@ -58,7 +58,7 @@ namespace Core.Tests.Handlers.Users
             RepoMock.Verify(x => x.Add(It.Is(expression)), Times.Once);
             RepoMock.Verify(x => x.Add(It.Is<Checklist>(l => l.Name == "Untitled")), Times.Once);
 
-            UnitOfWorkMock.Verify(x => x.SaveAsync(), Times.Exactly(2));
+            UnitOfWorkMock.Verify(x => x.SaveAsync(), Times.Exactly(3));
         }
 
         [Fact]
