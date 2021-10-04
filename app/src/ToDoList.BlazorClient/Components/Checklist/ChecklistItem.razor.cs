@@ -53,13 +53,13 @@ namespace ToDoList.BlazorClient.Components.Checklist
             return base.SetParametersAsync(parameters);
         }
 
-        protected override async Task OnInitializedAsync()
+        protected override void OnInitialized()
         {
-            await LoadTodoItems();
-
             Notifier.ChecklistChanged += OnTodoItemsChanged;
             Notifier.FilterChosen += OnFilterChosen;
         }
+
+        protected override async Task OnParametersSetAsync() => await LoadTodoItems();
 
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {

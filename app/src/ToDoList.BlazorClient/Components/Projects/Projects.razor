@@ -2,14 +2,13 @@
 
 @inject IStringLocalizer<General> Localizer
 
-<div class="d-flex align-items-center justify-content-between mb-3">
-	<SearchInput />
+<div class="text-right mb-3">
 	<AddButton Hint="@Localizer["AddProject"]"
 			   OnClick="@Add"/>
 </div>
 
 <div class="card-columns">
-	<Virtualize Items="@projects" Context="project">
+	<Virtualize Items="@State.Projects" Context="project">
 		<ProjectItem @key="project.Id"
 					 ProjectModel="@project"
 					 OnDeleteCallback="Delete" />

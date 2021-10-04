@@ -1,4 +1,6 @@
-﻿using ToDoList.SharedClientLibrary.Models;
+﻿using System.Collections.Generic;
+
+using ToDoList.SharedClientLibrary.Models;
 
 namespace ToDoList.BlazorClient.State
 {
@@ -10,5 +12,7 @@ namespace ToDoList.BlazorClient.State
         public string SearchTerm { get; set; }
 
         public TodoItemModel DraggedTodoItem { get; set; }
+
+        public List<ProjectModel> Projects { get; set; } = new List<ProjectModel>();
     }
 }

@@ -1,6 +1,7 @@
-﻿@inherits LayoutComponentBase
+﻿@using System.Security.Claims
 
-@using System.Security.Claims
+@inherits LayoutComponentBase
+@implements IDisposable
 
 @inject IStringLocalizer<General> Localizer
 @inject NavigationManager NavManager
@@ -37,19 +38,21 @@
 @code {
 	private bool inRegisterPage;
 
+	private EventHandler<LocationChangedEventArgs> handler;
+
     protected override void OnInitialized()
 	{
-		inRegisterPage = false;
-		NavManager.LocationChanged += CheckLocation;
+		CheckIfRegisterPage();
+
+		handler = (s, e) => CheckIfRegisterPage();
+		NavManager.LocationChanged += handler;
 	}
 
-	private void CheckLocation(object sender, LocationChangedEventArgs args)
+	private void CheckIfRegisterPage()
 	{
-		if (args.Location.Contains("register", StringComparison.OrdinalIgnoreCase))
-			inRegisterPage = true;
-		else
-			inRegisterPage = false;
-
+		inRegisterPage = NavManager.Uri.Contains("register", StringComparison.OrdinalIgnoreCase);
 		StateHasChanged();
 	}
+
+	public void Dispose() => NavManager.LocationChanged -= handler;
 }

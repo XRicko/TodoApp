@@ -2,6 +2,7 @@
 @using ToDoList.SharedClientLibrary
 
 @inject IApiInvoker ApiInvoker
+@inject StateContainer State
 
 <div class="card item">
 	<a href="project/@project.Id" class="stretched-link"></a>
@@ -30,8 +31,6 @@
 	[Parameter]
 	public EventCallback<int> OnDeleteCallback { get; set; }
 
-	private void Click() => Console.WriteLine("click");
-
 	public override Task SetParametersAsync(ParameterView parameters)
 	{
 		if (parameters.TryGetValue<ProjectModel>(nameof(ProjectModel), out var value))
@@ -45,7 +44,9 @@
 		if (project.Id == 0)
 		{
 			await ApiInvoker.PostItemAsync(ApiEndpoints.Projects, project);
+
 			project = await ApiInvoker.GetItemAsync<ProjectModel>($"{ApiEndpoints.ProjectByName}/{project.Name}");
+			State.Projects = (await ApiInvoker.GetItemsAsync<ProjectModel>(ApiEndpoints.Projects)).ToList();
 		}
 		if (project.Id > 0)
 			await ApiInvoker.PutItemAsync(ApiEndpoints.Projects, project);

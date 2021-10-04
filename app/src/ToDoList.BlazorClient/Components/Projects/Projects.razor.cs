@@ -18,7 +18,6 @@ namespace ToDoList.BlazorClient.Components.Projects
 {
     public partial class Projects : IDisposable
     {
-        private List<ProjectModel> projects = new();
         private readonly List<Func<Task>> toRunAfterRender = new();
 
         [CascadingParameter]
@@ -38,7 +37,9 @@ namespace ToDoList.BlazorClient.Components.Projects
 
         protected override async Task OnInitializedAsync()
         {
-            await LoadProjects();
+            if (!State.Projects.Any())
+                await LoadProjects();
+
             Notifier.FilterChosen += OnSearch;
         }
 
@@ -59,12 +60,12 @@ namespace ToDoList.BlazorClient.Components.Projects
             var user = authState.User;
             int userId = Convert.ToInt32(user.FindFirst(ClaimTypes.NameIdentifier).Value);
 
-            var project = projects.Find(x => x.Id == 0);
+            var project = State.Projects.Find(x => x.Id == 0);
 
             if (project is null)
             {
                 project = new ProjectModel { UserId = userId };
-                projects.Add(project);
+                State.Projects.Add(project);
             }
 
             toRunAfterRender.Add(() => Notifier.OnItemAdded(project));
@@ -82,7 +83,7 @@ namespace ToDoList.BlazorClient.Components.Projects
                 await ApiInvoker.DeleteItemAsync($"{ApiEndpoints.Projects}/{projectId}");
             }
 
-            await LoadProjects();
+            State.Projects.RemoveAll(x => x.Id == projectId);
         }
 
         private async Task OnSearch()
@@ -90,12 +91,12 @@ namespace ToDoList.BlazorClient.Components.Projects
             await LoadProjects();
 
             if (!string.IsNullOrWhiteSpace(State.SearchTerm))
-                projects = projects.FindAll(x => x.Name.Contains(State.SearchTerm, StringComparison.OrdinalIgnoreCase));
+                State.Projects = State.Projects.FindAll(x => x.Name.Contains(State.SearchTerm, StringComparison.OrdinalIgnoreCase));
 
             StateHasChanged();
         }
 
-        private async Task LoadProjects() => projects = (await ApiInvoker.GetItemsAsync<ProjectModel>(ApiEndpoints.Projects)).ToList();
+        private async Task LoadProjects() => State.Projects = (await ApiInvoker.GetItemsAsync<ProjectModel>(ApiEndpoints.Projects)).ToList();
 
         public void Dispose() => Notifier.FilterChosen -= OnSearch;
     }

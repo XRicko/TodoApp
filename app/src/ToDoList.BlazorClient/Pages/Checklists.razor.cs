@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Claims;
 using System.Threading.Tasks;
 
 using Blazored.Modal.Services;
 
 using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Authorization;
 
 using ToDoList.BlazorClient.Services;
 using ToDoList.BlazorClient.Shared;
@@ -25,9 +23,6 @@ namespace ToDoList.BlazorClient.Pages
         [CascadingParameter]
         private IModalService Modal { get; set; }
 
-        [CascadingParameter]
-        private Task<AuthenticationState> AuthenticationStateTask { get; set; }
-
         [Inject]
         private IApiInvoker ApiInvoker { get; set; }
         [Inject]
@@ -36,7 +31,7 @@ namespace ToDoList.BlazorClient.Pages
         [Parameter]
         public int ProjectId { get; set; }
 
-        protected override async Task OnInitializedAsync() => await LoadChecklists();
+        protected override async Task OnParametersSetAsync() => await LoadChecklists();
 
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {
@@ -48,18 +43,13 @@ namespace ToDoList.BlazorClient.Pages
             toRunAfterRender.Clear();
         }
 
-        private async Task Add()
+        private void Add()
         {
-            var authState = await AuthenticationStateTask;
-
-            var user = authState.User;
-            int userId = Convert.ToInt32(user.FindFirst(ClaimTypes.NameIdentifier).Value);
-
             var checklist = checklistModels.Find(x => x.Id == 0);
 
             if (checklist is null)
             {
-                checklist = new ChecklistModel { ProjectId = userId };
+                checklist = new ChecklistModel { ProjectId = ProjectId };
                 checklistModels.Add(checklist);
             }
 

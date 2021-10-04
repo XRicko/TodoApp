@@ -57,10 +57,7 @@ namespace ToDoList.BlazorClient.Components.TodoItem
             return base.SetParametersAsync(parameters);
         }
 
-        protected override async Task OnInitializedAsync()
-        {
-            categories = await ApiInvoker.GetItemsAsync<CategoryModel>(ApiEndpoints.Categories);
-        }
+        protected override async Task OnInitializedAsync() => categories = await ApiInvoker.GetItemsAsync<CategoryModel>(ApiEndpoints.Categories);
 
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {

@@ -1,4 +1,13 @@
-﻿@inject IStringLocalizer<General> Localizer
+﻿@using ToDoList.BlazorClient.Services
+@using ToDoList.SharedClientLibrary
+
+@implements IDisposable
+
+@inject IStringLocalizer<General> Localizer
+@inject NavigationManager NavManager
+@inject IApiInvoker ApiInvoker
+@inject StateContainer State
+@inject Notifier Notifier
 
 <div class="top-row pl-4 navbar navbar-dark">
 	<a class="navbar-brand" href="">ToDoList.BlazorClient</a>
@@ -8,12 +17,32 @@
 </div>
 
 <div class="@NavMenuCssClass">
+	<AuthorizeView>
+		<div class="p-3">
+			<SearchInput />
+		</div>
+	</AuthorizeView>
+
 	<ul class="nav flex-column" @onclick="ToggleNavMenu">
 		<li class="nav-item px-3">
 			<NavLink class="nav-link" href="" Match="NavLinkMatch.All">
 				<span class="oi oi-home" aria-hidden="true"></span> @Localizer["Home"]
 			</NavLink>
 		</li>
+
+		<AuthorizeView>
+			@if (inProjectPage)
+			{
+				@foreach (var project in State.Projects)
+				{
+					<li class="nav-item px-3">
+						<NavLink class="nav-link" href="@($"project/{project.Id}")">
+							<span class="oi oi-pie-chart" aria-hidden="true"></span> @project.Name
+						</NavLink>
+					</li>
+				}
+			}
+		</AuthorizeView>
 	</ul>
 
 	<div class="p-3">
@@ -27,11 +56,46 @@
 
 @code {
 	private bool collapseNavMenu = true;
+	private bool inProjectPage;
 
 	private string NavMenuCssClass => collapseNavMenu ? "collapse" : null;
 
-	private void ToggleNavMenu()
+	private EventHandler<LocationChangedEventArgs> handler;
+
+    protected override void OnInitialized()
+    {
+		CheckIfProjectPage();
+
+		handler = (s, e) => CheckIfProjectPage();
+
+        NavManager.LocationChanged += handler;
+		Notifier.FilterChosen += OnSearch;
+    }
+
+    private void ToggleNavMenu()
 	{
 		collapseNavMenu = !collapseNavMenu;
 	}
+
+	private void CheckIfProjectPage()
+	{
+		inProjectPage = NavManager.Uri.Contains("project", StringComparison.OrdinalIgnoreCase);
+		StateHasChanged();
+	}
+
+	private async Task OnSearch()
+    {
+		State.Projects = (await ApiInvoker.GetItemsAsync<ProjectModel>(ApiEndpoints.Projects)).ToList();
+
+        if (!string.IsNullOrWhiteSpace(State.SearchTerm))
+            State.Projects = State.Projects.FindAll(x => x.Name.Contains(State.SearchTerm, StringComparison.OrdinalIgnoreCase));
+
+        StateHasChanged();
+    }
+
+    public void Dispose()
+    {
+        NavManager.LocationChanged -= handler;
+		Notifier.FilterChosen -= OnSearch;
+    }
 }

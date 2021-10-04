@@ -30,8 +30,8 @@ namespace ToDoList.BlazorClient
 
             builder.Services.AddScoped<IApiInvoker, ApiInvoker>();
 
-            builder.Services.AddSingleton<StateContainer>();
-            builder.Services.AddSingleton<Notifier>();
+            builder.Services.AddScoped<StateContainer>();
+            builder.Services.AddScoped<Notifier>();
 
             builder.Services.AddScoped<AuthenticationStateProvider, AuthStateProvider>();
             builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
