@@ -4,9 +4,8 @@
 @attribute [Authorize]
 
 @inject IStringLocalizer<General> Localizer
-@inject IApiInvoker ApiInvoker
-@inject Notifier Notifier
 @inject StateContainer State
+@inject Notifier Notifier
 
 <div class="d-flex">
     <div class="filter">
@@ -31,7 +30,7 @@
             </button>
 
             <div class="dropdown-menu dropdown-menu-right category-menu" aria-labelledby="dropdown-btn">
-                @foreach (var category in categories.Where(x => x.Name != State.CategoryName))
+                @foreach (var category in State.Categories.Where(x => x.Name != State.CategoryName))
                 {
                     <button class="dropdown-item custom-dropdown-item bg-category" 
                             @onclick="() => UpdateCategory(category.Name)">
@@ -50,10 +49,6 @@
 </div>
 
 @code {
-    private IEnumerable<CategoryModel> categories = Array.Empty<CategoryModel>();
-
-    protected override async Task OnInitializedAsync() => categories = await ApiInvoker.GetItemsAsync<CategoryModel>(ApiEndpoints.Categories);
-
     private async Task ResetStatus()
     {
         if (string.IsNullOrWhiteSpace(State.StatusName))

@@ -26,21 +26,19 @@ namespace ToDoList.BlazorClient.Components.TodoItem
     {
         private TodoItemModel todoItemModel;
 
-        private IEnumerable<CategoryModel> categories = Array.Empty<CategoryModel>();
-
         private bool? Checked => todoItemModel.StatusName?.Equals("Done");
 
         [CascadingParameter]
         private IModalService Modal { get; set; }
 
         [Inject]
+        private StateContainer State { get; set; }
+
+        [Inject]
         private IApiInvoker ApiInvoker { get; set; }
 
         [Inject]
         private Notifier Notifier { get; set; }
-
-        [Inject]
-        private StateContainer State { get; set; }
 
         [Inject]
         private IJSRuntime JSRuntime { get; set; }
@@ -56,8 +54,6 @@ namespace ToDoList.BlazorClient.Components.TodoItem
 
             return base.SetParametersAsync(parameters);
         }
-
-        protected override async Task OnInitializedAsync() => categories = await ApiInvoker.GetItemsAsync<CategoryModel>(ApiEndpoints.Categories);
 
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {

@@ -1,8 +1,8 @@
 ﻿@using ToDoList.BlazorClient.Services
 
 @inject IStringLocalizer<General> Localizer
-@inject Notifier Notifier
 @inject StateContainer State
+@inject Notifier Notifier
 
 <div>
     <input class="form-control standart-input" @oninput="UpdateSearchTerm" placeholder="@Localizer["SearchPlaceholder"]" />

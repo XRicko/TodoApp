@@ -17,7 +17,7 @@
 
                 <div class="category-select">
                     <select id="category-selector-@todoItemModel.Id">
-                        @foreach (var category in categories.Where(x => x.Id != todoItemModel.CategoryId))
+                        @foreach (var category in State.Categories.Where(x => x.Id != todoItemModel.CategoryId))
                         {
                             <option value="@category.Id">@category.Name</option>
                         }
@@ -117,7 +117,7 @@
                 {
                     <div class="category-select-new">
                         <select id="category-selector-@todoItemModel.Id">
-                            @foreach (var category in categories)
+                            @foreach (var category in State.Categories)
                             {
                                 <option value="@category.Id">@category.Name</option>
                             }

@@ -3,7 +3,7 @@
 @attribute [Authorize]
 
 @inject IStringLocalizer<General> Localizer
-@inject IApiInvoker ApiInvoker
+@inject StateContainer State
 
 <div class="dropdown">
     <button id="dropdown-btn"
@@ -22,7 +22,7 @@
     </button>
 
     <div class="dropdown-menu dropdown-menu-right custom-dropdown-menu" aria-labelledby="dropdown-btn">
-        @foreach (var status in statuses.Where(x => x.Name != StatusName))
+        @foreach (var status in State.Statuses.Where(x => x.Name != StatusName))
         {
             <button class="dropdown-item custom-dropdown-item @StatusModel.GetBackgroundColor(status.Name)" 
                     @onclick="() => OnStatusChanged.InvokeAsync(status)">
@@ -33,12 +33,8 @@
 </div>
 
 @code {
-    private IEnumerable<StatusModel> statuses = Array.Empty<StatusModel>();
-
     [Parameter]
     public string StatusName { get; set; }
     [Parameter]
     public EventCallback<StatusModel> OnStatusChanged { get; set; }
-
-    protected override async Task OnInitializedAsync() => statuses = await ApiInvoker.GetItemsAsync<StatusModel>(ApiEndpoints.Statuses);
 }

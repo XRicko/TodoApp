@@ -31,13 +31,13 @@ namespace ToDoList.BlazorClient.Components.Checklist
         private bool collapsed;
 
         [Inject]
+        private StateContainer State { get; set; }
+
+        [Inject]
         private IApiInvoker ApiInvoker { get; set; }
 
         [Inject]
         private Notifier Notifier { get; set; }
-
-        [Inject]
-        private StateContainer State { get; set; }
 
         [Parameter]
         public EventCallback<int> OnDeleteCallback { get; set; }

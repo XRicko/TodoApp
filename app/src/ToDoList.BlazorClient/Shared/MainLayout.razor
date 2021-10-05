@@ -1,51 +1,74 @@
 ﻿@using System.Security.Claims
+@using ToDoList.BlazorClient.Services
 
 @inherits LayoutComponentBase
 @implements IDisposable
 
 @inject IStringLocalizer<General> Localizer
 @inject NavigationManager NavManager
+@inject StateContainer State
+@inject Notifier Notifier
 
-<div class="page">
-	<div class="sidebar">
-		<NavMenu />
-	</div>
-
-	<div class="main">
-
-		<div class="top-row px-4 auth position-relative">
-			<AuthorizeView>
-				<Authorized>
-					@Localizer["Welcome"], @context.User.FindFirst(ClaimTypes.Name).Value!
-					<Logout />
-				</Authorized>
-				<NotAuthorized>
-					@if (!inRegisterPage)
-					{
-						<Login />
-						<a class="btn btn-link" href="register">@Localizer["Register"]</a>
-					}
-				</NotAuthorized>
-			</AuthorizeView>
+@if (loading)
+{
+	<span>Loading...</span>
+}
+else
+{
+	<div class="page">
+		<div class="sidebar">
+			<NavMenu />
 		</div>
 
-		<div class="content px-4">
-			@Body
+		<div class="main">
+
+			<div class="top-row px-4 auth position-relative">
+				<AuthorizeView>
+					<Authorized>
+						@Localizer["Welcome"], @context.User.FindFirst(ClaimTypes.Name).Value!
+						<Logout />
+					</Authorized>
+					<NotAuthorized>
+						@if (!inRegisterPage)
+						{
+							<Login />
+							<a class="btn btn-link" href="register">@Localizer["Register"]</a>
+						}
+					</NotAuthorized>
+				</AuthorizeView>
+			</div>
+
+			<div class="content px-4">
+				@Body
+			</div>
 		</div>
-	</div>
-</div>
+	</div>	
+}
 
 @code {
 	private bool inRegisterPage;
+	private bool loading;
 
 	private EventHandler<LocationChangedEventArgs> handler;
 
-    protected override void OnInitialized()
+	[CascadingParameter]
+	private Task<AuthenticationState> AuthenticationStateTask { get; set; }
+
+    protected override async Task OnInitializedAsync()
 	{
+		loading = true;
+
+		var authState = await AuthenticationStateTask;
+
+		if (authState.User.Identity.IsAuthenticated)
+			await State.InitAsync();
+
 		CheckIfRegisterPage();
 
 		handler = (s, e) => CheckIfRegisterPage();
 		NavManager.LocationChanged += handler;
+
+		loading = false;
 	}
 
 	private void CheckIfRegisterPage()

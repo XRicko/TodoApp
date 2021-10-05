@@ -35,13 +35,7 @@ namespace ToDoList.BlazorClient.Components.Projects
         [Inject]
         private StateContainer State { get; set; }
 
-        protected override async Task OnInitializedAsync()
-        {
-            if (!State.Projects.Any())
-                await LoadProjects();
-
-            Notifier.FilterChosen += OnSearch;
-        }
+        protected override void OnInitialized() => Notifier.FilterChosen += OnSearch;
 
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {
@@ -83,7 +77,7 @@ namespace ToDoList.BlazorClient.Components.Projects
                 await ApiInvoker.DeleteItemAsync($"{ApiEndpoints.Projects}/{projectId}");
             }
 
-            State.Projects.RemoveAll(x => x.Id == projectId);
+            await LoadProjects();
         }
 
         private async Task OnSearch()

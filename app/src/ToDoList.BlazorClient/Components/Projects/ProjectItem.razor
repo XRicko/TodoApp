@@ -1,8 +1,10 @@
 ﻿@using Blazored.Modal.Services
+@using ToDoList.BlazorClient.Services
 @using ToDoList.SharedClientLibrary
 
 @inject IApiInvoker ApiInvoker
 @inject StateContainer State
+@inject Notifier Notifier
 
 <div class="card item">
 	<a href="project/@project.Id" class="stretched-link"></a>
@@ -41,16 +43,23 @@
 
 	private async Task SubmitValid()
 	{
+		if (project.Id < 0)
+			return;
+
 		if (project.Id == 0)
 		{
 			await ApiInvoker.PostItemAsync(ApiEndpoints.Projects, project);
-
 			project = await ApiInvoker.GetItemAsync<ProjectModel>($"{ApiEndpoints.ProjectByName}/{project.Name}");
-			State.Projects = (await ApiInvoker.GetItemsAsync<ProjectModel>(ApiEndpoints.Projects)).ToList();
 		}
 		if (project.Id > 0)
 			await ApiInvoker.PutItemAsync(ApiEndpoints.Projects, project);
+
+		await Notifier.OnProjectsChanged();
 	}
 
-	private async Task Delete() => await OnDeleteCallback.InvokeAsync(project.Id);
+    private async Task Delete()
+    {
+        await OnDeleteCallback.InvokeAsync(project.Id);
+		await Notifier.OnProjectsChanged();
+    }
 }
