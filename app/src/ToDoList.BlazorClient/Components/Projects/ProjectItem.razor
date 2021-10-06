@@ -50,6 +50,10 @@
 		{
 			await ApiInvoker.PostItemAsync(ApiEndpoints.Projects, project);
 			project = await ApiInvoker.GetItemAsync<ProjectModel>($"{ApiEndpoints.ProjectByName}/{project.Name}");
+
+			int index = State.Projects.FindIndex(x => x.Name == project.Name);
+			if (index != -1)
+				State.Projects[index] = project;
 		}
 		if (project.Id > 0)
 			await ApiInvoker.PutItemAsync(ApiEndpoints.Projects, project);

@@ -35,30 +35,31 @@ namespace ToDoList.BlazorClient.Components
         [Parameter]
         public string ResetButtonClass { get; set; }
 
-        protected override void OnInitialized()
+        protected override void OnInitialized() => Notifier.ItemAdded += FocusInput;
+
+        protected override void OnParametersSet()
         {
-            originalName = Item.Name;
-
             editContext = new EditContext(Item);
-
-            Notifier.ItemAdded += FocusInput;
+            originalName = Item.Name;
         }
 
         private async Task HandleSubmit()
         {
+            if (Item.Name == originalName)
+                return;
+
             if (editContext.Validate())
                 await Submit();
-            else
+            else if (string.IsNullOrWhiteSpace(originalName))
                 await OnInvalidSubmit.InvokeAsync();
+            else
+                Item.Name = originalName;
         }
 
         private async Task Submit()
         {
-            if (Item.Name != originalName)
-            {
-                await OnValidSubmit.InvokeAsync();
-                originalName = Item.Name;
-            }
+            await OnValidSubmit.InvokeAsync();
+            originalName = Item.Name;
         }
 
         private void Reset() => Item.Name = originalName;

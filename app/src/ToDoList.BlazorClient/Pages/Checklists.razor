@@ -3,17 +3,25 @@
 @attribute [Authorize]
 
 @inject IStringLocalizer<General> Localizer
+@inject StateContainer State
 
-<div class="d-flex align-items-center justify-content-between mb-3">
-	<Filter />
-	<AddButton Hint="@Localizer["AddChecklist"]"
-			   OnClick="@Add" />
-</div>
+@if (State.Projects.Any(x => x.Id == ProjectId))
+{
+	<div class="d-flex align-items-center justify-content-between mb-3">
+		<Filter />
+		<AddButton Hint="@Localizer["AddChecklist"]"
+				   OnClick="@Add" />
+	</div>
 
-<div class="card-columns">
-	<Virtualize Items="@checklistModels" Context="checklist">
-		<ChecklistItem @key="checklist.Id"
-					   ChecklistModel="@checklist"
-					   OnDeleteCallback="@Delete" />
-	</Virtualize>
-</div>
+	<div class="card-columns">
+		<Virtualize Items="@checklistModels" Context="checklist">
+			<ChecklistItem @key="checklist.Id"
+						   ChecklistModel="@checklist"
+						   OnDeleteCallback="@Delete" />
+		</Virtualize>
+	</div>
+}
+else
+{
+	<p>Nothing to see here</p>
+}
