@@ -11,6 +11,7 @@ using ToDoList.MvcClient.Services;
 using ToDoList.SharedClientLibrary;
 using ToDoList.SharedClientLibrary.Models;
 using ToDoList.SharedClientLibrary.Services;
+using ToDoList.SharedKernel;
 
 using Xunit;
 
@@ -23,15 +24,24 @@ namespace MvcClient.Tests.Services
 
         private readonly List<ChecklistModel> checklists;
 
+        private readonly int projectId;
+
         public CreateViewModelServiceTests()
         {
             apiInvokerMock = new Mock<IApiInvoker>();
             createViewModelService = new ViewModelService(apiInvokerMock.Object);
 
+            projectId = 13;
+            var defaultProject = new ProjectModel { Id = projectId, Name = Constants.Untitled, UserId = 1 };
+
             checklists = GetChecklistsSample();
 
-            apiInvokerMock.Setup(x => x.GetItemsAsync<ChecklistModel>(ApiEndpoints.ChecklistsByProjectId))
+            apiInvokerMock.Setup(x => x.GetItemsAsync<ChecklistModel>($"{ApiEndpoints.ChecklistsByProjectId}/{projectId}"))
                           .ReturnsAsync(checklists)
+                          .Verifiable();
+
+            apiInvokerMock.Setup(x => x.GetItemAsync<ProjectModel>($"{ApiEndpoints.ProjectByName}/{Constants.Untitled}"))
+                          .ReturnsAsync(defaultProject)
                           .Verifiable();
         }
 
@@ -50,7 +60,9 @@ namespace MvcClient.Tests.Services
 
             // Assert
             indexViewModel.TodoItems.Should().Equal(todoItems);
+
             indexViewModel.ChecklistModels.Should().Equal(checklists);
+            indexViewModel.ChecklistModels.Should().OnlyContain(x => x.ProjectId == projectId);
 
             apiInvokerMock.Verify();
         }
@@ -74,6 +86,8 @@ namespace MvcClient.Tests.Services
             indexViewModel.TodoItems.Should().OnlyContain(x => x.CategoryName == categoryName);
 
             indexViewModel.ChecklistModels.Should().Equal(checklists);
+            indexViewModel.ChecklistModels.Should().OnlyContain(x => x.ProjectId == projectId);
+
             indexViewModel.SelectedCategory.Should().Be(categoryName);
 
             apiInvokerMock.Verify();
@@ -98,6 +112,8 @@ namespace MvcClient.Tests.Services
             indexViewModel.TodoItems.Should().OnlyContain(x => x.StatusName == statusName);
 
             indexViewModel.ChecklistModels.Should().Equal(checklists);
+            indexViewModel.ChecklistModels.Should().OnlyContain(x => x.ProjectId == projectId);
+
             indexViewModel.SelectedStatus.Should().Be(statusName);
 
             apiInvokerMock.Verify();
@@ -124,6 +140,8 @@ namespace MvcClient.Tests.Services
             indexViewModel.TodoItems.Should().Contain(x => x.StatusName == statusName);
 
             indexViewModel.ChecklistModels.Should().Equal(checklists);
+            indexViewModel.ChecklistModels.Should().OnlyContain(x => x.ProjectId == projectId);
+
             indexViewModel.SelectedCategory.Should().Be(categoryName);
             indexViewModel.SelectedStatus.Should().Be(statusName);
 
@@ -156,6 +174,8 @@ namespace MvcClient.Tests.Services
 
             // Assert
             viewModel.ChecklistModels.Should().Equal(checklists);
+            viewModel.ChecklistModels.Should().OnlyContain(x => x.ProjectId == projectId);
+
             viewModel.StatusModels.Should().Equal(statuses);
             viewModel.StatusModels.Should().Equal(statuses);
 
@@ -176,13 +196,13 @@ namespace MvcClient.Tests.Services
             };
         }
 
-        private static List<ChecklistModel> GetChecklistsSample()
+        private List<ChecklistModel> GetChecklistsSample()
         {
             return new List<ChecklistModel>
             {
-                new ChecklistModel { Id = 1, Name = "University", ProjectId = 1 },
-                new ChecklistModel { Id = 2, Name = "Nirhtday", ProjectId = 1 },
-                new ChecklistModel { Id = 3, Name = "Chores", ProjectId = 1 }
+                new ChecklistModel { Id = 1, Name = "University", ProjectId = projectId },
+                new ChecklistModel { Id = 2, Name = "Nirhtday", ProjectId = projectId },
+                new ChecklistModel { Id = 3, Name = "Chores", ProjectId = projectId }
             };
         }
 

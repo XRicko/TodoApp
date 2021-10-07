@@ -3,16 +3,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using Blazored.Modal.Services;
-using Microsoft.AspNetCore.Components.Authorization;
-using Microsoft.AspNetCore.Components;
-using ToDoList.BlazorClient.Shared;
-using ToDoList.SharedClientLibrary.Models;
 
-using ToDoList.SharedClientLibrary;
+using Blazored.Modal.Services;
+
+using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Authorization;
+
 using ToDoList.BlazorClient.Services;
-using ToDoList.SharedClientLibrary.Services;
+using ToDoList.BlazorClient.Shared;
 using ToDoList.BlazorClient.State;
+using ToDoList.SharedClientLibrary;
+using ToDoList.SharedClientLibrary.Models;
+using ToDoList.SharedClientLibrary.Services;
 
 namespace ToDoList.BlazorClient.Components.Projects
 {

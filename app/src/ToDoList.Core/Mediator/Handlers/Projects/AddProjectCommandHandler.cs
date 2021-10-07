@@ -11,6 +11,7 @@ using ToDoList.Core.Entities;
 using ToDoList.Core.Mediator.Commands.Generics;
 using ToDoList.Core.Mediator.Handlers.Generics;
 using ToDoList.Core.Mediator.Requests.Create;
+using ToDoList.SharedKernel;
 using ToDoList.SharedKernel.Interfaces;
 
 namespace ToDoList.Core.Mediator.Handlers.Projects
@@ -36,7 +37,7 @@ namespace ToDoList.Core.Mediator.Handlers.Projects
                 UnitOfWork.Repository.Add(entity);
                 await UnitOfWork.SaveAsync();
 
-                var defaultChecklist = new Checklist { Name = "Untitled", ProjectId = entity.Id };
+                var defaultChecklist = new Checklist { Name = Constants.Untitled, ProjectId = entity.Id };
 
                 UnitOfWork.Repository.Add(defaultChecklist);
                 await UnitOfWork.SaveAsync();

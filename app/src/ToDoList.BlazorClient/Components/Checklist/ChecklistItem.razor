@@ -33,7 +33,7 @@
             <AddButton Hint="@Localizer["AddTask"]"
                        OnClick="@AddTodoItem" />
 
-            @if (checklistModel.Name != "Untitled")
+            @if (checklistModel.Name != SharedKernel.Constants.Untitled)
             {
                 <DeleteButton OnClick="@Delete" />
             }

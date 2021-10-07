@@ -9,6 +9,7 @@ using ToDoList.Core.Entities;
 using ToDoList.Core.Mediator.Handlers.Projects;
 using ToDoList.Core.Mediator.Queries.Projects;
 using ToDoList.Core.Mediator.Response;
+using ToDoList.SharedKernel;
 
 using Xunit;
 
@@ -27,7 +28,7 @@ namespace Core.Tests.Handlers.Projects
         {
             handler = new GetProjectByNameAndUserIdQueryHandler(UnitOfWorkMock.Object, Mapper);
 
-            name = "Untitled";
+            name = Constants.Untitled;
             userId = 58;
 
             projects = new List<Project>

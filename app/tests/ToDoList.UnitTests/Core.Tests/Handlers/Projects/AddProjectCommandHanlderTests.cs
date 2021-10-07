@@ -9,6 +9,7 @@ using ToDoList.Core.Entities;
 using ToDoList.Core.Mediator.Commands.Generics;
 using ToDoList.Core.Mediator.Handlers.Projects;
 using ToDoList.Core.Mediator.Requests.Create;
+using ToDoList.SharedKernel;
 
 using Xunit;
 
@@ -47,7 +48,7 @@ namespace Core.Tests.Handlers.Projects
             // Assert
             RepoMock.Verify();
             RepoMock.Verify(x => x.Add(It.Is<Project>(e => e.Name == name && e.UserId == userId)), Times.Once);
-            RepoMock.Verify(x => x.Add(It.Is<Checklist>(l => l.Name == "Untitled")), Times.Once);
+            RepoMock.Verify(x => x.Add(It.Is<Checklist>(l => l.Name == Constants.Untitled)), Times.Once);
 
             UnitOfWorkMock.Verify(x => x.SaveAsync(), Times.Exactly(2));
         }
@@ -73,7 +74,7 @@ namespace Core.Tests.Handlers.Projects
             // Assert
             RepoMock.Verify();
             RepoMock.Verify(x => x.Add(It.Is<Checklist>(e => e.Name == name && e.ProjectId == userId)), Times.Never);
-            RepoMock.Verify(x => x.Add(It.Is<Checklist>(l => l.Name == "Untitled")), Times.Never);
+            RepoMock.Verify(x => x.Add(It.Is<Checklist>(l => l.Name == Constants.Untitled)), Times.Never);
 
             UnitOfWorkMock.Verify(x => x.SaveAsync(), Times.Never);
         }

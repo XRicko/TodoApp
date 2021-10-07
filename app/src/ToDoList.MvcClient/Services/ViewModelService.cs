@@ -7,6 +7,7 @@ using ToDoList.MvcClient.ViewModels;
 using ToDoList.SharedClientLibrary;
 using ToDoList.SharedClientLibrary.Models;
 using ToDoList.SharedClientLibrary.Services;
+using ToDoList.SharedKernel;
 
 namespace ToDoList.MvcClient.Services
 {
@@ -21,8 +22,10 @@ namespace ToDoList.MvcClient.Services
 
         public async Task<IndexViewModel> CreateIndexViewModelAsync(string categoryName = null, string statusName = null)
         {
+            var defaultProject = await apiInvoker.GetItemAsync<ProjectModel>($"{ApiEndpoints.ProjectByName}/{Constants.Untitled}");
+
             var todoItems = await apiInvoker.GetItemsAsync<TodoItemModelWithFile>(ApiEndpoints.TodoItems);
-            var checklists = await apiInvoker.GetItemsAsync<ChecklistModel>(ApiEndpoints.ChecklistsByProjectId);
+            var checklists = await apiInvoker.GetItemsAsync<ChecklistModel>($"{ApiEndpoints.ChecklistsByProjectId}/{defaultProject.Id}");
 
             if (!string.IsNullOrWhiteSpace(categoryName))
                 todoItems = todoItems.Where(x => string.Equals(x.CategoryName, categoryName, StringComparison.CurrentCultureIgnoreCase));
@@ -45,7 +48,9 @@ namespace ToDoList.MvcClient.Services
         {
             _ = todoItemModel ?? throw new ArgumentNullException(nameof(todoItemModel));
 
-            var checklists = await apiInvoker.GetItemsAsync<ChecklistModel>(ApiEndpoints.ChecklistsByProjectId);
+            var defaultProject = await apiInvoker.GetItemAsync<ProjectModel>($"{ApiEndpoints.ProjectByName}/{Constants.Untitled}");
+
+            var checklists = await apiInvoker.GetItemsAsync<ChecklistModel>($"{ApiEndpoints.ChecklistsByProjectId}/{defaultProject.Id}");
             var categories = await apiInvoker.GetItemsAsync<CategoryModel>(ApiEndpoints.Categories);
             var statuses = await apiInvoker.GetItemsAsync<StatusModel>(ApiEndpoints.Statuses);
 

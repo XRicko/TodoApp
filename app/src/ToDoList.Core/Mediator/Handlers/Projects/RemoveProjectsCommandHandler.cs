@@ -11,6 +11,7 @@ using ToDoList.Core.Entities;
 using ToDoList.Core.Extensions;
 using ToDoList.Core.Mediator.Commands.Generics;
 using ToDoList.Core.Mediator.Handlers.Generics;
+using ToDoList.SharedKernel;
 using ToDoList.SharedKernel.Interfaces;
 
 namespace ToDoList.Core.Mediator.Handlers.Projects
@@ -38,7 +39,7 @@ namespace ToDoList.Core.Mediator.Handlers.Projects
                                                })
                                                .SingleOrDefault(x => x.Id == request.Id);
 
-            if (project is not null && project.Name != "Untitled")
+            if (project is not null && project.Name != Constants.Untitled)
             {
                 foreach (var checklist in project.Checklists)
                 {

@@ -17,8 +17,15 @@ namespace ToDoList.Core.Services
 
         public async Task<string> GetAddressAsync(double latitude, double longitude)
         {
-            IEnumerable<Address> addresses = await geocoder.ReverseGeocodeAsync(latitude, longitude);
-            return addresses.First().FormattedAddress;
+            try
+            {
+                IEnumerable<Address> addresses = await geocoder.ReverseGeocodeAsync(latitude, longitude);
+                return addresses.First().FormattedAddress;
+            }
+            catch
+            {
+                return "Unable to get address";
+            }
         }
     }
 }

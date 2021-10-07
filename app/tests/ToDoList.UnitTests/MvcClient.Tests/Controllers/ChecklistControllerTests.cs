@@ -42,10 +42,10 @@ namespace MvcClient.Tests.Controllers
         }
 
         [Fact]
-        public async Task CreateOrUpdate_ReturnsCreateViewWithNewChecklistGivenNewId()
+        public async Task CreateOrUpdate_ReturnsCreateViewWithNewChecklistGivenNoName()
         {
             // Act
-            var result = await checklistController.CreateOrUpdateAsync(0, projectId) as ViewResult;
+            var result = await checklistController.CreateOrUpdateAsync(projectId) as ViewResult;
             var checklist = (ChecklistModel)result.ViewData.Model;
 
             // Assert
@@ -54,18 +54,19 @@ namespace MvcClient.Tests.Controllers
         }
 
         [Fact]
-        public async Task Get_CreateOrUpdate_ReturnsCreateViewWithExistingChecklistGivenExistingId()
+        public async Task Get_CreateOrUpdate_ReturnsCreateViewWithExistingChecklistGivenExistingName()
         {
             // Arrange
-            int existingChecklistId = 3;
-            var checklist = new ChecklistModel { Id = 3, Name = "Chores", ProjectId = projectId };
+            string name = "Chores";
+            var checklist = new ChecklistModel { Id = 3, Name = name, ProjectId = projectId };
 
-            ApiInvokerMock.Setup(x => x.GetItemAsync<ChecklistModel>($"{ApiEndpoints.ChecklistsByProjectId}/{existingChecklistId}"))
+            ApiInvokerMock.Setup(x => x.GetItemAsync<ChecklistModel>(
+                $"{ApiEndpoints.ChecklistByProjectIdAndName}?name={name}&projectId={projectId}"))
                           .ReturnsAsync(checklist)
                           .Verifiable();
 
             // Act
-            var result = await checklistController.CreateOrUpdateAsync(existingChecklistId, projectId) as ViewResult;
+            var result = await checklistController.CreateOrUpdateAsync(projectId, name) as ViewResult;
             var modelFromView = (ChecklistModel)result.ViewData.Model;
 
             // Assert
@@ -76,17 +77,18 @@ namespace MvcClient.Tests.Controllers
         }
 
         [Fact]
-        public async Task Get_CreateOrUpdate_ReturnsNotFoundGivenInvalidId()
+        public async Task Get_CreateOrUpdate_ReturnsNotFoundGivenInvalidName()
         {
             // Arrange
-            int invalidId = 45;
+            string invalidName = "invalid";
 
-            ApiInvokerMock.Setup(x => x.GetItemAsync<ChecklistModel>($"{ApiEndpoints.ChecklistsByProjectId}/{invalidId}"))
+            ApiInvokerMock.Setup(x => x.GetItemAsync<ChecklistModel>(
+                $"{ApiEndpoints.ChecklistByProjectIdAndName}?name={invalidName}&projectId={projectId}"))
                           .ReturnsAsync(() => null)
                           .Verifiable();
 
             // Act
-            var result = await checklistController.CreateOrUpdateAsync(invalidId, projectId) as NotFoundResult;
+            var result = await checklistController.CreateOrUpdateAsync(projectId, invalidName) as NotFoundResult;
 
             // Assert
             result.StatusCode.Should().Be((int)HttpStatusCode.NotFound);
@@ -118,7 +120,7 @@ namespace MvcClient.Tests.Controllers
 
             IndexViewModel indexViewModel = new();
 
-            ApiInvokerMock.Setup(x => x.PostItemAsync(ApiEndpoints.ChecklistsByProjectId, newChecklist))
+            ApiInvokerMock.Setup(x => x.PostItemAsync(ApiEndpoints.Checklists, newChecklist))
                           .Callback(() =>
                           {
                               newChecklist.Id = checklists.Last().Id++;
@@ -150,7 +152,7 @@ namespace MvcClient.Tests.Controllers
 
             IndexViewModel indexViewModel = new();
 
-            ApiInvokerMock.Setup(x => x.PutItemAsync(ApiEndpoints.ChecklistsByProjectId, checklistToUpdate))
+            ApiInvokerMock.Setup(x => x.PutItemAsync(ApiEndpoints.Checklists, checklistToUpdate))
                           .Callback(() =>
                           {
                               checklists.SingleOrDefault(c => c.Id == checklistToUpdate.Id).Name = checklistToUpdate.Name;
@@ -185,7 +187,7 @@ namespace MvcClient.Tests.Controllers
 
             IndexViewModel indexViewModel = new();
 
-            ApiInvokerMock.Setup(x => x.DeleteItemAsync($"{ApiEndpoints.ChecklistsByProjectId}/{idToDelete}"))
+            ApiInvokerMock.Setup(x => x.DeleteItemAsync($"{ApiEndpoints.Checklists}/{idToDelete}"))
                           .Callback(() =>
                           {
                               checklists.Remove(checklists.SingleOrDefault(c => c.Id == idToDelete));

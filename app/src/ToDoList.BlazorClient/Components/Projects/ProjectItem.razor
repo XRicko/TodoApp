@@ -16,7 +16,7 @@
 						  OnValidSubmit="@SubmitValid"
 						  OnInvalidSubmit="@Delete"/>
 
-			@if (project.Name != "Untitled")
+			@if (project.Name != SharedKernel.Constants.Untitled)
 			{
 				<DeleteButton OnClick="@Delete" />
 			}
