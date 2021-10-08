@@ -14,14 +14,14 @@ using ToDoList.SharedKernel.Interfaces;
 
 namespace ToDoList.Core.Mediator.Handlers.Checklists
 {
-    internal class RemoveChecklistCommandHandler : RemoveCommandHandler<Checklist>
+    internal class RemoveChecklistByIdCommandHandler : RemoveByIdCommandHandler<Checklist>
     {
-        public RemoveChecklistCommandHandler(IUnitOfWork unitOfWork, IMapper mapper) : base(unitOfWork, mapper)
+        public RemoveChecklistByIdCommandHandler(IUnitOfWork unitOfWork, IMapper mapper) : base(unitOfWork, mapper)
         {
 
         }
 
-        public override async Task<Unit> Handle(RemoveCommand<Checklist> request, CancellationToken cancellationToken)
+        public override async Task<Unit> Handle(RemoveByIdCommand<Checklist> request, CancellationToken cancellationToken)
         {
             _ = request ?? throw new ArgumentNullException(nameof(request));
 

@@ -151,9 +151,23 @@ input:-webkit-autofill:active {
     color: var(--color);
 }
 
-.custom-primary-btn, .custom-primary-btn:hover {
+.custom-primary-btn, .custom-primary-btn:hover, .custom-secondary-btn, .custom-secondary-btn:hover {
     color: var(--hovered-btn-text);
-    background-color: rgb(var(--primary-btn-rgb));
+}
+
+    .custom-primary-btn, .custom-primary-btn:hover {
+        background-color: rgb(var(--primary-btn-rgb));
+    }
+
+    .custom-secondary-btn, .custom-secondary-btn:hover {
+        background-color: rgb(var(--secondary-btn-rgb));
+    }
+
+.custom-danger-outline-btn:hover, .custom-danger-outline-btn:active, .custom-danger-outline-btn.active,
+.custom-primary-outline-btn:hover, .custom-primary-outline-btn:active, .custom-primary-outline-btn.active,
+.custom-secondary-outline-btn:hover, .custom-secondary-outline-btn:active, .custom-secondary-outline-btn.active,
+.custom-success-btn, .custom-success-btn:hover {
+    color: var(--hovered-btn-text);
 }
 
 .custom-primary-outline-btn {
@@ -162,7 +176,6 @@ input:-webkit-autofill:active {
 }
 
     .custom-primary-outline-btn:hover, .custom-primary-outline-btn:active, .custom-primary-outline-btn.active {
-        color: var(--hovered-btn-text);
         background-color: rgb(var(--primary-btn-rgb));
     }
 
@@ -176,7 +189,6 @@ input:-webkit-autofill:active {
 }
 
     .custom-danger-outline-btn:hover, .custom-danger-outline-btn:active, .custom-danger-outline-btn.active {
-        color: var(--hovered-btn-text);
         background-color: rgb(var(--danger-rgb));
     }
 
@@ -191,16 +203,14 @@ input:-webkit-autofill:active {
 }
 
     .custom-secondary-outline-btn:hover, .custom-secondary-outline-btn:active, .custom-secondary-outline-btn.active {
-        color: var(--hovered-btn-text);
         background-color: rgb(var(--secondary-btn-rgb));
     }
 
-    .custom-secondary-outline-btn:focus {
+    .custom-secondary-btn:focus, .custom-secondary-outline-btn:focus {
         box-shadow: 0 0 0 0.2rem rgba(var(--secondary-btn-rgb), 50%);
     }
 
 .custom-success-btn, .custom-success-btn:hover {
-    color: var(--hovered-btn-text);
     background-color: rgb(var(--success-rgb));
 }
 

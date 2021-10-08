@@ -10,6 +10,7 @@ using TestExtensions;
 
 using ToDoList.MvcClient.Controllers;
 using ToDoList.SharedClientLibrary.Services;
+using ToDoList.SharedKernel;
 
 using Xunit;
 
@@ -32,7 +33,7 @@ namespace MvcClient.Tests.Controllers
             // Arrange
             string viewName = "Index";
 
-            tokenStorageMock.SetupGettingToken("refreshToken", "");
+            tokenStorageMock.SetupGettingToken(Constants.RefreshToken, "");
 
             // Act
             var result = await homeController.IndexAsync() as ViewResult;
@@ -48,7 +49,7 @@ namespace MvcClient.Tests.Controllers
             // Arrange
             string controllerName = "Todo";
 
-            tokenStorageMock.SetupGettingToken("refreshToken", "efjiJdjWFdojfw.PWQKDpfjejvnj");
+            tokenStorageMock.SetupGettingToken(Constants.RefreshToken, "efjiJdjWFdojfw.PWQKDpfjejvnj");
 
             // Act
             var result = await homeController.IndexAsync() as RedirectToActionResult;

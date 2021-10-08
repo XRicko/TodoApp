@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components.Authorization;
 
 using ToDoList.SharedClientLibrary.Services;
+using ToDoList.SharedKernel;
 
 namespace ToDoList.BlazorClient.Authentication
 {
@@ -31,8 +32,8 @@ namespace ToDoList.BlazorClient.Authentication
 
         public override async Task<AuthenticationState> GetAuthenticationStateAsync()
         {
-            string token = await tokenStorage.GetTokenAsync("accessToken");
-            string refreshToken = await tokenStorage.GetTokenAsync("refreshToken");
+            string token = await tokenStorage.GetTokenAsync(Constants.AccessToken);
+            string refreshToken = await tokenStorage.GetTokenAsync(Constants.RefreshToken);
 
             if (string.IsNullOrWhiteSpace(token) || string.IsNullOrWhiteSpace(refreshToken))
                 return anonymous;
@@ -45,14 +46,14 @@ namespace ToDoList.BlazorClient.Authentication
                 try
                 {
                     await apiInvoker.RefreshTokenAsync();
+
+                    token = await tokenStorage.GetTokenAsync(Constants.AccessToken);
+                    claimsPrincipal = tokenParser.GetClaimsPrincipal(token);
                 }
                 catch (HttpRequestException ex) when (ex.StatusCode == HttpStatusCode.Unauthorized)
                 {
                     return anonymous;
                 }
-
-                token = await tokenStorage.GetTokenAsync("accessToken");
-                claimsPrincipal = tokenParser.GetClaimsPrincipal(token);
             }
 
             await apiInvoker.AddAuthorizationHeaderAsync(token);

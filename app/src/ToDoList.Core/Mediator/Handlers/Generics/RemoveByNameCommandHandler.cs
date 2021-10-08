@@ -13,18 +13,20 @@ using ToDoList.SharedKernel.Interfaces;
 
 namespace ToDoList.Core.Mediator.Handlers.Generics
 {
-    internal class RemoveCommandHandler<TEntity> : HandlerBase, IRequestHandler<RemoveCommand<TEntity>>
+    internal class RemoveByNameCommandHandler<TEntity> : HandlerBase, IRequestHandler<RemoveByNameCommand<TEntity>>
         where TEntity : BaseEntity, new()
     {
-        public RemoveCommandHandler(IUnitOfWork unitOfWork, IMapper mapper) : base(unitOfWork, mapper) { }
+        public RemoveByNameCommandHandler(IUnitOfWork unitOfWork, IMapper mapper) : base(unitOfWork, mapper)
+        {
+        }
 
-        public virtual async Task<Unit> Handle(RemoveCommand<TEntity> request, CancellationToken cancellationToken)
+        public async Task<Unit> Handle(RemoveByNameCommand<TEntity> request, CancellationToken cancellationToken)
         {
             _ = request ?? throw new ArgumentNullException(nameof(request));
 
             var entity = UnitOfWork.Repository.GetAll<TEntity>()
-                                              .Select(x => new TEntity { Id = x.Id })
-                                              .SingleOrDefault(x => x.Id == request.Id);
+                                              .Select(x => new TEntity { Id = x.Id, Name = x.Name })
+                                              .SingleOrDefault(x => x.Name == request.Name);
 
             if (entity is not null)
             {

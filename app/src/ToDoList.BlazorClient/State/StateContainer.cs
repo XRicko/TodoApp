@@ -35,5 +35,13 @@ namespace ToDoList.BlazorClient.State
             Statuses = (await apiInvoker.GetItemsAsync<StatusModel>(ApiEndpoints.Statuses)).ToList();
             Categories = (await apiInvoker.GetItemsAsync<CategoryModel>(ApiEndpoints.Categories)).ToList();
         }
+
+        public void Reset()
+        {
+            Projects.Clear();
+
+            Statuses.Clear();
+            Categories.Clear();
+        }
     }
 }

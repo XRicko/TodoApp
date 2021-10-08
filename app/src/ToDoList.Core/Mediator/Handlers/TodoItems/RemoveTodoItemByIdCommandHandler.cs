@@ -6,9 +6,9 @@ using ToDoList.SharedKernel.Interfaces;
 
 namespace ToDoList.Core.Mediator.Handlers.TodoItems
 {
-    internal class RemoveTodoItemCommandHandler : RemoveCommandHandler<TodoItem>
+    internal class RemoveTodoItemByIdCommandHandler : RemoveByIdCommandHandler<TodoItem>
     {
-        public RemoveTodoItemCommandHandler(IUnitOfWork unitOfWork, IMapper mapper) : base(unitOfWork, mapper)
+        public RemoveTodoItemByIdCommandHandler(IUnitOfWork unitOfWork, IMapper mapper) : base(unitOfWork, mapper)
         {
 
         }

@@ -18,19 +18,22 @@ namespace Core.Tests.Services
         private readonly GeocodingService geocodingService;
         private readonly Mock<IGeocoder> geocoderMock;
 
+        private readonly double latitide;
+        private readonly double longitude;
+
         public GeocodingServiceTests()
         {
             geocoderMock = new Mock<IGeocoder>();
             geocodingService = new GeocodingService(geocoderMock.Object);
+
+            latitide = 69;
+            longitude = 42.0;
         }
 
         [Fact]
         public async Task GetAddressAsync_ReturnsAddressGivenCoordinates()
         {
             // Arrange
-            double latitide = 69;
-            double longitude = 42.0;
-
             string address1 = "Unnamed road 49";
             string address2 = "Some road 27";
 
@@ -53,6 +56,22 @@ namespace Core.Tests.Services
 
             // Assert
             actual.Should().Be(expectedAddressMock.Object.FormattedAddress);
+            geocoderMock.Verify();
+        }
+
+        [Fact]
+        public async Task GetAddressAsync_ReturnsMessageIfCantGetAddress()
+        {
+            // Arrange
+            geocoderMock.Setup(x => x.ReverseGeocodeAsync(latitide, longitude))
+                        .ThrowsAsync(new System.Exception())
+                        .Verifiable();
+
+            // Act
+            string actual = await geocodingService.GetAddressAsync(latitide, longitude);
+
+            // Assert
+            actual.Should().Be("Unable to get address");
             geocoderMock.Verify();
         }
     }

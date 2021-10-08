@@ -152,7 +152,7 @@ namespace ToDoList.BlazorClient.Components.TodoItem
             ModalParameters parameters = new();
             parameters.Add(nameof(GeoCoordinate), todoItemModel.GeoPoint);
 
-            var result = await Modal.Show<LocationSelector>("Choose location for the task", parameters).Result;
+            var result = await Modal.Show<LocationSelector>(Localizer["LocationPrompt"], parameters).Result;
 
             if (result.Cancelled)
                 return;

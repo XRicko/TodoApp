@@ -20,10 +20,10 @@ namespace Core.Tests.Validators.CreateRequests
         [Theory]
         [InlineData("", 87)]
         [InlineData("chores", 0)]
-        public void ShouldHaveValidationErrorWhenInvalidValues(string name, int userId)
+        public void ShouldHaveValidationErrorWhenInvalidValues(string name, int projectId)
         {
             // Act
-            var result = validator.Validate(new ChecklistCreateRequest(name, userId));
+            var result = validator.Validate(new ChecklistCreateRequest(name, projectId));
 
             // Assert
             result.IsValid.Should().BeFalse();
@@ -33,11 +33,11 @@ namespace Core.Tests.Validators.CreateRequests
         public void ShouldNotHaveValidationErrorWhenValidValues()
         {
             // Assert
-            int userId = 5;
+            int projectId = 5;
             string name = "name";
 
             // Act
-            var result = validator.Validate(new ChecklistCreateRequest(name, userId));
+            var result = validator.Validate(new ChecklistCreateRequest(name, projectId));
 
             // Assert
             result.IsValid.Should().BeTrue();

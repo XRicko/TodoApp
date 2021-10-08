@@ -17,7 +17,9 @@ namespace ToDoList.SharedClientLibrary.Services
         Task DeleteItemAsync(string routeWithParameters);
 
         Task<AuthenticatedModel> AuthenticateUserAsync(string route, UserModel userModel);
+
         Task LogOutAsync();
+        Task LogOutEverywhereAsync();
 
         Task AddAuthorizationHeaderAsync(string token = null);
         Task RefreshTokenAsync();

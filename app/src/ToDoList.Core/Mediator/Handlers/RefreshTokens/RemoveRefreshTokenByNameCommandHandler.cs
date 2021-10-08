@@ -6,9 +6,9 @@ using ToDoList.SharedKernel.Interfaces;
 
 namespace ToDoList.Core.Mediator.Handlers.RefreshTokens
 {
-    internal class RemoveRefreshTokenCommandHandler : RemoveCommandHandler<RefreshToken>
+    internal class RemoveRefreshTokenByNameCommandHandler : RemoveByNameCommandHandler<RefreshToken>
     {
-        public RemoveRefreshTokenCommandHandler(IUnitOfWork unitOfWork, IMapper mapper) : base(unitOfWork, mapper)
+        public RemoveRefreshTokenByNameCommandHandler(IUnitOfWork unitOfWork, IMapper mapper) : base(unitOfWork, mapper)
         {
         }
     }

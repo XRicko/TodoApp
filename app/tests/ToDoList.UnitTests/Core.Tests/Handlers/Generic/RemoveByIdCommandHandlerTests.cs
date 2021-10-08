@@ -13,18 +13,18 @@ using Xunit;
 
 namespace Core.Tests.Handlers.Generic
 {
-    public class RemoveCommandHandlerTests : HandlerBaseForTests
+    public class RemoveByIdCommandHandlerTests : HandlerBaseForTests
     {
-        private readonly RemoveTodoItemCommandHandler removeCommandHandler;
+        private readonly RemoveTodoItemByIdCommandHandler removeCommandHandler;
 
         private readonly int id;
         private readonly string name;
 
         private readonly IQueryable<TodoItem> todoItems;
 
-        public RemoveCommandHandlerTests() : base()
+        public RemoveByIdCommandHandlerTests() : base()
         {
-            removeCommandHandler = new RemoveTodoItemCommandHandler(UnitOfWorkMock.Object, Mapper);
+            removeCommandHandler = new RemoveTodoItemByIdCommandHandler(UnitOfWorkMock.Object, Mapper);
 
             id = 420;
             name = "Clean my room";
@@ -52,7 +52,7 @@ namespace Core.Tests.Handlers.Generic
         public async Task Handle_DeletesItemGivenExisting()
         {
             // Act
-            await removeCommandHandler.Handle(new RemoveCommand<TodoItem>(id), new CancellationToken());
+            await removeCommandHandler.Handle(new RemoveByIdCommand<TodoItem>(id), new CancellationToken());
 
             // Assert
             RepoMock.Verify();
@@ -69,7 +69,7 @@ namespace Core.Tests.Handlers.Generic
             int invalidId = 13;
 
             // Act
-            await removeCommandHandler.Handle(new RemoveCommand<TodoItem>(invalidId), new CancellationToken());
+            await removeCommandHandler.Handle(new RemoveByIdCommand<TodoItem>(invalidId), new CancellationToken());
 
             // Assert
             RepoMock.Verify();

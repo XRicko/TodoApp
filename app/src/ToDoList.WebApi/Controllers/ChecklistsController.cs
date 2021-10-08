@@ -56,7 +56,7 @@ namespace ToDoList.WebApi.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            await Mediator.Send(new RemoveCommand<Checklist>(id));
+            await Mediator.Send(new RemoveByIdCommand<Checklist>(id));
             return NoContent();
         }
 

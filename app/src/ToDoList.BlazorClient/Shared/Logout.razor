@@ -1,15 +1,33 @@
-﻿@using ToDoList.BlazorClient.Services
+﻿@using Blazored.Modal.Services
+@using ToDoList.BlazorClient.Services
 
+@inject IStringLocalizer<General> Localizer
 @inject NavigationManager NavManager
 @inject IAuthenticationService AuthService
-@inject IStringLocalizer<General> Localizer
+@inject StateContainer State
 
 <button class="btn btn-link" @onclick="LogOut"><span class="oi oi-account-logout"></span> @Localizer["Log Out"]</button>
 
 @code {
+    [CascadingParameter]
+    private IModalService Modal { get; set; }
+
     private async Task LogOut()
     {
-        await AuthService.LogOutAsync();
+        var result = await Modal.Show<LogoutDialog>("Confirmation").Result;
+
+        if (result.Cancelled)
+            return;
+
+        bool fullLogout = (bool)result.Data;
+
+        if (fullLogout)
+            await AuthService.LogOutEverywhereAsync();
+        else
+            await AuthService.LogOutAsync();
+
+        State.Reset();
+
         NavManager.NavigateTo("/");
     }
 }

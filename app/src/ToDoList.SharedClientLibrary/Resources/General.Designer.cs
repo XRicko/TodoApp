@@ -223,6 +223,15 @@ namespace ToDoList.SharedClientLibrary.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Choose location for the task.
+        /// </summary>
+        public static string LocationPrompt {
+            get {
+                return ResourceManager.GetString("LocationPrompt", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Log in.
         /// </summary>
         public static string Log_In {
@@ -255,6 +264,24 @@ namespace ToDoList.SharedClientLibrary.Resources {
         public static string LoginTitle {
             get {
                 return ResourceManager.GetString("LoginTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Do you also want to log out from everywhere?.
+        /// </summary>
+        public static string LogoutQuestion {
+            get {
+                return ResourceManager.GetString("LogoutQuestion", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No.
+        /// </summary>
+        public static string No {
+            get {
+                return ResourceManager.GetString("No", resourceCulture);
             }
         }
         
@@ -372,6 +399,15 @@ namespace ToDoList.SharedClientLibrary.Resources {
         public static string WelcomingInfo {
             get {
                 return ResourceManager.GetString("WelcomingInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Yes.
+        /// </summary>
+        public static string Yes {
+            get {
+                return ResourceManager.GetString("Yes", resourceCulture);
             }
         }
     }

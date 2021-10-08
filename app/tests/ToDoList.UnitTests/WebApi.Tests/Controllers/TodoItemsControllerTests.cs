@@ -188,7 +188,7 @@ namespace WebApi.Tests.Controllers
             cache.Get(recordKey).Should().BeNull();
             result.Should().BeAssignableTo<NoContentResult>();
 
-            MediatorMock.Verify(x => x.Send(It.Is<RemoveCommand<TodoItem>>(q => q.Id == id),
+            MediatorMock.Verify(x => x.Send(It.Is<RemoveByIdCommand<TodoItem>>(q => q.Id == id),
                                             It.IsAny<CancellationToken>()), Times.Once);
         }
 

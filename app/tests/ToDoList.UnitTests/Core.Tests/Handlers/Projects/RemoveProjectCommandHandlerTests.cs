@@ -16,7 +16,7 @@ namespace Core.Tests.Handlers.Projects
 {
     public class RemoveProjectCommandHandlerTests : HandlerBaseForTests
     {
-        private readonly RemoveProjectsCommandHandler handler;
+        private readonly RemoveProjectByIdCommandHandler handler;
 
         private readonly int id;
         private readonly int firstChecklistId;
@@ -26,7 +26,7 @@ namespace Core.Tests.Handlers.Projects
 
         public RemoveProjectCommandHandlerTests()
         {
-            handler = new RemoveProjectsCommandHandler(UnitOfWorkMock.Object, Mapper);
+            handler = new RemoveProjectByIdCommandHandler(UnitOfWorkMock.Object, Mapper);
 
             id = 42;
             firstChecklistId = 13;
@@ -54,7 +54,7 @@ namespace Core.Tests.Handlers.Projects
                     .Verifiable();
 
             // Act
-            await handler.Handle(new RemoveCommand<Project>(id), new CancellationToken());
+            await handler.Handle(new RemoveByIdCommand<Project>(id), new CancellationToken());
 
             // Arrange
             RepoMock.Verify();
@@ -79,7 +79,7 @@ namespace Core.Tests.Handlers.Projects
                     .Verifiable();
 
             // Act
-            await handler.Handle(new RemoveCommand<Project>(invalidId), new CancellationToken());
+            await handler.Handle(new RemoveByIdCommand<Project>(invalidId), new CancellationToken());
 
             // Assert
             RepoMock.Verify();

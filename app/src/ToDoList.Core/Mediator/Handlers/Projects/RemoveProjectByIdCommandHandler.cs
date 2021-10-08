@@ -16,13 +16,13 @@ using ToDoList.SharedKernel.Interfaces;
 
 namespace ToDoList.Core.Mediator.Handlers.Projects
 {
-    internal class RemoveProjectsCommandHandler : RemoveCommandHandler<Project>
+    internal class RemoveProjectByIdCommandHandler : RemoveByIdCommandHandler<Project>
     {
-        public RemoveProjectsCommandHandler(IUnitOfWork unitOfWork, IMapper mapper) : base(unitOfWork, mapper)
+        public RemoveProjectByIdCommandHandler(IUnitOfWork unitOfWork, IMapper mapper) : base(unitOfWork, mapper)
         {
         }
 
-        public override async Task<Unit> Handle(RemoveCommand<Project> request, CancellationToken cancellationToken)
+        public override async Task<Unit> Handle(RemoveByIdCommand<Project> request, CancellationToken cancellationToken)
         {
             _ = request ?? throw new ArgumentNullException(nameof(request));
 

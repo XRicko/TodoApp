@@ -171,6 +171,9 @@
   <data name="Location" xml:space="preserve">
     <value>Location</value>
   </data>
+  <data name="LocationPrompt" xml:space="preserve">
+    <value>Choose location for the task</value>
+  </data>
   <data name="Log In" xml:space="preserve">
     <value>Log in</value>
   </data>
@@ -182,6 +185,12 @@
   </data>
   <data name="LoginTitle" xml:space="preserve">
     <value>Use a local account to log in</value>
+  </data>
+  <data name="LogoutQuestion" xml:space="preserve">
+    <value>Do you also want to log out from everywhere?</value>
+  </data>
+  <data name="No" xml:space="preserve">
+    <value>No</value>
   </data>
   <data name="OngoingStatus" xml:space="preserve">
     <value>Ongoing</value>
@@ -221,5 +230,8 @@
   </data>
   <data name="WelcomingInfo" xml:space="preserve">
     <value>Login or register to get access</value>
+  </data>
+  <data name="Yes" xml:space="preserve">
+    <value>Yes</value>
   </data>
 </root>

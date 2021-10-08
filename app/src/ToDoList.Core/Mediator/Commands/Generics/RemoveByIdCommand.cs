@@ -4,6 +4,7 @@ using ToDoList.SharedKernel;
 
 namespace ToDoList.Core.Mediator.Commands.Generics
 {
-    public record RemoveCommand<TEntity>(int Id) : IRequest
+    public record RemoveByIdCommand<TEntity>(int Id) : IRequest
         where TEntity : BaseEntity;
+
 }

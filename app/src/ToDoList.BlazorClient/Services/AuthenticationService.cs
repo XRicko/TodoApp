@@ -31,5 +31,11 @@ namespace ToDoList.BlazorClient.Services
             await apiInvoker.LogOutAsync();
             ((AuthStateProvider)authenticationStateProvider).NotifyUserLogout();
         }
+
+        public async Task LogOutEverywhereAsync()
+        {
+            await apiInvoker.LogOutEverywhereAsync();
+            ((AuthStateProvider)authenticationStateProvider).NotifyUserLogout();
+        }
     }
 }

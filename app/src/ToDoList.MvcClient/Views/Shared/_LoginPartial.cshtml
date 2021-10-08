@@ -1,7 +1,9 @@
-﻿@inject IStringLocalizer<General> Localizer
+﻿@using ToDoList.SharedKernel
+
+@inject IStringLocalizer<General> Localizer
 
 <ul class="navbar-nav">
-@if (Context.Request.Cookies["accessToken"] is not null)
+@if (Context.Request.Cookies[Constants.AccessToken] is not null)
 {
     <li class="nav-item">
         <form  class="form-inline" asp-controller="User" asp-action="Logout">

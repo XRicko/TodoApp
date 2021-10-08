@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 using ToDoList.MvcClient.Models;
 using ToDoList.SharedClientLibrary.Services;
+using ToDoList.SharedKernel;
 
 namespace ToDoList.MvcClient.Controllers
 {
@@ -20,7 +21,7 @@ namespace ToDoList.MvcClient.Controllers
 
         public async Task<ActionResult> IndexAsync()
         {
-            string refreshToken = await tokenStorage.GetTokenAsync("refreshToken");
+            string refreshToken = await tokenStorage.GetTokenAsync(Constants.RefreshToken);
 
             return string.IsNullOrWhiteSpace(refreshToken)
                 ? View("Index")

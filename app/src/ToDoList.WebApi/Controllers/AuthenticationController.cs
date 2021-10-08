@@ -79,7 +79,7 @@ namespace ToDoList.WebApi.Controllers
             if (tokenResponse is null)
                 return Unauthorized("No refresh token");
 
-            await Mediator.Send(new RemoveCommand<RefreshToken>(tokenResponse.Id));
+            await Mediator.Send(new RemoveByNameCommand<RefreshToken>(tokenResponse.Name));
 
             var user = await Mediator.Send(new GetByIdQuery<User, UserResponse>(tokenResponse.UserId));
             if (user is null)
@@ -90,8 +90,21 @@ namespace ToDoList.WebApi.Controllers
 
         [Authorize]
         [HttpDelete]
+        [Route("[action]/{refreshToken}")]
+        public async Task<IActionResult> Logout(string refreshToken)
+        {
+            if (string.IsNullOrWhiteSpace(refreshToken))
+                throw new ArgumentException($"'{nameof(refreshToken)}' cannot be null or whitespace.", nameof(refreshToken));
+
+            await Mediator.Send(new RemoveByNameCommand<RefreshToken>(refreshToken));
+
+            return Ok();
+        }
+
+        [Authorize]
+        [HttpDelete]
         [Route("[action]")]
-        public async Task<IActionResult> Logout()
+        public async Task<IActionResult> LogoutEverywhere()
         {
             string id = User?.FindFirst(ClaimTypes.NameIdentifier).Value;
 

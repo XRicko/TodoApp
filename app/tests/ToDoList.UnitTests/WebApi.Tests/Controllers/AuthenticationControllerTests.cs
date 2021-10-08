@@ -163,7 +163,7 @@ namespace WebApi.Tests.Controllers
         }
 
         [Fact]
-        public async Task Logout_ReturnsOkResultOnSuccess()
+        public async Task LogoutEverywhere_ReturnsOkResultOnSuccess()
         {
             // Arrange
             int userId = 13;
@@ -178,7 +178,7 @@ namespace WebApi.Tests.Controllers
                        .Verifiable();
 
             // Act
-            var actionResult = await authenticationController.Logout();
+            var actionResult = await authenticationController.LogoutEverywhere();
 
             // Assert
             actionResult.Should().BeAssignableTo<OkResult>();
@@ -189,15 +189,29 @@ namespace WebApi.Tests.Controllers
         }
 
         [Fact]
-        public async Task Logout_ReturnsUnauthorizedWhenUserIdNull()
+        public async Task LogoutEverywhere_ReturnsUnauthorizedWhenUserIdNull()
         {
             // Act
-            var actionResult = await authenticationController.Logout();
+            var actionResult = await authenticationController.LogoutEverywhere();
 
             // Assert
             actionResult.Should().BeAssignableTo<UnauthorizedResult>();
             MediatorMock.Verify(x => x.Send(new RemoveAllRefreshTokensFromUserCommand(It.IsAny<int>()),
                                             It.IsAny<CancellationToken>()), Times.Never);
+        }
+
+        [Fact]
+        public async Task Logout_ReturnsOkResult()
+        {
+            // Arrange
+            string refreshToken = "EyJdnjEWFO.QnjQvnXJ";
+
+            // Act
+            var actionResult = await authenticationController.Logout(refreshToken);
+
+            // Assert
+            actionResult.Should().BeAssignableTo<OkResult>();
+            MediatorMock.Verify(x => x.Send(new RemoveByNameCommand<RefreshToken>(refreshToken), It.IsAny<CancellationToken>()), Times.Once);
         }
 
         [Fact]
@@ -266,7 +280,7 @@ namespace WebApi.Tests.Controllers
                         .ReturnsAsync(refreshTokenResponse)
                         .Verifiable();
 
-            MediatorMock.Setup(x => x.Send(new RemoveCommand<RefreshToken>(refreshTokenResponse.Id), It.IsAny<CancellationToken>()))
+            MediatorMock.Setup(x => x.Send(new RemoveByNameCommand<RefreshToken>(refreshTokenResponse.Name), It.IsAny<CancellationToken>()))
                         .Verifiable();
 
             MediatorMock.Setup(x => x.Send(new GetByIdQuery<User, UserResponse>(refreshTokenResponse.UserId),
@@ -306,7 +320,7 @@ namespace WebApi.Tests.Controllers
                         .ReturnsAsync(refreshTokenResponse)
                         .Verifiable();
 
-            MediatorMock.Setup(x => x.Send(new RemoveCommand<RefreshToken>(refreshTokenResponse.Id), It.IsAny<CancellationToken>()))
+            MediatorMock.Setup(x => x.Send(new RemoveByNameCommand<RefreshToken>(refreshTokenResponse.Name), It.IsAny<CancellationToken>()))
                         .Verifiable();
 
             MediatorMock.Setup(x => x.Send(new GetByIdQuery<User, UserResponse>(refreshTokenResponse.UserId),

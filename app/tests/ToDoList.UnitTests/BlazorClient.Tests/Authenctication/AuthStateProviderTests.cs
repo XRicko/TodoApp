@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net.Http;
 using System.Threading.Tasks;
 
 using FluentAssertions;
@@ -9,6 +10,7 @@ using TestExtensions;
 
 using ToDoList.BlazorClient.Authentication;
 using ToDoList.SharedClientLibrary.Services;
+using ToDoList.SharedKernel;
 
 using Xunit;
 
@@ -39,8 +41,8 @@ namespace BlazorClient.Tests.Authenctication
             // Arrange
             string refreshToken = "enfeofwjeiWQpojpcowX.qwfno";
 
-            tokenStorageMock.SetupGettingToken("accessToken", "");
-            tokenStorageMock.SetupGettingToken("refreshToken", refreshToken);
+            tokenStorageMock.SetupGettingToken(Constants.AccessToken, "");
+            tokenStorageMock.SetupGettingToken(Constants.RefreshToken, refreshToken);
 
             // Act
             var actual = await authStateProvider.GetAuthenticationStateAsync();
@@ -56,8 +58,8 @@ namespace BlazorClient.Tests.Authenctication
             // Arrange
             string accessToken = "edjWDopjcNjsqw.Wdnjap[q";
 
-            tokenStorageMock.SetupGettingToken("accessToken", accessToken);
-            tokenStorageMock.SetupGettingToken("refreshToken", "");
+            tokenStorageMock.SetupGettingToken(Constants.AccessToken, accessToken);
+            tokenStorageMock.SetupGettingToken(Constants.RefreshToken, "");
 
             // Act
             var actual = await authStateProvider.GetAuthenticationStateAsync();
@@ -87,11 +89,11 @@ namespace BlazorClient.Tests.Authenctication
 
             tokenParserMock.SetupGettingExpiryDate(token, expiredDate, claimsPrincipalWithExpired);
 
-            tokenStorageMock.SetupSequence(x => x.GetTokenAsync("accessToken"))
+            tokenStorageMock.SetupSequence(x => x.GetTokenAsync(Constants.AccessToken))
                             .ReturnsAsync(token)
                             .ReturnsAsync(refreshedToken);
 
-            tokenStorageMock.SetupGettingToken("refreshToken", refreshToken);
+            tokenStorageMock.SetupGettingToken(Constants.RefreshToken, refreshToken);
 
             // Act
             var actual = await authStateProvider.GetAuthenticationStateAsync();
@@ -102,9 +104,41 @@ namespace BlazorClient.Tests.Authenctication
             tokenParserMock.Verify();
 
             tokenStorageMock.Verify();
-            tokenStorageMock.Verify(x => x.GetTokenAsync("accessToken"), Times.Exactly(2));
+            tokenStorageMock.Verify(x => x.GetTokenAsync(Constants.AccessToken), Times.Exactly(2));
 
             apiInvokerMock.Verify(x => x.AddAuthorizationHeaderAsync(refreshedToken), Times.Once);
+        }
+
+        [Fact]
+        public async Task GetAuthenticationStateAsync_ReturnsEmptyAuthencticationStateIfRefreshTokenUnsuccessful()
+        {
+            // Arrange
+            string token = "ejnefNWPQDMpf.FE{OFekwpqvje";
+            string refreshToken = "enfeofwjeiWQpojpcowX.qwfno";
+
+            var expiredDate = DateTimeOffset.Now.AddMinutes(-2);
+            var claimsPrincipalWithExpired = ClaimsPrincipalHelpers.CreateClaimsPrincipal(expiredDate);
+
+            tokenParserMock.SetupGettingClaimsPrincipal(token, claimsPrincipalWithExpired);
+            tokenParserMock.SetupGettingExpiryDate(token, expiredDate, claimsPrincipalWithExpired);
+
+            tokenStorageMock.SetupGettingToken(Constants.AccessToken, token);
+            tokenStorageMock.SetupGettingToken(Constants.RefreshToken, refreshToken);
+
+            apiInvokerMock.Setup(x => x.RefreshTokenAsync())
+                          .ThrowsAsync(new HttpRequestException(null, null, System.Net.HttpStatusCode.Unauthorized))
+                          .Verifiable();
+
+            // Act
+            var actual = await authStateProvider.GetAuthenticationStateAsync();
+
+            // Assert
+            actual.User.Claims.Should().BeEmpty();
+
+            tokenParserMock.Verify();
+            tokenStorageMock.Verify();
+
+            apiInvokerMock.Verify(x => x.AddAuthorizationHeaderAsync(It.IsAny<string>()), Times.Never);
         }
 
         [Fact]
@@ -120,8 +154,8 @@ namespace BlazorClient.Tests.Authenctication
             tokenParserMock.SetupGettingClaimsPrincipal(token, claimsPrincipal);
             tokenParserMock.SetupGettingExpiryDate(token, expiryDate, claimsPrincipal);
 
-            tokenStorageMock.SetupGettingToken("accessToken", token);
-            tokenStorageMock.SetupGettingToken("refreshToken", refreshToken);
+            tokenStorageMock.SetupGettingToken(Constants.AccessToken, token);
+            tokenStorageMock.SetupGettingToken(Constants.RefreshToken, refreshToken);
 
             // Act
             var actual = await authStateProvider.GetAuthenticationStateAsync();

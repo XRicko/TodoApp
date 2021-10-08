@@ -2,9 +2,10 @@
 @using ToDoList.BlazorClient.Services
 @using ToDoList.SharedClientLibrary
 
+@inject IStringLocalizer<General> Localizer
 @inject NavigationManager NavManager
 @inject IAuthenticationService AuthService
-@inject IStringLocalizer<General> Localizer
+@inject StateContainer State
 
 <EditForm EditContext="@editContext" OnSubmit="@Submit">
 	<DataAnnotationsValidator />
@@ -66,6 +67,8 @@
 			try
 			{
 				await AuthService.AuthenticateAsync(ApiEndpoints.Login, user);
+				await State.InitAsync();
+
 				loading = false;
 
 				NavManager.NavigateTo(NavManager.Uri);

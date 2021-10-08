@@ -81,5 +81,20 @@ namespace BlazorClient.Tests.Services
             eventRaised.Should().BeTrue();
             apiInvokerMock.Verify(x => x.LogOutAsync(), Times.Once);
         }
+
+        [Fact]
+        public async Task LogOutEverywhereAsync_LogsOutAndRaisesEvent()
+        {
+            // Arrange
+            bool eventRaised = false;
+            authStateProvider.AuthenticationStateChanged += (obj) => eventRaised = true;
+
+            // Act
+            await authenticationService.LogOutEverywhereAsync();
+
+            // Assert
+            eventRaised.Should().BeTrue();
+            apiInvokerMock.Verify(x => x.LogOutEverywhereAsync(), Times.Once);
+        }
     }
 }

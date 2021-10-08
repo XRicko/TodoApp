@@ -15,7 +15,7 @@ namespace Core.Tests.Handlers.Checklists
 {
     public class RemoveChecklistCommandHandlerTests : HandlerBaseForTests
     {
-        private readonly RemoveChecklistCommandHandler removeChecklistHandler;
+        private readonly RemoveChecklistByIdCommandHandler removeChecklistHandler;
 
         private readonly int id;
 
@@ -23,7 +23,7 @@ namespace Core.Tests.Handlers.Checklists
 
         public RemoveChecklistCommandHandlerTests() : base()
         {
-            removeChecklistHandler = new RemoveChecklistCommandHandler(UnitOfWorkMock.Object, Mapper);
+            removeChecklistHandler = new RemoveChecklistByIdCommandHandler(UnitOfWorkMock.Object, Mapper);
 
             id = 9;
 
@@ -41,7 +41,7 @@ namespace Core.Tests.Handlers.Checklists
                     .Verifiable();
 
             // Act
-            await removeChecklistHandler.Handle(new RemoveCommand<Checklist>(id), new CancellationToken());
+            await removeChecklistHandler.Handle(new RemoveByIdCommand<Checklist>(id), new CancellationToken());
 
             // Arrange
             RepoMock.Verify();
@@ -62,7 +62,7 @@ namespace Core.Tests.Handlers.Checklists
                     .Verifiable();
 
             // Act
-            await removeChecklistHandler.Handle(new RemoveCommand<Checklist>(invalidId), new CancellationToken());
+            await removeChecklistHandler.Handle(new RemoveByIdCommand<Checklist>(invalidId), new CancellationToken());
 
             // Assert
             RepoMock.Verify();

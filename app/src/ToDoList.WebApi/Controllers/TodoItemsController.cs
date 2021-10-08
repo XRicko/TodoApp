@@ -72,7 +72,7 @@ namespace ToDoList.WebApi.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            await Mediator.Send(new RemoveCommand<TodoItem>(id));
+            await Mediator.Send(new RemoveByIdCommand<TodoItem>(id));
             await cache.RemoveAsync(RecordKeyByUser);
 
             return NoContent();

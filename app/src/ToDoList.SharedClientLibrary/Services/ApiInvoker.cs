@@ -7,6 +7,7 @@ using System.Net.Http.Json;
 using System.Threading.Tasks;
 
 using ToDoList.SharedClientLibrary.Models;
+using ToDoList.SharedKernel;
 
 namespace ToDoList.SharedClientLibrary.Services
 {
@@ -109,13 +110,20 @@ namespace ToDoList.SharedClientLibrary.Services
 
         public async Task LogOutAsync()
         {
-            await AddAuthorizationHeaderAsync();
-            using var response = await MakeRequest(Logout);
+            string refreshToken = await tokenStorage.GetTokenAsync(Constants.RefreshToken);
+
+            await DeleteItemAsync($"{ApiEndpoints.Logout}/{refreshToken}");
 
             await RemoveTokensFromStorageAsync();
             httpClient.DefaultRequestHeaders.Authorization = null;
+        }
 
-            Task<HttpResponseMessage> Logout() => httpClient.DeleteAsync("Authentication/Logout");
+        public async Task LogOutEverywhereAsync()
+        {
+            await DeleteItemAsync(ApiEndpoints.LogoutEverywhere);
+
+            await RemoveTokensFromStorageAsync();
+            httpClient.DefaultRequestHeaders.Authorization = null;
         }
 
         public async Task<AuthenticatedModel> AuthenticateUserAsync(string route, UserModel userModel)
@@ -137,7 +145,7 @@ namespace ToDoList.SharedClientLibrary.Services
 
         public async Task AddAuthorizationHeaderAsync(string token = null)
         {
-            string accessToken = token ?? await tokenStorage.GetTokenAsync("accessToken");
+            string accessToken = token ?? await tokenStorage.GetTokenAsync(Constants.AccessToken);
 
             if (string.IsNullOrWhiteSpace(accessToken))
                 return;
@@ -149,7 +157,7 @@ namespace ToDoList.SharedClientLibrary.Services
 
         public async Task RefreshTokenAsync()
         {
-            string refreshToken = await tokenStorage.GetTokenAsync("refreshToken");
+            string refreshToken = await tokenStorage.GetTokenAsync(Constants.RefreshToken);
 
             using var response = await httpClient.PostAsJsonAsync("Authentication/Refresh", refreshToken);
             response.EnsureSuccessStatusCode();
@@ -197,14 +205,14 @@ namespace ToDoList.SharedClientLibrary.Services
         {
             _ = authenticatedModel ?? throw new ArgumentNullException(nameof(authenticatedModel));
 
-            await tokenStorage.SetTokenAsync("accessToken", authenticatedModel.AccessToken);
-            await tokenStorage.SetTokenAsync("refreshToken", authenticatedModel.RefreshToken);
+            await tokenStorage.SetTokenAsync(Constants.AccessToken, authenticatedModel.AccessToken);
+            await tokenStorage.SetTokenAsync(Constants.RefreshToken, authenticatedModel.RefreshToken);
         }
 
         private async Task RemoveTokensFromStorageAsync()
         {
-            await tokenStorage.RemoveTokenAsync("accessToken");
-            await tokenStorage.RemoveTokenAsync("refreshToken");
+            await tokenStorage.RemoveTokenAsync(Constants.AccessToken);
+            await tokenStorage.RemoveTokenAsync(Constants.RefreshToken);
         }
     }
 }

@@ -3,6 +3,7 @@
     public class ApiEndpoints
     {
         private const string GetByName = "GetByName";
+        private const string Authentication = "Authentication";
 
         public const string Statuses = "Statuses";
         public const string StatusByName = $"{Statuses}/{GetByName}";
@@ -27,8 +28,12 @@
         public const string TodoItems = "TodoItems";
         public const string TodoItemsByChecklistId = $"{TodoItems}/GetByChecklistId";
 
-        public const string Register = "Authentication/Register";
-        public const string Login = "Authentication/Login";
-        public const string RefreshToken = "Authentication/Refresh";
+        public const string Register = $"{Authentication}/Register";
+        public const string Login = $"{Authentication}/Login";
+
+        public const string Logout = $"{Authentication}/Logout";
+        public const string LogoutEverywhere = $"{Authentication}/LogoutEverywhere";
+
+        public const string RefreshToken = $"{Authentication}/Refresh";
     }
 }

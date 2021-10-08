@@ -1,5 +1,4 @@
-﻿
-using FluentAssertions;
+﻿using FluentAssertions;
 
 using ToDoList.Core.Mediator.Requests.Update;
 using ToDoList.Core.Validators.UpdateRequests;
@@ -21,10 +20,10 @@ namespace Core.Tests.Validators.UpdateRequests
         [InlineData(1, "smth", 0)]
         [InlineData(45, "do", 87)]
         [InlineData(-8, "chores", 10)]
-        public void ShouldHaveValidationErrorWhenInvalidValues(int id, string name, int userId)
+        public void ShouldHaveValidationErrorWhenInvalidValues(int id, string name, int projectId)
         {
             // Act
-            var result = validator.Validate(new ChecklistUpdateRequest(id, name, userId));
+            var result = validator.Validate(new ChecklistUpdateRequest(id, name, projectId));
 
             // Assert
             result.IsValid.Should().BeFalse();
@@ -35,11 +34,11 @@ namespace Core.Tests.Validators.UpdateRequests
         {
             // Assert
             int id = 12;
-            int userId = 5;
+            int projectId = 5;
             string name = "name";
 
             // Act
-            var result = validator.Validate(new ChecklistUpdateRequest(id, name, userId));
+            var result = validator.Validate(new ChecklistUpdateRequest(id, name, projectId));
 
             // Assert
             result.IsValid.Should().BeTrue();

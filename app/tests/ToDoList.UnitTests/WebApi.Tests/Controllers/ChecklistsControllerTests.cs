@@ -156,7 +156,7 @@ namespace WebApi.Tests.Controllers
             // Assert
             result.Should().BeAssignableTo<NoContentResult>();
 
-            MediatorMock.Verify(x => x.Send(new RemoveCommand<Checklist>(id), It.IsAny<CancellationToken>()), Times.Once);
+            MediatorMock.Verify(x => x.Send(new RemoveByIdCommand<Checklist>(id), It.IsAny<CancellationToken>()), Times.Once);
         }
 
         [Fact]

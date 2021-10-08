@@ -171,6 +171,9 @@
   <data name="Location" xml:space="preserve">
     <value>Місце</value>
   </data>
+  <data name="LocationPrompt" xml:space="preserve">
+    <value>Виберіть місце для завдання</value>
+  </data>
   <data name="Log In" xml:space="preserve">
     <value>Увійти</value>
   </data>
@@ -182,6 +185,12 @@
   </data>
   <data name="LoginTitle" xml:space="preserve">
     <value>Використовуйте локальний акаунт, щоб увійти</value>
+  </data>
+  <data name="LogoutQuestion" xml:space="preserve">
+    <value>Чи хочете ви також вийти звідусіль?</value>
+  </data>
+  <data name="No" xml:space="preserve">
+    <value>Ні</value>
   </data>
   <data name="OngoingStatus" xml:space="preserve">
     <value>Поточне</value>
@@ -221,5 +230,8 @@
   </data>
   <data name="WelcomingInfo" xml:space="preserve">
     <value>Увійдіть або зареєструйтеся для доступу</value>
+  </data>
+  <data name="Yes" xml:space="preserve">
+    <value>Так</value>
   </data>
 </root>
